@@ -7,7 +7,7 @@ Class::Multimethods::multimethod __lgrt__ => qw(Math::MPFR) => sub {
     my ($d) = @_;
 
     # Return a complex number for x < e^(-1/e)
-    if (Math::MPFR::Rmpfr_cmp_d($d, CORE::exp(-1/CORE::exp(1))) < 0) {
+    if (Math::MPFR::Rmpfr_cmp_d($d, CORE::exp(-1 / CORE::exp(1))) < 0) {
         (@_) = _mpfr2mpc($d);
         goto &__lgrt__;
     }
@@ -16,7 +16,7 @@ Class::Multimethods::multimethod __lgrt__ => qw(Math::MPFR) => sub {
     Math::MPFR::Rmpfr_log($d, $d, $ROUND);
 
     my $p = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_ui_pow_ui($p, 10, CORE::int($PREC / 4), $ROUND);
+    Math::MPFR::Rmpfr_ui_pow_ui($p, 10, CORE::int($PREC / 3.4), $ROUND);
     Math::MPFR::Rmpfr_ui_div($p, 1, $p, $ROUND);
 
     my $x = Math::MPFR::Rmpfr_init2($PREC);
@@ -52,7 +52,7 @@ Class::Multimethods::multimethod __lgrt__ => qw(Math::MPC) => sub {
     $PREC = CORE::int($PREC);
 
     my $p = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_ui_pow_ui($p, 10, CORE::int($PREC / 4), $ROUND);
+    Math::MPFR::Rmpfr_ui_pow_ui($p, 10, CORE::int($PREC / 3.4), $ROUND);
     Math::MPFR::Rmpfr_ui_div($p, 1, $p, $ROUND);
 
     my $d = Math::MPC::Rmpc_init2($PREC);

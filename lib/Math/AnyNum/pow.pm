@@ -131,11 +131,9 @@ Class::Multimethods::multimethod __pow__ => qw(Math::GMPz Math::MPC) => sub {
 Class::Multimethods::multimethod __pow__ => qw(Math::MPFR Math::MPFR) => sub {
     my ($x, $y) = @_;
 
-    if (
-        Math::MPFR::Rmpfr_sgn($x) < 0
+    if (    Math::MPFR::Rmpfr_sgn($x) < 0
         and !Math::MPFR::Rmpfr_integer_p($y)
-        and Math::MPFR::Rmpfr_number_p($y)
-    ) {
+        and Math::MPFR::Rmpfr_number_p($y)) {
         (@_) = (_mpfr2mpc($x), $y);
         goto &__pow__;
     }

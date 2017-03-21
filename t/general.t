@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 100;
+plan tests => 18;
 
 {
     use Math::AnyNum qw(:constant);

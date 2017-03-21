@@ -25,8 +25,8 @@ Class::Multimethods::multimethod __div__ => qw(Math::GMPq Math::GMPz) => sub {
 
     #~ # Check for division by zero
     #~ if (Math::GMPz::Rmpz_sgn($_[1]) == 0) {
-        #~ (@_) = (_mpq2mpfr($_[0]), $_[1]);
-        #~ goto &__div__;
+    #~ (@_) = (_mpq2mpfr($_[0]), $_[1]);
+    #~ goto &__div__;
     #~ }
 
     #~ my ($x, $y) = @_;

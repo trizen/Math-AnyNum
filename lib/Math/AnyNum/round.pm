@@ -3,11 +3,65 @@ use warnings;
 
 our ($ROUND, $PREC);
 
-Class::Multimethods::multimethod __round__ => qw(Math::GMPq $) => sub {
+Class::Multimethods::multimethod __round__ => qw(Math::MPFR $) => sub {
     my ($n, $prec) = @_;
 
     my $nth = -CORE::int($prec);
     my $sgn = Math::MPFR::Rmpfr_sgn($n);
+
+    Math::MPFR::Rmpfr_abs($n, $n, $ROUND) if $sgn < 0;
+
+    my $p = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_set_str($p, '1e' . CORE::abs($nth), 10, $ROUND);
+
+    if ($nth < 0) {
+        Math::MPFR::Rmpfr_div($n, $n, $p, $ROUND);
+    }
+    else {
+        Math::MPFR::Rmpfr_mul($n, $n, $p, $ROUND);
+    }
+
+    Math::MPFR::Rmpfr_round($n, $n);
+
+    if ($nth < 0) {
+        Math::MPFR::Rmpfr_mul($n, $n, $p, $ROUND);
+    }
+    else {
+        Math::MPFR::Rmpfr_div($n, $n, $p, $ROUND);
+    }
+
+    if ($sgn < 0) {
+        Math::MPFR::Rmpfr_neg($n, $n, $ROUND);
+    }
+
+    $n;
+};
+
+Class::Multimethods::multimethod __round__ => qw(Math::MPC $) => sub {
+    my ($x, $prec) = @_;
+
+    my $real = Math::MPFR::Rmpfr_init2($PREC);
+    my $imag = Math::MPFR::Rmpfr_init2($PREC);
+
+    Math::MPC::RMPC_RE($real, $x);
+    Math::MPC::RMPC_IM($imag, $x);
+
+    $real = __round__($real, $prec);
+    $imag = __round__($imag, $prec);
+
+    if (Math::MPFR::Rmpfr_sgn($imag) == 0) {
+        return $real;
+    }
+
+    Math::MPC::Rmpc_set_fr_fr($x, $real, $imag, $ROUND);
+    $x;
+};
+
+Class::Multimethods::multimethod __round__ => qw(Math::GMPq $) => sub {
+    my ($n, $prec) = @_;
+
+    my $nth = -CORE::int($prec);
+    my $sgn = Math::GMPq::Rmpq_sgn($n);
 
     Math::GMPq::Rmpq_abs($n, $n) if $sgn < 0;
 
@@ -49,13 +103,17 @@ Class::Multimethods::multimethod __round__ => qw(Math::GMPq $) => sub {
         Math::GMPq::Rmpq_neg($n, $n);
     }
 
-    (@_) = ($n);
-
     if (Math::GMPq::Rmpq_integer_p($n)) {
-        goto &_mpq2mpz;
+        Math::GMPz::Rmpz_set_q($z, $n);
+        return $z;
     }
 
-    goto &_mpq2mpfr;
+    $n;
+};
+
+Class::Multimethods::multimethod __round__ => qw(Math::GMPz $) => sub {
+    (@_) = (_mpz2mpq($_[0]), $_[1]);
+    goto &__round__;
 };
 
 1;

@@ -123,7 +123,7 @@ use overload
   '**' => sub { Math::AnyNum::pow($_[2] ? (__PACKAGE__->new($_[1]), $_[0]) : ($_[0]->copy, $_[1])) },
   '%'  => sub { Math::AnyNum::mod($_[2] ? (__PACKAGE__->new($_[1]), $_[0]) : ($_[0]->copy, $_[1])) },
 
-  '/'  => sub { $_[2] ? Math::AnyNum::mul($_[0]->copy->inv, $_[1]) : Math::AnyNum::div($_[0]->copy, $_[1]) },
+  '/' => sub { $_[2] ? Math::AnyNum::mul($_[0]->copy->inv, $_[1]) : Math::AnyNum::div($_[0]->copy, $_[1]) },
   '-' => sub { $_[2] ? Math::AnyNum::add($_[0]->copy->neg, $_[1]) : Math::AnyNum::sub($_[0]->copy, $_[1]) },
 
   atan2 => sub { Math::AnyNum::atan2($_[2] ? (__PACKAGE__->new($_[1]), $_[0]) : ($_[0]->copy, $_[1])) },
@@ -1054,6 +1054,12 @@ sub numify {
     goto &__numify__;
 }
 
+sub boolify {
+    require Math::AnyNum::boolify;
+    (@_) = (${$_[0]});
+    goto &__boolify__;
+}
+
 Class::Multimethods::multimethod eq => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::eq;
     my ($x, $y) = @_;
@@ -1086,8 +1092,6 @@ Class::Multimethods::multimethod ne => qw(Math::AnyNum *) => sub {
 ## LT,GT
 #
 
-
-
 sub copy {
     require Math::AnyNum::copy;
     my ($x) = @_;
@@ -1099,6 +1103,13 @@ sub neg {
     require Math::AnyNum::neg;
     my ($x) = @_;
     $$x = __neg__($$x);
+    $x;
+}
+
+sub abs {
+    require Math::AnyNum::abs;
+    my ($x) = @_;
+    $$x = __abs__($$x);
     $x;
 }
 
@@ -1395,8 +1406,6 @@ Class::Multimethods::multimethod iroot => qw(Math::AnyNum *) => sub {
 ## SPECIAL
 #
 
-
-
 sub log2 {
     require Math::AnyNum::log;
     my ($x) = @_;
@@ -1492,14 +1501,14 @@ sub lgrt {
 Class::Multimethods::multimethod round => qw(Math::AnyNum) => sub {
     require Math::AnyNum::round;
     my ($x) = @_;
-    $$x = __round__(_any2mpq($$x) // (goto &to_nan), 0);
+    $$x = __round__($$x, 0);
     $x;
 };
 
 Class::Multimethods::multimethod round => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::round;
     my ($x, $y) = @_;
-    $$x = __round__(_any2mpq($$x) // (goto &to_nan), _any2si($$y) // (goto &to_nan));
+    $$x = __round__($$x, _any2si($$y) // (goto &to_nan));
     $x;
 };
 
@@ -1508,10 +1517,10 @@ Class::Multimethods::multimethod round => qw(Math::AnyNum $) => sub {
     my ($x, $y) = @_;
 
     if (CORE::int($y) eq $y and $y >= LONG_MIN and $y <= ULONG_MAX) {
-        $$x = __round__(_any2mpq($$x) // (goto &to_nan), $y);
+        $$x = __round__($$x, $y);
     }
     else {
-        $$x = __round__(_any2mpq($$x) // (goto &to_nan), _any2si(_str2obj($y)) // (goto &to_nan));
+        $$x = __round__($$x, _any2si(_str2obj($y)) // (goto &to_nan));
     }
     $x;
 };
@@ -1519,7 +1528,7 @@ Class::Multimethods::multimethod round => qw(Math::AnyNum $) => sub {
 Class::Multimethods::multimethod round => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::round;
     my ($x, $y) = @_;
-    $$x = __round__(_any2mpq($$x) // (goto &to_nan), _any2si(${__PACKAGE__->new($y)}) // (goto &to_nan));
+    $$x = __round__($$x, _any2si(${__PACKAGE__->new($y)}) // (goto &to_nan));
     $x;
 };
 
@@ -1552,12 +1561,12 @@ sub factorial {
 
 Class::Multimethods::multimethod binomial => qw(Math::AnyNum Math::AnyNum) => sub {
     my ($x, $y) = @_;
-    my $n = _any2si($$y) // (goto &to_nan);
+    my $n = _any2si($$y)  // (goto &to_nan);
     my $z = _any2mpz($$x) // (goto &to_nan);
 
     $n < 0
-        ? Math::GMPz::Rmpz_bin_si($z, $z, $n)
-        : Math::GMPz::Rmpz_bin_ui($z, $z, $n);
+      ? Math::GMPz::Rmpz_bin_si($z, $z, $n)
+      : Math::GMPz::Rmpz_bin_ui($z, $z, $n);
 
     $$x = $z;
     $x;
@@ -1569,8 +1578,8 @@ Class::Multimethods::multimethod binomial => qw(Math::AnyNum $) => sub {
         my $z = _any2mpz($$x) // (goto &to_nan);
 
         $y < 0
-            ? Math::GMPz::Rmpz_bin_si($z, $z, $y)
-            : Math::GMPz::Rmpz_bin_ui($z, $z, $y);
+          ? Math::GMPz::Rmpz_bin_si($z, $z, $y)
+          : Math::GMPz::Rmpz_bin_ui($z, $z, $y);
 
         $$x = $z;
         $x;
@@ -1584,14 +1593,12 @@ Class::Multimethods::multimethod binomial => qw(Math::AnyNum $) => sub {
 Class::Multimethods::multimethod binomial => qw($ $) => sub {
     my ($x, $y) = @_;
 
-    if (
-            CORE::int($x) eq $x
+    if (    CORE::int($x) eq $x
         and CORE::int($y) eq $y
         and $x >= 0
         and $y >= 0
         and $x <= ULONG_MAX
-        and $y <= ULONG_MAX
-    ) {
+        and $y <= ULONG_MAX) {
         my $z = Math::GMPz::Rmpz_init();
         Math::GMPz::Rmpz_bin_uiui($z, $x, $y);
         return bless \$z, __PACKAGE__;

@@ -18,8 +18,8 @@ Class::Multimethods::multimethod __iroot__ => qw(Math::GMPz $) => sub {
         goto &Math::AnyNum::_inf;
     }
     elsif ($y < 0) {
-        my $sign = Math::GMPz::Rmpz_sgn($x) || goto &Math::AnyNum::_inf;      # 1 / 0^k = Inf
-        Math::GMPz::Rmpz_cmp_ui($x, 1) == 0 and return $x;       # 1 / 1^k = 1
+        my $sign = Math::GMPz::Rmpz_sgn($x) || goto &Math::AnyNum::_inf;    # 1 / 0^k = Inf
+        Math::GMPz::Rmpz_cmp_ui($x, 1) == 0 and return $x;                  # 1 / 1^k = 1
 
         if ($sign < 0) {
             goto &Math::AnyNum::_nan;

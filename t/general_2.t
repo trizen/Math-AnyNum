@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 1000;
+plan tests => 382;
 
 {
     use Math::AnyNum;
