@@ -1,27 +1,45 @@
-Math-AnyNum
+# Math-AnyNum
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+Transparent interface to Math::GMPq, Math::GMPz, Math::MPFR and Math::MPC.
 
-A README file is required for CPAN modules since CPAN extracts the README
-file from a module distribution so that people browsing the archive
-can use it to get an idea of the module's uses. It is usually a good idea
-to provide version information here so that people can decide whether
-fixes for the module are worth downloading.
+# DESCRIPTION
 
+Math::AnyNum provides a correct, intuitive and transparent interface to the [GMP](https://gmplib.org/), [MPFR](http://www.mpfr.org/) and [MPC](http://www.multiprecision.org/) libraries.
 
-INSTALLATION
+# SYNOPSIS
+
+```perl
+use 5.014;
+use Math::AnyNum qw(:constant i);
+
+# Rational numbers
+say ((10->factorial + 1) / 2);    #=> 3628801/2
+
+# Floating-point numbers
+say sqrt(1 / 100->factorial);     #=> 1.03513781117562647132049459165[...]e-79
+
+# Rational numbers
+my $x = 2/3;
+say $x*3;               #=> 2
+say 2/$x;               #=> 3
+say $x;                 #=> "2/3"
+
+# Complex numbers
+say 3 + 4*i;            #=> 3+4i
+say sqrt(-4);           #=> 2i
+say log(-1);            #=> 3.141592653589793238462643383279502884197169[...]i
+```
+
+# INSTALLATION
 
 To install this module, run the following commands:
 
-	perl Build.PL
-	./Build
-	./Build test
-	./Build install
+    perl Build.PL
+    ./Build
+    ./Build test
+    ./Build install
 
-SUPPORT AND DOCUMENTATION
+# SUPPORT AND DOCUMENTATION
 
 After installing, you can find documentation for this module with the
 perldoc command.
@@ -43,7 +61,7 @@ You can also look for information at:
         http://search.cpan.org/dist/Math-AnyNum/
 
 
-LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 Copyright (C) 2017 Daniel Șuteu
 
@@ -51,7 +69,7 @@ This program is free software; you can redistribute it and/or modify it
 under the terms of the the Artistic License (2.0). You may obtain a
 copy of the full license at:
 
-L<http://www.perlfoundation.org/artistic_license_2_0>
+http://www.perlfoundation.org/artistic_license_2_0
 
 Any use, modification, and distribution of the Standard or Modified
 Versions is governed by this Artistic License. By using, modifying or
@@ -82,4 +100,3 @@ YOUR LOCAL LAW. UNLESS REQUIRED BY LAW, NO COPYRIGHT HOLDER OR
 CONTRIBUTOR WILL BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, OR
 CONSEQUENTIAL DAMAGES ARISING IN ANY WAY OUT OF THE USE OF THE PACKAGE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
