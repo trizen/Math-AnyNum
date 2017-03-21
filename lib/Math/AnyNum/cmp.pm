@@ -38,10 +38,10 @@ Class::Multimethods::multimethod __cmp__ => qw(Math::GMPq Math::MPFR) => sub {
     -(Math::MPFR::Rmpfr_cmp_q($_[1], $_[0]));
 };
 
-#~ Class::Multimethods::multimethod __cmp__ => qw(Math::GMPq Math::MPC) => sub {
-    #~ (@_) = (_mpq2mpc($_[0]), $_[1]);
-    #~ goto &__cmp__;
-#~ };
+Class::Multimethods::multimethod __cmp__ => qw(Math::GMPq Math::MPC) => sub {
+    (@_) = (_mpq2mpc($_[0]), $_[1]);
+    goto &__cmp__;
+};
 
 #
 ## GMPz
@@ -51,36 +51,39 @@ Class::Multimethods::multimethod __cmp__ => qw(Math::GMPz Math::GMPz) => sub {
 };
 
 Class::Multimethods::multimethod __cmp__ => qw(Math::GMPz Math::GMPq) => sub {
-     -(Math::GMPq::Rmpq_cmp_z($_[1], $_[0]));
+    -(Math::GMPq::Rmpq_cmp_z($_[1], $_[0]));
 };
 
 Class::Multimethods::multimethod __cmp__ => qw(Math::GMPz Math::MPFR) => sub {
     -(Math::MPFR::Rmpfr_cmp_z($_[1], $_[0]));
 };
 
-#~ Class::Multimethods::multimethod __cmp__ => qw(Math::GMPz Math::MPC) => sub {
-    #~ (@_) = (_mpz2mpc($_[0]), $_[1]);
-    #~ goto &__cmp__;
-#~ };
+Class::Multimethods::multimethod __cmp__ => qw(Math::GMPz Math::MPC) => sub {
+    (@_) = (_mpz2mpc($_[0]), $_[1]);
+    goto &__cmp__;
+};
 
 #
 ## MPC
 #
-#~ Class::Multimethods::multimethod __cmp__ => qw(Math::MPC Math::MPC) => sub {
-    #~ Math::MPC::Rmpc_cmp($_[0], $_[1]);
-#~ };
+Class::Multimethods::multimethod __cmp__ => qw(Math::MPC Math::MPC) => sub {
+    my $si = Math::MPC::Rmpc_cmp($_[0], $_[1]);
+    my $re_cmp = Math::MPC::RMPC_INEX_RE($si);
+    $re_cmp == 0 or return $re_cmp;
+    Math::MPC::RMPC_INEX_IM($si);
+};
 
-#~ Class::Multimethods::multimethod __cmp__ => qw(Math::MPC Math::GMPz) => sub {
-    #~ (@_) = ($_[0], _mpz2mpc($_[1]));
-    #~ goto &__cmp__;
-#~ };
+Class::Multimethods::multimethod __cmp__ => qw(Math::MPC Math::GMPz) => sub {
+    (@_) = ($_[0], _mpz2mpc($_[1]));
+    goto &__cmp__;
+};
 
-#~ Class::Multimethods::multimethod __cmp__ => qw(Math::MPC Math::GMPq) => sub {
-    #~ (@_) = ($_[0], _mpq2mpc($_[1]));
-    #~ goto &__cmp__;
-#~ };
+Class::Multimethods::multimethod __cmp__ => qw(Math::MPC Math::GMPq) => sub {
+    (@_) = ($_[0], _mpq2mpc($_[1]));
+    goto &__cmp__;
+};
 
-#~ Class::Multimethods::multimethod __cmp__ => qw(Math::MPC Math::MPFR) => sub {
-    #~ (@_) = ($_[0], _mpfr2mpc($_[1]));
-    #~ goto &__cmp__;
-#~ };
+Class::Multimethods::multimethod __cmp__ => qw(Math::MPC Math::MPFR) => sub {
+    (@_) = ($_[0], _mpfr2mpc($_[1]));
+    goto &__cmp__;
+};
