@@ -111,11 +111,13 @@ use overload
   '++' => \&inc,
   '--' => \&dec,
 
-  '>'   => sub { Math::AnyNum::gt($_[2]  ? ($_[1], $_[0]) : ($_[0], $_[1])) },
-  '>='  => sub { Math::AnyNum::ge($_[2]  ? ($_[1], $_[0]) : ($_[0], $_[1])) },
-  '<'   => sub { Math::AnyNum::lt($_[2]  ? ($_[1], $_[0]) : ($_[0], $_[1])) },
-  '<='  => sub { Math::AnyNum::le($_[2]  ? ($_[1], $_[0]) : ($_[0], $_[1])) },
-  '<=>' => sub { Math::AnyNum::cmp($_[2] ? ($_[1], $_[0]) : ($_[0], $_[1])) },
+#<<<
+  '>'   => sub { $_[2] ?  Math::AnyNum::lt ($_[0], $_[1]) : Math::AnyNum::gt ($_[0], $_[1]) },
+  '>='  => sub { $_[2] ?  Math::AnyNum::le ($_[0], $_[1]) : Math::AnyNum::ge ($_[0], $_[1]) },
+  '<'   => sub { $_[2] ?  Math::AnyNum::gt ($_[0], $_[1]) : Math::AnyNum::lt ($_[0], $_[1]) },
+  '<='  => sub { $_[2] ?  Math::AnyNum::ge ($_[0], $_[1]) : Math::AnyNum::le ($_[0], $_[1]) },
+  '<=>' => sub { $_[2] ? -Math::AnyNum::cmp($_[0], $_[1]) : Math::AnyNum::cmp($_[0], $_[1]) },
+#>>>
 
   '>>' => sub { Math::AnyNum::rsft($_[2] ? (__PACKAGE__->new($_[1]), $_[0]) : ($_[0]->copy, $_[1])) },
   '<<' => sub { Math::AnyNum::lsft($_[2] ? (__PACKAGE__->new($_[1]), $_[0]) : ($_[0]->copy, $_[1])) },

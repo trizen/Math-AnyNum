@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 406;
+plan tests => 426;
 
 {
     use Math::AnyNum;
@@ -368,6 +368,31 @@ plan tests => 406;
     is($q * $f <=> $f * $q, 0);
     is($q * $z <=> $z * $q, 0);
     is($z * $f <=> $f * $z, 0);
+
+    is($q <=> 3, -1);
+    is($q <=> 2, 0);
+    is($q <=> 1, 1);
+
+    is(3 <=> $q, 1);
+    is(2 <=> $q, 0);
+    is(1 <=> $q, -1);
+
+    is($f <=> 5, -1);
+    is($f <=> 4, 0);
+    is($f <=> 3, 1);
+
+    ok(5 > $f);
+    ok(4 >= $f);
+    ok(4 <= $f);
+    ok(4 == $f);
+
+    ok($f == 4);
+    ok($f > 3);
+    ok(!($f > 6));
+    ok($f > 2.5);
+    ok($f >= 2.5);
+    ok($f < 4.5);
+    ok($f <= 4.5);
 
     is($z <=> $q, +1);
     is($q <=> $z, -1);
