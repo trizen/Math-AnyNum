@@ -1,6 +1,6 @@
 # Math-AnyNum
 
-Transparent interface to Math::GMPq, Math::GMPz, Math::MPFR and Math::MPC.
+Transparent interface to [Math::GMPq](https://metacpan.org/release/Math-GMPq), [Math::GMPz](https://metacpan.org/release/Math-GMPz), [Math::MPFR](https://metacpan.org/release/Math-MPFR) and [Math::MPC](https://metacpan.org/release/Math-MPC).
 
 # DESCRIPTION
 
