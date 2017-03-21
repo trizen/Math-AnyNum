@@ -22,7 +22,7 @@ say sqrt(1 / 100->factorial);     #=> 1.03513781117562647132049459165[...]e-79
 my $x = 2/3;
 say $x*3;               #=> 2
 say 2/$x;               #=> 3
-say $x;                 #=> "2/3"
+say $x;                 #=> 2/3
 
 # Complex numbers
 say 3 + 4*i;            #=> 3+4i
