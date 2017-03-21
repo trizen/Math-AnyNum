@@ -2,10 +2,13 @@ Build.PL
 Changes
 examples/agm_pi.pl
 examples/bernoulli_numbers_recursive.pl
+examples/fibonacci_validation.pl
 examples/inverse_of_factorial.pl
 ignore.txt
 lib/Math/AnyNum.pm
+lib/Math/AnyNum/abs.pm
 lib/Math/AnyNum/add.pm
+lib/Math/AnyNum/boolify.pm
 lib/Math/AnyNum/copy.pm
 lib/Math/AnyNum/div.pm
 lib/Math/AnyNum/eq.pm
@@ -40,4 +43,5 @@ t/manifest.t
 t/pod-coverage.t
 t/pod.t
 t/root.t
+t/round.t
 xt/boilerplate.t

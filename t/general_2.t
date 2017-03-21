@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 386;
+plan tests => 387;
 
 {
     use Math::AnyNum;
@@ -594,6 +594,7 @@ plan tests => 386;
     is(Math::AnyNum->new_c(5),     '5');
     is(Math::AnyNum->new_c('1e2'), '100');
     is(Math::AnyNum->new_c('1e2', '1e3'), '100+1000i');
+    is(Math::AnyNum->new_c("ff", "ae", 16), '255+174i');
 }
 
 warn "\n\n\t\t-- TEST FINISHED SUCCESSFULLY --\n\n";
