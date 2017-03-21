@@ -854,10 +854,24 @@ sub new_f {
 }
 
 sub new_c {
-    my (undef, $str, $base) = @_;
-    my $r = Math::MPC::Rmpc_init2($PREC);
-    Math::MPC::Rmpc_set_str($r, $str, $base // 10, $ROUND);
-    bless \$r, __PACKAGE__;
+    my (undef, $real, $imag, $base) = @_;
+
+    my $c = Math::MPC::Rmpc_init2($PREC);
+
+    if (defined($imag)) {
+        my $re = Math::MPFR::Rmpfr_init2($PREC);
+        my $im = Math::MPFR::Rmpfr_init2($PREC);
+
+        Math::MPFR::Rmpfr_set_str($re, $real, $base // 10, $ROUND);
+        Math::MPFR::Rmpfr_set_str($im, $imag, $base // 10, $ROUND);
+
+        Math::MPC::Rmpc_set_fr_fr($c, $re, $im, $ROUND);
+    }
+    else {
+        Math::MPC::Rmpc_set_str($c, $real, $base // 10, $ROUND);
+    }
+
+    bless \$c, __PACKAGE__;
 }
 
 sub _nan {

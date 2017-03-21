@@ -41,8 +41,7 @@ sub test_root {
     $expected = qr/$expected/;
 
     # Test "pow" and "iroot"
-    like(Math::AnyNum->new($x)->pow($n)->iroot($y),
-         $expected, "Math::AnyNum->new($x)->pow($n)->iroot($y) == $expected");
+    like(Math::AnyNum->new($x)->pow($n)->iroot($y), $expected, "Math::AnyNum->new($x)->pow($n)->iroot($y) == $expected");
 }
 
 is(Math::AnyNum->new(-1234)->iroot(3),                    -10);

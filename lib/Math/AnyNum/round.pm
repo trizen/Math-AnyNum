@@ -7,9 +7,6 @@ Class::Multimethods::multimethod __round__ => qw(Math::MPFR $) => sub {
     my ($n, $prec) = @_;
 
     my $nth = -CORE::int($prec);
-    my $sgn = Math::MPFR::Rmpfr_sgn($n);
-
-    Math::MPFR::Rmpfr_abs($n, $n, $ROUND) if $sgn < 0;
 
     my $p = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_set_str($p, '1e' . CORE::abs($nth), 10, $ROUND);
@@ -30,10 +27,6 @@ Class::Multimethods::multimethod __round__ => qw(Math::MPFR $) => sub {
         Math::MPFR::Rmpfr_div($n, $n, $p, $ROUND);
     }
 
-    if ($sgn < 0) {
-        Math::MPFR::Rmpfr_neg($n, $n, $ROUND);
-    }
-
     $n;
 };
 
@@ -49,7 +42,7 @@ Class::Multimethods::multimethod __round__ => qw(Math::MPC $) => sub {
     $real = __round__($real, $prec);
     $imag = __round__($imag, $prec);
 
-    if (Math::MPFR::Rmpfr_sgn($imag) == 0) {
+    if (Math::MPFR::Rmpfr_zero_p($imag)) {
         return $real;
     }
 
