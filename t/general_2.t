@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 387;
+plan tests => 406;
 
 {
     use Math::AnyNum;
@@ -360,6 +360,34 @@ plan tests => 387;
     ok($c != $q);
     ok($c != $z);
     ok($c != $f);
+
+    #
+    ## Comparisons
+    #
+
+    is($q * $f <=> $f * $q, 0);
+    is($q * $z <=> $z * $q, 0);
+    is($z * $f <=> $f * $z, 0);
+
+    is($z <=> $q, +1);
+    is($q <=> $z, -1);
+    is($f <=> $z, 1);
+    is($z <=> $f, -1);
+
+    ok($f > $q);
+    ok($f > $z);
+    ok($f >= $f);
+    ok($f <= $f);
+
+    ok($z > $q);
+    ok($z >= $z);
+    ok($z <= $z);
+    ok($z < $f);
+
+    ok($q < $z);
+    ok($q >= $q);
+    ok($q <= $q);
+    ok($q < $f);
 
     #
     ## Scalar

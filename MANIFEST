@@ -4,11 +4,15 @@ examples/agm_pi.pl
 examples/bernoulli_numbers_recursive.pl
 examples/fibonacci_validation.pl
 examples/inverse_of_factorial.pl
+examples/lambert_W.pl
+examples/newton_s_method.pl
+examples/zeta_2n.pl
 ignore.txt
 lib/Math/AnyNum.pm
 lib/Math/AnyNum/abs.pm
 lib/Math/AnyNum/add.pm
 lib/Math/AnyNum/boolify.pm
+lib/Math/AnyNum/cmp.pm
 lib/Math/AnyNum/copy.pm
 lib/Math/AnyNum/div.pm
 lib/Math/AnyNum/eq.pm
@@ -44,4 +48,6 @@ t/pod-coverage.t
 t/pod.t
 t/root.t
 t/round.t
+utils/auto_perltidy.sh
+utils/bak_cleaner.sh
 xt/boilerplate.t

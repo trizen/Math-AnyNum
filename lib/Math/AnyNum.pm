@@ -492,6 +492,18 @@ sub _mpfr2mpc {
 ## Any
 #
 
+sub _any2mpc {
+    my ($x) = @_;
+
+    my $ref = ref($x);
+
+    $ref eq 'Math::MPC'  && return $x;
+    $ref eq 'Math::GMPq' && goto &_mpq2mpc;
+    $ref eq 'Math::GMPz' && goto &_mpz2mpc;
+
+    goto &_mpfr2mpc;
+}
+
 sub _any2mpfr {
     my ($x) = @_;
     my $ref = ref($x);
@@ -1074,6 +1086,10 @@ sub boolify {
     goto &__boolify__;
 }
 
+#
+## EQ
+#
+
 Class::Multimethods::multimethod eq => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::eq;
     my ($x, $y) = @_;
@@ -1087,6 +1103,10 @@ Class::Multimethods::multimethod eq => qw(Math::AnyNum *) => sub {
     (@_) = ($$x, ${__PACKAGE__->new($y)});
     goto &__eq__;
 };
+
+#
+## NE
+#
 
 Class::Multimethods::multimethod ne => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::ne;
@@ -1103,14 +1123,114 @@ Class::Multimethods::multimethod ne => qw(Math::AnyNum *) => sub {
 };
 
 #
-## LT,GT
+## CMP
 #
+
+Class::Multimethods::multimethod cmp => qw(Math::AnyNum Math::AnyNum) => sub {
+    require Math::AnyNum::cmp;
+    my ($x, $y) = @_;
+    (@_) = ($$x, $$y);
+    goto &__cmp__;
+};
+
+Class::Multimethods::multimethod cmp => qw(Math::AnyNum *) => sub {
+    require Math::AnyNum::cmp;
+    my ($x, $y) = @_;
+    (@_) = ($$x, ${__PACKAGE__->new($y)});
+    goto &__cmp__;
+};
+
+#
+## GT
+#
+
+Class::Multimethods::multimethod gt => qw(Math::AnyNum Math::AnyNum) => sub {
+    require Math::AnyNum::cmp;
+    my ($x, $y) = @_;
+    __cmp__($$x, $$y) > 0;
+};
+
+Class::Multimethods::multimethod gt => qw(Math::AnyNum *) => sub {
+    require Math::AnyNum::cmp;
+    my ($x, $y) = @_;
+    __cmp__($$x, ${__PACKAGE__->new($y)}) > 0;
+};
+
+#
+## GE
+#
+
+Class::Multimethods::multimethod ge => qw(Math::AnyNum Math::AnyNum) => sub {
+    require Math::AnyNum::cmp;
+    my ($x, $y) = @_;
+    __cmp__($$x, $$y) >= 0;
+};
+
+Class::Multimethods::multimethod ge => qw(Math::AnyNum *) => sub {
+    require Math::AnyNum::cmp;
+    my ($x, $y) = @_;
+    __cmp__($$x, ${__PACKAGE__->new($y)}) >= 0;
+};
+
+#
+## LT
+#
+Class::Multimethods::multimethod lt => qw(Math::AnyNum Math::AnyNum) => sub {
+    require Math::AnyNum::cmp;
+    my ($x, $y) = @_;
+    __cmp__($$x, $$y) < 0;
+};
+
+Class::Multimethods::multimethod lt => qw(Math::AnyNum *) => sub {
+    require Math::AnyNum::cmp;
+    my ($x, $y) = @_;
+    __cmp__($$x, ${__PACKAGE__->new($y)}) < 0;
+};
+
+#
+## LE
+#
+Class::Multimethods::multimethod le => qw(Math::AnyNum Math::AnyNum) => sub {
+    require Math::AnyNum::cmp;
+    my ($x, $y) = @_;
+    __cmp__($$x, $$y) <= 0;
+};
+
+Class::Multimethods::multimethod le => qw(Math::AnyNum *) => sub {
+    require Math::AnyNum::cmp;
+    my ($x, $y) = @_;
+    __cmp__($$x, ${__PACKAGE__->new($y)}) <= 0;
+};
 
 sub copy {
     require Math::AnyNum::copy;
     my ($x) = @_;
     my $r = __copy__($$x);
     bless \$r, __PACKAGE__;
+}
+
+sub int {
+    my ($x) = @_;
+    $$x = _any2mpz($$x) // (goto &to_nan);
+    $x;
+}
+
+sub rat {
+    my ($x) = @_;
+    $$x = _any2mpq($$x) // (goto &to_nan);
+    $x;
+}
+
+sub float {
+    my ($x) = @_;
+    $$x = _any2mpfr($$x);
+    $x;
+}
+
+sub complex {
+    my ($x) = @_;
+    $$x = _any2mpc($$x);
+    $x;
 }
 
 sub neg {

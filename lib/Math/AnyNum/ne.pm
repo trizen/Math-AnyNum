@@ -11,15 +11,12 @@ Class::Multimethods::multimethod __ne__ => qw(Math::MPFR Math::MPFR) => sub {
 };
 
 Class::Multimethods::multimethod __ne__ => qw(Math::MPFR Math::GMPz) => sub {
-    !Math::MPFR::Rmpfr_integer_p($_[0]) || do {
-        (@_) = ($_[0], _mpz2mpfr($_[1]));
-        goto &__ne__;
-    };
+    !Math::MPFR::Rmpfr_integer_p($_[0])
+      or Math::MPFR::Rmpfr_cmp_z($_[0], $_[1]) != 0;
 };
 
 Class::Multimethods::multimethod __ne__ => qw(Math::MPFR Math::GMPq) => sub {
-    (@_) = ($_[0], _mpq2mpfr($_[1]));
-    goto &__ne__;
+    Math::MPFR::Rmpfr_cmp_q($_[0], $_[1]) != 0;
 };
 
 Class::Multimethods::multimethod __ne__ => qw(Math::MPFR Math::MPC) => sub {
@@ -35,16 +32,12 @@ Class::Multimethods::multimethod __ne__ => qw(Math::GMPq Math::GMPq) => sub {
 };
 
 Class::Multimethods::multimethod __ne__ => qw(Math::GMPq Math::GMPz) => sub {
-    !Math::GMPq::Rmpq_integer_p($_[0]) or do {
-        my $z = Math::GMPz::Rmpz_init();
-        Math::GMPq::Rmpq_get_num($z, $_[0]);
-        Math::GMPz::Rmpz_cmp($z, $_[1]) != 0;
-    };
+    !Math::GMPq::Rmpq_integer_p($_[0])
+      or Math::GMPq::Rmpq_cmp_z($_[0], $_[1]) != 0;
 };
 
 Class::Multimethods::multimethod __ne__ => qw(Math::GMPq Math::MPFR) => sub {
-    (@_) = (_mpq2mpfr($_[0]), $_[1]);
-    goto &__ne__;
+    Math::MPFR::Rmpfr_cmp_q($_[1], $_[0]) != 0;
 };
 
 Class::Multimethods::multimethod __ne__ => qw(Math::GMPq Math::MPC) => sub {
@@ -60,16 +53,12 @@ Class::Multimethods::multimethod __ne__ => qw(Math::GMPz Math::GMPz) => sub {
 };
 
 Class::Multimethods::multimethod __ne__ => qw(Math::GMPz Math::GMPq) => sub {
-    !Math::GMPq::Rmpq_integer_p($_[1]) or do {
-        my $z = Math::GMPz::Rmpz_init();
-        Math::GMPq::Rmpq_get_num($z, $_[1]);
-        Math::GMPz::Rmpz_cmp($z, $_[0]) != 0;
-    };
+    !Math::GMPq::Rmpq_integer_p($_[1])
+      or Math::GMPq::Rmpq_cmp_z($_[1], $_[0]) != 0;
 };
 
 Class::Multimethods::multimethod __ne__ => qw(Math::GMPz Math::MPFR) => sub {
-    (@_) = (_mpz2mpfr($_[0]), $_[1]);
-    goto &__ne__;
+    Math::MPFR::Rmpfr_cmp_z($_[1], $_[0]) != 0;
 };
 
 Class::Multimethods::multimethod __ne__ => qw(Math::GMPz Math::MPC) => sub {
