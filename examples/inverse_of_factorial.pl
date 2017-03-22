@@ -11,20 +11,20 @@ use ntheory qw(factorial);
 use Math::AnyNum qw(:constant tau e);
 
 use constant S => tau->copy->sqrt->log;
-use constant T => tau->copy->root(-2 * e);
+use constant T => tau->copy->root(-2.0 * e);
 
 sub inv_fac_W {
     my ($n) = @_;
     my $L = log($n) - S;
-    $L / ($L / e)->lambert_w - 1/2;
+    $L / ($L / e)->lambert_w - 0.5;
 }
 
 sub inv_fac_lgrt {
     my ($n) = @_;
-    (T * $n**(1 / e))->lgrt * e - 1/2;
+    (T * $n**(1 / e))->lgrt * e - 0.5;
 }
 
-for my $z(1..100) {
+for my $z (1 .. 100) {
     my $n = Math::AnyNum->new($z);
 
     my $f = Math::AnyNum::factorial($z);

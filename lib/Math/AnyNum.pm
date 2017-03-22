@@ -169,8 +169,8 @@ use overload
             if ($name eq ':constant') {
                 overload::constant
                   integer => sub { __PACKAGE__->new_ui($_[0]) },
-                  float   => sub { __PACKAGE__->new($_[0], 10) },
-                  binary => sub {
+                  float   => sub { __PACKAGE__->new_f($_[0]) },
+                  binary  => sub {
                     my ($const) = @_;
                     my $prefix = substr($const, 0, 2);
                         $prefix eq '0x' ? __PACKAGE__->new(substr($const, 2), 16)

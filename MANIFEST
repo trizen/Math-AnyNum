@@ -3,6 +3,7 @@ Changes
 examples/agm_pi.pl
 examples/bernoulli_numbers_recursive.pl
 examples/fibonacci_validation.pl
+examples/halley_s_method.pl
 examples/inverse_of_factorial.pl
 examples/lambert_W.pl
 examples/newton_s_method.pl
