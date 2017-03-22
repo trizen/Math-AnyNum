@@ -358,8 +358,8 @@ sub _str2obj {
         return $r;
     }
 
-    # Floating-point exponential
-    if (index($s, 'e') != -1) {
+    # Floating point value
+    if ($s =~ tr/e.//) {
         my $r = Math::MPFR::Rmpfr_init2($PREC);
         if (Math::MPFR::Rmpfr_set_str($r, $s, 10, $ROUND)) {
             Math::MPFR::Rmpfr_set_nan($r);
@@ -367,31 +367,48 @@ sub _str2obj {
         return $r;
     }
 
-    if (index($s, '.') != -1) {
-        my $rat = _str2rat($s);
-
-        # Not a valid number
-        if ($rat !~ m{^\s*[-+]?[0-9]+(?>\s*/\s*[-+]?[1-9]+[0-9]*)?\s*\z}) {
-            my $r = Math::MPFR::Rmpfr_init2($PREC);
-            if (Math::MPFR::Rmpfr_set_str($r, $s, 10, $ROUND)) {
-                Math::MPFR::Rmpfr_set_nan($r);
-            }
-            return $r;
-        }
-
-        # Rational number (a/b)
-        if (index($rat, '/') != -1) {
-            my $r = Math::GMPq::Rmpq_init();
-            Math::GMPq::Rmpq_set_str($r, $rat, 10);
-            Math::GMPq::Rmpq_canonicalize($r);
-            return $r;
-        }
-
-        # For values like 42.000
-        my $r = Math::GMPz::Rmpz_init();
-        Math::GMPz::Rmpz_set_str($r, $rat, 10);
+    # Fractional value
+    if (index($s, '/') != -1 and $s =~ m{^\s*[-+]?[0-9]+\s*/\s*[-+]?[1-9]+[0-9]*\s*\z}) {
+        my $r = Math::GMPq::Rmpq_init();
+        Math::GMPq::Rmpq_set_str($r, $s, 10);
+        Math::GMPq::Rmpq_canonicalize($r);
         return $r;
     }
+
+    #~ # Floating-point exponential
+    #~ if (index($s, 'e') != -1) {
+    #~ my $r = Math::MPFR::Rmpfr_init2($PREC);
+    #~ if (Math::MPFR::Rmpfr_set_str($r, $s, 10, $ROUND)) {
+    #~ Math::MPFR::Rmpfr_set_nan($r);
+    #~ }
+    #~ return $r;
+    #~ }
+
+    #~ if (index($s, '.') != -1) {
+    #~ my $rat = _str2rat($s);
+
+    #~ # Not a valid number
+    #~ if ($rat !~ m{^\s*[-+]?[0-9]+(?>\s*/\s*[-+]?[1-9]+[0-9]*)?\s*\z}) {
+    #~ my $r = Math::MPFR::Rmpfr_init2($PREC);
+    #~ if (Math::MPFR::Rmpfr_set_str($r, $s, 10, $ROUND)) {
+    #~ Math::MPFR::Rmpfr_set_nan($r);
+    #~ }
+    #~ return $r;
+    #~ }
+
+    #~ # Rational number (a/b)
+    #~ if (index($rat, '/') != -1) {
+    #~ my $r = Math::GMPq::Rmpq_init();
+    #~ Math::GMPq::Rmpq_set_str($r, $rat, 10);
+    #~ Math::GMPq::Rmpq_canonicalize($r);
+    #~ return $r;
+    #~ }
+
+    #~ # For values like 42.000
+    #~ my $r = Math::GMPz::Rmpz_init();
+    #~ Math::GMPz::Rmpz_set_str($r, $rat, 10);
+    #~ return $r;
+    #~ }
 
     my $r = Math::GMPz::Rmpz_init();
     eval { Math::GMPz::Rmpz_set_str($r, $s, 10); 1 } // do {
@@ -786,7 +803,19 @@ sub new {
 
         if (index($num, '/') != -1) {
             my $r = Math::GMPq::Rmpq_init();
-            Math::GMPq::Rmpq_set_str($r, $num, $int_base);
+            eval {
+                Math::GMPq::Rmpq_set_str($r, $num, $int_base);
+                1;
+              } // do {
+                my $r = Math::MPFR::Rmpfr_init2($PREC);
+                Math::MPFR::Rmpfr_set_nan($r);
+                return bless \$r, $class;
+              };
+            if (Math::GMPq::Rmpq_get_str($r, 10) !~ m{^\s*[-+]?[0-9]+\s*/\s*[-+]?[1-9]+[0-9]*\s*\z}) {
+                my $r = Math::MPFR::Rmpfr_init2($PREC);
+                Math::MPFR::Rmpfr_set_nan($r);
+                return bless \$r, $class;
+            }
             Math::GMPq::Rmpq_canonicalize($r);
             return bless \$r, $class;
         }
@@ -799,7 +828,11 @@ sub new {
         }
         else {
             my $r = Math::GMPz::Rmpz_init();
-            Math::GMPq::Rmpz_set_str($r, $num, $int_base);
+            eval { Math::GMPz::Rmpz_set_str($r, $num, $int_base); 1 } // do {
+                my $r = Math::MPFR::Rmpfr_init2($PREC);
+                Math::MPFR::Rmpfr_set_nan($r);
+                return bless \$r, $class;
+            };
             return bless \$r, $class;
         }
     }

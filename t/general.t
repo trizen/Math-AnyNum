@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 17;
+plan tests => 28;
 
 {
     use Math::AnyNum qw(:constant);
@@ -38,6 +38,18 @@ plan tests => 17;
 
     like(3 + sqrt(2), qr/^4\.414213562373095048801\d*\z/);
     like(sqrt(2) + 3, qr/^4\.414213562373095048801\d*\z/);
+
+    is(Math::AnyNum->new('42/12'), '7/2');
+    is(Math::AnyNum->new('12.34'), '12.34');
+    is(Math::AnyNum->new('0/0'),   'NaN');
+    is(Math::AnyNum->new('0/0',     36), 'NaN');
+    is(Math::AnyNum->new('000/000', 16), 'NaN');
+    is(Math::AnyNum->new('dfp/abc', 12), 'NaN');
+    is(Math::AnyNum->new('-0/0'),  'NaN');
+    is(Math::AnyNum->new('1234'),  '1234');
+    is(Math::AnyNum->new('-1234'), '-1234');
+    is(Math::AnyNum->new('ff',    16), '255');
+    is(Math::AnyNum->new('ff/ae', 16), '85/58');
 
     #is(2.5, 5/2);
 }
