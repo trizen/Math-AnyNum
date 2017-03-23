@@ -12,16 +12,16 @@ Math::AnyNum provides a correct, intuitive and transparent interface to the [GMP
 use 5.014;
 use Math::AnyNum qw(:constant i);
 
-# Rational numbers
-say ((10->factorial + 1) / 2);    #=> 3628801/2
+# Integers
+say 30->factorial;                #=> 265252859812191058636308480000000
 
 # Floating-point numbers
 say sqrt(1 / 100->factorial);     #=> 1.03513781117562647132049459165[...]e-79
 
 # Rational numbers
 my $x = 2/3;
-say $x*3;               #=> 2
-say 2/$x;               #=> 3
+say ($x * 3);           #=> 2
+say (2 / $x);           #=> 3
 say $x;                 #=> 2/3
 
 # Complex numbers
