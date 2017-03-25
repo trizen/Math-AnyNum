@@ -12,7 +12,7 @@ Class::Multimethods::multimethod __mod__ => qw(Math::GMPq Math::GMPq) => sub {
     Math::GMPq::Rmpq_sgn($y)
       || goto &Math::AnyNum::_nan;
 
-    my $quo = Math::GMPq::Rmpq_init;
+    my $quo = Math::GMPq::Rmpq_init();
     Math::GMPq::Rmpq_set($quo, $x);
     Math::GMPq::Rmpq_div($quo, $quo, $y);
 
