@@ -23,7 +23,7 @@ sub binomial {
 sub bernoulli_number {
     my ($n) = @_;
 
-    return 0 if $n > 1 && "$n" % "2";    # Bn = 0 for all odd n > 1
+    return 0 if $n > 1 && $n % 2;    # Bn = 0 for all odd n > 1
 
     my @A;
     for my $m (0 .. $n) {

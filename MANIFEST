@@ -25,6 +25,7 @@ lib/Math/AnyNum/iroot.pm
 lib/Math/AnyNum/lambert_w.pm
 lib/Math/AnyNum/lgrt.pm
 lib/Math/AnyNum/log.pm
+lib/Math/AnyNum/mod.pm
 lib/Math/AnyNum/mul.pm
 lib/Math/AnyNum/ne.pm
 lib/Math/AnyNum/neg.pm
@@ -46,6 +47,7 @@ t/00-load.t
 t/general.t
 t/general_2.t
 t/manifest.t
+t/mod.t
 t/pod-coverage.t
 t/pod.t
 t/root.t

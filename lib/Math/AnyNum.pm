@@ -1572,6 +1572,38 @@ Class::Multimethods::multimethod iroot => qw(Math::AnyNum *) => sub {
 };
 
 #
+## MOD
+#
+
+Class::Multimethods::multimethod mod => qw(Math::AnyNum Math::AnyNum) => sub {
+    require Math::AnyNum::mod;
+    my ($x, $y) = @_;
+    $$x = __mod__($$x, $$y);
+    $x;
+};
+
+Class::Multimethods::multimethod mod => qw(Math::AnyNum $) => sub {
+    require Math::AnyNum::mod;
+    my ($x, $y) = @_;
+
+    if (ref($$x) ne 'Math::GMPq' and CORE::int($y) eq $y and $y > 0 and $y < ULONG_MAX) {
+        $$x = __mod__($$x, $y);
+    }
+    else {
+        $$x = __mod__($$x, _str2obj($y) // (goto &to_nan));
+    }
+
+    $x;
+};
+
+Class::Multimethods::multimethod mod => qw(Math::AnyNum *) => sub {
+    require Math::AnyNum::mod;
+    my ($x, $y) = @_;
+    $$x = __mod__($$x, ${__PACKAGE__->new($y)});
+    $x;
+};
+
+#
 ## SPECIAL
 #
 
