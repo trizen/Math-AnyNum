@@ -1,7 +1,7 @@
 ---
 abstract: 'Transparent interface to Math::GMPq, Math::GMPz, Math::MPFR and Math::MPC.'
 author:
-  - "Daniel È\x98uteu <trizenx@gmail.com>"
+  - 'Daniel Șuteu <trizenx@gmail.com>'
 build_requires:
   Test::More: '0'
 configure_requires:
