@@ -15,14 +15,14 @@ sub nth_root {
     $n->float;
     $x->float;
 
-    my $eps = 10**-($Math::AnyNum::PREC / 3.4);
+    my $eps = 10**-($Math::AnyNum::PREC / 4);
 
     my $m = $n;
     my $r = 0;
 
     while (abs($m - $r) > $eps) {
         $r = $m;
-        $m = ((($n - 1)*($r) + $x/($r**($n - 1)))/($n));
+        $m = ((($n - 1) * ($r) + $x / ($r**($n - 1))) / ($n));
     }
 
     $r;

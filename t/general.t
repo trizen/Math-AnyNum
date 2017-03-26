@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 28;
+plan tests => 31;
 
 {
     use Math::AnyNum qw(:constant);
@@ -14,6 +14,10 @@ plan tests => 28;
     like(sqrt(42),   qr/^6\.480740698407860230965967436087996\d*\z/);
     like(sqrt(-1),   qr/^i\z/);
     like(sqrt(-3.5), qr/^1\.87082869338697069279187436\d*i\z/);
+
+    ok((Math::AnyNum->new('0.1') + Math::AnyNum->new('0.2')) == Math::AnyNum->new_f('0.3'));
+    ok((Math::AnyNum->new('0.01') + Math::AnyNum->new('0.02')) == Math::AnyNum->new_f('0.03'));
+    ok((Math::AnyNum->new('0.001') + Math::AnyNum->new('0.002')) == Math::AnyNum->new_f('0.003'));
 
     my $x = -2;
     like($x->copy->sqrt, qr/^1\.4142135623730950488016\d*i\z/);

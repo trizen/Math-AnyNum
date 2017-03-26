@@ -25,7 +25,7 @@ sub halleys_method {
     my $k = $k0->copy->float;
 
     my @fx  = derivatives($x, $m, $k);
-    my $eps = 10**-($Math::AnyNum::PREC / 3.4);
+    my $eps = 10**-($Math::AnyNum::PREC / 4);
     my $r   = $fx[0] / ($fx[1] - ($fx[0] * $fx[2]) / (2 * $fx[1]));
 
     while (abs($fx[0]) > $eps) {

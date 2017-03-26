@@ -51,7 +51,7 @@ our ($ROUND, $PREC);
 
 BEGIN {
     $ROUND = Math::MPFR::MPFR_RNDN();
-    $PREC  = 200;
+    $PREC  = 192;
 }
 
 state $ZERO_F = (Math::MPFR::Rmpfr_init_set_ui_nobless(0, $ROUND))[0];

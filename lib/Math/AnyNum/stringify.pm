@@ -11,7 +11,7 @@ Class::Multimethods::multimethod __stringify__ => qw(Math::MPFR) => sub {
     }
     else {
         # log(10)/log(2) =~ 3.3219280948873623
-        my $digits = CORE::int($PREC / 3.4);
+        my $digits = CORE::int($PREC >> 2);
         my $str = Math::MPFR::Rmpfr_get_str($x, 10, $digits, $ROUND);
 
         if ($str =~ s/e(-?[0-9]+)\z//) {
