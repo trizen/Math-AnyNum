@@ -886,10 +886,17 @@ sub new_z {
 }
 
 sub new_q {
-    my (undef, $str, $base) = @_;
+    my (undef, $num, $den, $base) = @_;
     my $r = Math::GMPq::Rmpq_init();
-    Math::GMPq::Rmpq_set_str($r, $str, $base // 10);
-    Math::GMPq::Rmpq_canonicalize($r) if index($str, '/') != -1;
+
+    if (defined($den)) {
+        Math::GMPq::Rmpq_set_str($r, "$num/$den", $base // 10);
+    }
+    else {
+        Math::GMPq::Rmpq_set_str($r, "$num", $base // 10);
+    }
+
+    Math::GMPq::Rmpq_canonicalize($r);
     bless \$r, __PACKAGE__;
 }
 
