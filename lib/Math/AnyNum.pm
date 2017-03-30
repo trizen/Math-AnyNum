@@ -164,6 +164,7 @@ use overload
                      fibonacci => \&fibonacci,
                      lucas     => \&lucas,
                      primorial => \&primorial,
+                     rand      => \&rand,
                      irand     => \&irand,
                      invmod    => \&invmod,
                      powmod    => \&powmod,
