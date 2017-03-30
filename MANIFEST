@@ -3,6 +3,7 @@ Changes
 examples/agm_pi.pl
 examples/arithmetic_coding.pl
 examples/bernoulli_numbers_recursive.pl
+examples/closed_form_fib.pl
 examples/faulhaber_s_formula.pl
 examples/fibonacci_validation.pl
 examples/halley_s_method.pl
@@ -17,6 +18,7 @@ lib/Math/AnyNum/add.pm
 lib/Math/AnyNum/boolify.pm
 lib/Math/AnyNum/cmp.pm
 lib/Math/AnyNum/copy.pm
+lib/Math/AnyNum/cos.pm
 lib/Math/AnyNum/div.pm
 lib/Math/AnyNum/eq.pm
 lib/Math/AnyNum/exp.pm
@@ -36,6 +38,7 @@ lib/Math/AnyNum/numify.pm
 lib/Math/AnyNum/pow.pm
 lib/Math/AnyNum/real.pm
 lib/Math/AnyNum/round.pm
+lib/Math/AnyNum/sin.pm
 lib/Math/AnyNum/sqrt.pm
 lib/Math/AnyNum/stringify.pm
 lib/Math/AnyNum/sub.pm

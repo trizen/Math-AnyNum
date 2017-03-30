@@ -158,6 +158,12 @@ use overload
                      NaN => \&nan,
                     );
 
+    my %functions = (
+                     factorial => \&factorial,
+                     binomial  => \&binomial,
+                     fibonacci => \&fibonacci,
+                    );
+
     sub import {
         shift;
 
@@ -203,8 +209,15 @@ use overload
                     *$caller_sub = sub() { $value }
                 }
             }
+            elsif (exists $functions{$name}) {
+                no strict 'refs';
+                my $caller_sub = $caller . '::' . $name;
+                if (!defined &$caller_sub) {
+                    *$caller_sub = $functions{$name};
+                }
+            }
             elsif ($name eq ':all') {
-                push @_, keys(%constants);
+                push @_, keys(%constants), keys(%functions);
             }
             elsif ($name eq 'PREC') {
                 my $prec = CORE::int(shift(@_));
@@ -1908,6 +1921,20 @@ sub exp {
     $x;
 }
 
+sub sin {
+    require Math::AnyNum::sin;
+    my ($x) = @_;
+    $$x = __sin__($$x);
+    $x;
+}
+
+sub cos {
+    require Math::AnyNum::cos;
+    my ($x) = @_;
+    $$x = __cos__($$x);
+    $x;
+}
+
 sub zeta {
     require Math::AnyNum::zeta;
     my ($x) = @_;
@@ -1968,26 +1995,45 @@ Class::Multimethods::multimethod round => qw(Math::AnyNum *) => sub {
 };
 
 #
+## Fibonacci
+#
+sub fibonacci {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {    # called as a function
+        if (CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
+            my $z = Math::GMPz::Rmpz_init();
+            Math::GMPz::Rmpz_fib_ui($z, CORE::int($x));
+            return bless \$z, __PACKAGE__;
+        }
+        return __PACKAGE__->new($x)->fibonacci;
+    }
+
+    my $ui = _any2ui($$x) // (goto &nan);
+    my $z = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_fib_ui($z, $ui);
+    bless \$z, __PACKAGE__;
+}
+
+#
 ## Factorial
 #
 sub factorial {
     my ($x) = @_;
 
-    if (ref($x) eq '') {    # called as a function
+    if (ref($x) ne __PACKAGE__) {    # called as a function
         if (CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
             my $z = Math::GMPz::Rmpz_init();
-            Math::GMPz::Rmpz_fac_ui($z, $x);
+            Math::GMPz::Rmpz_fac_ui($z, CORE::int($x));
             return bless \$z, __PACKAGE__;
         }
-
         return __PACKAGE__->new($x)->factorial;
     }
 
-    my $ui = _any2ui($$x) // (goto &to_nan);
-    my $z = ref($$x) eq 'Math::GMPz' ? $$x : Math::GMPz::Rmpz_init();
+    my $ui = _any2ui($$x) // (goto &nan);
+    my $z = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_fac_ui($z, $ui);
-    $$x = $z;
-    $x;
+    bless \$z, __PACKAGE__;
 }
 
 #
@@ -1996,28 +2042,30 @@ sub factorial {
 
 Class::Multimethods::multimethod binomial => qw(Math::AnyNum Math::AnyNum) => sub {
     my ($x, $y) = @_;
-    my $n = _any2si($$y)  // (goto &to_nan);
-    my $z = _any2mpz($$x) // (goto &to_nan);
+
+    my $n = _any2si($$y)  // (goto &nan);
+    my $z = _any2mpz($$x) // (goto &nan);
+
+    my $r = Math::GMPz::Rmpz_init();
 
     $n < 0
-      ? Math::GMPz::Rmpz_bin_si($z, $z, $n)
-      : Math::GMPz::Rmpz_bin_ui($z, $z, $n);
+      ? Math::GMPz::Rmpz_bin_si($r, $z, $n)
+      : Math::GMPz::Rmpz_bin_ui($r, $z, $n);
 
-    $$x = $z;
-    $x;
+    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod binomial => qw(Math::AnyNum $) => sub {
     my ($x, $y) = @_;
     if (CORE::int($y) eq $y and $y >= LONG_MIN and $y <= ULONG_MAX) {
-        my $z = _any2mpz($$x) // (goto &to_nan);
+        my $z = _any2mpz($$x) // (goto &nan);
+        my $r = Math::GMPz::Rmpz_init();
 
         $y < 0
-          ? Math::GMPz::Rmpz_bin_si($z, $z, $y)
-          : Math::GMPz::Rmpz_bin_ui($z, $z, $y);
+          ? Math::GMPz::Rmpz_bin_si($r, $z, $y)
+          : Math::GMPz::Rmpz_bin_ui($r, $z, $y);
 
-        $$x = $z;
-        $x;
+        bless \$r, __PACKAGE__;
     }
     else {
         (@_) = ($x, __PACKAGE__->new($y));

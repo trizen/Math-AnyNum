@@ -7,8 +7,7 @@ use strict;
 use warnings;
 
 use lib qw(../lib);
-use ntheory qw(factorial);
-use Math::AnyNum qw(:constant tau e);
+use Math::AnyNum qw(:constant tau e factorial);
 
 use constant S => tau->copy->sqrt->log;
 use constant T => tau->copy->root(-2.0 * e);
@@ -27,7 +26,7 @@ sub inv_fac_lgrt {
 for my $z (1 .. 100) {
     my $n = Math::AnyNum->new($z);
 
-    my $f = Math::AnyNum::factorial($z);
+    my $f = factorial($z);
     my $i = inv_fac_W($f);
     my $j = inv_fac_lgrt($f);
 

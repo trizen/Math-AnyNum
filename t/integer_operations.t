@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 39;
+plan tests => 52;
 
 use Math::AnyNum;
 
@@ -25,9 +25,11 @@ use Math::AnyNum;
 }
 
 {
-    my $z = Math::AnyNum->new_z('12');
-    $z->factorial;
-    is($z, '479001600');
+    my $z  = Math::AnyNum->new_z('12');
+    my $t1 = $z->factorial;
+    is($t1, '479001600');
+    is($z,  '12');               # make sure factorial didn't change $z
+    $z = $t1;
 
     $z->isqrt;
     is($z, 21886);
@@ -49,8 +51,10 @@ use Math::AnyNum;
     $z->iroot(3);
     is($z, '6');
 
-    $z->binomial(3);
-    is($z, '20');
+    my $t2 = $z->binomial(3);
+    is($t2, '20');
+    is($z,  '6');    # make sure binomial didn't change $z
+    $z = $t2;
 
     $z->imod(12);
     is($z, '8');
@@ -206,4 +210,23 @@ use Math::AnyNum;
         $z->idiv($f);
         is($z, '2');
     }
+}
+
+{
+    # Import functions
+    use Math::AnyNum qw(factorial fibonacci binomial);
+
+    is(factorial(0),  '1');
+    is(factorial(5),  '120');
+    is(factorial(-1), 'NaN');
+
+    is(fibonacci(0),  '0');
+    is(fibonacci(12), '144');
+    is(fibonacci(-3), 'NaN');
+
+    is(binomial(12,   5),  '792');
+    is(binomial(0,    0),  '1');
+    is(binomial(-15,  12), '9657700');
+    is(binomial(124,  -2), '0');
+    is(binomial(-124, -3), '0');
 }

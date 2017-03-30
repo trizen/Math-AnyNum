@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 439;
+plan tests => 443;
 
 {
     use Math::AnyNum;
@@ -665,6 +665,18 @@ plan tests => 439;
     is(Math::AnyNum->new_c('1e2'), '100');
     is(Math::AnyNum->new_c('1e2', '1e3'), '100+1000i');
     is(Math::AnyNum->new_c("ff", "ae", 16), '255+174i');
+}
+
+{
+    # Trigonometric functions
+    my $f = Math::AnyNum->new_f('12.3');
+    my $c = Math::AnyNum->new_c('3.5', '5.2');
+
+    like(cos($f), qr/^0\.964732617886609590915710186\d*\z/);
+    like(sin($f), qr/^-0\.263231791365801650601707825888\d*\z/);
+
+    like(cos($c), qr/\-84\.87938457391136851218282456\d*\+31\.79266348861286277038879360747474\d*i\z/);
+    like(sin($c), qr/^-31\.79459860688613495225058132\d*\-84\.87421855026867660849447320745263\d*i\z/);
 }
 
 warn "\n\n\t\t-- TEST FINISHED SUCCESSFULLY --\n\n";

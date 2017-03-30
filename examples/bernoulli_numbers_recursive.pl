@@ -10,15 +10,9 @@ use warnings;
 use lib qw(../lib);
 use Memoize qw(memoize);
 
-#use ntheory qw(binomial);
-#use Math::BigNum qw(binomial);
-use Math::AnyNum qw(:constant);
+use Math::AnyNum qw(:constant binomial);
 
 memoize('bernoulli');
-
-sub binomial {
-    Math::AnyNum->new($_[0])->binomial($_[1]);
-}
 
 sub bernoulli {
     my ($n) = @_;
