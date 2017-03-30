@@ -93,7 +93,7 @@ use overload
 
   '^='  => sub { $_[0]->xor($_[1]) },
   '&='  => sub { $_[0]->and($_[1]) },
-  '|='  => sub { $_[0]->ior($_[1]) },
+  '|='  => sub { $_[0]->or($_[1]) },
   '<<=' => sub { $_[0]->lsft($_[1]) },
   '>>=' => sub { $_[0]->rsft($_[1]) },
 
@@ -104,7 +104,7 @@ use overload
   '!=' => sub { $_[0]->ne($_[1]) },
 
   '&' => sub { $_[0]->copy->and($_[1]) },
-  '|' => sub { $_[0]->copy->ior($_[1]) },
+  '|' => sub { $_[0]->copy->or($_[1]) },
   '^' => sub { $_[0]->copy->xor($_[1]) },
   '~' => sub { $_[0]->copy->not },
 
@@ -208,8 +208,11 @@ use overload
             }
             elsif ($name eq 'PREC') {
                 my $prec = CORE::int(shift(@_));
-                if ($prec < 2 or $prec > Math::MPFR::MPFR_PREC_MAX()) {
-                    die "invalid value for <<PREC>>: must be between 2 and ", Math::MPFR::MPFR_PREC_MAX();
+                if (   $prec < Math::MPFR::RMPFR_PREC_MIN()
+                    or $prec > Math::MPFR::RMPFR_PREC_MAX()) {
+                    die "invalid value for <<PREC>>: must be between "
+                      . Math::MPFR::RMPFR_PREC_MIN() . " and "
+                      . Math::MPFR::RMPFR_PREC_MAX();
                 }
                 $Math::AnyNum::PREC = $prec;
             }
@@ -554,7 +557,9 @@ sub _any2mpz {
     if ($ref eq 'Math::MPFR') {
         if (Math::MPFR::Rmpfr_number_p($x)) {
             my $z = Math::GMPz::Rmpz_init();
-            Math::MPFR::Rmpfr_get_z($z, $x, $ROUND);
+            my $t = Math::MPFR::Rmpfr_init2($PREC);
+            Math::MPFR::Rmpfr_trunc($t, $x);
+            Math::MPFR::Rmpfr_get_z($z, $t, $ROUND);
             return $z;
         }
         return;
@@ -1822,10 +1827,84 @@ Class::Multimethods::multimethod binomial => qw(Math::AnyNum *) => sub {
 };
 
 Class::Multimethods::multimethod binomial => qw($ *) => sub {
-    my ($x, $y) = @_;
-    (@_) = (__PACKAGE__->new($x), __PACKAGE__->new($y));
+    (@_) = (__PACKAGE__->new($_[0]), __PACKAGE__->new($_[1]));
     goto &binomial;
 };
+
+#
+## AND
+#
+
+Class::Multimethods::multimethod and => qw(Math::AnyNum Math::AnyNum) => sub {
+    my ($x, $y) = @_;
+
+    my $z = _any2mpz($$x) // (goto &to_nan);
+    my $n = _any2mpz($$y) // (goto &to_nan);
+
+    Math::GMPz::Rmpz_and($z, $z, $n);
+
+    $$x = $z;
+    $x;
+};
+
+Class::Multimethods::multimethod and => qw(Math::AnyNum *) => sub {
+    (@_) = ($_[0], __PACKAGE__->new($_[1]));
+    goto &and;
+};
+
+#
+## OR
+#
+
+Class::Multimethods::multimethod or => qw(Math::AnyNum Math::AnyNum) => sub {
+    my ($x, $y) = @_;
+
+    my $z = _any2mpz($$x) // (goto &to_nan);
+    my $n = _any2mpz($$y) // (goto &to_nan);
+
+    Math::GMPz::Rmpz_ior($z, $z, $n);
+
+    $$x = $z;
+    $x;
+};
+
+Class::Multimethods::multimethod or => qw(Math::AnyNum *) => sub {
+    (@_) = ($_[0], __PACKAGE__->new($_[1]));
+    goto &or;
+};
+
+#
+## XOR
+#
+
+Class::Multimethods::multimethod xor => qw(Math::AnyNum Math::AnyNum) => sub {
+    my ($x, $y) = @_;
+
+    my $z = _any2mpz($$x) // (goto &to_nan);
+    my $n = _any2mpz($$y) // (goto &to_nan);
+
+    Math::GMPz::Rmpz_xor($z, $z, $n);
+
+    $$x = $z;
+    $x;
+};
+
+Class::Multimethods::multimethod xor => qw(Math::AnyNum *) => sub {
+    (@_) = ($_[0], __PACKAGE__->new($_[1]));
+    goto &xor;
+};
+
+#
+## NOT
+#
+
+sub not {
+    my ($x) = @_;
+    my $z = _any2mpz($$x) // (goto &to_nan);
+    Math::GMPz::Rmpz_com($z, $z);
+    $$x = $z;
+    $x;
+}
 
 =head1 LICENSE AND COPYRIGHT
 
