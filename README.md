@@ -10,13 +10,13 @@ Math::AnyNum provides a correct, intuitive and transparent interface to the [GMP
 
 ```perl
 use 5.014;
-use Math::AnyNum qw(:constant i);
+use Math::AnyNum qw(:constant factorial i);
 
 # Integers
-say 30->factorial;                #=> 265252859812191058636308480000000
+say factorial(30);                #=> 265252859812191058636308480000000
 
 # Floating-point numbers
-say sqrt(1 / 100->factorial);     #=> 1.03513781117562647132049459165[...]e-79
+say sqrt(1 / factorial(100));     #=> 1.03513781117562647132049459165[...]e-79
 
 # Rational numbers
 my $x = 2/3;
