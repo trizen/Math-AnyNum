@@ -162,6 +162,12 @@ use overload
                      factorial => \&factorial,
                      binomial  => \&binomial,
                      fibonacci => \&fibonacci,
+                     lucas     => \&lucas,
+                     primorial => \&primorial,
+                     irand     => \&irand,
+                     invmod    => \&invmod,
+                     powmod    => \&powmod,
+                     gcd       => \&gcd,
                     );
 
     sub import {
@@ -642,9 +648,7 @@ sub _any2mpz {
     if ($ref eq 'Math::MPFR') {
         if (Math::MPFR::Rmpfr_number_p($x)) {
             my $z = Math::GMPz::Rmpz_init();
-            my $t = Math::MPFR::Rmpfr_init2($PREC);
-            Math::MPFR::Rmpfr_trunc($t, $x);
-            Math::MPFR::Rmpfr_get_z($z, $t, $ROUND);
+            Math::MPFR::Rmpfr_get_z($z, $x, Math::MPFR::MPFR_RNDZ);
             return $z;
         }
         return;
@@ -1995,6 +1999,151 @@ Class::Multimethods::multimethod round => qw(Math::AnyNum *) => sub {
 };
 
 #
+## RAND / IRAND
+#
+
+{
+    my $srand = srand();
+
+    {
+        state $state = Math::MPFR::Rmpfr_randinit_mt_nobless();
+        Math::MPFR::Rmpfr_randseed_ui($state, $srand);
+
+        Class::Multimethods::multimethod rand => qw(Math::AnyNum) => sub {
+            require Math::AnyNum::mul;
+
+            my ($x) = @_;
+
+            my $rand = Math::MPFR::Rmpfr_init2($PREC);
+            Math::MPFR::Rmpfr_urandom($rand, $state, $ROUND);
+            $rand = __mul__($rand, $$x);
+
+            bless \$rand, __PACKAGE__;
+        };
+
+        Class::Multimethods::multimethod rand => qw(Math::AnyNum Math::AnyNum) => sub {
+            require Math::AnyNum::mul;
+            require Math::AnyNum::sub;
+            require Math::AnyNum::add;
+
+            my ($x, $y) = @_;
+
+            my $rand = Math::MPFR::Rmpfr_init2($PREC);
+            Math::MPFR::Rmpfr_urandom($rand, $state, $ROUND);
+            $rand = __mul__($rand, __sub__(${$x->copy}, $$y));
+            $rand = __add__($rand, $$x);
+
+            bless \$rand, __PACKAGE__;
+        };
+
+        Class::Multimethods::multimethod rand => qw(Math::AnyNum *) => sub {
+            (@_) = ($_[0], __PACKAGE__->new($_[1]));
+            goto &rand;
+        };
+
+=head2 seed
+
+    $n->seed                       # => GMPz
+
+Reseeds the C<rand()> method with the value of C<n>, where C<n> can be any arbitrary large integer.
+
+Returns back the original value of C<n>.
+
+=cut
+
+        sub seed {
+            my $z = _any2mpz($_[0]) // die "invalid seed: <<$_[0]>> (expected an integer)";
+            Math::MPFR::Rmpfr_randseed($state, $z);
+            bless \$z, __PACKAGE__;
+        }
+    }
+
+=head2 irand
+
+    $x->irand                      # => GMPz
+    $x->irand(BigNum)              # => GMPz
+    $x->irand(Scalar)              # => GMPz
+
+Returns a pseudorandom integer. When an additional argument is provided, it returns
+an integer between C<x> (inclusive) and C<y> (inclusive), otherwise returns an integer between C<0> (inclusive)
+and C<x> (exclusive).
+
+The PRNG behind this method is called the "Mersenne Twister".
+Although it generates high-quality pseudorandom integers, it is B<NOT> cryptographically secure!
+
+Example:
+
+    10->irand        # a random integer between 0 and 10 (inclusive)
+    10->irand(20)    # a random integer between 10 and 20 (inclusive)
+
+=cut
+
+    {
+        state $state = Math::GMPz::zgmp_randinit_mt_nobless();
+        Math::GMPz::zgmp_randseed_ui($state, $srand);
+
+        Class::Multimethods::multimethod irand => qw(Math::AnyNum) => sub {
+            my ($x) = @_;
+
+            my $z = _any2mpz($$x) // (goto &nan);
+            my $sgn = Math::GMPz::Rmpz_sgn($z) || do {
+                my $r = Math::GMPz::Rmpz_init_set_ui(0);
+                return bless \$r, __PACKAGE__;
+            };
+
+            Math::GMPz::Rmpz_urandomm($z, $state, $z, 1);
+            Math::GMPz::Rmpz_neg($z, $z) if $sgn < 0;
+            bless \$z, __PACKAGE__;
+        };
+
+        Class::Multimethods::multimethod irand => qw(Math::AnyNum Math::AnyNum) => sub {
+            my ($x, $y) = @_;
+
+            my $z    = _any2mpz($$x) // (goto &nan);
+            my $rand = _any2mpz($$y) // (goto &nan);
+
+            my $r = Math::GMPz::Rmpz_init();
+            my $cmp = Math::GMPz::Rmpz_cmp($rand, $z);
+
+            if ($cmp == 0) {
+                Math::GMPz::Rmpz_set($r, $z);
+                return bless \$r, __PACKAGE__;
+            }
+            elsif ($cmp < 0) {
+                ($z, $rand) = ($rand, $z);
+            }
+
+            Math::GMPz::Rmpz_sub($r, $rand, $z);
+            Math::GMPz::Rmpz_add_ui($r, $r, 1);
+            Math::GMPz::Rmpz_urandomm($r, $state, $r, 1);
+            Math::GMPz::Rmpz_add($r, $r, $z);
+            bless \$r, __PACKAGE__;
+        };
+
+        Class::Multimethods::multimethod irand => qw(Math::AnyNum *) => sub {
+            (@_) = ($_[0], __PACKAGE__->new($_[1]));
+            goto &irand;
+        };
+
+=head2 iseed
+
+    $n->iseed                      # => GMPz
+
+Reseeds the C<irand()> method with the value of C<n>, where C<n> can be any arbitrary large integer.
+
+Returns back the original value of C<n>.
+
+=cut
+
+        sub iseed {
+            my $z = _any2mpz($_[0]) // die "invalid seed: <<$_[0]>> (expected an integer)";
+            Math::GMPz::zgmp_randseed($state, $z);
+            bless \$z, __PACKAGE__;
+        }
+    }
+}
+
+#
 ## Fibonacci
 #
 sub fibonacci {
@@ -2012,6 +2161,48 @@ sub fibonacci {
     my $ui = _any2ui($$x) // (goto &nan);
     my $z = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_fib_ui($z, $ui);
+    bless \$z, __PACKAGE__;
+}
+
+#
+## Lucas
+#
+sub lucas {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {    # called as a function
+        if (CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
+            my $z = Math::GMPz::Rmpz_init();
+            Math::GMPz::Rmpz_lucnum_ui($z, CORE::int($x));
+            return bless \$z, __PACKAGE__;
+        }
+        return __PACKAGE__->new($x)->lucas;
+    }
+
+    my $ui = _any2ui($$x) // (goto &nan);
+    my $z = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_lucnum_ui($z, $ui);
+    bless \$z, __PACKAGE__;
+}
+
+#
+## Primorial
+#
+sub primorial {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {    # called as a function
+        if (CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
+            my $z = Math::GMPz::Rmpz_init();
+            Math::GMPz::Rmpz_primorial_ui($z, CORE::int($x));
+            return bless \$z, __PACKAGE__;
+        }
+        return __PACKAGE__->new($x)->primorial;
+    }
+
+    my $ui = _any2ui($$x) // (goto &nan);
+    my $z = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_primorial_ui($z, $ui);
     bless \$z, __PACKAGE__;
 }
 
@@ -2035,6 +2226,125 @@ sub factorial {
     Math::GMPz::Rmpz_fac_ui($z, $ui);
     bless \$z, __PACKAGE__;
 }
+
+#
+## GCD
+#
+
+Class::Multimethods::multimethod gcd => qw(Math::AnyNum Math::AnyNum) => sub {
+    my ($x, $y) = @_;
+
+    my $n = _any2mpz($$x) // (goto &nan);
+    my $z = _any2mpz($$y) // (goto &nan);
+
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_gcd($r, $n, $z);
+    bless \$r, __PACKAGE__;
+};
+
+Class::Multimethods::multimethod gcd => qw(Math::AnyNum *) => sub {
+    (@_) = ($_[0], __PACKAGE__->new($_[1]));
+    goto &gcd;
+};
+
+Class::Multimethods::multimethod gcd => qw(* Math::AnyNum) => sub {
+    (@_) = (__PACKAGE__->new($_[0]), $_[1]);
+    goto &gcd;
+};
+
+Class::Multimethods::multimethod gcd => qw(* *) => sub {
+    (@_) = (__PACKAGE__->new($_[0]), __PACKAGE__->new($_[1]));
+    goto &gcd;
+};
+
+#
+## Invmod
+#
+
+Class::Multimethods::multimethod invmod => qw(Math::AnyNum Math::AnyNum) => sub {
+    my ($x, $y) = @_;
+
+    my $n = _any2mpz($$x) // (goto &nan);
+    my $z = _any2mpz($$y) // (goto &nan);
+
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_invert($r, $n, $z) || (goto &nan);
+    bless \$r, __PACKAGE__;
+};
+
+Class::Multimethods::multimethod invmod => qw(Math::AnyNum *) => sub {
+    (@_) = ($_[0], __PACKAGE__->new($_[1]));
+    goto &invmod;
+};
+
+Class::Multimethods::multimethod invmod => qw(* Math::AnyNum) => sub {
+    (@_) = (__PACKAGE__->new($_[0]), $_[1]);
+    goto &invmod;
+};
+
+Class::Multimethods::multimethod invmod => qw(* *) => sub {
+    (@_) = (__PACKAGE__->new($_[0]), __PACKAGE__->new($_[1]));
+    goto &invmod;
+};
+
+#
+## Powmod
+#
+
+Class::Multimethods::multimethod powmod => qw(Math::AnyNum Math::AnyNum Math::AnyNum) => sub {
+    my ($n, $m, $o) = @_;
+
+    my $x = _any2mpz($$n) // (goto &nan);
+    my $y = _any2mpz($$m) // (goto &nan);
+    my $z = _any2mpz($$o) // (goto &nan);
+
+    Math::GMPz::Rmpz_sgn($z) || (goto &nan);
+
+    my $r = Math::GMPz::Rmpz_init();
+
+    if (Math::GMPz::Rmpz_sgn($y) < 0) {
+        Math::GMPz::Rmpz_gcd($r, $x, $z);
+        Math::GMPz::Rmpz_cmp_ui($r, 1) == 0 or (goto &nan);
+    }
+
+    Math::GMPz::Rmpz_powm($r, $x, $y, $z);
+    bless \$r, __PACKAGE__;
+};
+
+Class::Multimethods::multimethod powmod => qw(Math::AnyNum * Math::AnyNum) => sub {
+    (@_) = ($_[0], __PACKAGE__->new($_[1]), $_[2]);
+    goto &powmod;
+};
+
+Class::Multimethods::multimethod powmod => qw(Math::AnyNum Math::AnyNum *) => sub {
+    (@_) = ($_[0], $_[1], __PACKAGE__->new($_[2]));
+    goto &powmod;
+};
+
+Class::Multimethods::multimethod powmod => qw(Math::AnyNum * *) => sub {
+    (@_) = ($_[0], __PACKAGE__->new($_[1]), __PACKAGE__->new($_[2]));
+    goto &powmod;
+};
+
+Class::Multimethods::multimethod powmod => qw(* Math::AnyNum *) => sub {
+    (@_) = (__PACKAGE__->new($_[0]), $_[1], __PACKAGE__->new($_[2]));
+    goto &powmod;
+};
+
+Class::Multimethods::multimethod powmod => qw(* Math::AnyNum Math::AnyNum) => sub {
+    (@_) = (__PACKAGE__->new($_[0]), $_[1], $_[2]);
+    goto &powmod;
+};
+
+Class::Multimethods::multimethod powmod => qw(* * Math::AnyNum) => sub {
+    (@_) = (__PACKAGE__->new($_[0]), __PACKAGE__->new($_[1]), $_[2]);
+    goto &powmod;
+};
+
+Class::Multimethods::multimethod powmod => qw(* * *) => sub {
+    (@_) = (__PACKAGE__->new($_[0]), __PACKAGE__->new($_[1]), __PACKAGE__->new($_[2]));
+    goto &powmod;
+};
 
 #
 ## Binomial
@@ -2096,7 +2406,7 @@ Class::Multimethods::multimethod binomial => qw(Math::AnyNum *) => sub {
     goto &binomial;
 };
 
-Class::Multimethods::multimethod binomial => qw($ *) => sub {
+Class::Multimethods::multimethod binomial => qw(* *) => sub {
     (@_) = (__PACKAGE__->new($_[0]), __PACKAGE__->new($_[1]));
     goto &binomial;
 };
@@ -2273,6 +2583,16 @@ sub popcount {
         $z = $t;
     }
     Math::GMPz::Rmpz_popcount($z);
+}
+
+#
+## Introspection
+#
+
+sub as_bin {
+    my ($x) = @_;
+    my $z = _any2mpz($$x) // return;
+    Math::GMPz::Rmpz_get_str($z, 2);
 }
 
 =head1 LICENSE AND COPYRIGHT

@@ -10,6 +10,7 @@ examples/halley_s_method.pl
 examples/inverse_of_factorial.pl
 examples/lambert_W.pl
 examples/newton_s_method.pl
+examples/rsa_algorithm.pl
 examples/zeta_2n.pl
 ignore.txt
 lib/Math/AnyNum.pm
