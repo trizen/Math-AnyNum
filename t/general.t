@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 31;
+plan tests => 67;
 
 {
     use Math::AnyNum qw(:constant);
@@ -43,12 +43,59 @@ plan tests => 31;
     like(3 + sqrt(2), qr/^4\.414213562373095048801\d*\z/);
     like(sqrt(2) + 3, qr/^4\.414213562373095048801\d*\z/);
 
-    is(Math::AnyNum->new('42/12'), '7/2');
-    is(Math::AnyNum->new('12.34'), '12.34');
-    is(Math::AnyNum->new('0/0'),   'NaN');
+    # Complex numbers
+    is(Math::AnyNum->new('3+4i'),     '3+4i');
+    is(Math::AnyNum->new('-i'),       '-i');
+    is(Math::AnyNum->new('i'),        'i');
+    is(Math::AnyNum->new('-1i'),      '-i');
+    is(Math::AnyNum->new('-0i'),      '0');
+    is(Math::AnyNum->new('0i'),       '0');
+    is(Math::AnyNum->new('+i'),       'i');
+    is(Math::AnyNum->new('+1i'),      'i');
+    is(Math::AnyNum->new('2i'),       '2i');
+    is(Math::AnyNum->new('-2i'),      '-2i');
+    is(Math::AnyNum->new('0-2i'),     '-2i');
+    is(Math::AnyNum->new('-0-2i'),    '-2i');
+    is(Math::AnyNum->new('3.5-2.5i'), '3.5-2.5i');
+    is(Math::AnyNum->new('3.5-2i'),   '3.5-2i');
+    is(Math::AnyNum->new('-3.5+2i'),  '-3.5+2i');
+    is(Math::AnyNum->new('-2-3.5i'),  '-2-3.5i');
+
+    #is(Math::AnyNum->new('1/2+3i'),     '0.5+3i');        # not supported yet
+    #is(Math::AnyNum->new('1/2-5/8i'),   '0.5-0.625i');    # =//=
+    #is(Math::AnyNum->new('-1/2-13.2i'), '-0.5-13.2i');    # =//=
+
+    is(Math::AnyNum->new('1e3-1e2i'),          '1000-100i');
+    is(Math::AnyNum->new('1.42e-3-1.42e-3i'),  '0.00142-0.00142i');
+    is(Math::AnyNum->new('-1.42e-3-1.42e-3i'), '-0.00142-0.00142i');
+    is(Math::AnyNum->new('1.42e+3-1.42e+3i'),  '1420-1420i');
+    is(Math::AnyNum->new('1.42e+3+1.42e+3i'),  '1420+1420i');
+    is(Math::AnyNum->new('-1.42e-3i'),         '-0.00142i');
+    is(Math::AnyNum->new('1.42e-3i'),          '0.00142i');
+    is(Math::AnyNum->new('+1.42e-3i'),         '0.00142i');
+
+    is(Math::AnyNum->new('-3-i'),  '-3-i');
+    is(Math::AnyNum->new('-3+i'),  '-3+i');
+    is(Math::AnyNum->new('-3+0i'), '-3');
+    is(Math::AnyNum->new('-3-0i'), '-3');
+    is(Math::AnyNum->new('3+i'),   '3+i');
+    is(Math::AnyNum->new('3-i'),   '3-i');
+    is(Math::AnyNum->new('3-1i'),  '3-i');
+    is(Math::AnyNum->new('3+0i'),  '3');
+
+    # With extra-spaces
+    is(Math::AnyNum->new('3 + 4i'),    '3+4i');
+    is(Math::AnyNum->new('-3.5 - 4i'), '-3.5-4i');
+
+    # Special values
+    is(Math::AnyNum->new('-1.42e-3'), '-0.00142');
+    is(Math::AnyNum->new('42/12'),    '7/2');
+    is(Math::AnyNum->new('12.34'),    '12.34');
+    is(Math::AnyNum->new('0/0'),      'NaN');
     is(Math::AnyNum->new('0/0',     36), 'NaN');
     is(Math::AnyNum->new('000/000', 16), 'NaN');
     is(Math::AnyNum->new('dfp/abc', 12), 'NaN');
+    is(Math::AnyNum->new('hi'),    'NaN');
     is(Math::AnyNum->new('-0/0'),  'NaN');
     is(Math::AnyNum->new('1234'),  '1234');
     is(Math::AnyNum->new('-1234'), '-1234');

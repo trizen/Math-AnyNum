@@ -20,7 +20,9 @@ lib/Math/AnyNum/div.pm
 lib/Math/AnyNum/eq.pm
 lib/Math/AnyNum/exp.pm
 lib/Math/AnyNum/imag.pm
+lib/Math/AnyNum/imod.pm
 lib/Math/AnyNum/inv.pm
+lib/Math/AnyNum/ipow.pm
 lib/Math/AnyNum/iroot.pm
 lib/Math/AnyNum/lambert_w.pm
 lib/Math/AnyNum/lgrt.pm
@@ -47,6 +49,8 @@ README.md
 t/00-load.t
 t/general.t
 t/general_2.t
+t/integer_logic.t
+t/integer_operations.t
 t/manifest.t
 t/mod.t
 t/pod-coverage.t
@@ -55,4 +59,3 @@ t/root.t
 t/round.t
 utils/auto_perltidy.sh
 utils/bak_cleaner.sh
-xt/boilerplate.t

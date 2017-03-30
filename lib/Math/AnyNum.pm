@@ -361,6 +361,76 @@ sub _str2obj {
         return $r;
     }
 
+    # Complex number
+    if (substr($s, -1) eq 'i') {
+
+        if ($s eq 'i' or $s eq '+i') {
+            my $r = Math::MPC::Rmpc_init2($PREC);
+            Math::MPC::Rmpc_set_ui_ui($r, 0, 1, $ROUND);
+            return $r;
+        }
+        elsif ($s eq '-i') {
+            my $r = Math::MPC::Rmpc_init2($PREC);
+            Math::MPC::Rmpc_set_si_si($r, 0, -1, $ROUND);
+            return $r;
+        }
+
+        my ($re, $im);
+
+        state $numeric_re  = qr/[+-]?+(?=\.?[0-9])[0-9]*+(?:\.[0-9]++)?(?:[Ee](?:[+-]?+[0-9]+))?/;
+        state $unsigned_re = qr/(?=\.?[0-9])[0-9]*+(?:\.[0-9]++)?(?:[Ee](?:[+-]?+[0-9]+))?/;
+
+        if ($s =~ /^($numeric_re)\s*([-+])\s*($unsigned_re)i\z/o) {
+            ($re, $im) = ($1, $3);
+            $im = "-$im" if $2 eq '-';
+        }
+        elsif ($s =~ /^($numeric_re)i\z/o) {
+            ($re, $im) = (0, $1);
+        }
+        elsif ($s =~ /^($numeric_re)\s*([-+])\s*i\z/o) {
+            ($re, $im) = ($1, 1);
+            $im = -1 if $2 eq '-';
+        }
+
+        if (defined($re) and defined($im)) {
+
+            my $r = Math::MPC::Rmpc_init2($PREC);
+
+            if ($im eq '+') {
+                $im = 1;
+            }
+            elsif ($im eq '-') {
+                $im = -1;
+            }
+
+            $re = _str2obj($re);
+            $im = _str2obj($im);
+
+            my $re_type = ref($re);
+            my $im_type = ref($im);
+
+            if ($re_type eq 'Math::MPFR' and $im_type eq 'Math::MPFR') {
+                Math::MPC::Rmpc_set_fr_fr($r, $re, $im, $ROUND);
+            }
+            elsif ($re_type eq 'Math::GMPz' and $im_type eq 'Math::GMPz') {
+                Math::MPC::Rmpc_set_z_z($r, $re, $im, $ROUND);
+            }
+            elsif ($re_type eq 'Math::GMPz' and $im_type eq 'Math::MPFR') {
+                Math::MPC::Rmpc_set_z_fr($r, $re, $im, $ROUND);
+            }
+            elsif ($re_type eq 'Math::MPFR' and $im_type eq 'Math::GMPz') {
+                Math::MPC::Rmpc_set_fr_z($r, $re, $im, $ROUND);
+            }
+            else {    # this should never happen
+                $re = _any2mpfr($re);
+                $im = _any2mpfr($im);
+                Math::MPC::Rmpc_set_fr_fr($r, $re, $im, $ROUND);
+            }
+
+            return $r;
+        }
+    }
+
     # Floating point value
     if ($s =~ tr/e.//) {
         my $r = Math::MPFR::Rmpfr_init2($PREC);
@@ -413,6 +483,8 @@ sub _str2obj {
     #~ return $r;
     #~ }
 
+    $s =~ s/^\+//;
+
     my $r = Math::GMPz::Rmpz_init();
     eval { Math::GMPz::Rmpz_set_str($r, $s, 10); 1 } // do {
         my $r = Math::MPFR::Rmpfr_init2($PREC);
@@ -423,15 +495,15 @@ sub _str2obj {
 }
 
 # Converts a string into an mpz object
-sub _str2mpz {
-    (CORE::int($_[0]) eq $_[0] and $_[0] <= ULONG_MAX and $_[0] >= LONG_MIN)
-      ? (
-         ($_[0] >= 0)
-         ? Math::GMPz::Rmpz_init_set_ui($_[0])
-         : Math::GMPz::Rmpz_init_set_si($_[0])
-        )
-      : eval { Math::GMPz::Rmpz_init_set_str($_[0], 10) };
-}
+#~ sub _str2mpz {
+#~ (CORE::int($_[0]) eq $_[0] and $_[0] <= ULONG_MAX and $_[0] >= LONG_MIN)
+#~ ? (
+#~ ($_[0] >= 0)
+#~ ? Math::GMPz::Rmpz_init_set_ui($_[0])
+#~ : Math::GMPz::Rmpz_init_set_si($_[0])
+#~ )
+#~ : eval { Math::GMPz::Rmpz_init_set_str($_[0], 10) };
+#~ }
 
 #~ # Converts a AnyNum object to mpfr
 #~ sub _big2mpfr {
@@ -945,6 +1017,17 @@ sub nan {
     bless \$r, __PACKAGE__;
 }
 
+sub to_nan {
+    my ($x) = @_;
+    if (ref($$x) eq 'Math::MPFR') {
+        Math::MPFR::Rmpfr_set_nan($$x);
+    }
+    else {
+        $$x = _nan();
+    }
+    $x;
+}
+
 sub _inf {
     my $r = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_set_inf($r, 1);
@@ -957,6 +1040,17 @@ sub inf {
     bless \$r, __PACKAGE__;
 }
 
+sub to_inf {
+    my ($x) = @_;
+    if (ref($$x) eq 'Math::MPFR') {
+        Math::MPFR::Rmpfr_set_inf($$x, 1);
+    }
+    else {
+        $$x = _inf();
+    }
+    $x;
+}
+
 sub _ninf {
     my $r = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_set_inf($r, -1);
@@ -967,6 +1061,17 @@ sub ninf {
     my $r = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_set_inf($r, -1);
     bless \$r, __PACKAGE__;
+}
+
+sub to_ninf {
+    my ($x) = @_;
+    if (ref($$x) eq 'Math::MPFR') {
+        Math::MPFR::Rmpfr_set_inf($$x, -1);
+    }
+    else {
+        $$x = _ninf();
+    }
+    $x;
 }
 
 sub zero {
@@ -1516,6 +1621,34 @@ Class::Multimethods::multimethod pow => qw(Math::AnyNum *) => sub {
 };
 
 #
+## INTEGER POWER
+#
+
+Class::Multimethods::multimethod ipow => qw(Math::AnyNum Math::AnyNum) => sub {
+    require Math::AnyNum::ipow;
+    my ($x, $y) = @_;
+    $$x = __ipow__(_any2mpz($$x) // (goto &to_nan), _any2si($$y) // (goto &to_nan));
+    $x;
+};
+
+Class::Multimethods::multimethod ipow => qw(Math::AnyNum $) => sub {
+    require Math::AnyNum::ipow;
+    my ($x, $y) = @_;
+    if (CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
+        $$x = __ipow__(_any2mpz($$x) // (goto &to_nan), $y);
+    }
+    else {
+        $$x = __ipow__(_any2mpz($$x) // (goto &to_nan), _any2si(_str2obj($y)) // (goto &to_nan));
+    }
+    $x;
+};
+
+Class::Multimethods::multimethod ipow => qw(Math::AnyNum *) => sub {
+    (@_) = ($_[0], __PACKAGE__->new($_[1]));
+    goto &ipow;
+};
+
+#
 ## ROOT
 #
 
@@ -1543,17 +1676,6 @@ Class::Multimethods::multimethod root => qw(Math::AnyNum *) => sub {
     $x;
 };
 
-sub to_nan {
-    my ($x) = @_;
-    if (ref($$x) eq 'Math::MPFR') {
-        Math::MPFR::Rmpfr_set_nan($$x);
-    }
-    else {
-        $$x = _nan();
-    }
-    $x;
-}
-
 #
 ## IROOT
 #
@@ -1567,7 +1689,7 @@ Class::Multimethods::multimethod iroot => qw(Math::AnyNum Math::AnyNum) => sub {
 Class::Multimethods::multimethod iroot => qw(Math::AnyNum $) => sub {
     require Math::AnyNum::iroot;
     my ($x, $y) = @_;
-    if (CORE::int($y) eq $y and $y >= 0 and $y <= ULONG_MAX) {
+    if (CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
         $$x = __iroot__(_any2mpz($$x) // (goto &to_nan), $y);
     }
     else {
@@ -1598,7 +1720,7 @@ Class::Multimethods::multimethod mod => qw(Math::AnyNum $) => sub {
     require Math::AnyNum::mod;
     my ($x, $y) = @_;
 
-    if (ref($$x) ne 'Math::GMPq' and CORE::int($y) eq $y and $y > 0 and $y < ULONG_MAX) {
+    if (ref($$x) ne 'Math::GMPq' and CORE::int($y) eq $y and $y > 0 and $y <= ULONG_MAX) {
         $$x = __mod__($$x, $y);
     }
     else {
@@ -1613,6 +1735,41 @@ Class::Multimethods::multimethod mod => qw(Math::AnyNum *) => sub {
     my ($x, $y) = @_;
     $$x = __mod__($$x, ${__PACKAGE__->new($y)});
     $x;
+};
+
+#
+## IMOD
+#
+
+Class::Multimethods::multimethod imod => qw(Math::AnyNum Math::AnyNum) => sub {
+    require Math::AnyNum::imod;
+    my ($x, $y) = @_;
+
+    my $z = _any2mpz($$x) // goto &to_nan;
+    my $m = _any2mpz($$y) // goto &to_nan;
+
+    $$x = __imod__($z, $m);
+    $x;
+};
+
+Class::Multimethods::multimethod imod => qw(Math::AnyNum $) => sub {
+    require Math::AnyNum::imod;
+    my ($x, $y) = @_;
+
+    if (CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
+        my $z = _any2mpz($$x) // goto &to_nan;
+        $$x = __imod__($z, $y);
+        $x;
+    }
+    else {
+        (@_) = ($x, __PACKAGE__->new($y));
+        goto &imod;
+    }
+};
+
+Class::Multimethods::multimethod imod => qw(Math::AnyNum *) => sub {
+    (@_) = ($_[0], __PACKAGE__->new($_[1]));
+    goto &imod;
 };
 
 #
@@ -1672,10 +1829,23 @@ Class::Multimethods::multimethod log => qw(Math::AnyNum) => sub {
     $x;
 };
 
+#
+## SQRT
+#
+
 sub sqrt {
     require Math::AnyNum::sqrt;
     my ($x) = @_;
     $$x = __sqrt__($$x);
+    $x;
+}
+
+sub isqrt {
+    my ($x) = @_;
+    my $z = _any2mpz($$x) // goto &to_nan;
+    Math::GMPz::Rmpz_sgn($z) < 0 && goto &to_nan;
+    Math::GMPz::Rmpz_sqrt($z, $z);
+    $$x = $z;
     $x;
 }
 
@@ -1989,6 +2159,21 @@ Class::Multimethods::multimethod rsft => qw(Math::AnyNum *) => sub {
     (@_) = ($_[0], __PACKAGE__->new($_[1]));
     goto &rsft;
 };
+
+#
+## POPCOUNT
+#
+
+sub popcount {
+    my ($x) = @_;
+    my $z = _any2mpz($$x) // return -1;
+    if (Math::GMPz::Rmpz_sgn($z) < 0) {
+        my $t = Math::GMPz::Rmpz_init();
+        Math::GMPz::Rmpz_neg($t, $z);
+        $z = $t;
+    }
+    Math::GMPz::Rmpz_popcount($z);
+}
 
 =head1 LICENSE AND COPYRIGHT
 
