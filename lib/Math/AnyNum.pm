@@ -993,7 +993,7 @@ sub mone {
 
 =head2 pi
 
-    Math::AnyNum->pi               # => BigNum
+    Math::AnyNum->pi               # => MPFR
 
 Returns the number PI, which is C<3.1415...>.
 
@@ -1007,7 +1007,7 @@ sub pi {
 
 =head2 tau
 
-    Math::AnyNum->tau              # => BigNum
+    Math::AnyNum->tau              # => MPFR
 
 Returns the number TAU, which is C<2*PI>.
 
@@ -1022,7 +1022,7 @@ sub tau {
 
 =head2 ln2
 
-    Math::AnyNum->ln2              # => BigNum
+    Math::AnyNum->ln2              # => MPFR
 
 Returns the natural logarithm of C<2>.
 
@@ -1036,7 +1036,7 @@ sub ln2 {
 
 =head2 euler
 
-    Math::AnyNum->euler                # => BigNum
+    Math::AnyNum->euler                # => MPFR
 
 Returns the Euler-Mascheroni constant, which is C<0.57721...>.
 
@@ -1050,7 +1050,7 @@ sub euler {
 
 =head2 catalan
 
-    Math::AnyNum->catalan                # => BigNum
+    Math::AnyNum->catalan                # => MPFR
 
 Returns the value of Catalan's constant, also known
 as Beta(2) or G, and starts as: C<0.91596...>.
@@ -1065,7 +1065,7 @@ sub catalan {
 
 =head2 i
 
-    Math::AnyNum->i                # => Complex
+    Math::AnyNum->i                # => MPC
 
 Returns the imaginary unit, which is C<sqrt(-1)>.
 
@@ -1079,7 +1079,7 @@ sub i {
 
 =head2 e
 
-    Math::AnyNum->e                # => BigNum
+    Math::AnyNum->e                # => MPFR
 
 Returns the e mathematical constant, which is C<2.718...>.
 
@@ -1094,7 +1094,7 @@ sub e {
 
 =head2 phi
 
-    Math::AnyNum->phi              # => BigNum
+    Math::AnyNum->phi              # => MPFR
 
 Returns the value of the golden ratio, which is C<1.61803...>.
 
@@ -1905,6 +1905,90 @@ sub not {
     $$x = $z;
     $x;
 }
+
+#
+## LEFT SHIFT
+#
+
+Class::Multimethods::multimethod lsft => qw(Math::AnyNum Math::AnyNum) => sub {
+    my ($x, $y) = @_;
+
+    my $n = _any2si($$y)  // (goto &to_nan);
+    my $z = _any2mpz($$x) // (goto &to_nan);
+
+    $n < 0
+      ? Math::GMPz::Rmpz_div_2exp($z, $z, -$n)
+      : Math::GMPz::Rmpz_mul_2exp($z, $z, $n);
+
+    $$x = $z;
+    $x;
+};
+
+Class::Multimethods::multimethod lsft => qw(Math::AnyNum $) => sub {
+    my ($x, $y) = @_;
+
+    if (CORE::int($y) eq $y and $y >= LONG_MIN and $y <= ULONG_MAX) {
+        my $z = _any2mpz($$x) // (goto &to_nan);
+
+        $y < 0
+          ? Math::GMPz::Rmpz_div_2exp($z, $z, -$y)
+          : Math::GMPz::Rmpz_mul_2exp($z, $z, $y);
+
+        $$x = $z;
+        $x;
+    }
+    else {
+        (@_) = ($x, __PACKAGE__->new($y));
+        goto &lsft;
+    }
+};
+
+Class::Multimethods::multimethod lsft => qw(Math::AnyNum *) => sub {
+    (@_) = ($_[0], __PACKAGE__->new($_[1]));
+    goto &lsft;
+};
+
+#
+## RIGHT SHIFT
+#
+
+Class::Multimethods::multimethod rsft => qw(Math::AnyNum Math::AnyNum) => sub {
+    my ($x, $y) = @_;
+
+    my $n = _any2si($$y)  // (goto &to_nan);
+    my $z = _any2mpz($$x) // (goto &to_nan);
+
+    $n < 0
+      ? Math::GMPz::Rmpz_mul_2exp($z, $z, -$n)
+      : Math::GMPz::Rmpz_div_2exp($z, $z, $n);
+
+    $$x = $z;
+    $x;
+};
+
+Class::Multimethods::multimethod rsft => qw(Math::AnyNum $) => sub {
+    my ($x, $y) = @_;
+
+    if (CORE::int($y) eq $y and $y >= LONG_MIN and $y <= ULONG_MAX) {
+        my $z = _any2mpz($$x) // (goto &to_nan);
+
+        $y < 0
+          ? Math::GMPz::Rmpz_mul_2exp($z, $z, -$y)
+          : Math::GMPz::Rmpz_div_2exp($z, $z, $y);
+
+        $$x = $z;
+        $x;
+    }
+    else {
+        (@_) = ($x, __PACKAGE__->new($y));
+        goto &rsft;
+    }
+};
+
+Class::Multimethods::multimethod rsft => qw(Math::AnyNum *) => sub {
+    (@_) = ($_[0], __PACKAGE__->new($_[1]));
+    goto &rsft;
+};
 
 =head1 LICENSE AND COPYRIGHT
 
