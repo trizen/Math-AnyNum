@@ -5,15 +5,15 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 33;
+plan tests => 39;
 
 use Math::AnyNum;
 
 {
     my $z = Math::AnyNum->new_z('43');
+
     is($z->popcount, 4);
     is($z,           43);
-
     $z->neg;
     is($z,           -43);
     is($z->popcount, 4);
@@ -59,6 +59,8 @@ use Math::AnyNum;
 {
     my $n = Math::AnyNum->new('-13');
     my $y = Math::AnyNum->new('9');
+    my $f = Math::AnyNum->new('5.7');
+
     {
         # Special
         my $z = $n->copy;
@@ -166,5 +168,42 @@ use Math::AnyNum;
         my $z = $n->copy;
         $z->imod('-11');
         is($z, '-2');
+    }
+
+    {
+        my $z = $n->copy;
+        $z->idiv('2');
+        is($z, '-6');
+    }
+
+    {
+        my $z = $n->copy;
+        $z->idiv('-2');
+        is($z, '6');
+    }
+
+    {
+        my $z = $n->copy;
+        $z->idiv($y);
+        is($z, '-1');
+    }
+
+    {
+        my $z = $n->copy;
+        $z->idiv(-$y);
+        is($z, '1');
+    }
+
+    {
+        my $z = $n->copy;
+        $z->idiv($f);
+        is($z, '-2');
+    }
+
+    {
+        my $z = $n->copy;
+        $z->abs;
+        $z->idiv($f);
+        is($z, '2');
     }
 }

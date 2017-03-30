@@ -1589,6 +1589,58 @@ Class::Multimethods::multimethod div => qw(Math::AnyNum *) => sub {
 };
 
 #
+## IDIV
+#
+
+Class::Multimethods::multimethod idiv => qw(Math::AnyNum Math::AnyNum) => sub {
+    my ($x, $y) = @_;
+
+    my $n = _any2mpz($$x) // goto &to_nan;
+    my $d = _any2mpz($$y) // goto &to_nan;
+
+    # Detect division by zero
+    if (!Math::GMPz::Rmpz_sgn($d)) {
+        my $sign = Math::GMPz::Rmpz_sgn($n);
+
+        if ($sign == 0) {    # 0/0
+            goto &to_nan;
+        }
+        elsif ($sign > 0) {    # x/0 where: x > 0
+            goto &to_inf;
+        }
+        else {                 # x/0 where: x < 0
+            goto &to_ninf;
+        }
+    }
+
+    Math::GMPz::Rmpz_tdiv_q($n, $n, $d);
+
+    $$x = $n;
+    $x;
+};
+
+Class::Multimethods::multimethod idiv => qw(Math::AnyNum $) => sub {
+    my ($x, $y) = @_;
+
+    if (CORE::int($y) and CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
+        my $n = _any2mpz($$x) // goto &to_nan;
+        Math::GMPz::Rmpz_tdiv_q_ui($n, $n, CORE::abs($y));
+        Math::GMPz::Rmpz_neg($n, $n) if $y < 0;
+        $$x = $n;
+        $x;
+    }
+    else {
+        (@_) = ($x, __PACKAGE__->new($y));
+        goto &idiv;
+    }
+};
+
+Class::Multimethods::multimethod idiv => qw(Math::AnyNum *) => sub {
+    (@_) = ($_[0], __PACKAGE__->new($_[1]));
+    goto &idiv;
+};
+
+#
 ## POWER
 #
 

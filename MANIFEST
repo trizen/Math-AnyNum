@@ -1,6 +1,7 @@
 Build.PL
 Changes
 examples/agm_pi.pl
+examples/arithmetic_coding.pl
 examples/bernoulli_numbers_recursive.pl
 examples/faulhaber_s_formula.pl
 examples/fibonacci_validation.pl
