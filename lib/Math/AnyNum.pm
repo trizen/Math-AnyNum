@@ -2126,6 +2126,38 @@ sub asech {
 }
 
 #
+## csc / csch / acsc / acsch
+#
+
+sub csc {
+    require Math::AnyNum::csc;
+    my ($x) = @_;
+    $$x = __csc__($$x);
+    $x;
+}
+
+sub csch {
+    require Math::AnyNum::csch;
+    my ($x) = @_;
+    $$x = __csch__($$x);
+    $x;
+}
+
+sub acsc {
+    require Math::AnyNum::acsc;
+    my ($x) = @_;
+    $$x = __acsc__($$x);
+    $x;
+}
+
+sub acsch {
+    require Math::AnyNum::acsch;
+    my ($x) = @_;
+    $$x = __acsch__($$x);
+    $x;
+}
+
+#
 ## zeta
 #
 
