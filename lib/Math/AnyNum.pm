@@ -169,6 +169,7 @@ use overload
                      invmod    => \&invmod,
                      powmod    => \&powmod,
                      gcd       => \&gcd,
+                     bernfrac  => \&bernfrac,
                     );
 
     sub import {
@@ -2496,6 +2497,27 @@ sub primorial {
     my $z = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_primorial_ui($z, $ui);
     bless \$z, __PACKAGE__;
+}
+
+#
+## bernfrac
+#
+
+sub bernfrac {
+    require Math::AnyNum::bernfrac;
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {    # called as a function
+        if (CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
+            my $q = __bernfrac__(CORE::int($x));
+            return bless \$q, __PACKAGE__;
+        }
+        return __PACKAGE__->new($x)->bernfrac;
+    }
+
+    my $n = _any2ui($$x) // goto &nan;
+    my $q = __bernfrac__($n);
+    bless \$q, __PACKAGE__;
 }
 
 #
