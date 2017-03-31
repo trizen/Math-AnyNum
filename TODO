@@ -53,8 +53,8 @@
     lambert_w       -- added/tested
     bernfrac        -- added
     bernreal        -- added
-    harmfrac
-    harmreal
+    harmfrac [?]
+    harmreal [?]
     agm
     hypot
     gamma
@@ -63,7 +63,7 @@
     digamma
     beta
     zeta            -- added/tested
-    eta
+    eta             -- added
     bessel_j
     bessel_y
     erf

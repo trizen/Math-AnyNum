@@ -2196,9 +2196,21 @@ sub acoth {
 #
 
 sub zeta {
-    require Math::AnyNum::zeta;
     my ($x) = @_;
-    $$x = __zeta__(_any2mpfr($$x));
+    my $f = _any2mpfr($$x);
+    Math::MPFR::Rmpfr_zeta($f, $f, $ROUND);
+    $$x = $f;
+    $x;
+}
+
+#
+## eta
+#
+
+sub eta {
+    require Math::AnyNum::eta;
+    my ($x) = @_;
+    $$x = __eta__(_any2mpfr($$x));
     $x;
 }
 
