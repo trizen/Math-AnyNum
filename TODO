@@ -37,14 +37,14 @@
     asec            -- added
     sech            -- added
     asech           -- added
-    csc
-    acsc
-    csch
-    acsch
-    cot
-    acot
-    coth
-    acoth
+    csc             -- added
+    acsc            -- added
+    csch            -- added
+    acsch           -- added
+    cot             -- added
+    acot            -- added
+    coth            -- added
+    acoth           -- added
     atan2
 
 # Add the following special methods:

@@ -2158,6 +2158,38 @@ sub acsch {
 }
 
 #
+## cot / coth / acot / acoth
+#
+
+sub cot {
+    require Math::AnyNum::cot;
+    my ($x) = @_;
+    $$x = __cot__($$x);
+    $x;
+}
+
+sub coth {
+    require Math::AnyNum::coth;
+    my ($x) = @_;
+    $$x = __coth__($$x);
+    $x;
+}
+
+sub acot {
+    require Math::AnyNum::acot;
+    my ($x) = @_;
+    $$x = __acot__($$x);
+    $x;
+}
+
+sub acoth {
+    require Math::AnyNum::acoth;
+    my ($x) = @_;
+    $$x = __acoth__($$x);
+    $x;
+}
+
+#
 ## zeta
 #
 
