@@ -2094,6 +2094,38 @@ sub atanh {
 }
 
 #
+## sec / sech / asec / asech
+#
+
+sub sec {
+    require Math::AnyNum::sec;
+    my ($x) = @_;
+    $$x = __sec__($$x);
+    $x;
+}
+
+sub sech {
+    require Math::AnyNum::sech;
+    my ($x) = @_;
+    $$x = __sech__($$x);
+    $x;
+}
+
+sub asec {
+    require Math::AnyNum::asec;
+    my ($x) = @_;
+    $$x = __asec__($$x);
+    $x;
+}
+
+sub asech {
+    require Math::AnyNum::asech;
+    my ($x) = @_;
+    $$x = __asech__($$x);
+    $x;
+}
+
+#
 ## zeta
 #
 

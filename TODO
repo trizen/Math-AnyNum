@@ -33,10 +33,10 @@
     atan            -- added
     tanh            -- added
     atanh           -- added
-    sec
-    asec
-    sech
-    asech
+    sec             -- added
+    asec            -- added
+    sech            -- added
+    asech           -- added
     csc
     acsc
     csch

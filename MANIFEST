@@ -20,6 +20,8 @@ lib/Math/AnyNum/abs.pm
 lib/Math/AnyNum/acos.pm
 lib/Math/AnyNum/acosh.pm
 lib/Math/AnyNum/add.pm
+lib/Math/AnyNum/asec.pm
+lib/Math/AnyNum/asech.pm
 lib/Math/AnyNum/asin.pm
 lib/Math/AnyNum/asinh.pm
 lib/Math/AnyNum/atan.pm
@@ -50,6 +52,8 @@ lib/Math/AnyNum/numify.pm
 lib/Math/AnyNum/pow.pm
 lib/Math/AnyNum/real.pm
 lib/Math/AnyNum/round.pm
+lib/Math/AnyNum/sec.pm
+lib/Math/AnyNum/sech.pm
 lib/Math/AnyNum/sin.pm
 lib/Math/AnyNum/sinh.pm
 lib/Math/AnyNum/sqrt.pm
