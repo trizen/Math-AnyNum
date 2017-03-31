@@ -1,0 +1,171 @@
+## TODO list for Math::AnyNum
+
+# Add the following methods:
+
+    add             -- added/tested
+    sub             -- added/tested
+    mul             -- added/tested
+    div             -- added/tested
+    mod             -- added/tested
+    pow             -- added/tested
+    inv             -- added/tested
+    sqr
+    sqrt            -- added/tested
+    cbrt
+    root            -- added
+    exp             -- added/tested
+    exp2
+    exp10
+    log             -- added/tested
+    log2            -- added/tested
+    log10           -- added/tested
+    lgrt [?]
+    lambert_w       -- added/tested
+    bernfrac
+    harmfrac
+
+# Add the following trigonometric methods:
+    sin             -- added
+    asin
+    sinh
+    asinh
+    cos             -- added
+    acos
+    cosh
+    acosh
+    tan
+    atan
+    tanh
+    atanh
+    sec
+    asec
+    sech
+    asech
+    csc
+    acsc
+    csch
+    acsch
+    cot
+    acot
+    coth
+    acoth
+    atan2
+
+# Add the following special methods:
+
+    agm
+    hypot
+    gamma
+    lngamma
+    lgamma
+    digamma
+    beta
+    zeta            -- added/tested
+    eta
+    bessel_j
+    bessel_y
+    bernreal
+    harmreal
+    erf
+    erfc
+    eint
+    li
+    li2
+
+# Add the following integer methods:
+
+    iadd
+    isub
+    imul
+    idiv                -- added
+    ipow                -- added
+    isqrt               -- added
+    isqrtrem
+    iroot               -- added/tested
+    irootrem
+    imod                -- added/tested
+    divmod
+
+# Add the following number theory methods:
+
+    invmod              -- added
+    powmod              -- added
+    gcd                 -- added
+    lcm
+    valuation
+    remove
+    kronecker
+    is_square
+    is_power
+    is_prime
+    next_prime
+    primorial           -- added
+    fibonacci           -- added
+    lucas               -- added
+    binomial            -- added
+
+# Add the following miscellaneous methods:
+
+    rand            -- added
+    seed            -- added
+    irand           -- added
+    iseed           -- added
+    copy            -- added
+    floor
+    ceil
+    rat             -- added
+    int             -- added
+    float           -- added
+    round           -- added
+    neg             -- added
+    abs             -- added
+    inc             -- added/tested
+    dec             -- added/tested
+
+# Add the following introspective methods:
+
+    is_zero
+    is_one
+    is_mone
+    is_pos
+    is_neg
+    is_int
+    is_rat
+    is_real
+    is_inf
+    is_nan
+    is_ninf
+    is_odd
+    is_even
+    is_div
+    sign
+    length
+
+# Add the following conversion methods:
+
+    stringify           -- added/tested
+    numify              -- added
+    boolify             -- added
+    as_frac
+    as_rat   [?]
+    as_float [?]
+    as_int
+    as_bin              -- added
+    as_oct
+    as_hex
+    in_base
+    deg2rad
+    rad2deg
+
+# Add the following dissection methods:
+
+    digits
+    numerator   [?]
+    denominator [?]
+
+# Add the following method/functions:
+
+    max
+    min
+    sum
+    product

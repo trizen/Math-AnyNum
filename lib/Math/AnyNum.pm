@@ -1424,6 +1424,20 @@ sub inv {
     $x;
 }
 
+sub inc {
+    require Math::AnyNum::inc;
+    my ($x) = @_;
+    $$x = __inc__($$x);
+    $x;
+}
+
+sub dec {
+    require Math::AnyNum::dec;
+    my ($x) = @_;
+    $$x = __dec__($$x);
+    $x;
+}
+
 sub real {
     require Math::AnyNum::real;
     my ($x) = @_;
@@ -1864,7 +1878,7 @@ Class::Multimethods::multimethod log => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::log;
     require Math::AnyNum::div;
     my ($x, $y) = @_;
-    $$x = __div__(__log__($$x), __log__(${$y->copy}));
+    $$x = __div__(__log__(${$x->copy}), __log__(${$y->copy}));
     $x;
 };
 
@@ -1880,7 +1894,7 @@ Class::Multimethods::multimethod log => qw(Math::AnyNum $) => sub {
         goto &log10;
     }
 
-    $$x = __div__(__log__($$x), __log__(_str2obj($y)));
+    $$x = __div__(__log__(${$x->copy}), __log__(_str2obj($y)));
     $x;
 };
 
@@ -1888,7 +1902,7 @@ Class::Multimethods::multimethod log => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::log;
     require Math::AnyNum::div;
     my ($x, $y) = @_;
-    $$x = __div__(__log__($$x), __log__(${__PACKAGE__->new($y)}));
+    $$x = __div__(__log__(${$x->copy}), __log__(${__PACKAGE__->new($y)}));
     $x;
 };
 
@@ -2257,27 +2271,6 @@ sub factorial {
     Math::GMPz::Rmpz_fac_ui($z, $ui);
     bless \$z, __PACKAGE__;
 }
-
-######## TODO ########
-# Add:
-#   * remove(x, y)
-#   * valuation(x, y)
-#   * bernfrac(n)
-#   * bernreal(n)
-#   * gamma(x)
-#   * lngamma(x)
-#   * beta(x,y)
-#   * irootrem(n, m)
-#   * isqrtrem(n, m)
-#   * divmod(n, m)
-#   * kronecker(n, m)
-#   * is_prime(n, m)
-#   * is_power(n, m)
-#   * is_square(n)
-#   * is_int(n)
-#   * as_hex(n)
-#   * as_oct(n)
-#   * digits(n)
 
 #
 ## GCD
