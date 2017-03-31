@@ -51,8 +51,10 @@
 
     lgrt            -- added
     lambert_w       -- added/tested
-    bernfrac
+    bernfrac        -- added
+    bernreal        -- added
     harmfrac
+    harmreal
     agm
     hypot
     gamma
@@ -64,8 +66,6 @@
     eta
     bessel_j
     bessel_y
-    bernreal
-    harmreal
     erf
     erfc
     eint

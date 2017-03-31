@@ -12,7 +12,7 @@ sub __bernfrac__ {
         return $r;
     }
 
-    if (($n & 1) and ($n > 1)) {
+    if (($n & 1) and ($n > 1)) {    # Bn = 0 for odd n>1
         my $r = Math::GMPq::Rmpq_init();
         Math::GMPq::Rmpq_set_ui($r, 0, 1);
         return $r;

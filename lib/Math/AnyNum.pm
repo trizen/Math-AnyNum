@@ -170,6 +170,7 @@ use overload
                      powmod    => \&powmod,
                      gcd       => \&gcd,
                      bernfrac  => \&bernfrac,
+                     bernreal  => \&bernreal,
                     );
 
     sub import {
@@ -2518,6 +2519,27 @@ sub bernfrac {
     my $n = _any2ui($$x) // goto &nan;
     my $q = __bernfrac__($n);
     bless \$q, __PACKAGE__;
+}
+
+#
+## bernreal
+#
+
+sub bernreal {
+    require Math::AnyNum::bernreal;
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {    # called as a function
+        if (CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
+            my $f = __bernreal__(CORE::int($x));
+            return bless \$f, __PACKAGE__;
+        }
+        return __PACKAGE__->new($x)->bernreal;
+    }
+
+    my $n = _any2ui($$x) // goto &nan;
+    my $f = __bernreal__($n);
+    bless \$f, __PACKAGE__;
 }
 
 #
