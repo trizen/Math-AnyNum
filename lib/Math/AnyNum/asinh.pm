@@ -16,13 +16,15 @@ Class::Multimethods::multimethod __asinh__ => qw(Math::MPC) => sub {
 };
 
 Class::Multimethods::multimethod __asinh__ => qw(Math::GMPq) => sub {
-    (@_) = _mpq2mpfr($_[0]);
-    goto &__asinh__;
+    my ($x) = _mpq2mpfr($_[0]);
+    Math::MPFR::Rmpfr_asinh($x, $x, $ROUND);
+    $x;
 };
 
 Class::Multimethods::multimethod __asinh__ => qw(Math::GMPz) => sub {
-    (@_) = _mpz2mpfr($_[0]);
-    goto &__asinh__;
+    my ($x) = _mpz2mpfr($_[0]);
+    Math::MPFR::Rmpfr_asinh($x, $x, $ROUND);
+    $x;
 };
 
 1;

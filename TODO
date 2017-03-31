@@ -29,10 +29,10 @@
     acos            -- added
     cosh            -- added
     acosh           -- added
-    tan
-    atan
-    tanh
-    atanh
+    tan             -- added
+    atan            -- added
+    tanh            -- added
+    atanh           -- added
     sec
     asec
     sech

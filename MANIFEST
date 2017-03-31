@@ -22,6 +22,8 @@ lib/Math/AnyNum/acosh.pm
 lib/Math/AnyNum/add.pm
 lib/Math/AnyNum/asin.pm
 lib/Math/AnyNum/asinh.pm
+lib/Math/AnyNum/atan.pm
+lib/Math/AnyNum/atanh.pm
 lib/Math/AnyNum/boolify.pm
 lib/Math/AnyNum/cmp.pm
 lib/Math/AnyNum/copy.pm
@@ -53,6 +55,8 @@ lib/Math/AnyNum/sinh.pm
 lib/Math/AnyNum/sqrt.pm
 lib/Math/AnyNum/stringify.pm
 lib/Math/AnyNum/sub.pm
+lib/Math/AnyNum/tan.pm
+lib/Math/AnyNum/tanh.pm
 lib/Math/AnyNum/template.pm
 lib/Math/AnyNum/zeta.pm
 LICENSE

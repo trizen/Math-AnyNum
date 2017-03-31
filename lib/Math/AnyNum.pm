@@ -2062,6 +2062,38 @@ sub acosh {
 }
 
 #
+## tan / tanh / atan / atanh
+#
+
+sub tan {
+    require Math::AnyNum::tan;
+    my ($x) = @_;
+    $$x = __tan__($$x);
+    $x;
+}
+
+sub tanh {
+    require Math::AnyNum::tanh;
+    my ($x) = @_;
+    $$x = __tanh__($$x);
+    $x;
+}
+
+sub atan {
+    require Math::AnyNum::atan;
+    my ($x) = @_;
+    $$x = __atan__($$x);
+    $x;
+}
+
+sub atanh {
+    require Math::AnyNum::atanh;
+    my ($x) = @_;
+    $$x = __atanh__($$x);
+    $x;
+}
+
+#
 ## zeta
 #
 
