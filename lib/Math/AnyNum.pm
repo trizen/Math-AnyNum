@@ -1997,12 +1997,41 @@ sub exp {
     $x;
 }
 
+#
+## sin / sinh / asin / asinh
+#
+
 sub sin {
     require Math::AnyNum::sin;
     my ($x) = @_;
     $$x = __sin__($$x);
     $x;
 }
+
+sub sinh {
+    require Math::AnyNum::sinh;
+    my ($x) = @_;
+    $$x = __sinh__($$x);
+    $x;
+}
+
+sub asin {
+    require Math::AnyNum::asin;
+    my ($x) = @_;
+    $$x = __asin__($$x);
+    $x;
+}
+
+sub asinh {
+    require Math::AnyNum::asinh;
+    my ($x) = @_;
+    $$x = __asinh__($$x);
+    $x;
+}
+
+#
+## cos / cosh / acos / acosh
+#
 
 sub cos {
     require Math::AnyNum::cos;
@@ -2011,6 +2040,31 @@ sub cos {
     $x;
 }
 
+sub cosh {
+    require Math::AnyNum::cosh;
+    my ($x) = @_;
+    $$x = __cosh__($$x);
+    $x;
+}
+
+sub acos {
+    require Math::AnyNum::acos;
+    my ($x) = @_;
+    $$x = __acos__($$x);
+    $x;
+}
+
+sub acosh {
+    require Math::AnyNum::acosh;
+    my ($x) = @_;
+    $$x = __acosh__($$x);
+    $x;
+}
+
+#
+## zeta
+#
+
 sub zeta {
     require Math::AnyNum::zeta;
     my ($x) = @_;
@@ -2018,12 +2072,20 @@ sub zeta {
     $x;
 }
 
+#
+## Lambert W
+#
+
 sub lambert_w {
     require Math::AnyNum::lambert_w;
     my ($x) = @_;
     $$x = __lambert_w__(ref($$x) eq 'Math::MPC' ? $$x : _any2mpfr($$x));
     $x;
 }
+
+#
+## lgrt -- logarithmic root
+#
 
 sub lgrt {
     require Math::AnyNum::lgrt;

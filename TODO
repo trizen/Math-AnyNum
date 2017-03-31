@@ -19,20 +19,16 @@
     log             -- added/tested
     log2            -- added/tested
     log10           -- added/tested
-    lgrt [?]
-    lambert_w       -- added/tested
-    bernfrac
-    harmfrac
 
 # Add the following trigonometric methods:
     sin             -- added
-    asin
-    sinh
-    asinh
+    asin            -- added
+    sinh            -- added
+    asinh           -- added
     cos             -- added
-    acos
-    cosh
-    acosh
+    acos            -- added
+    cosh            -- added
+    acosh           -- added
     tan
     atan
     tanh
@@ -53,6 +49,10 @@
 
 # Add the following special methods:
 
+    lgrt            -- added
+    lambert_w       -- added/tested
+    bernfrac
+    harmfrac
     agm
     hypot
     gamma
