@@ -33,6 +33,7 @@ lib/Math/AnyNum/atan.pm
 lib/Math/AnyNum/atanh.pm
 lib/Math/AnyNum/bernfrac.pm
 lib/Math/AnyNum/bernreal.pm
+lib/Math/AnyNum/beta.pm
 lib/Math/AnyNum/boolify.pm
 lib/Math/AnyNum/cmp.pm
 lib/Math/AnyNum/copy.pm

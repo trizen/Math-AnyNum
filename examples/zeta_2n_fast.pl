@@ -10,7 +10,6 @@ use strict;
 use warnings;
 
 use lib qw(../lib);
-use Memoize qw(memoize);
 use Math::AnyNum qw(:constant pi bernfrac factorial);
 
 sub zeta_2n {

@@ -2192,6 +2192,42 @@ sub acoth {
 }
 
 #
+## gamma
+#
+
+sub gamma {
+    my ($x) = @_;
+    my $f = _any2mpfr($$x);
+    Math::MPFR::Rmpfr_gamma($f, $f, $ROUND);
+    $$x = $f;
+    $x;
+}
+
+#
+## lngamma
+#
+
+sub lngamma {
+    my ($x) = @_;
+    my $f = _any2mpfr($$x);
+    Math::MPFR::Rmpfr_lngamma($f, $f, $ROUND);
+    $$x = $f;
+    $x;
+}
+
+#
+## digamma
+#
+
+sub digamma {
+    my ($x) = @_;
+    my $f = _any2mpfr($$x);
+    Math::MPFR::Rmpfr_digamma($f, $f, $ROUND);
+    $$x = $f;
+    $x;
+}
+
+#
 ## zeta
 #
 
@@ -2211,6 +2247,90 @@ sub eta {
     require Math::AnyNum::eta;
     my ($x) = @_;
     $$x = __eta__(_any2mpfr($$x));
+    $x;
+}
+
+#
+## beta
+#
+Class::Multimethods::multimethod beta => qw(Math::AnyNum Math::AnyNum) => sub {
+    require Math::AnyNum::beta;
+    my ($x, $y) = @_;
+    $$x = __beta__(_any2mpfr($$x), _any2mpfr($$y));
+    $x;
+};
+
+Class::Multimethods::multimethod beta => qw(Math::AnyNum *) => sub {
+    (@_) = ($_[0], __PACKAGE__->new($_[1]));
+    goto &beta;
+};
+
+#
+## Airy function (Ai)
+#
+
+sub Ai {
+    my ($x) = @_;
+    my $f = _any2mpfr($$x);
+    Math::MPFR::Rmpfr_ai($f, $f, $ROUND);
+    $$x = $f;
+    $x;
+}
+
+#
+## Exponential integral (Ei)
+#
+
+sub Ei {
+    my ($x) = @_;
+    my $f = _any2mpfr($$x);
+    Math::MPFR::Rmpfr_eint($f, $f, $ROUND);
+    $$x = $f;
+    $x;
+}
+
+#
+## Logarithmic integral (Li)
+#
+sub Li {
+    my ($x) = @_;
+    my $f = _any2mpfr($$x);
+    Math::MPFR::Rmpfr_log($f, $f, $ROUND);
+    Math::MPFR::Rmpfr_eint($f, $f, $ROUND);
+    $$x = $f;
+    $x;
+}
+
+#
+## Dilogarithm function (Li_2)
+#
+sub Li2 {
+    my ($x) = @_;
+    my $f = _any2mpfr($$x);
+    Math::MPFR::Rmpfr_li2($f, $f, $ROUND);
+    $$x = $f;
+    $x;
+}
+
+#
+## Error function
+#
+sub erf {
+    my ($x) = @_;
+    my $f = _any2mpfr($$x);
+    Math::MPFR::Rmpfr_erf($f, $f, $ROUND);
+    $$x = $f;
+    $x;
+}
+
+#
+## Complementary error function
+#
+sub erfc {
+    my ($x) = @_;
+    my $f = _any2mpfr($$x);
+    Math::MPFR::Rmpfr_erfc($f, $f, $ROUND);
+    $$x = $f;
     $x;
 }
 

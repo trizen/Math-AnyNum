@@ -3,6 +3,10 @@ use warnings;
 
 our ($ROUND, $PREC);
 
+# Implemented as:
+#    eta(1) = ln(2)
+#    eta(x) = (1 - 2**(1-x)) * zeta(x)
+
 sub __eta__ {
     my ($x) = @_;      # $n is always a Math::MPFR object
 

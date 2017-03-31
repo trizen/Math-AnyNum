@@ -57,20 +57,20 @@
     harmreal [?]
     agm
     hypot
-    gamma
-    lngamma
-    lgamma
-    digamma
-    beta
+    gamma           -- added
+    lngamma         -- added
+    lgamma [?]
+    digamma         -- added
+    beta            -- added
     zeta            -- added/tested
     eta             -- added
     bessel_j
     bessel_y
-    erf
-    erfc
-    eint
-    li
-    li2
+    erf             -- added
+    erfc            -- added
+    ei              -- added
+    li              -- added
+    li2             -- added
 
 # Add the following integer methods:
 
