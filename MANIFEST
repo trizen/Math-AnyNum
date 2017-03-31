@@ -12,6 +12,7 @@ examples/lambert_W.pl
 examples/miller_rabin_primality_test.pl
 examples/newton_s_method.pl
 examples/rsa_algorithm.pl
+examples/tac-compressor.pl
 examples/zeta_2n.pl
 ignore.txt
 lib/Math/AnyNum.pm

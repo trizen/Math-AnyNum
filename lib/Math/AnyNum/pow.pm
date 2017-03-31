@@ -90,11 +90,11 @@ Class::Multimethods::multimethod __pow__ => qw(Math::GMPz $) => sub {
     Math::GMPz::Rmpz_pow_ui($x, $x, CORE::abs($y));
 
     if ($y < 0) {
-        if (Math::GMPz::Rmpz_sgn($x) == 0) {
+        Math::GMPz::Rmpz_sgn($x) || do {
             my $r = Math::MPFR::Rmpfr_init2($PREC);
             Math::MPFR::Rmpfr_set_inf($r, 1);
             return $r;
-        }
+        };
 
         my $q = Math::GMPq::Rmpq_init();
         Math::GMPq::Rmpq_set_z($q, $x);
