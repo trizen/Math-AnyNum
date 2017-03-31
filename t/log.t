@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 21;
+plan tests => 28;
 
 use Math::AnyNum;
 
@@ -59,8 +59,31 @@ like($z2, qr/^2\.48490664978800031022970947983\d*\+3\.14159265358979323846264338
 $z2->log($z2);
 is($z2, 1);
 
+my $z3 = Math::AnyNum->new_z('12345');
+$z3->log('14');
+like($z3, qr/^3\.5698377204836032070641968436795293361\d*\z/);
+$z3->log('2');
+like($z3, qr/^1\.835858492972909133630016527893470154893\d*\z/);
+
 my $c = Math::AnyNum->new_c('3', '4');
 $c->log;
 like($c, qr/^1\.609437912434100374600759\d*\+0\.92729521800161223242851246292\d*i\z/);
 $c->log($c);
 is($c, 1);
+
+#
+## ilog / ilog2 / ilog10
+#
+my $f2 = Math::AnyNum->new('9123124124123.42123123');
+$f2->ilog10;
+is($f2, '12');
+$f2->ilog2;
+is($f2, '3');
+$f2->rat->inc->ilog2;
+is($f2, '2');
+
+my $f3 = Math::AnyNum->new('9123124124123.42123123');
+$f3->ilog('13');
+is($f3, '11');
+$f3->ilog('2');
+is($f3, '3');

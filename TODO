@@ -79,6 +79,9 @@
     imul
     idiv                -- added
     ipow                -- added
+    ilog                -- added/tested
+    ilog2               -- added/tested
+    ilog10              -- added/tested
     isqrt               -- added
     isqrtrem
     iroot               -- added/tested

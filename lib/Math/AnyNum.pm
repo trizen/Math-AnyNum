@@ -1914,6 +1914,63 @@ Class::Multimethods::multimethod log => qw(Math::AnyNum) => sub {
 };
 
 #
+## ILOG
+#
+
+sub ilog2 {
+    require Math::AnyNum::log;
+    my ($x) = @_;
+    $$x = _any2mpz(__log2__($$x)) // _nan();
+    $x;
+}
+
+sub ilog10 {
+    require Math::AnyNum::log;
+    my ($x) = @_;
+    $$x = _any2mpz(__log10__($$x)) // _nan();
+    $x;
+}
+
+Class::Multimethods::multimethod ilog => qw(Math::AnyNum Math::AnyNum) => sub {
+    require Math::AnyNum::log;
+    require Math::AnyNum::div;
+    my ($x, $y) = @_;
+    $$x = _any2mpz(__div__(__log__(${$x->copy}), __log__(${$y->copy}))) // _nan();
+    $x;
+};
+
+Class::Multimethods::multimethod ilog => qw(Math::AnyNum $) => sub {
+    require Math::AnyNum::log;
+    require Math::AnyNum::div;
+    my ($x, $y) = @_;
+
+    if ($y == 2) {
+        goto &ilog2;
+    }
+    elsif ($y == 10) {
+        goto &ilog10;
+    }
+
+    $$x = _any2mpz(__div__(__log__(${$x->copy}), __log__(_str2obj($y)))) // _nan();
+    $x;
+};
+
+Class::Multimethods::multimethod ilog => qw(Math::AnyNum *) => sub {
+    require Math::AnyNum::log;
+    require Math::AnyNum::div;
+    my ($x, $y) = @_;
+    $$x = _any2mpz(__div__(__log__(${$x->copy}), __log__(${__PACKAGE__->new($y)}))) // _nan();
+    $x;
+};
+
+Class::Multimethods::multimethod ilog => qw(Math::AnyNum) => sub {
+    require Math::AnyNum::log;
+    my ($x) = @_;
+    $$x = _any2mpz(__log__($$x)) // _nan();
+    $x;
+};
+
+#
 ## SQRT
 #
 
