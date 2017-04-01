@@ -31,6 +31,7 @@ lib/Math/AnyNum/asech.pm
 lib/Math/AnyNum/asin.pm
 lib/Math/AnyNum/asinh.pm
 lib/Math/AnyNum/atan.pm
+lib/Math/AnyNum/atan2.pm
 lib/Math/AnyNum/atanh.pm
 lib/Math/AnyNum/bernfrac.pm
 lib/Math/AnyNum/bernreal.pm

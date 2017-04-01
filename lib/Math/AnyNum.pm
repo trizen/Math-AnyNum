@@ -561,9 +561,9 @@ sub _str2obj {
     if (CORE::int($s) eq $s and $s >= LONG_MIN and $s <= ULONG_MAX) {
         my $r = Math::GMPz::Rmpz_init();
 
-        $s >= 0
-          ? Math::GMPz::Rmpz_set_ui($r, $s)
-          : Math::GMPz::Rmpz_set_si($r, $s);
+        $s < 0
+          ? Math::GMPz::Rmpz_set_si($r, $s)
+          : Math::GMPz::Rmpz_set_ui($r, $s);
 
         return $r;
     }
@@ -1551,6 +1551,18 @@ Class::Multimethods::multimethod eq => qw(Math::AnyNum Math::AnyNum) => sub {
     goto &__eq__;
 };
 
+Class::Multimethods::multimethod eq => qw(Math::AnyNum $) => sub {
+    require Math::AnyNum::cmp;
+    my ($x, $y) = @_;
+
+    if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
+        __cmp__($$x, $y) == 0;
+    }
+    else {
+        __cmp__($$x, _str2obj($y)) == 0;
+    }
+};
+
 Class::Multimethods::multimethod eq => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::eq;
     my ($x, $y) = @_;
@@ -1567,6 +1579,18 @@ Class::Multimethods::multimethod ne => qw(Math::AnyNum Math::AnyNum) => sub {
     my ($x, $y) = @_;
     (@_) = ($$x, $$y);
     goto &__ne__;
+};
+
+Class::Multimethods::multimethod ne => qw(Math::AnyNum $) => sub {
+    require Math::AnyNum::cmp;
+    my ($x, $y) = @_;
+
+    if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
+        __cmp__($$x, $y) != 0;
+    }
+    else {
+        __cmp__($$x, _str2obj($y)) != 0;
+    }
 };
 
 Class::Multimethods::multimethod ne => qw(Math::AnyNum *) => sub {
@@ -1788,8 +1812,15 @@ sub float {
 
 sub complex {
     my ($x) = @_;
-    my $r = _any2mpc($$x);
-    bless \$r, __PACKAGE__;
+    if (ref($x) eq __PACKAGE__) {
+        my $r = _any2mpc($$x);
+        bless \$r, __PACKAGE__;
+    }
+    else {
+        my $r = __PACKAGE__->new($x);
+        $$r = _any2mpc($$r);
+        $r;
+    }
 }
 
 sub neg {
@@ -2490,6 +2521,13 @@ sub atanh {
     my $r = __atanh__(_star2mpfr_mpc($_[0]));
     bless \$r, __PACKAGE__;
 }
+
+Class::Multimethods::multimethod atan2 => qw(* *) => sub {
+    require Math::AnyNum::atan2;
+    my ($x, $y) = @_;
+    my $r = __atan2__(_star2mpfr_mpc($x), _star2mpfr_mpc($y));
+    bless \$r, __PACKAGE__;
+};
 
 #
 ## sec / sech / asec / asech

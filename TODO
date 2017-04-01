@@ -45,7 +45,7 @@
     acot            -- added
     coth            -- added
     acoth           -- added
-    atan2
+    atan2           -- added
 
 # Add the following special methods:
 
