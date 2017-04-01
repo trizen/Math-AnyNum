@@ -2210,21 +2210,21 @@ Class::Multimethods::multimethod log => qw(Math::AnyNum) => sub {
 
 sub ilog2 {
     require Math::AnyNum::log;
-    my $r = __log2__(_star2mpfr_mpc($_[0]));
-    _any2ui($r) // (0 + 'NaN');
+    my $r = _any2mpz(__log2__(_star2mpfr_mpc($_[0]))) // goto &nan;
+    bless \$r, __PACKAGE__;
 }
 
 sub ilog10 {
     require Math::AnyNum::log;
-    my $r = __log10__(_star2mpfr_mpc($_[0]));
-    _any2ui($r) // (0 + 'NaN');
+    my $r = _any2mpz(__log10__(_star2mpfr_mpc($_[0]))) // goto &nan;
+    bless \$r, __PACKAGE__;
 }
 
 Class::Multimethods::multimethod ilog => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::log;
     require Math::AnyNum::div;
-    my $r = __div__(__log__(_star2mpfr_mpc($_[0])), __log__(_star2mpfr_mpc($_[1])));
-    _any2ui($r) // (0 + 'NaN');
+    my $r = _any2mpz(__div__(__log__(_star2mpfr_mpc($_[0])), __log__(_star2mpfr_mpc($_[1])))) // goto &nan;
+    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod ilog => qw(Math::AnyNum $) => sub {
@@ -2238,21 +2238,21 @@ Class::Multimethods::multimethod ilog => qw(Math::AnyNum $) => sub {
         goto &ilog10;
     }
 
-    my $r = __div__(__log__(_star2mpfr_mpc($_[0])), __log__(_star2mpfr_mpc($_[1])));
-    _any2ui($r) // (0 + 'NaN');
+    my $r = _any2mpz(__div__(__log__(_star2mpfr_mpc($_[0])), __log__(_star2mpfr_mpc($_[1])))) // goto &nan;
+    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod ilog => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::log;
     require Math::AnyNum::div;
-    my $r = __div__(__log__(_star2mpfr_mpc($_[0])), __log__(_star2mpfr_mpc($_[1])));
-    _any2ui($r) // (0 + 'NaN');
+    my $r = _any2mpz(__div__(__log__(_star2mpfr_mpc($_[0])), __log__(_star2mpfr_mpc($_[1])))) // goto &nan;
+    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod ilog => qw(Math::AnyNum) => sub {
     require Math::AnyNum::log;
-    my $r = __log__(_star2mpfr_mpc($_[0]));
-    _any2ui($r) // (0 + 'NaN');
+    my $r = _any2mpz(__log__(_star2mpfr_mpc($_[0]))) // goto &nan;
+    bless \$r, __PACKAGE__;
 };
 
 #
