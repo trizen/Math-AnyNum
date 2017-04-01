@@ -53,16 +53,16 @@ is(Math::AnyNum->new(-1234)->iroot(Math::AnyNum->new(4)), Math::AnyNum->nan);
 {
     my $n = Math::AnyNum->new(-1234);
 
-    my $x = $n->copy->iroot(3);
+    my $x = $n->iroot(3);
     is($x, -10);
 
-    $x = $n->copy->iroot(Math::AnyNum->new(3));
+    $x = $n->iroot(Math::AnyNum->new(3));
     is($x, -10);
 
-    $x = $n->copy->iroot(4);
+    $x = $n->iroot(4);
     is($x, Math::AnyNum->nan);
 
-    $x = $n->copy->iroot(Math::AnyNum->new(4));
+    $x = $n->iroot(Math::AnyNum->new(4));
     is($x, Math::AnyNum->nan);
 }
 
@@ -78,79 +78,79 @@ my $ninf = Math::AnyNum->ninf;
 my $nan  = Math::AnyNum->nan;
 
 # [i]root(AnyNum)
-is($one->copy->root($mone),  $one);
-is($one->copy->iroot($mone), $one);
+is($one->root($mone),  $one);
+is($one->iroot($mone), $one);
 
-is($zero->copy->root($zero),  $zero);
-is($zero->copy->iroot($zero), $zero);
+is($zero->root($zero),  $zero);
+is($zero->iroot($zero), $zero);
 
-is($zero->copy->root($mone),  $inf);
-is($zero->copy->iroot($mone), $inf);
+is($zero->root($mone),  $inf);
+is($zero->iroot($mone), $inf);
 
-is($mone->copy->root($zero),  $one);
-is($mone->copy->iroot($zero), $one);
+is($mone->root($zero),  $one);
+is($mone->iroot($zero), $one);
 
-is($mone->copy->root($one),  $mone);
-is($mone->copy->iroot($one), $mone);
+is($mone->root($one),  $mone);
+is($mone->iroot($one), $mone);
 
 my $two  = $one + $one;
 my $mtwo = -$two;
 
-is($mone->copy->root($two),  Math::AnyNum->i);
-is($mone->copy->iroot($two), $nan);
+is($mone->root($two),  Math::AnyNum->i);
+is($mone->iroot($two), $nan);
 
-is($one->copy->root($mtwo),  $one);
-is($one->copy->iroot($mtwo), $one);
+is($one->root($mtwo),  $one);
+is($one->iroot($mtwo), $one);
 
-is($mone->copy->root($mtwo),  -(Math::AnyNum->i));
-is($mone->copy->iroot($mtwo), $nan);
+is($mone->root($mtwo),  -(Math::AnyNum->i));
+is($mone->iroot($mtwo), $nan);
 
-like($mtwo->copy->root($mtwo), qr/^-0\.70710678118654752\d*i\z/);
-is($mtwo->copy->iroot($mtwo), $nan);
+like($mtwo->root($mtwo), qr/^-0\.70710678118654752\d*i\z/);
+is($mtwo->iroot($mtwo), $nan);
 
-is($zero->copy->root($mone),  $inf);
-is($zero->copy->iroot($mone), $inf);
+is($zero->root($mone),  $inf);
+is($zero->iroot($mone), $inf);
 
-is($two->copy->root($mone), $one / $two);
+is($two->root($mone), $one / $two);
 
-is($two->copy->iroot($mone), $zero);
-is($two->copy->iroot($mtwo), $zero);
+is($two->iroot($mone), $zero);
+is($two->iroot($mtwo), $zero);
 
 # [i]root(Scalar)
-is($one->copy->root(-1),  $one);
-is($one->copy->iroot(-1), $one);
+is($one->root(-1),  $one);
+is($one->iroot(-1), $one);
 
-is($zero->copy->root(0),  $zero);
-is($zero->copy->iroot(0), $zero);
+is($zero->root(0),  $zero);
+is($zero->iroot(0), $zero);
 
-is($zero->copy->root(-1),  $inf);
-is($zero->copy->iroot(-1), $inf);
+is($zero->root(-1),  $inf);
+is($zero->iroot(-1), $inf);
 
-is($mone->copy->root(0),  $one);
-is($mone->copy->iroot(0), $one);
+is($mone->root(0),  $one);
+is($mone->iroot(0), $one);
 
-is($mone->copy->root(1),  $mone);
-is($mone->copy->iroot(1), $mone);
+is($mone->root(1),  $mone);
+is($mone->iroot(1), $mone);
 
-is($mone->copy->root(2),  'i');
-is($mone->copy->iroot(2), $nan);
+is($mone->root(2),  'i');
+is($mone->iroot(2), $nan);
 
-is($one->copy->root(-2),  $one);
-is($one->copy->iroot(-2), $one);
+is($one->root(-2),  $one);
+is($one->iroot(-2), $one);
 
-is($mone->copy->root(-2),  -(Math::AnyNum->i));
-is($mone->copy->iroot(-2), $nan);
+is($mone->root(-2),  -(Math::AnyNum->i));
+is($mone->iroot(-2), $nan);
 
-like($mtwo->copy->root(-2), qr/^-0\.707106781186547524\d*i\z/);
-is($mtwo->copy->iroot(-2), $nan);
+like($mtwo->root(-2), qr/^-0\.707106781186547524\d*i\z/);
+is($mtwo->iroot(-2), $nan);
 
-is($zero->copy->root(-1),  $inf);
-is($zero->copy->iroot(-1), $inf);
+is($zero->root(-1),  $inf);
+is($zero->iroot(-1), $inf);
 
-is($two->copy->root(-1), $one / $two);
+is($two->root(-1), $one / $two);
 
-is($two->copy->iroot(-1), $zero);
-is($two->copy->iroot(-2), $zero);
+is($two->iroot(-1), $zero);
+is($two->iroot(-2), $zero);
 
 warn "\n\n\t\tTEST DONE: root()\n\n";
 

@@ -13,6 +13,7 @@ examples/miller_rabin_primality_test.pl
 examples/newton_s_method.pl
 examples/rsa_algorithm.pl
 examples/tac-compressor.pl
+examples/test.pl
 examples/zeta_2n.pl
 examples/zeta_2n_fast.pl
 ignore.txt
@@ -50,11 +51,12 @@ lib/Math/AnyNum/eq.pm
 lib/Math/AnyNum/eta.pm
 lib/Math/AnyNum/exp.pm
 lib/Math/AnyNum/floor.pm
-lib/Math/AnyNum/imag.pm
+lib/Math/AnyNum/idiv.pm
 lib/Math/AnyNum/imod.pm
 lib/Math/AnyNum/inc.pm
 lib/Math/AnyNum/inv.pm
 lib/Math/AnyNum/ipow.pm
+lib/Math/AnyNum/irand.pm
 lib/Math/AnyNum/iroot.pm
 lib/Math/AnyNum/LambertW.pm
 lib/Math/AnyNum/lgrt.pm
@@ -65,7 +67,6 @@ lib/Math/AnyNum/ne.pm
 lib/Math/AnyNum/neg.pm
 lib/Math/AnyNum/numify.pm
 lib/Math/AnyNum/pow.pm
-lib/Math/AnyNum/real.pm
 lib/Math/AnyNum/round.pm
 lib/Math/AnyNum/sec.pm
 lib/Math/AnyNum/sech.pm

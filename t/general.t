@@ -20,7 +20,7 @@ plan tests => 66;
     ok((Math::AnyNum->new('0.001') + Math::AnyNum->new('0.002')) == Math::AnyNum->new_f('0.003'));
 
     my $x = -2;
-    like($x->copy->sqrt, qr/^1\.4142135623730950488016\d*i\z/);
+    like($x->sqrt, qr/^1\.4142135623730950488016\d*i\z/);
     ok($x == -2);
 
     my $z = 42;

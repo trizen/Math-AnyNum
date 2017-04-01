@@ -23,6 +23,13 @@ Class::Multimethods::multimethod __cmp__ => qw(Math::MPFR Math::MPC) => sub {
     goto &__cmp__;
 };
 
+Class::Multimethods::multimethod __cmp__ => qw(Math::MPFR $) => sub {
+    my ($x, $y) = @_;
+    $y < 0
+      ? Math::MPFR::Rmpfr_cmp_si($x, $y)
+      : Math::MPFR::Rmpfr_cmp_ui($x, $y);
+};
+
 #
 ## GMPq
 #
@@ -43,6 +50,13 @@ Class::Multimethods::multimethod __cmp__ => qw(Math::GMPq Math::MPC) => sub {
     goto &__cmp__;
 };
 
+Class::Multimethods::multimethod __cmp__ => qw(Math::GMPq $) => sub {
+    my ($x, $y) = @_;
+    $y < 0
+      ? Math::GMPq::Rmpq_cmp_si($x, $y, 1)
+      : Math::GMPq::Rmpq_cmp_ui($x, $y, 1);
+};
+
 #
 ## GMPz
 #
@@ -61,6 +75,13 @@ Class::Multimethods::multimethod __cmp__ => qw(Math::GMPz Math::MPFR) => sub {
 Class::Multimethods::multimethod __cmp__ => qw(Math::GMPz Math::MPC) => sub {
     (@_) = (_mpz2mpc($_[0]), $_[1]);
     goto &__cmp__;
+};
+
+Class::Multimethods::multimethod __cmp__ => qw(Math::GMPz $) => sub {
+    my ($x, $y) = @_;
+    $y < 0
+      ? Math::GMPz::Rmpz_cmp_si($x, $y)
+      : Math::GMPz::Rmpz_cmp_ui($x, $y);
 };
 
 #
@@ -85,5 +106,10 @@ Class::Multimethods::multimethod __cmp__ => qw(Math::MPC Math::GMPq) => sub {
 
 Class::Multimethods::multimethod __cmp__ => qw(Math::MPC Math::MPFR) => sub {
     (@_) = ($_[0], _mpfr2mpc($_[1]));
+    goto &__cmp__;
+};
+
+Class::Multimethods::multimethod __cmp__ => qw(Math::MPC $) => sub {
+    (@_) = ($_[0], _any2mpc(_str2obj($_[1])));
     goto &__cmp__;
 };

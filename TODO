@@ -114,13 +114,13 @@
     irand           -- added
     iseed           -- added
     copy            -- added
-    floor
-    ceil
+    floor           -- added/tested
+    ceil            -- added/tested
     rat             -- added
     int             -- added
     float           -- added
-    round           -- added
-    neg             -- added
+    round           -- added/tested
+    neg             -- added/tested
     abs             -- added
     inc             -- added/tested
     dec             -- added/tested

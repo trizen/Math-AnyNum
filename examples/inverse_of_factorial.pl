@@ -9,8 +9,8 @@ use warnings;
 use lib qw(../lib);
 use Math::AnyNum qw(:overload tau e factorial);
 
-use constant S => tau->copy->sqrt->log;
-use constant T => tau->copy->root(-2.0 * e);
+use constant S => tau->sqrt->log;
+use constant T => tau->root(-2.0 * e);
 
 sub inv_fac_W {
     my ($n) = @_;
@@ -32,11 +32,11 @@ for my $z (1 .. 100) {
 
     printf("F(%2s!) =~ %s\n", $n, $i);
 
-    if ($i->copy->round(-20) != $j->copy->round(-20)) {
+    if ($i->round(-20) != $j->round(-20)) {
         die "$i != $j";
     }
 
-    if ($i->copy->round(0) != $n) {
-        die "However that is incorrect! (expected: $n -- got ", $i->copy->round(0), ")";
+    if ($i->round(0) != $n) {
+        die "However that is incorrect! (expected: $n -- got ", $i->round(0), ")";
     }
 }

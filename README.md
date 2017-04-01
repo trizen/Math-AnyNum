@@ -10,7 +10,7 @@ Math::AnyNum provides a correct, intuitive and transparent interface to the [GMP
 
 ```perl
 use 5.014;
-use Math::AnyNum qw(:constant factorial i);
+use Math::AnyNum qw(:overload factorial);
 
 # Integers
 say factorial(30);                #=> 265252859812191058636308480000000

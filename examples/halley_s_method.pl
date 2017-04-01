@@ -21,8 +21,8 @@ sub halleys_method {
     my ($x0, $m0, $k0) = @_;
 
     my $x = $x0;
-    my $m = $m0->copy->float;
-    my $k = $k0->copy->float;
+    my $m = $m0->float;
+    my $k = $k0->float;
 
     my @fx  = derivatives($x, $m, $k);
     my $eps = 10**-($Math::AnyNum::PREC / 4);

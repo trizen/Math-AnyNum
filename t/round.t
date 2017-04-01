@@ -69,7 +69,7 @@ use Math::AnyNum;
 
     foreach my $group (@tests) {
         my ($orig, $expected, $places) = @{$group};
-        my $rounded = $orig->copy->round($places);
+        my $rounded = $orig->round($places);
         is("$rounded", "$expected", "($orig, $expected, $places)");
         ok($rounded == $expected);
     }

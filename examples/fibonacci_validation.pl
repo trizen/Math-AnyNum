@@ -44,7 +44,7 @@ sub is_prob_fib {
 #
 sub fib_pos1 {
     my ($n) = @_;
-    ($W * $n + $T->copy->neg->pow(log(5 * $n**2) / ($W + 1)))->log($S)->round;
+    ($W * $n + $T->neg->pow(log(5 * $n**2) / ($W + 1)))->log($S)->round;
 }
 
 #
