@@ -88,7 +88,7 @@ use Math::AnyNum;
         my $z1 = Math::AnyNum->new_z('43');
         my $z2 = Math::AnyNum->new_z('13');
 
-        $z1->xor($z2);
+        $z1 = $z1->xor($z2);
         is($z1, 38);
         is($z2, 13);
     }
@@ -97,7 +97,7 @@ use Math::AnyNum;
         my $z1 = Math::AnyNum->new_z('43');
         my $z2 = Math::AnyNum->new_z('13');
 
-        $z1->or($z2);
+        $z1 = $z1->or($z2);
         is($z1, 47);
         is($z2, 13);
     }
@@ -106,7 +106,7 @@ use Math::AnyNum;
         my $z1 = Math::AnyNum->new_z('43');
         my $z2 = Math::AnyNum->new_z('13');
 
-        $z1->and($z2);
+        $z1 = $z1->and($z2);
         is($z1, 9);
         is($z2, 13);
     }
@@ -165,12 +165,12 @@ use Math::AnyNum;
     my $y = Math::AnyNum->new(99);
     my $k = Math::AnyNum->new(3);
 
-    my $z = $x->copy;
-    $z->or($y);
+    my $z = $x;
+    $z = $z->or($y);
     is($z, "1267");
 
-    $z = $x->copy;
-    $z->or("99");
+    $z = $x;
+    $z = $z->or("99");
     is($z, "1267");
 
     is($x | $y,     "1267");
@@ -178,12 +178,12 @@ use Math::AnyNum;
     is($x | "99",   "1267");
     is("1234" | $y, "1267");
 
-    $z = $x->copy;
-    $z->and($y);
+    $z = $x;
+    $z = $z->and($y);
     is($z, "66");
 
-    $z = $x->copy;
-    $z->and("99");
+    $z = $x;
+    $z = $z->and("99");
     is($z, "66");
 
     is($x & $y,     "66");
@@ -191,12 +191,12 @@ use Math::AnyNum;
     is($x & "99",   "66");
     is("1234" & $y, "66");
 
-    $z = $x->copy;
-    $z->xor($y);
+    $z = $x;
+    $z = $z->xor($y);
     is($z, "1201");
 
-    $z = $x->copy;
-    $z->xor("99");
+    $z = $x;
+    $z = $z->xor("99");
     is($z, "1201");
 
     is($x ^ $y,     "1201");
@@ -204,40 +204,40 @@ use Math::AnyNum;
     is($x ^ "99",   "1201");
     is("1234" ^ $y, "1201");
 
-    $z = $x->copy;
-    $z->lsft("3");
+    $z = $x;
+    $z = $z->lsft("3");
     is($z, "9872");
 
-    $z = $x->copy;
-    $z->lsft($k);
+    $z = $x;
+    $z = $z->lsft($k);
     is($z, "9872");
 
-    $z = $x->copy;
-    $z <<= "3";
+    $z = $x;
+    $z = $z <<= "3";
     is($z, "9872");
 
-    $z = $x->copy;
-    $z <<= $k;
+    $z = $x;
+    $z = $z <<= $k;
     is($z, "9872");
 
     is($x << ("3"), "9872");
     is($x << $k,     "9872");
     is("1234" << $k, "9872");
 
-    $z = $x->copy;
-    $z->rsft("3");
+    $z = $x;
+    $z = $z->rsft("3");
     is($z, "154");
 
-    $z = $x->copy;
-    $z->rsft($k);
+    $z = $x;
+    $z = $z->rsft($k);
     is($z, "154");
 
-    $z = $x->copy;
-    $z >>= "3";
+    $z = $x;
+    $z = $z >>= "3";
     is($z, "154");
 
-    $z = $x->copy;
-    $z >>= $k;
+    $z = $x;
+    $z = $z >>= $k;
     is($z, "154");
 
     is($x >> "3",    "154");

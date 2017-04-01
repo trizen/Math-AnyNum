@@ -71,42 +71,4 @@ Class::Multimethods::multimethod __log10__ => qw(Math::MPC) => sub {
     $x;
 };
 
-#
-## GMPq
-#
-
-Class::Multimethods::multimethod __log__ => qw(Math::GMPq) => sub {
-    (@_) = _mpq2mpfr($_[0]);
-    goto &__log__;
-};
-
-Class::Multimethods::multimethod __log2__ => qw(Math::GMPq) => sub {
-    (@_) = _mpq2mpfr($_[0]);
-    goto &__log2__;
-};
-
-Class::Multimethods::multimethod __log10__ => qw(Math::GMPq) => sub {
-    (@_) = _mpq2mpfr($_[0]);
-    goto &__log10__;
-};
-
-#
-## GMPz
-#
-
-Class::Multimethods::multimethod __log__ => qw(Math::GMPz) => sub {
-    (@_) = _mpz2mpfr($_[0]);
-    goto &__log__;
-};
-
-Class::Multimethods::multimethod __log2__ => qw(Math::GMPz) => sub {
-    (@_) = _mpz2mpfr($_[0]);
-    goto &__log2__;
-};
-
-Class::Multimethods::multimethod __log10__ => qw(Math::GMPz) => sub {
-    (@_) = _mpz2mpfr($_[0]);
-    goto &__log10__;
-};
-
 1;

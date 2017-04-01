@@ -11,7 +11,7 @@ use strict;
 use warnings;
 
 use lib qw(../lib);
-use Math::AnyNum;
+use Math::AnyNum qw(ipow ilog10 idiv);
 
 sub asciibet {
     map { chr } 0 .. 255;
@@ -55,8 +55,9 @@ sub arithmethic_coding {
     # Each term is multiplied by the product of the
     # frequencies of all previously occurring symbols
     foreach my $c (@chars) {
-        $L->mul($base)->add($cf{$c} * $pf);
-        $pf->mul($freq{$c});
+        $L *= $base;
+        $L += $cf{$c} * $pf;
+        $pf *= $freq{$c};
     }
 
     # Upper bound
@@ -65,8 +66,8 @@ sub arithmethic_coding {
     #~ say $L;
     #~ say $U;
 
-    my $pow = Math::AnyNum->new($pf)->log(10)->int;
-    my $enc = ($U - 1)->idiv(Math::AnyNum->new(10)->ipow($pow));
+    my $pow = ilog10($pf);
+    my $enc = idiv($U - 1, ipow(10, $pow));
 
     return ($enc, $pow, \%freq);
 }
@@ -75,7 +76,7 @@ sub arithmethic_decoding {
     my ($enc, $pow, $freq) = @_;
 
     # Multiply enc by 10^pow
-    $enc *= 10**$pow;
+    $enc *= ipow(10, $pow);
 
     my $base = Math::AnyNum->new(0);
     $base += $_ for values %{$freq};
@@ -102,14 +103,14 @@ sub arithmethic_decoding {
 
     # Decode the input number
     my $decoded = '';
-    for (my $pow = $base**($base - 1) ; $pow > 0 ; $pow->idiv($base)) {
-        my $div = $enc->copy->idiv($pow);
+    for (my $pow = ipow($base, $base - 1) ; $pow > 0 ; $pow = idiv($pow, $base)) {
+        my $div = idiv($enc, $pow);
 
         my $c  = $dict{$div};
         my $fv = $freq->{$c};
         my $cv = $cf{$c};
 
-        my $rem = ($enc - $pow * $cv)->idiv($fv);
+        my $rem = idiv($enc - $pow * $cv, $fv);
 
         #~ say "$enc / $base^$pow = $div ($c)";
         #~ say "($enc - $base^$pow * $cv) / $fv = $rem\n";

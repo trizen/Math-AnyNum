@@ -7,7 +7,7 @@ use strict;
 use warnings;
 
 use lib qw(../lib);
-use Math::AnyNum qw(:constant);
+use Math::AnyNum qw(:overload);
 
 sub derivatives {
     my ($x, $m, $k) = @_;

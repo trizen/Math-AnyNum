@@ -15,16 +15,4 @@ Class::Multimethods::multimethod __asinh__ => qw(Math::MPC) => sub {
     $x;
 };
 
-Class::Multimethods::multimethod __asinh__ => qw(Math::GMPq) => sub {
-    my ($x) = _mpq2mpfr($_[0]);
-    Math::MPFR::Rmpfr_asinh($x, $x, $ROUND);
-    $x;
-};
-
-Class::Multimethods::multimethod __asinh__ => qw(Math::GMPz) => sub {
-    my ($x) = _mpz2mpfr($_[0]);
-    Math::MPFR::Rmpfr_asinh($x, $x, $ROUND);
-    $x;
-};
-
 1;

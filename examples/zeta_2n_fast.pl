@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 use lib qw(../lib);
-use Math::AnyNum qw(:constant pi bernfrac factorial);
+use Math::AnyNum qw(:overload pi bernfrac factorial);
 
 sub zeta_2n {
     my ($n2) = 2 * $_[0];

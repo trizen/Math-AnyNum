@@ -35,6 +35,7 @@ lib/Math/AnyNum/bernfrac.pm
 lib/Math/AnyNum/bernreal.pm
 lib/Math/AnyNum/beta.pm
 lib/Math/AnyNum/boolify.pm
+lib/Math/AnyNum/ceil.pm
 lib/Math/AnyNum/cmp.pm
 lib/Math/AnyNum/copy.pm
 lib/Math/AnyNum/cos.pm
@@ -48,13 +49,14 @@ lib/Math/AnyNum/div.pm
 lib/Math/AnyNum/eq.pm
 lib/Math/AnyNum/eta.pm
 lib/Math/AnyNum/exp.pm
+lib/Math/AnyNum/floor.pm
 lib/Math/AnyNum/imag.pm
 lib/Math/AnyNum/imod.pm
 lib/Math/AnyNum/inc.pm
 lib/Math/AnyNum/inv.pm
 lib/Math/AnyNum/ipow.pm
 lib/Math/AnyNum/iroot.pm
-lib/Math/AnyNum/lambert_w.pm
+lib/Math/AnyNum/LambertW.pm
 lib/Math/AnyNum/lgrt.pm
 lib/Math/AnyNum/log.pm
 lib/Math/AnyNum/mod.pm
@@ -83,6 +85,7 @@ META.yml
 README.md
 t/00-load.t
 t/exp.t
+t/floor_ceil.t
 t/general.t
 t/general_2.t
 t/inc_dec.t

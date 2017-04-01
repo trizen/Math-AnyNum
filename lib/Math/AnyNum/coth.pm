@@ -17,16 +17,4 @@ Class::Multimethods::multimethod __coth__ => qw(Math::MPC) => sub {
     $x;
 };
 
-Class::Multimethods::multimethod __coth__ => qw(Math::GMPq) => sub {
-    my ($x) = _mpq2mpfr($_[0]);
-    Math::MPFR::Rmpfr_coth($x, $x, $ROUND);
-    $x;
-};
-
-Class::Multimethods::multimethod __coth__ => qw(Math::GMPz) => sub {
-    my ($x) = _mpz2mpfr($_[0]);
-    Math::MPFR::Rmpfr_coth($x, $x, $ROUND);
-    $x;
-};
-
 1;

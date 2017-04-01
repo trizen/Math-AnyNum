@@ -15,7 +15,7 @@ use Math::AnyNum;
 }
 
 {
-    use Math::AnyNum qw(:constant);
+    use Math::AnyNum qw(:overload);
 
     #[+0.5,      0,         0],
     #[-0.5,      0,         0],

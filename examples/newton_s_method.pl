@@ -7,13 +7,13 @@ use strict;
 use warnings;
 
 use lib qw(../lib);
-use Math::AnyNum qw(:constant);
+use Math::AnyNum qw(:overload float);
 
 sub nth_root {
     my ($n, $x) = @_;
 
-    $n->float;
-    $x->float;
+    $n = float($n);
+    $x = float($x);
 
     my $eps = 10**-($Math::AnyNum::PREC / 4);
 

@@ -7,7 +7,7 @@ use strict;
 use warnings;
 
 use lib qw(../lib);
-use Math::AnyNum qw(:constant);
+use Math::AnyNum qw(:overload);
 
 my $S = sqrt(1.25) + 0.5;
 my $T = sqrt(1.25) - 0.5;

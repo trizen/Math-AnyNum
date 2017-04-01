@@ -10,7 +10,7 @@ use warnings;
 use lib qw(../lib);
 use Memoize qw(memoize);
 
-use Math::AnyNum qw(:constant binomial);
+use Math::AnyNum qw(:overload binomial);
 
 memoize('bernoulli');
 
@@ -22,12 +22,12 @@ sub bernoulli {
     return 1     if $n == 0;
 
     my $bern = 1 / 2 - 1 / ($n + 1);
-    for (my $k = "2" ; $k < $n ; $k += "2") {
+    for (my $k = '2' ; $k < $n ; $k += '2') {
         $bern -= bernoulli($k) * binomial($n, $k) / ($n - $k + 1);
     }
     $bern;
 }
 
 foreach my $i (0 .. 100) {
-    printf "B%-3d = %s\n", "2" * $i, bernoulli("2" * $i);
+    printf "B%-3d = %s\n", '2' * $i, bernoulli('2' * $i);
 }

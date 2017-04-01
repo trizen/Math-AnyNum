@@ -19,17 +19,20 @@ sub agm_pi {
     local $Math::AnyNum::PREC = 4 * $digits;
 
     my $HALF = Math::AnyNum->new_f(0.5);
-    my ($an, $bn, $tn, $pn) = (Math::AnyNum->new_ui(1), $HALF->copy->sqrt, $HALF->copy->mul($HALF), Math::AnyNum->new_ui(1));
+    my ($an, $bn, $tn, $pn) = (Math::AnyNum->new_ui(1), sqrt($HALF), $HALF * $HALF, Math::AnyNum->new_ui(1));
     while ($pn < $acc) {
-        my $prev_an = $an->copy;
-        $an->add($bn)->div(2);
-        $bn->mul($prev_an)->sqrt;
-        $prev_an->sub($an);
-        $tn->sub($pn * $prev_an * $prev_an);
-        $pn->add($pn);
+        my $prev_an = $an;
+        $an += $bn;
+        $an /= 2;
+        $bn *= $prev_an;
+        $bn = sqrt($bn);
+        $prev_an -= $an;
+        $tn -= $pn * $prev_an * $prev_an;
+        $pn += $pn;
     }
-    $an->add($bn);
-    $an->mul($an)->div(4 * $tn);
+    $an += $bn;
+    $an *= $an;
+    $an /= (4 * $tn);
     return "$an";
 }
 

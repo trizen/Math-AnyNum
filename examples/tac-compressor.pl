@@ -20,7 +20,7 @@ use Getopt::Std qw(getopts);
 use File::Basename qw(basename);
 
 use lib qw(../lib);
-use Math::AnyNum;
+use Math::AnyNum qw(ipow idiv ilog2);
 
 use constant {
               PKGNAME => 'TAC Compressor',
@@ -150,7 +150,7 @@ sub compress {
     my %cf = cumulative_freq(\%freq);
 
     # Limit and base
-    my $base = Math::AnyNum->new(scalar @chars);
+    my $base = scalar @chars;
 
     # Lower bound
     my $L = Math::AnyNum->new(0);
@@ -161,14 +161,15 @@ sub compress {
     # Each term is multiplied by the product of the
     # frequencies of all previously occurring symbols
     foreach my $c (@chars) {
-        $L->mul($base)->add($cf{$c} * $pf);
-        $pf->mul($freq{$c});
+        $L *= $base;
+        $L += $cf{$c} * $pf;
+        $pf *= $freq{$c};
     }
 
     # Upper bound
     my $U = $L + $pf;
 
-    my $pow = $pf->ilog2;
+    my $pow = ilog2($pf);
     my $enc = ($U - 1) >> $pow;
 
     # Remove any divisibility by 2
@@ -249,14 +250,16 @@ sub decompress {
     open my $out_fh, '>:raw', $output;
 
     # Decode the input number
-    for (my ($i, $pow) = (0, Math::AnyNum->new($base)->ipow($base - 1)) ; $i < $base ; ++$i, $pow->idiv($base)) {
-        my $div = $enc->copy->idiv($pow);
+    for (my ($i, $pow) = (0, ipow($base, $base - 1)) ; $i < $base ; ++$i, $pow = idiv($pow, $base)) {
+        my $div = idiv($enc, $pow);
 
         my $c  = $dict{$div};
         my $fv = $freq{$c};
         my $cv = $cf{$c};
 
-        $enc->sub($pow * $cv)->idiv($fv);
+        $enc -= $pow * $cv;
+        $enc = idiv($enc, $fv);
+
         print {$out_fh} $c;
     }
 

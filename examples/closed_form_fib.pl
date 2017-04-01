@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use lib qw(../lib);
-use Math::AnyNum qw(:constant fibonacci);
+use Math::AnyNum qw(:overload fibonacci);
 
 my $S = sqrt(5);
 my $T = (1 + $S) / 2;

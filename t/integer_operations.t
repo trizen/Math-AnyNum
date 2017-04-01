@@ -14,7 +14,7 @@ use Math::AnyNum;
 
     is($z->popcount, 4);
     is($z,           43);
-    $z->neg;
+    $z = $z->neg;
     is($z,           -43);
     is($z->popcount, 4);
     is($z,           -43);
@@ -31,10 +31,10 @@ use Math::AnyNum;
     is($z,  '12');               # make sure factorial didn't change $z
     $z = $t1;
 
-    $z->isqrt;
+    $z = $z->isqrt;
     is($z, 21886);
 
-    $z->ipow(30);
+    $z = $z->ipow(30);
     is($z,
 '16032152917429066747418982495813383711705136304907234176407498567267316572349793360954753660521310614994729887678856029514210738176'
       );
@@ -42,13 +42,13 @@ use Math::AnyNum;
     #~ $z->ilog(21886);
     #~ is($z, '30');
 
-    $z->log(21886);
+    $z = $z->log(21886);
     is($z, '30');
 
-    $z->mul(10);
+    $z = $z->mul(10);
     is($z, '300');
 
-    $z->iroot(3);
+    $z = $z->iroot(3);
     is($z, '6');
 
     my $t2 = $z->binomial(3);
@@ -56,7 +56,7 @@ use Math::AnyNum;
     is($z,  '6');    # make sure binomial didn't change $z
     $z = $t2;
 
-    $z->imod(12);
+    $z = $z->imod(12);
     is($z, '8');
 }
 
@@ -67,147 +67,122 @@ use Math::AnyNum;
 
     {
         # Special
-        my $z = $n->copy;
-        $z->isqrt;
+        my $z = $n->isqrt;
         is($z, 'NaN');
     }
 
     {
-        my $z = $n->copy;
-        $z->iroot(3);
+        my $z = $n->iroot(3);
         is($z, '-2');
     }
 
     {
-        my $z = $n->copy;
-        $z->iroot(-3);
+        my $z = $n->iroot(-3);
         is($z, 'NaN');
     }
 
     {
-        my $z = $n->copy;
-        $z->ipow('3.95');    # gets truncated to '3'
+        my $z = $n->ipow('3.95');    # gets truncated to '3'
         is($z, '-2197');
     }
 
     {
-        my $z = $n->copy;
-        $z->ipow('-3.95');    # gets truncated to '-3'
+        my $z = $n->ipow('-3.95');    # gets truncated to '-3'
         is($z, '0');
     }
 
     {
-        my $z = $n->copy;
-        $z->ipow('4.95');     # gets truncated to '4'
+        my $z = $n->ipow('4.95');     # gets truncated to '4'
         is($z, '28561');
     }
 
     {
-        my $z = $n->copy;
-        $z->ipow('-4.95');    # gets truncated to '-4'
+        my $z = $n->ipow('-4.95');    # gets truncated to '-4'
         is($z, '0');
     }
 
     {
-        my $z = $n->copy;
-        $z->imod('-0.01');    # gets truncated to '0'
+        my $z = $n->imod('-0.01');    # gets truncated to '0'
         is($z, 'NaN');
     }
 
     {
-        my $z = $n->copy;
-        $z->imod(Math::AnyNum->new('-0.91'));    # gets truncated to '0'
+        my $z = $n->imod(Math::AnyNum->new('-0.91'));    # gets truncated to '0'
         is($z, 'NaN');
     }
 
     {
-        my $z = $n->copy;
-        $z->imod(Math::AnyNum->new('9.2'));      # gets truncated to '9'
+        my $z = $n->imod(Math::AnyNum->new('9.2'));      # gets truncated to '9'
         is($z, '5');
     }
 
     {
-        my $z = $n->copy;
-        $z->imod(Math::AnyNum->new('-9.9'));     # gets truncated to '9'
+        my $z = $n->imod(Math::AnyNum->new('-9.9'));     # gets truncated to '9'
         is($z, '-4');
     }
 
     {
-        my $z = $n->copy;
-        $z->imod(Math::AnyNum->new('-20/2'));
+        my $z = $n->imod(Math::AnyNum->new('-20/2'));
         is($z, '-3');
     }
 
     {
-        my $z = $n->copy;
-        $z->imod('13');
+        my $z = $n->imod('13');
         is($z, '0');
     }
 
     {
-        my $z = $n->copy;
-        $z->imod('-13');
+        my $z = $n->imod('-13');
         is($z, '0');
     }
 
     {
-        my $z = $n->copy;
-        $z->imod('11');
+        my $z = $n->imod('11');
         is($z, '9');
     }
 
     {
-        my $z = $n->copy;
-        $z->imod($y);
+        my $z = $n->imod($y);
         is($z, '5');
     }
 
     {
-        my $z = $n->copy;
-        $z->mod('11');
+        my $z = $n->mod('11');
         is($z, '9');
     }
 
     {
-        my $z = $n->copy;
-        $z->imod('-11');
+        my $z = $n->imod('-11');
         is($z, '-2');
     }
 
     {
-        my $z = $n->copy;
-        $z->idiv('2');
+        my $z = $n->idiv('2');
         is($z, '-6');
     }
 
     {
-        my $z = $n->copy;
-        $z->idiv('-2');
+        my $z = $n->idiv('-2');
         is($z, '6');
     }
 
     {
-        my $z = $n->copy;
-        $z->idiv($y);
+        my $z = $n->idiv($y);
         is($z, '-1');
     }
 
     {
-        my $z = $n->copy;
-        $z->idiv(-$y);
+        my $z = $n->idiv(-$y);
         is($z, '1');
     }
 
     {
-        my $z = $n->copy;
-        $z->idiv($f);
+        my $z = $n->idiv($f);
         is($z, '-2');
     }
 
     {
-        my $z = $n->copy;
-        $z->abs;
-        $z->idiv($f);
+        my $z = $n->abs->idiv($f);
         is($z, '2');
     }
 }

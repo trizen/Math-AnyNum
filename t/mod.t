@@ -7,7 +7,7 @@ use Test::More;
 
 plan tests => 202;
 
-use Math::AnyNum qw(:constant);
+use Math::AnyNum qw(:overload);
 
 my $m = 5;
 my $x = (100->factorial + $m);

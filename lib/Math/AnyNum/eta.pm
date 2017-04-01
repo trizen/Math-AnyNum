@@ -8,7 +8,7 @@ our ($ROUND, $PREC);
 #    eta(x) = (1 - 2**(1-x)) * zeta(x)
 
 sub __eta__ {
-    my ($x) = @_;      # $n is always a Math::MPFR object
+    my ($x) = @_;    # $n is always a Math::MPFR object
 
     # Special case for eta(1) = log(2)
     if (!Math::MPFR::Rmpfr_cmp_ui($x, 1)) {

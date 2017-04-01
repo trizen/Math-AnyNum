@@ -12,11 +12,7 @@ use strict;
 use warnings;
 
 use lib qw(../lib);
-use Math::AnyNum qw(:constant);
-
-sub binomial {
-    Math::AnyNum->new($_[0])->binomial($_[1]);
-}
+use Math::AnyNum qw(:overload binomial);
 
 # This function returns the nth Bernoulli number (Akiyama–Tanigawa algorithm)
 # See: https://en.wikipedia.org/wiki/Bernoulli_number

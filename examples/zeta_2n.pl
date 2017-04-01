@@ -11,7 +11,7 @@ use warnings;
 
 use lib qw(../lib);
 use Memoize qw(memoize);
-use Math::AnyNum qw(:constant pi);
+use Math::AnyNum qw(:overload pi);
 
 sub bernoulli_number {
     my ($n) = @_;

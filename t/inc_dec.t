@@ -10,25 +10,25 @@ plan tests => 8;
 use Math::AnyNum;
 
 my $q = Math::AnyNum->new_q('3/4');
-$q->inc;
+$q = $q->inc;
 is($q, '7/4');
-$q->dec;
+$q = $q->dec;
 is($q, '3/4');
 
 my $f = Math::AnyNum->new_f('9.92');
-$f->inc;
+$f = $f->inc;
 is($f, '10.92');
-$f->dec;
+$f = $f->dec;
 is($f, '9.92');
 
 my $z = Math::AnyNum->new_z('41');
-$z->inc;
+$z = $z->inc;
 is($z, '42');
-$z->dec;
+$z = $z->dec;
 is($z, '41');
 
 my $c = Math::AnyNum->new_c('3', '4');
-$c->inc;
+$c = $c->inc;
 is($c, '4+4i');
-$c->dec;
+$c = $c->dec;
 is($c, '3+4i');

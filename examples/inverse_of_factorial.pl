@@ -7,7 +7,7 @@ use strict;
 use warnings;
 
 use lib qw(../lib);
-use Math::AnyNum qw(:constant tau e factorial);
+use Math::AnyNum qw(:overload tau e factorial);
 
 use constant S => tau->copy->sqrt->log;
 use constant T => tau->copy->root(-2.0 * e);
@@ -15,7 +15,7 @@ use constant T => tau->copy->root(-2.0 * e);
 sub inv_fac_W {
     my ($n) = @_;
     my $L = log($n) - S;
-    $L / ($L / e)->lambert_w - 0.5;
+    $L / ($L / e)->LambertW - 0.5;
 }
 
 sub inv_fac_lgrt {

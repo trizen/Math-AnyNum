@@ -22,14 +22,4 @@ Class::Multimethods::multimethod __sqrt__ => qw(Math::MPC) => sub {
     $x;
 };
 
-Class::Multimethods::multimethod __sqrt__ => qw(Math::GMPq) => sub {
-    (@_) = _mpq2mpfr($_[0]);
-    goto &__sqrt__;
-};
-
-Class::Multimethods::multimethod __sqrt__ => qw(Math::GMPz) => sub {
-    (@_) = _mpz2mpfr($_[0]);
-    goto &__sqrt__;
-};
-
 1;

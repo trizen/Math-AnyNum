@@ -3,13 +3,13 @@ use warnings;
 
 our ($ROUND, $PREC);
 
-Class::Multimethods::multimethod __lambert_w__ => qw(Math::MPFR) => sub {
+Class::Multimethods::multimethod __LambertW__ => qw(Math::MPFR) => sub {
     my ($r) = @_;
 
     # Return a complex number for x < -1/e
     if (Math::MPFR::Rmpfr_cmp_d($r, -1 / CORE::exp(1)) < 0) {
         (@_) = _mpfr2mpc($r);
-        goto &__lambert_w__;
+        goto &__LambertW__;
     }
 
     $PREC = CORE::int($PREC);
@@ -41,7 +41,7 @@ Class::Multimethods::multimethod __lambert_w__ => qw(Math::MPFR) => sub {
     $r;
 };
 
-Class::Multimethods::multimethod __lambert_w__ => qw(Math::MPC) => sub {
+Class::Multimethods::multimethod __LambertW__ => qw(Math::MPC) => sub {
     my ($c) = @_;
 
     $PREC = CORE::int($PREC);

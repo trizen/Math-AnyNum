@@ -24,14 +24,4 @@ Class::Multimethods::multimethod __atanh__ => qw(Math::MPC) => sub {
     $x;
 };
 
-Class::Multimethods::multimethod __atanh__ => qw(Math::GMPq) => sub {
-    (@_) = _mpq2mpfr($_[0]);
-    goto &__atanh__;
-};
-
-Class::Multimethods::multimethod __atanh__ => qw(Math::GMPz) => sub {
-    (@_) = _mpz2mpfr($_[0]);
-    goto &__atanh__;
-};
-
 1;

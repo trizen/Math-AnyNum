@@ -5,10 +5,10 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 67;
+plan tests => 66;
 
 {
-    use Math::AnyNum qw(:constant);
+    use Math::AnyNum qw(:overload);
 
     is(ref(42), 'Math::AnyNum');
     like(sqrt(42),   qr/^6\.480740698407860230965967436087996\d*\z/);
@@ -22,9 +22,6 @@ plan tests => 67;
     my $x = -2;
     like($x->copy->sqrt, qr/^1\.4142135623730950488016\d*i\z/);
     ok($x == -2);
-
-    $x->sqrt;
-    ok($x != -2);
 
     my $z = 42;
     is(-$z, "-42");
