@@ -1,10 +1,6 @@
 use 5.014;
 use warnings;
 
-our ($ROUND, $PREC);
-
-#Class::Multimethods::multimethod __isqrtrem__ => qw(Math::GMPz $) => sub {
-
 sub __isqrtrem__ {
     my ($x) = @_;
 

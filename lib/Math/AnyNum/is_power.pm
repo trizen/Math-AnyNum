@@ -1,8 +1,6 @@
 use 5.014;
 use warnings;
 
-our ($ROUND, $PREC);
-
 #  $x is a Math::GMPz object
 #  $y is a signed integer
 
@@ -20,15 +18,15 @@ sub __is_power__ {
     # Don't accept a non-positive power
     # Also, when $x is negative and $y is even, return faster
     if ($y <= 0 or ($y % 2 == 0 and Math::GMPq::Rmpq_sgn($x) < 0)) {
-        return !1;
+        return 0;
     }
 
     # Optimization for perfect squares
     $y == 2 and return Math::GMPz::Rmpz_perfect_square_p($x);
 
-    Math::GMPz::Rmpz_perfect_power_p($x) || return !1;
+    Math::GMPz::Rmpz_perfect_power_p($x) || return 0;
     my $z = Math::GMPz::Rmpz_init_set($x);
     Math::GMPz::Rmpz_root($z, $z, $y);
 }
 
-1
+1;

@@ -1,8 +1,6 @@
 use 5.014;
 use warnings;
 
-our ($ROUND, $PREC);
-
 sub __idiv__ {    # takes two Math::GMPz objects
     my ($x, $y) = @_;
 
@@ -24,3 +22,5 @@ sub __idiv__ {    # takes two Math::GMPz objects
     Math::GMPz::Rmpz_tdiv_q($x, $x, $y);
     $x;
 }
+
+1;

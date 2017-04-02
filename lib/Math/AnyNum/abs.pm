@@ -27,3 +27,5 @@ Class::Multimethods::multimethod __abs__ => qw(Math::MPC) => sub {
     Math::MPC::Rmpc_abs($mpfr, $x, $ROUND);
     $mpfr;
 };
+
+1;

@@ -1,7 +1,7 @@
 use 5.014;
 use warnings;
 
-our ($ROUND, $PREC);
+our ($ROUND);
 
 # asec(x) = acos(1/x)
 Class::Multimethods::multimethod __asec__ => qw(Math::MPFR) => sub {

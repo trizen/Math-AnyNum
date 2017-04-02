@@ -1,8 +1,6 @@
 use 5.014;
 use warnings;
 
-our ($ROUND, $PREC);
-
 Class::Multimethods::multimethod __sign__ => qw(Math::MPFR) => \&Math::MPFR::Rmpfr_sgn;
 Class::Multimethods::multimethod __sign__ => qw(Math::GMPq) => \&Math::GMPq::Rmpq_sgn;
 Class::Multimethods::multimethod __sign__ => qw(Math::GMPz) => \&Math::GMPz::Rmpz_sgn;

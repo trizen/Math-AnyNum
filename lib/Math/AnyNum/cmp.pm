@@ -113,3 +113,5 @@ Class::Multimethods::multimethod __cmp__ => qw(Math::MPC $) => sub {
     (@_) = ($_[0], _any2mpc(_str2obj($_[1])));
     goto &__cmp__;
 };
+
+1;

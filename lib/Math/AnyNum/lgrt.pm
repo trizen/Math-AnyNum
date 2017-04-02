@@ -90,4 +90,4 @@ Class::Multimethods::multimethod __lgrt__ => qw(Math::MPC) => sub {
     bless \$x, __PACKAGE__;
 };
 
-1
+1;

@@ -1,7 +1,7 @@
 use 5.014;
 use warnings;
 
-our ($ROUND, $PREC);
+our ($ROUND);
 
 Class::Multimethods::multimethod __acosh__ => qw(Math::MPFR) => sub {
     my ($x) = @_;

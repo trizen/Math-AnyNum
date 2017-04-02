@@ -1,8 +1,6 @@
 use 5.014;
 use warnings;
 
-our ($ROUND, $PREC);
-
 #
 ## This multimethod DO NOT modify $x.
 #
@@ -48,3 +46,5 @@ Class::Multimethods::multimethod __irand__ => qw(Math::GMPz *) => sub {
     Math::GMPz::Rmpz_neg($x, $x) if $sgn < 0;
     $x;
 };
+
+1;

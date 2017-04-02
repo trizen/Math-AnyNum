@@ -1,9 +1,8 @@
 use 5.014;
 use warnings;
 
-our ($ROUND, $PREC);
-
-#Class::Multimethods::multimethod __iroot__ => qw(Math::GMPz $) => sub {
+# $x is a Math::GMPz object
+# $y is a signed integer
 
 sub __iroot__ {
     my ($x, $y) = @_;

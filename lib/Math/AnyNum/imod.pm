@@ -1,8 +1,6 @@
 use 5.014;
 use warnings;
 
-our ($ROUND, $PREC);
-
 Class::Multimethods::multimethod __imod__ => qw(Math::GMPz Math::GMPz) => sub {
     my ($x, $y) = @_;
 

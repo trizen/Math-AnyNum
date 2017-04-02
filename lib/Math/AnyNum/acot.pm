@@ -1,7 +1,7 @@
 use 5.014;
 use warnings;
 
-our ($ROUND, $PREC);
+our ($ROUND);
 
 # acot(x) = atan(1/x)
 Class::Multimethods::multimethod __acot__ => qw(Math::MPFR) => sub {

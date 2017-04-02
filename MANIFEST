@@ -44,7 +44,6 @@ lib/Math/AnyNum/boolify.pm
 lib/Math/AnyNum/cbrt.pm
 lib/Math/AnyNum/ceil.pm
 lib/Math/AnyNum/cmp.pm
-lib/Math/AnyNum/copy.pm
 lib/Math/AnyNum/cos.pm
 lib/Math/AnyNum/cosh.pm
 lib/Math/AnyNum/cot.pm

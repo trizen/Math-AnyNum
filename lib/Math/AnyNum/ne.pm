@@ -87,3 +87,5 @@ Class::Multimethods::multimethod __ne__ => qw(Math::MPC Math::MPFR) => sub {
     (@_) = ($_[0], _mpfr2mpc($_[1]));
     goto &__ne__;
 };
+
+1;

@@ -1,7 +1,7 @@
 use 5.014;
 use warnings;
 
-our ($ROUND, $PREC);
+our ($ROUND);
 
 # asech(x) = acosh(1/x)
 Class::Multimethods::multimethod __asech__ => qw(Math::MPFR) => sub {

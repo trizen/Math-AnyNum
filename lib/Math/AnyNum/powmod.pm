@@ -13,6 +13,6 @@ sub __powmod__ {    # takes three Math::GMPz objects
 
     Math::GMPz::Rmpz_powm($x, $x, $y, $z);
     $x;
-};
+}
 
 1;

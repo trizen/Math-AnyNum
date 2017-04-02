@@ -15,14 +15,4 @@ Class::Multimethods::multimethod __exp__ => qw(Math::MPC) => sub {
     $x;
 };
 
-Class::Multimethods::multimethod __exp__ => qw(Math::GMPq) => sub {
-    (@_) = _mpq2mpfr($_[0]);
-    goto &__exp__;
-};
-
-Class::Multimethods::multimethod __exp__ => qw(Math::GMPz) => sub {
-    (@_) = _mpz2mpfr($_[0]);
-    goto &__exp__;
-};
-
 1;

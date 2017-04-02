@@ -26,3 +26,5 @@ Class::Multimethods::multimethod __neg__ => qw(Math::MPC) => sub {
     Math::MPC::Rmpc_neg($x, $x, $ROUND);
     $x;
 };
+
+1;

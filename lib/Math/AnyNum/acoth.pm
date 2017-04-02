@@ -1,7 +1,7 @@
 use 5.014;
 use warnings;
 
-our ($ROUND, $PREC);
+our ($ROUND);
 
 # acoth(x) = atanh(1/x)
 Class::Multimethods::multimethod __acoth__ => qw(Math::MPFR) => sub {

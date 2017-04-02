@@ -1,8 +1,6 @@
 use 5.014;
 use warnings;
 
-our ($ROUND, $PREC);
-
 #
 ## MPFR
 #
@@ -87,3 +85,5 @@ Class::Multimethods::multimethod __eq__ => qw(Math::MPC Math::MPFR) => sub {
     (@_) = ($_[0], _mpfr2mpc($_[1]));
     goto &__eq__;
 };
+
+1;

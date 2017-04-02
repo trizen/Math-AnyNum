@@ -1,7 +1,7 @@
 use 5.014;
 use warnings;
 
-our ($ROUND, $PREC);
+our ($ROUND);
 
 sub __bernfrac__ {
     my ($n) = @_;    # $n is an unsigned integer

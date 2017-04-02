@@ -15,6 +15,8 @@ use POSIX qw(ULONG_MAX LONG_MIN);
 
 use Class::Multimethods qw();
 
+=encoding utf8
+
 =head1 NAME
 
 Math::AnyNum - Transparent interface to Math::GMPq, Math::GMPz, Math::MPFR and Math::MPC.
