@@ -47,6 +47,22 @@ say irand(1000);
 say complex('3+4i');
 say atan2(complex('3+4i'), complex('1+3i'));
 
+say float('NaN')->boolify;
+
+say popcount(123);
+
+    #say is_power(100, 2)       ;# true: 100 is a square (10**2)
+    #say is_power(125, 3)       ;# true: 125 is a cube   ( 5**3)
+    #say is_power(279841)       ;# true: 279841 is 23**4
+
+    say real('12/3');
+
+__END__
+    say my $n = Math::AnyNum->new_c('1234');
+    say my $m = Math::AnyNum->new_c('3', '4');
+    say my $o = Math::AnyNum->new_c('f', 'a', 16);
+
+__END__
 say atan2(4, complex(3));
 say atan(rat('4/3'));
 say int('42/12');
@@ -86,3 +102,9 @@ say log(gamma(-100.5));
 
 say rad2deg(pi / 4);
 say deg2rad(90);
+
+say join(' ', divmod(1234, 100));
+say kronecker(123148, 1231);
+
+say dfactorial(12);
+say mfactorial(12, 4);

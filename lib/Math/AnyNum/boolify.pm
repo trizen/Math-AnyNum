@@ -4,7 +4,7 @@ use warnings;
 our ($ROUND, $PREC);
 
 Class::Multimethods::multimethod __boolify__ => qw(Math::MPFR) => sub {
-    Math::MPFR::Rmpfr_get_d($_[0], $ROUND) != 0;
+    !Math::MPFR::Rmpfr_zero_p($_[0]);
 };
 
 Class::Multimethods::multimethod __boolify__ => qw(Math::GMPq) => sub {
@@ -19,7 +19,9 @@ Class::Multimethods::multimethod __boolify__ => qw(Math::MPC) => sub {
     my ($x) = @_;
     my $r = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPC::RMPC_RE($r, $x);
-    Math::MPFR::Rmpfr_get_d($r, $ROUND) != 0;
+    Math::MPFR::Rmpfr_zero_p($r) || return 1;
+    Math::MPC::RMPC_IM($r, $x);
+    !Math::MPFR::Rmpfr_zero_p($r);
 };
 
 1;

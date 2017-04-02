@@ -22,6 +22,7 @@ examples/zeta_2n.pl
 examples/zeta_2n_fast.pl
 ignore.txt
 lib/Math/AnyNum.pm
+lib/Math/AnyNum.pod
 lib/Math/AnyNum/abs.pm
 lib/Math/AnyNum/acos.pm
 lib/Math/AnyNum/acosh.pm
@@ -55,6 +56,7 @@ lib/Math/AnyNum/csc.pm
 lib/Math/AnyNum/csch.pm
 lib/Math/AnyNum/dec.pm
 lib/Math/AnyNum/div.pm
+lib/Math/AnyNum/divmod.pm
 lib/Math/AnyNum/eq.pm
 lib/Math/AnyNum/eta.pm
 lib/Math/AnyNum/exp.pm
@@ -76,7 +78,6 @@ lib/Math/AnyNum/irootrem.pm
 lib/Math/AnyNum/is_power.pm
 lib/Math/AnyNum/isqrtrem.pm
 lib/Math/AnyNum/isub.pm
-lib/Math/AnyNum/kronecker.pm
 lib/Math/AnyNum/LambertW.pm
 lib/Math/AnyNum/lcm.pm
 lib/Math/AnyNum/lgrt.pm
@@ -123,5 +124,6 @@ t/pod.t
 t/root.t
 t/round.t
 TODO
+utils/align_types.pl
 utils/auto_perltidy.sh
 utils/bak_cleaner.sh

@@ -2,122 +2,126 @@
 
 # Add the following methods:
 
-    add             -- added/tested
-    sub             -- added/tested
-    mul             -- added/tested
-    div             -- added/tested
-    mod             -- added/tested
-    pow             -- added/tested
-    inv             -- added/tested
-    sqr             -- added
-    sqrt            -- added/tested
-    cbrt            -- added
-    root            -- added
-    exp             -- added/tested
+    add             -- added/tested/documented
+    sub             -- added/tested/documented
+    mul             -- added/tested/documented
+    div             -- added/tested/documented
+    mod             -- added/tested/documented
+    pow             -- added/tested/documented
+    inv             -- added/tested/documented
+    sqr             -- added/documented
+    sqrt            -- added/tested/documented
+    cbrt            -- added/documented
+    root            -- added/documented
+    exp             -- added/tested/documented
     exp2  [?]
     exp10 [?]
-    ln              -- added
-    log             -- added/tested
-    log2            -- added/tested
-    log10           -- added/tested
+    ln              -- added/documented
+    log             -- added/tested/documented
+    log2            -- added/tested/documented
+    log10           -- added/tested/documented
 
 # Add the following trigonometric methods:
-    sin             -- added
-    asin            -- added
-    sinh            -- added
-    asinh           -- added
-    cos             -- added
-    acos            -- added
-    cosh            -- added
-    acosh           -- added
-    tan             -- added
-    atan            -- added
-    tanh            -- added
-    atanh           -- added
-    sec             -- added
-    asec            -- added
-    sech            -- added
-    asech           -- added
-    csc             -- added
-    acsc            -- added
-    csch            -- added
-    acsch           -- added
-    cot             -- added
-    acot            -- added
-    coth            -- added
-    acoth           -- added
-    atan2           -- added
+    sin             -- added/documented
+    asin            -- added/documented
+    sinh            -- added/documented
+    asinh           -- added/documented
+    cos             -- added/documented
+    acos            -- added/documented
+    cosh            -- added/documented
+    acosh           -- added/documented
+    tan             -- added/documented
+    atan            -- added/documented
+    tanh            -- added/documented
+    atanh           -- added/documented
+    sec             -- added/documented
+    asec            -- added/documented
+    sech            -- added/documented
+    asech           -- added/documented
+    csc             -- added/documented
+    acsc            -- added/documented
+    csch            -- added/documented
+    acsch           -- added/documented
+    cot             -- added/documented
+    acot            -- added/documented
+    coth            -- added/documented
+    acoth           -- added/documented
+    atan2           -- added/documented
 
 # Add the following special methods:
 
-    lgrt            -- added
-    lambert_w       -- added/tested
-    bernfrac        -- added
-    bernreal        -- added
-    harmfrac        -- added
-    harmreal        -- added
-    agm             -- added
-    hypot           -- added
-    gamma           -- added
-    lngamma         -- added
-    lgamma          -- added
-    digamma         -- added
-    beta            -- added
-    zeta            -- added/tested
-    eta             -- added
-    bessel_j        -- added
-    bessel_y        -- added
-    erf             -- added
-    erfc            -- added
-    ei              -- added
-    li              -- added
-    li2             -- added
+    lgrt            -- added/documented
+    LambertW        -- added/tested/documented
+    bernfrac        -- added/documented
+    bernreal        -- added/documented
+    harmfrac        -- added/documented
+    harmreal        -- added/documented
+    agm             -- added/documented
+    hypot           -- added/documented
+    gamma           -- added/documented
+    lngamma         -- added/documented
+    lgamma          -- added/documented
+    digamma         -- added/documented
+    beta            -- added/documented
+    zeta            -- added/tested/documented
+    eta             -- added/documented
+    BesselY         -- added/documented
+    BesselY         -- added/documented
+    erf             -- added/documented
+    erfc            -- added/documented
+    Ai              -- added/documented
+    Ei              -- added/documented
+    Li              -- added/documented
+    Li2             -- added/documented
 
 # Add the following integer methods:
 
-    iadd                -- added
-    isub                -- added
-    imul                -- added
-    idiv                -- added
-    ipow                -- added
-    ilog                -- added/tested
-    ilog2               -- added/tested
-    ilog10              -- added/tested
-    isqrt               -- added
-    icbrt               -- added
-    isqrtrem            -- added
-    iroot               -- added/tested
-    irootrem            -- added
-    imod                -- added/tested
-    divmod
+    iadd                -- added/documented
+    isub                -- added/documented
+    imul                -- added/documented
+    idiv                -- added/documented
+    ipow                -- added/documented
+    ilog                -- added/tested/documented
+    ilog2               -- added/tested/documented
+    ilog10              -- added/tested/documented
+    isqrt               -- added/documented
+    icbrt               -- added/documented
+    isqrtrem            -- added/documented
+    iroot               -- added/tested/documented
+    irootrem            -- added/documented
+    imod                -- added/tested/documented
+    divmod              -- added/documented
 
 # Add the following number theory methods:
 
-    invmod              -- added
-    powmod              -- added
-    gcd                 -- added
-    lcm                 -- added
-    valuation           -- added
-    remdiv              -- added
-    kronecker           -- added
+    invmod              -- added/documented
+    powmod              -- added/documented
+    gcd                 -- added/documented
+    lcm                 -- added/documented
+    valuation           -- added/documented
+    remdiv              -- added/documented
+    kronecker           -- added/documented
     is_square           -- added
     is_power            -- added
     is_prime            -- added
     next_prime          -- added
-    primorial           -- added
-    fibonacci           -- added
-    lucas               -- added
-    binomial            -- added
+    primorial           -- added/documented
+    fibonacci           -- added/documented
+    lucas               -- added/documented
+    binomial            -- added/documented
+    factorial           -- added/documented
+    dfactorial          -- added/documented
+    mfactorial          -- added/documented
 
 # Add the following miscellaneous methods:
 
-    rand            -- added
-    seed            -- added
-    irand           -- added
-    iseed           -- added
+    rand            -- added/documented
+    seed            -- added/documented
+    irand           -- added/documented
+    iseed           -- added/documented
     copy            -- added
-    floor           -- added/tested
-    ceil            -- added/tested
+    floor           -- added/tested/documented
+    ceil            -- added/tested/documented
     rat             -- added
     int             -- added
     float           -- added

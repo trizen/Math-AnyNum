@@ -15,89 +15,7 @@ use POSIX qw(ULONG_MAX LONG_MIN);
 
 use Class::Multimethods qw();
 
-=encoding utf8
-
-=head1 NAME
-
-Math::AnyNum - Transparent interface to Math::GMPq, Math::GMPz, Math::MPFR and Math::MPC.
-
-=head1 VERSION
-
-Version 0.01
-
-=cut
-
 our $VERSION = '0.01';
-
-=head1 SYNOPSIS
-
-Math::AnyNum provides a transparent and easy-to-use interface to L<Math::GMPq>, L<Math::GMPz>, L<Math::MPFR> and L<Math::MPC>.
-
-    use 5.014;
-    use Math::AnyNum qw(:overload factorial);
-
-    # Integers
-    say factorial(30);                #=> 265252859812191058636308480000000
-
-    # Floating-point numbers
-    say sqrt(1 / factorial(100));     #=> 1.0351378111756264713204945[...]e-79
-
-    # Rational numbers
-    my $x = 2/3;
-    say ($x * 3);           #=> 2
-    say (2 / $x);           #=> 3
-    say $x;                 #=> 2/3
-
-    # Complex numbers
-    say 3 + 4*i;            #=> 3+4i
-    say sqrt(-4);           #=> 2i
-    say log(-1);            #=> 3.14159265358979323846264338327950288419[...]i
-
-=head1 EXPORT
-
-The following functions are exportable:
-
-
-
-    :trig
-        sin sinh asin asinh
-        cos cosh acos acosh
-        tan tanh atan atanh
-        sec sech asec asech
-        csc csch acsc acsch
-        atan2 rad2deg deg2rad
-
-    :special
-        beta eta gamma lgamma lngamma digamma zeta
-        Ai Ei Li Li2 LambertW BesselJ BesselY
-        pow sqr sqrt cbrt root exp ln log log2 log10
-        lgrt erf erfc hypot agm harmreal bernreal
-
-    :ntheory
-        factorial binomial primorial next_prime
-        fibonacci lucas bernfrac harmfrac
-        lcm gcd valuation kronecker imod remdiv
-        powmod invmod divmod irootrem isqrtrem
-        ipow isqrt icbrt iroot ilog ilog2 ilog10
-        iadd isub imul idiv is_power is_square
-        is_prime
-
-    :misc
-        irand iseed floor ceil round sign
-        as_bin as_hex as_oct as_int digits
-        is_inf is_ninf is_neg is_pos is_nan
-        is_rat is_int is_real is_complex is_zero
-        is_even is_odd is_div is_one is_mone abs
-        int rat float complex
-
-Nothing is exported by default.
-
-=head1 SUBROUTINES/METHODS
-
-=head2 function1
-
-=cut
-
 our ($ROUND, $PREC);
 
 BEGIN {
@@ -105,46 +23,10 @@ BEGIN {
     $PREC  = 192;
 }
 
-#~ state $MONE = do {
-#~ my $r = Math::GMPq::Rmpq_init_nobless();
-#~ Math::GMPq::Rmpq_set_si($r, -1, 1);
-#~ $r;
-#~ };
-
-#~ state $ZERO = do {
-#~ my $r = Math::GMPq::Rmpq_init_nobless();
-#~ Math::GMPq::Rmpq_set_ui($r, 0, 1);
-#~ $r;
-#~ };
-
-#~ state $ONE = do {
-#~ my $r = Math::GMPq::Rmpq_init_nobless();
-#~ Math::GMPq::Rmpq_set_ui($r, 1, 1);
-#~ $r;
-#~ };
-
-#~ state $ONE_Z = Math::GMPz::Rmpz_init_set_ui_nobless(1);
-
 use overload
   '""' => \&stringify,
   '0+' => \&numify,
   bool => \&boolify,
-
-  #~ '=' => sub { $_[0] },
-
-  #~ # Some shortcuts for speed
-  #~ '+='  => sub { $_[0]->add($_[1]) },
-  #~ '-='  => sub { $_[0]->sub($_[1]) },
-  #~ '*='  => sub { $_[0]->mul($_[1]) },
-  #~ '/='  => sub { $_[0]->div($_[1]) },
-  #~ '%='  => sub { $_[0]->mod($_[1]) },
-  #~ '**=' => sub { $_[0]->pow($_[1]) },
-
-  #~ '^='  => sub { $_[0]->xor($_[1]) },
-  #~ '&='  => sub { $_[0]->and($_[1]) },
-  #~ '|='  => sub { $_[0]->or($_[1]) },
-  #~ '<<=' => sub { $_[0]->lsft($_[1]) },
-  #~ '>>=' => sub { $_[0]->rsft($_[1]) },
 
   '+' => sub { $_[0]->add($_[1]) },
   '*' => sub { $_[0]->mul($_[1]) },
@@ -156,9 +38,6 @@ use overload
   '|' => sub { $_[0]->or($_[1]) },
   '^' => sub { $_[0]->xor($_[1]) },
   '~' => \&not,
-
-  #'++' => \&inc,
-  #'--' => \&dec,
 
 #<<<
   '>'   => sub { $_[2] ?   $_[0]->lt ($_[1])  : $_[0]->gt ($_[1]) },
@@ -265,8 +144,8 @@ use overload
                    erf      => sub ($)   { goto &erf },
                    erfc     => sub ($)   { goto &erfc },
                    digamma  => sub ($)   { goto &digamma },
-                   BesselJ  => sub ($$)  { goto &BesselJ },    # BesselJ(x.xxx, n)
-                   BesselY  => sub ($$)  { goto &BesselY },    # BesselY(x.xxx, n)
+                   BesselJ  => sub ($$)  { goto &BesselJ },
+                   BesselY  => sub ($$)  { goto &BesselY },
                    hypot    => sub ($$)  { goto &hypot },
                    agm      => sub ($$)  { goto &agm },
                    bernreal => sub ($)   { goto &bernreal },
@@ -276,6 +155,8 @@ use overload
     my %ntheory = (
         primorial => sub ($)  { goto &primorial },
         factorial => sub ($)  { goto &factorial },
+        dfactorial => sub ($) { goto &dfactorial },
+        mfactorial => sub ($$) { goto &mfactorial },
         binomial  => sub ($$) { goto &binomial },
 
         fibonacci => sub ($) { goto &fibonacci },
@@ -328,7 +209,9 @@ use overload
         floor => sub ($)   { goto &floor },
         ceil  => sub ($)   { goto &ceil },
         round => sub ($;$) { goto &round },
+        mod      => sub ($$)  { goto &mod },
 
+        popcount => sub ($) { goto &popcount },
         abs => sub (_) { goto &abs },    # built-in keyword
 
         as_bin => sub ($)   { goto &as_bin },
@@ -336,8 +219,14 @@ use overload
         as_oct => sub ($)   { goto &as_oct },
         as_int => sub ($;$) { goto &as_int },
 
-        digits => sub ($) { goto &digits },
+        digits => sub ($;$) { goto &digits },
         sign   => sub ($) { goto &sign },
+
+        numerator => sub ($) { goto &numerator},
+        denominator => sub ($) { goto &denominator },
+
+        real => sub ($) { goto &real },
+        imag => sub ($) { goto &imag },
 
         is_inf     => sub ($) { goto &is_inf },
         is_neg     => sub ($) { goto &is_neg },
@@ -447,97 +336,6 @@ use overload
         overload::remove_constant('binary', '', 'float', '', 'integer');
     }
 }
-
-# Converts a string representing a floating-point number into a rational representation
-# Example: "1.234" is converted into "1234/1000"
-sub _str2rat {
-    my $str = $_[0] || "0";
-
-    my $sign = substr($str, 0, 1);
-
-    if ($sign eq '-') {
-        substr($str, 0, 1, '');
-        $sign = '-';
-    }
-    else {
-        substr($str, 0, 1, '') if ($sign eq '+');
-        $sign = '';
-    }
-
-    #~ my $i;
-    #~ if (($i = index($str, 'e')) != -1) {
-
-    #~ my $exp = substr($str, $i + 1);
-
-    #~ # Handle specially numbers with very big exponents
-    #~ # (it's not a very good solution, but I hope it's only temporarily)
-    #~ if (CORE::abs($exp) >= 1000000) {
-    #~ my $mpfr = Math::MPFR::Rmpfr_init2($PREC);
-    #~ Math::MPFR::Rmpfr_set_str($mpfr, "$sign$str", 10, $ROUND);
-    #~ my $mpq = Math::GMPq::Rmpq_init();
-    #~ Math::MPFR::Rmpfr_get_q($mpq, $mpfr);
-    #~ return Math::GMPq::Rmpq_get_str($mpq, 10);
-    #~ }
-
-    #~ my ($before, $after) = split(/\./, substr($str, 0, $i));
-
-    #~ if (!defined($after)) {    # return faster for numbers like "13e2"
-    #~ if ($exp >= 0) {
-    #~ return ("$sign$before" . ('0' x $exp));
-    #~ }
-    #~ else {
-    #~ $after = '';
-    #~ }
-    #~ }
-
-    #~ my $numerator   = "$before$after";
-    #~ my $denominator = "1";
-
-    #~ if ($exp < 1) {
-    #~ $denominator .= '0' x (CORE::abs($exp) + CORE::length($after));
-    #~ }
-    #~ else {
-    #~ my $diff = ($exp - CORE::length($after));
-    #~ if ($diff >= 0) {
-    #~ $numerator .= '0' x $diff;
-    #~ }
-    #~ else {
-    #~ my $s = "$before$after";
-    #~ substr($s, $exp + CORE::length($before), 0, '.');
-    #~ return _str2rat("$sign$s");
-    #~ }
-    #~ }
-
-    #~ "$sign$numerator/$denominator";
-    #~ }
-    #~ els
-    if ((my $i = index($str, '.')) != -1) {
-        my ($before, $after) = (substr($str, 0, $i), substr($str, $i + 1));
-        if ($after =~ tr/0// == CORE::length($after)) {
-            return "$sign$before";
-        }
-        $sign . ("$before$after/1" =~ s/^0+//r) . ('0' x CORE::length($after));
-    }
-    else {
-        "$sign$str";
-    }
-}
-
-#~ # Converts a string into an mpfr object
-#~ sub _str2mpfr {
-#~ my $r = Math::MPFR::Rmpfr_init2($PREC);
-
-#~ if (CORE::int($_[0]) eq $_[0] and $_[0] >= LONG_MIN and $_[0] <= ULONG_MAX) {
-#~ $_[0] >= 0
-#~ ? Math::MPFR::Rmpfr_set_ui($r, $_[0], $ROUND)
-#~ : Math::MPFR::Rmpfr_set_si($r, $_[0], $ROUND);
-#~ }
-#~ else {
-#~ Math::MPFR::Rmpfr_set_str($r, $_[0], 10, $ROUND) && return;
-#~ }
-
-#~ $r;
-#~ }
 
 # Converts a string into an mpq object
 sub _str2obj {
@@ -668,41 +466,6 @@ sub _str2obj {
         return $r;
     }
 
-    #~ # Floating-point exponential
-    #~ if (index($s, 'e') != -1) {
-    #~ my $r = Math::MPFR::Rmpfr_init2($PREC);
-    #~ if (Math::MPFR::Rmpfr_set_str($r, $s, 10, $ROUND)) {
-    #~ Math::MPFR::Rmpfr_set_nan($r);
-    #~ }
-    #~ return $r;
-    #~ }
-
-    #~ if (index($s, '.') != -1) {
-    #~ my $rat = _str2rat($s);
-
-    #~ # Not a valid number
-    #~ if ($rat !~ m{^\s*[-+]?[0-9]+(?>\s*/\s*[-+]?[1-9]+[0-9]*)?\s*\z}) {
-    #~ my $r = Math::MPFR::Rmpfr_init2($PREC);
-    #~ if (Math::MPFR::Rmpfr_set_str($r, $s, 10, $ROUND)) {
-    #~ Math::MPFR::Rmpfr_set_nan($r);
-    #~ }
-    #~ return $r;
-    #~ }
-
-    #~ # Rational number (a/b)
-    #~ if (index($rat, '/') != -1) {
-    #~ my $r = Math::GMPq::Rmpq_init();
-    #~ Math::GMPq::Rmpq_set_str($r, $rat, 10);
-    #~ Math::GMPq::Rmpq_canonicalize($r);
-    #~ return $r;
-    #~ }
-
-    #~ # For values like 42.000
-    #~ my $r = Math::GMPz::Rmpz_init();
-    #~ Math::GMPz::Rmpz_set_str($r, $rat, 10);
-    #~ return $r;
-    #~ }
-
     $s =~ s/^\+//;
 
     my $r = Math::GMPz::Rmpz_init();
@@ -713,41 +476,6 @@ sub _str2obj {
     };
     return $r;
 }
-
-# Converts a string into an mpz object
-#~ sub _str2mpz {
-#~ (CORE::int($_[0]) eq $_[0] and $_[0] <= ULONG_MAX and $_[0] >= LONG_MIN)
-#~ ? (
-#~ ($_[0] >= 0)
-#~ ? Math::GMPz::Rmpz_init_set_ui($_[0])
-#~ : Math::GMPz::Rmpz_init_set_si($_[0])
-#~ )
-#~ : eval { Math::GMPz::Rmpz_init_set_str($_[0], 10) };
-#~ }
-
-#~ # Converts a AnyNum object to mpfr
-#~ sub _big2mpfr {
-
-#~ $PREC = CORE::int($PREC) if ref($PREC);
-
-#~ my $r = Math::MPFR::Rmpfr_init2($PREC);
-#~ Math::MPFR::Rmpfr_set_q($r, ${$_[0]}, $ROUND);
-#~ $r;
-#~ }
-
-#~ # Converts a AnyNum object to mpz
-#~ sub _big2mpz {
-#~ my $z = Math::GMPz::Rmpz_init();
-#~ Math::GMPz::Rmpz_set_q($z, ${$_[0]});
-#~ $z;
-#~ }
-
-#~ # Converts an integer AnyNum object to mpz
-#~ sub _int2mpz {
-#~ my $z = Math::GMPz::Rmpz_init();
-#~ Math::GMPq::Rmpq_numref($z, ${$_[0]});
-#~ $z;
-#~ }
 
 #
 ## MPZ
@@ -995,7 +723,7 @@ sub _star2mpz {
 }
 
 #
-## Internal Math::AnyNum object to GMPz
+## Internal Math::AnyNum object as a GMPz copy
 #
 
 sub _copy2mpz {
@@ -1043,62 +771,8 @@ sub _star2mpfr_mpc {
     (@_) = $x;
     ref($x) eq 'Math::GMPz' && goto &_mpz2mpfr;
     ref($x) eq 'Math::GMPq' && goto &_mpq2mpfr;
-    goto &_any2mpfr;
+    goto &_any2mpfr;    # this should not happen
 }
-
-#~ # Converts an mpfr object to AnyNum
-#~ sub _mpfr2big {
-
-#~ if (!Math::MPFR::Rmpfr_number_p($_[0])) {
-
-#~ if (Math::MPFR::Rmpfr_inf_p($_[0])) {
-#~ if (Math::MPFR::Rmpfr_sgn($_[0]) > 0) {
-#~ return inf();
-#~ }
-#~ else {
-#~ return ninf();
-#~ }
-#~ }
-
-#~ if (Math::MPFR::Rmpfr_nan_p($_[0])) {
-#~ return nan();
-#~ }
-#~ }
-
-#~ my $r = Math::GMPq::Rmpq_init();
-#~ Math::MPFR::Rmpfr_get_q($r, $_[0]);
-#~ bless \$r, __PACKAGE__;
-#~ }
-
-#~ # Converts an mpfr object to mpq and puts it in $x
-#~ sub _mpfr2x {
-
-#~ if (!Math::MPFR::Rmpfr_number_p($_[1])) {
-
-#~ if (Math::MPFR::Rmpfr_inf_p($_[1])) {
-#~ if (Math::MPFR::Rmpfr_sgn($_[1]) > 0) {
-#~ return $_[0]->binf;
-#~ }
-#~ else {
-#~ return $_[0]->bninf;
-#~ }
-#~ }
-
-#~ if (Math::MPFR::Rmpfr_nan_p($_[1])) {
-#~ return $_[0]->bnan;
-#~ }
-#~ }
-
-#~ Math::MPFR::Rmpfr_get_q(${$_[0]}, $_[1]);
-#~ $_[0];
-#~ }
-
-#~ # Converts an mpz object to AnyNum
-#~ sub _mpz2big {
-#~ my $r = Math::GMPq::Rmpq_init();
-#~ Math::GMPq::Rmpq_set_z($r, $_[0]);
-#~ bless \$r, __PACKAGE__;
-#~ }
 
 sub new {
     my ($class, $num, $base) = @_;
@@ -1250,17 +924,7 @@ sub new {
     bless \(_str2obj("$num")), $class;
 }
 
-=head2 new_si
 
-    Math::AnyNum->new_si(Scalar)        # => AnyNum
-
-A faster version of the method C<new()> for setting a I<signed> native integer.
-
-Example:
-
-    my $x = Math::AnyNum->new_si(-42);
-
-=cut
 
 sub new_si {
     my (undef, $si) = @_;
@@ -1269,17 +933,7 @@ sub new_si {
     bless \$r, __PACKAGE__;
 }
 
-=head2 new_ui
 
-    Math::AnyNum->new_ui(Scalar)       # => AnyNum
-
-A faster version of the method C<new()> for setting an I<unsigned> native integer.
-
-Example:
-
-    my $x = Math::AnyNum->new_ui(42);
-
-=cut
 
 sub new_ui {
     my (undef, $ui) = @_;
@@ -1423,13 +1077,7 @@ sub mone {
 ## CONSTANTS
 #
 
-=head2 pi
 
-    Math::AnyNum->pi               # => MPFR
-
-Returns the number PI, which is C<3.1415...>.
-
-=cut
 
 sub pi {
     my $pi = Math::MPFR::Rmpfr_init2($PREC);
@@ -1437,13 +1085,7 @@ sub pi {
     bless \$pi, __PACKAGE__;
 }
 
-=head2 tau
 
-    Math::AnyNum->tau              # => MPFR
-
-Returns the number TAU, which is C<2*PI>.
-
-=cut
 
 sub tau {
     my $tau = Math::MPFR::Rmpfr_init2($PREC);
@@ -1452,13 +1094,7 @@ sub tau {
     bless \$tau, __PACKAGE__;
 }
 
-=head2 ln2
 
-    Math::AnyNum->ln2              # => MPFR
-
-Returns the natural logarithm of C<2>.
-
-=cut
 
 sub ln2 {
     my $ln2 = Math::MPFR::Rmpfr_init2($PREC);
@@ -1466,13 +1102,7 @@ sub ln2 {
     bless \$ln2, __PACKAGE__;
 }
 
-=head2 euler
 
-    Math::AnyNum->euler                # => MPFR
-
-Returns the Euler-Mascheroni constant, which is C<0.57721...>.
-
-=cut
 
 sub euler {
     my $euler = Math::MPFR::Rmpfr_init2($PREC);
@@ -1480,14 +1110,7 @@ sub euler {
     bless \$euler, __PACKAGE__;
 }
 
-=head2 catalan
 
-    Math::AnyNum->catalan                # => MPFR
-
-Returns the value of Catalan's constant, also known
-as Beta(2) or G, and starts as: C<0.91596...>.
-
-=cut
 
 sub catalan {
     my $catalan = Math::MPFR::Rmpfr_init2($PREC);
@@ -1495,13 +1118,7 @@ sub catalan {
     bless \$catalan, __PACKAGE__;
 }
 
-=head2 i
 
-    Math::AnyNum->i                # => MPC
-
-Returns the imaginary unit, which is C<sqrt(-1)>.
-
-=cut
 
 sub i {
     my $i = Math::MPC::Rmpc_init2($PREC);
@@ -1509,13 +1126,7 @@ sub i {
     bless \$i, __PACKAGE__;
 }
 
-=head2 e
 
-    Math::AnyNum->e                # => MPFR
-
-Returns the e mathematical constant, which is C<2.718...>.
-
-=cut
 
 sub e {
     state $one_f = (Math::MPFR::Rmpfr_init_set_ui_nobless(1, $ROUND))[0];
@@ -1524,13 +1135,7 @@ sub e {
     bless \$e, __PACKAGE__;
 }
 
-=head2 phi
 
-    Math::AnyNum->phi              # => MPFR
-
-Returns the value of the golden ratio, which is C<1.61803...>.
-
-=cut
 
 sub phi {
     state $five4_f = (Math::MPFR::Rmpfr_init_set_str_nobless("1.25", 10, $ROUND))[0];
@@ -1886,6 +1491,10 @@ sub dec {
 sub real {
     my ($x) = @_;
 
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
     if (ref($$x) eq 'Math::MPC') {
         my $r = Math::MPFR::Rmpfr_init2($PREC);
         Math::MPC::RMPC_RE($r, $$x);
@@ -1897,6 +1506,10 @@ sub real {
 
 sub imag {
     my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
 
     if (ref($$x) eq 'Math::MPC') {
         my $r = Math::MPFR::Rmpfr_init2($PREC);
@@ -2508,6 +2121,17 @@ Class::Multimethods::multimethod imod => qw(* *) => sub {
     my $r = __imod__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
     bless \$r, __PACKAGE__;
 };
+
+#
+## DIVMOD
+#
+
+sub divmod {
+    require Math::AnyNum::divmod;
+    my ($x, $y) = @_;
+    my ($r1, $r2) = __divmod__(_star2mpz($x) // (return (nan(), nan())), _star2mpz($y) // (return(nan(), nan())));
+    ((bless \$r1, __PACKAGE__), (bless \$r2, __PACKAGE__));
+}
 
 #
 ## is_div
@@ -3180,15 +2804,7 @@ Class::Multimethods::multimethod round => qw(* *) => sub {
             goto &rand;
         };
 
-=head2 seed
 
-    seed(n)                       # => GMPz
-
-Reseeds the C<rand()> method with the value of C<n>, where C<n> can be any arbitrary large integer.
-
-Returns back the original value of C<n>.
-
-=cut
 
         sub seed {
             my $z = _star2mpz($_[0]) // die "invalid seed: <<$_[0]>> (expected an integer)";
@@ -3197,27 +2813,7 @@ Returns back the original value of C<n>.
         }
     }
 
-=head2 irand
 
-    irand(x)                      # => GMPz
-    irand(x, y)               # => GMPz
-
-Returns a pseudorandom integer. Unlike the C<rand()> method, C<irand()> is always inclusive.
-
-When an additional argument is provided, it returns an integer between C<x> (inclusive) and C<y> (inclusive),
-otherwise returns an integer between C<0> (inclusive) and C<x> (inclusive).
-
-If C<x> is greater that C<y>, the returned result will be in the range C<[y, x]>.
-
-The PRNG behind this method is called the "Mersenne Twister".
-Although it generates high-quality pseudorandom integers, it is B<NOT> cryptographically secure!
-
-Example:
-
-    irand        # a random integer between 0 and 10 (inclusive)
-    irand(20)    # a random integer between 10 and 20 (inclusive)
-
-=cut
 
     {
         state $state = Math::GMPz::zgmp_randinit_mt_nobless();
@@ -3256,16 +2852,7 @@ Example:
             bless \$r, __PACKAGE__;
         };
 
-=head2 iseed
 
-    iseed(n)                      # => GMPz
-
-Reseeds the C<irand()> method with the value of C<n>, where C<n> can be any arbitrary large integer.
-
-Returns back the integer part of C<n>. If C<n> cannot be truncated to an integer,
-the method dies with an appropriate error message.
-
-=cut
 
         sub iseed {
             my $z = _star2mpz($_[0]) // die "invalid seed: <<$_[0]>> (expected an integer)";
@@ -3431,6 +3018,57 @@ sub factorial {
     my $ui = _any2ui($$x) // (goto &nan);
     my $z = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_fac_ui($z, $ui);
+    bless \$z, __PACKAGE__;
+}
+
+#
+## Double-factorial
+#
+
+sub dfactorial {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {    # called as a function
+        if (CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
+            my $z = Math::GMPz::Rmpz_init();
+            Math::GMPz::Rmpz_2fac_ui($z, CORE::int($x));
+            return bless \$z, __PACKAGE__;
+        }
+        return __PACKAGE__->new($x)->dfactorial;
+    }
+
+    my $ui = _any2ui($$x) // (goto &nan);
+    my $z = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_2fac_ui($z, $ui);
+    bless \$z, __PACKAGE__;
+}
+
+
+#
+## M-factorial
+#
+
+sub mfactorial {
+    my ($x, $y) = @_;
+
+    if (ref($x) eq __PACKAGE__) {
+        $x = $$x;
+    }
+    else {
+        $x = ${__PACKAGE__->new($x)};
+    }
+
+    if (ref($y) eq __PACKAGE__) {
+        $y = $$y
+    }
+    else {
+        $y = ${__PACKAGE__->new($y)};
+    }
+
+    my $ui1 = _any2ui($x) // (goto &nan);
+    my $ui2 = _any2ui($y) // (goto &nan);
+    my $z = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_mfac_uiui($z, $ui1, $ui2);
     bless \$z, __PACKAGE__;
 }
 
@@ -3844,30 +3482,22 @@ sub is_power {
 #
 
 Class::Multimethods::multimethod kronecker => qw(Math::AnyNum Math::AnyNum) => sub {
-    require Math::AnyNum::kronecker;
     my ($x, $y) = @_;
-    my $r = __kronecker__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    Math::GMPz::Rmpz_kronecker(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod kronecker => qw(Math::AnyNum *) => sub {
-    require Math::AnyNum::kronecker;
     my ($x, $y) = @_;
-    my $r = __kronecker__(_copy2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    Math::GMPz::Rmpz_kronecker(_any2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod kronecker => qw(* Math::AnyNum) => sub {
-    require Math::AnyNum::kronecker;
     my ($x, $y) = @_;
-    my $r = __kronecker__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    Math::GMPz::Rmpz_kronecker(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod kronecker => qw(* *) => sub {
-    require Math::AnyNum::kronecker;
-    my $r = __kronecker__(_star2mpz($_[0]) // (goto &nan), _star2mpz($_[1]) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    Math::GMPz::Rmpz_kronecker(_star2mpz($_[0]) // (goto &nan), _star2mpz($_[1]) // (goto &nan));
 };
 
 #
@@ -4248,6 +3878,11 @@ Class::Multimethods::multimethod rsft => qw(Math::AnyNum *) => sub {
 
 sub popcount {
     my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
     my $z = _any2mpz($$x) // return -1;
     if (Math::GMPz::Rmpz_sgn($z) < 0) {
         my $t = Math::GMPz::Rmpz_init();
@@ -4329,47 +3964,6 @@ sub digits {
     (@digits);
 }
 
-=head1 LICENSE AND COPYRIGHT
 
-Copyright 2017 Daniel Șuteu.
-
-This program is free software; you can redistribute it and/or modify it
-under the terms of the the Artistic License (2.0). You may obtain a
-copy of the full license at:
-
-L<http://www.perlfoundation.org/artistic_license_2_0>
-
-Any use, modification, and distribution of the Standard or Modified
-Versions is governed by this Artistic License. By using, modifying or
-distributing the Package, you accept this license. Do not use, modify,
-or distribute the Package, if you do not accept this license.
-
-If your Modified Version has been derived from a Modified Version made
-by someone other than you, you are nevertheless required to ensure that
-your Modified Version complies with the requirements of this license.
-
-This license does not grant you the right to use any trademark, service
-mark, tradename, or logo of the Copyright Holder.
-
-This license includes the non-exclusive, worldwide, free-of-charge
-patent license to make, have made, use, offer to sell, sell, import and
-otherwise transfer the Package with respect to any patent claims
-licensable by the Copyright Holder that are necessarily infringed by the
-Package. If you institute patent litigation (including a cross-claim or
-counterclaim) against any party alleging that the Package constitutes
-direct or contributory patent infringement, then this Artistic License
-to you shall terminate on the date that such litigation is filed.
-
-Disclaimer of Warranty: THE PACKAGE IS PROVIDED BY THE COPYRIGHT HOLDER
-AND CONTRIBUTORS "AS IS' AND WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
-THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-PURPOSE, OR NON-INFRINGEMENT ARE DISCLAIMED TO THE EXTENT PERMITTED BY
-YOUR LOCAL LAW. UNLESS REQUIRED BY LAW, NO COPYRIGHT HOLDER OR
-CONTRIBUTOR WILL BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, OR
-CONSEQUENTIAL DAMAGES ARISING IN ANY WAY OUT OF THE USE OF THE PACKAGE,
-EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-
-=cut
 
 1;    # End of Math::AnyNum
