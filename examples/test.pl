@@ -65,3 +65,24 @@ say $c->is_int;
 say $c->sign;
 
 say $c->sqrt->sqr->is_complex;
+
+say BesselY(13, -5);
+
+say hypot($c, 3);
+say hypot(3,  $c);
+say is_div(15, $c);
+
+say log(harmfrac(100));
+say log(harmfrac(6000));
+say log(harmreal(6000));
+
+say lgamma(100);
+say lngamma(100);
+say log(gamma(100));
+
+say lgamma(-100.5);
+say lngamma(-100.5);
+say log(gamma(-100.5));
+
+say rad2deg(pi / 4);
+say deg2rad(90);

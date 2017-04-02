@@ -54,19 +54,19 @@
     lambert_w       -- added/tested
     bernfrac        -- added
     bernreal        -- added
-    harmfrac [?]
-    harmreal [?]
-    agm
-    hypot
+    harmfrac        -- added
+    harmreal        -- added
+    agm             -- added
+    hypot           -- added
     gamma           -- added
     lngamma         -- added
-    lgamma [?]
+    lgamma          -- added
     digamma         -- added
     beta            -- added
     zeta            -- added/tested
     eta             -- added
-    bessel_j
-    bessel_y
+    bessel_j        -- added
+    bessel_y        -- added
     erf             -- added
     erfc            -- added
     ei              -- added
@@ -143,7 +143,7 @@
     is_odd          -- added
     is_even         -- added
     is_complex      -- added
-    is_div
+    is_div          -- added
     sign            -- added
     length          -- added
 
@@ -160,8 +160,8 @@
     as_oct              -- added
     as_hex              -- added
     in_base  [?]
-    deg2rad
-    rad2deg
+    deg2rad             -- added
+    rad2deg             -- added
 
 # Add the following dissection methods:
 

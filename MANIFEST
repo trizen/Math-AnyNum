@@ -30,6 +30,7 @@ lib/Math/AnyNum/acoth.pm
 lib/Math/AnyNum/acsc.pm
 lib/Math/AnyNum/acsch.pm
 lib/Math/AnyNum/add.pm
+lib/Math/AnyNum/agm.pm
 lib/Math/AnyNum/asec.pm
 lib/Math/AnyNum/asech.pm
 lib/Math/AnyNum/asin.pm
@@ -39,6 +40,8 @@ lib/Math/AnyNum/atan2.pm
 lib/Math/AnyNum/atanh.pm
 lib/Math/AnyNum/bernfrac.pm
 lib/Math/AnyNum/bernreal.pm
+lib/Math/AnyNum/BesselJ.pm
+lib/Math/AnyNum/BesselY.pm
 lib/Math/AnyNum/beta.pm
 lib/Math/AnyNum/boolify.pm
 lib/Math/AnyNum/cbrt.pm
@@ -57,6 +60,9 @@ lib/Math/AnyNum/eta.pm
 lib/Math/AnyNum/exp.pm
 lib/Math/AnyNum/floor.pm
 lib/Math/AnyNum/gcd.pm
+lib/Math/AnyNum/harmfrac.pm
+lib/Math/AnyNum/harmreal.pm
+lib/Math/AnyNum/hypot.pm
 lib/Math/AnyNum/iadd.pm
 lib/Math/AnyNum/idiv.pm
 lib/Math/AnyNum/imod.pm

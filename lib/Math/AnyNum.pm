@@ -62,12 +62,13 @@ The following functions are exportable:
     :trig
         sin sinh asin asinh
         cos cosh acos acosh
-        tan tanh atan atanh atan2
+        tan tanh atan atanh
         sec sech asec asech
         csc csch acsc acsch
+        atan2 rad2deg deg2rad
 
     :special
-        beta eta gamma lngamma digamma zeta
+        beta eta gamma lgamma lngamma digamma zeta
         Ai Ei Li Li2 LambertW BesselJ BesselY
         pow sqr sqrt cbrt root exp ln log log2 log10
         lgrt erf erfc hypot agm harmreal bernreal
@@ -233,7 +234,9 @@ use overload
         acsc  => sub ($) { goto &acsc },
         acsch => sub ($) { goto &acsch },
 
-        atan2 => sub ($$) { goto &atan2 },
+        atan2   => sub ($$) { goto &atan2 },
+        deg2rad => sub ($)  { goto &deg2rad },
+        rad2deg => sub ($)  { goto &rad2deg },
                );
 
     my %special = (
@@ -241,6 +244,7 @@ use overload
                    zeta     => sub ($)   { goto &zeta },
                    eta      => sub ($)   { goto &eta },
                    gamma    => sub ($)   { goto &gamma },
+                   lgamma   => sub ($)   { goto &lgamma },
                    lngamma  => sub ($)   { goto &lngamma },
                    Ai       => sub ($)   { goto &Ai },
                    Ei       => sub ($)   { goto &Ei },
@@ -2506,6 +2510,14 @@ Class::Multimethods::multimethod imod => qw(* *) => sub {
 };
 
 #
+## is_div
+#
+
+sub is_div {
+    mod($_[0], $_[1])->is_zero;
+}
+
+#
 ## SPECIAL
 #
 
@@ -2727,12 +2739,12 @@ sub atanh {
     bless \$r, __PACKAGE__;
 }
 
-Class::Multimethods::multimethod atan2 => qw(* *) => sub {
+sub atan2 {
     require Math::AnyNum::atan2;
     my ($x, $y) = @_;
     my $r = __atan2__(_star2mpfr_mpc($x), _star2mpfr_mpc($y));
     bless \$r, __PACKAGE__;
-};
+}
 
 #
 ## sec / sech / asec / asech
@@ -2818,6 +2830,26 @@ sub acoth {
     bless \$r, __PACKAGE__;
 }
 
+sub deg2rad {
+    require Math::AnyNum::mul;
+    my ($x) = @_;
+    my $f = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_const_pi($f, $ROUND);
+    Math::MPFR::Rmpfr_div_ui($f, $f, 180, $ROUND);
+    my $r = __mul__(_star2mpfr($x), $f);
+    bless \$r, __PACKAGE__;
+}
+
+sub rad2deg {
+    require Math::AnyNum::mul;
+    my ($x) = @_;
+    my $f = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_const_pi($f, $ROUND);
+    Math::MPFR::Rmpfr_ui_div($f, 180, $f, $ROUND);
+    my $r = __mul__(_star2mpfr($x), $f);
+    bless \$r, __PACKAGE__;
+}
+
 #
 ## gamma
 #
@@ -2825,6 +2857,16 @@ sub acoth {
 sub gamma {
     my $r = _star2mpfr($_[0]);
     Math::MPFR::Rmpfr_gamma($r, $r, $ROUND);
+    bless \$r, __PACKAGE__;
+}
+
+#
+## lgamma
+#
+
+sub lgamma {
+    my $r = _star2mpfr($_[0]);
+    Math::MPFR::Rmpfr_lgamma($r, $r, $ROUND);
     bless \$r, __PACKAGE__;
 }
 
@@ -2960,6 +3002,79 @@ sub lgrt {
     my $r = __lgrt__(_star2mpfr_mpc($_[0]));
     bless \$r, __PACKAGE__;
 }
+
+#
+## agm
+#
+sub agm {
+    require Math::AnyNum::agm;
+    my ($x, $y) = @_;
+    my $r = __agm__(_star2mpfr($x), _star2mpfr($y));
+    bless \$r, __PACKAGE__;
+}
+
+#
+## hypot
+#
+
+sub hypot {
+    require Math::AnyNum::hypot;
+    my ($x, $y) = @_;
+    my $r = __hypot__(_star2mpfr_mpc($x), _star2mpfr_mpc($y));
+    bless \$r, __PACKAGE__;
+}
+
+#
+## BesselJ
+#
+
+Class::Multimethods::multimethod BesselJ => qw(* $) => sub {
+    require Math::AnyNum::BesselJ;
+    my ($x, $y) = @_;
+
+    my $r;
+    if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
+        $r = __BesselJ__(_star2mpfr($x), $y);
+    }
+    else {
+        $r = __BesselJ__(_star2mpfr($x), _star2mpz($y) // (goto &nan));
+    }
+
+    bless \$r, __PACKAGE__;
+};
+
+Class::Multimethods::multimethod BesselJ => qw(* *) => sub {
+    require Math::AnyNum::BesselJ;
+    my ($x, $y) = @_;
+    my $r = __BesselJ__(_star2mpfr($x), _star2mpz($y) // (goto &nan));
+    bless \$r, __PACKAGE__;
+};
+
+#
+## BesselY
+#
+
+Class::Multimethods::multimethod BesselY => qw(* $) => sub {
+    require Math::AnyNum::BesselY;
+    my ($x, $y) = @_;
+
+    my $r;
+    if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
+        $r = __BesselY__(_star2mpfr($x), $y);
+    }
+    else {
+        $r = __BesselY__(_star2mpfr($x), _star2mpz($y) // (goto &nan));
+    }
+
+    bless \$r, __PACKAGE__;
+};
+
+Class::Multimethods::multimethod BesselY => qw(* *) => sub {
+    require Math::AnyNum::BesselY;
+    my ($x, $y) = @_;
+    my $r = __BesselY__(_star2mpfr($x), _star2mpz($y) // (goto &nan));
+    bless \$r, __PACKAGE__;
+};
 
 #
 ## ROUND
@@ -3245,6 +3360,27 @@ sub bernfrac {
 }
 
 #
+## harmfrac
+#
+
+sub harmfrac {
+    require Math::AnyNum::harmfrac;
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {    # called as a function
+        if (CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
+            my $q = __harmfrac__(CORE::int($x));
+            return bless \$q, __PACKAGE__;
+        }
+        return __PACKAGE__->new($x)->harmfrac;
+    }
+
+    my $n = _any2ui($$x) // (goto &nan);
+    my $q = __harmfrac__($n);
+    bless \$q, __PACKAGE__;
+}
+
+#
 ## bernreal
 #
 
@@ -3260,8 +3396,20 @@ sub bernreal {
         return __PACKAGE__->new($x)->bernreal;
     }
 
-    my $n = _any2ui($$x) // goto &nan;
+    my $n = _any2ui($$x) // (goto &nan);
     my $f = __bernreal__($n);
+    bless \$f, __PACKAGE__;
+}
+
+#
+## harmreal
+#
+
+sub harmreal {
+    require Math::AnyNum::harmreal;
+    my ($x) = @_;
+    my $n = _star2mpfr($x) // (goto &nan);
+    my $f = __harmreal__($n);
     bless \$f, __PACKAGE__;
 }
 
@@ -3601,36 +3749,36 @@ sub is_odd {
 }
 
 sub is_zero {
-    require Math::AnyNum::eq;
+    require Math::AnyNum::cmp;
     my ($x) = @_;
 
     if (ref($x) ne __PACKAGE__) {
         $x = __PACKAGE__->new($x);
     }
 
-    __eq__($$x, 0);
+    __cmp__($$x, 0) == 0;
 }
 
 sub is_one {
-    require Math::AnyNum::eq;
+    require Math::AnyNum::cmp;
     my ($x) = @_;
 
     if (ref($x) ne __PACKAGE__) {
         $x = __PACKAGE__->new($x);
     }
 
-    __eq__($$x, 1);
+    __cmp__($$x, 1) == 0;
 }
 
 sub is_mone {
-    require Math::AnyNum::eq;
+    require Math::AnyNum::cmp;
     my ($x) = @_;
 
     if (ref($x) ne __PACKAGE__) {
         $x = __PACKAGE__->new($x);
     }
 
-    __eq__($$x, -1);
+    __cmp__($$x, -1) == 0;
 }
 
 sub is_pos {
