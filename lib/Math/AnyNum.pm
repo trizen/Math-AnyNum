@@ -3817,58 +3817,63 @@ Class::Multimethods::multimethod invmod => qw(* *) => sub {
 #
 
 Class::Multimethods::multimethod powmod => qw(Math::AnyNum Math::AnyNum Math::AnyNum) => sub {
-    my ($n, $m, $o) = @_;
-
-    my $x = _any2mpz($$n) // (goto &nan);
-    my $y = _any2mpz($$m) // (goto &nan);
-    my $z = _any2mpz($$o) // (goto &nan);
-
-    Math::GMPz::Rmpz_sgn($z) || (goto &nan);
-
-    my $r = Math::GMPz::Rmpz_init();
-
-    if (Math::GMPz::Rmpz_sgn($y) < 0) {
-        Math::GMPz::Rmpz_gcd($r, $x, $z);
-        Math::GMPz::Rmpz_cmp_ui($r, 1) == 0 or (goto &nan);
-    }
-
-    Math::GMPz::Rmpz_powm($r, $x, $y, $z);
+    require Math::AnyNum::powmod;
+    my ($x, $y, $z) = @_;
+    my $r = __powmod__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan), _any2mpz($$z) // (goto &nan))
+      // goto(&nan);
     bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod powmod => qw(Math::AnyNum * Math::AnyNum) => sub {
-    (@_) = ($_[0], __PACKAGE__->new($_[1]), $_[2]);
-    goto &powmod;
+    require Math::AnyNum::powmod;
+    my ($x, $y, $z) = @_;
+    my $r = __powmod__(_copy2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan), _any2mpz($$z) // (goto &nan))
+      // goto(&nan);
+    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod powmod => qw(Math::AnyNum Math::AnyNum *) => sub {
-    (@_) = ($_[0], $_[1], __PACKAGE__->new($_[2]));
-    goto &powmod;
+    require Math::AnyNum::powmod;
+    my ($x, $y, $z) = @_;
+    my $r = __powmod__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan), _star2mpz($z) // (goto &nan))
+      // goto(&nan);
+    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod powmod => qw(Math::AnyNum * *) => sub {
-    (@_) = ($_[0], __PACKAGE__->new($_[1]), __PACKAGE__->new($_[2]));
-    goto &powmod;
+    require Math::AnyNum::powmod;
+    my ($x, $y, $z) = @_;
+    my $r = __powmod__(_copy2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan), _star2mpz($z) // (goto &nan))
+      // goto(&nan);
+    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod powmod => qw(* Math::AnyNum *) => sub {
-    (@_) = (__PACKAGE__->new($_[0]), $_[1], __PACKAGE__->new($_[2]));
-    goto &powmod;
+    require Math::AnyNum::powmod;
+    my ($x, $y, $z) = @_;
+    my $r = __powmod__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan), _star2mpz($z) // (goto &nan)) // goto(&nan);
+    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod powmod => qw(* Math::AnyNum Math::AnyNum) => sub {
-    (@_) = (__PACKAGE__->new($_[0]), $_[1], $_[2]);
-    goto &powmod;
+    require Math::AnyNum::powmod;
+    my ($x, $y, $z) = @_;
+    my $r = __powmod__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan), _any2mpz($$z) // (goto &nan)) // goto(&nan);
+    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod powmod => qw(* * Math::AnyNum) => sub {
-    (@_) = (__PACKAGE__->new($_[0]), __PACKAGE__->new($_[1]), $_[2]);
-    goto &powmod;
+    require Math::AnyNum::powmod;
+    my ($x, $y, $z) = @_;
+    my $r = __powmod__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan), _any2mpz($$z) // (goto &nan)) // goto(&nan);
+    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod powmod => qw(* * *) => sub {
-    (@_) = (__PACKAGE__->new($_[0]), __PACKAGE__->new($_[1]), __PACKAGE__->new($_[2]));
-    goto &powmod;
+    require Math::AnyNum::powmod;
+    my ($x, $y, $z) = @_;
+    my $r = __powmod__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan), _star2mpz($z) // (goto &nan)) // goto(&nan);
+    bless \$r, __PACKAGE__;
 };
 
 #

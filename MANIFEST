@@ -82,6 +82,7 @@ lib/Math/AnyNum/ne.pm
 lib/Math/AnyNum/neg.pm
 lib/Math/AnyNum/numify.pm
 lib/Math/AnyNum/pow.pm
+lib/Math/AnyNum/powmod.pm
 lib/Math/AnyNum/round.pm
 lib/Math/AnyNum/sec.pm
 lib/Math/AnyNum/sech.pm

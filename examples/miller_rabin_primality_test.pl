@@ -9,7 +9,7 @@ use strict;
 use warnings;
 
 use lib qw(../lib);
-use Math::AnyNum qw(irand);
+use Math::AnyNum qw(valuation irand powmod);
 
 sub is_prime {
     my ($n, $k) = @_;
@@ -17,24 +17,15 @@ sub is_prime {
     return 1 if $n == 2;
     return 0 if $n < 2 or $n % 2 == 0;
 
-    my $d = Math::AnyNum->new($n - 1);
-    my $s = 0;
+    my $d = $n - 1;
+    my $s = valuation($d, 2);
 
-    while (!($d & 1)) {
-        $d >>= 1;
-        ++$s;
-    }
-
-    #my $s = $d->valuation(2);
-    #$d >>= $s;
-
-    # ==OR==
-    #$d->remove(2);
+    $d >>= $s;
 
   LOOP: for (1 .. $k) {
-        my $a = 2 + irand($n - 2);
+        my $a = 2 + irand(0, $n - 3);
 
-        my $x = $a->powmod($d, $n);
+        my $x = powmod($a, $d, $n);
         next if $x == 1 or $x == $n - 1;
 
         for (1 .. $s - 1) {
