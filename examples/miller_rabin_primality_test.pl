@@ -32,7 +32,7 @@ sub is_prime {
     #$d->remove(2);
 
   LOOP: for (1 .. $k) {
-        my $a = 2 + irand($n-2);
+        my $a = 2 + irand($n - 2);
 
         my $x = $a->powmod($d, $n);
         next if $x == 1 or $x == $n - 1;

@@ -3,7 +3,10 @@ Changes
 examples/agm_pi.pl
 examples/arithmetic_coding.pl
 examples/bernoulli_numbers_recursive.pl
+examples/binary_arithmetic_coding.pl
+examples/binradix_arithmetic_coding.pl
 examples/closed_form_fib.pl
+examples/computing_pi.pl
 examples/faulhaber_s_formula.pl
 examples/fibonacci_validation.pl
 examples/halley_s_method.pl
@@ -11,6 +14,7 @@ examples/inverse_of_factorial.pl
 examples/lambert_W.pl
 examples/miller_rabin_primality_test.pl
 examples/newton_s_method.pl
+examples/power_pairs.pl
 examples/rsa_algorithm.pl
 examples/tac-compressor.pl
 examples/test.pl
@@ -37,6 +41,7 @@ lib/Math/AnyNum/bernfrac.pm
 lib/Math/AnyNum/bernreal.pm
 lib/Math/AnyNum/beta.pm
 lib/Math/AnyNum/boolify.pm
+lib/Math/AnyNum/cbrt.pm
 lib/Math/AnyNum/ceil.pm
 lib/Math/AnyNum/cmp.pm
 lib/Math/AnyNum/copy.pm
@@ -52,14 +57,21 @@ lib/Math/AnyNum/eq.pm
 lib/Math/AnyNum/eta.pm
 lib/Math/AnyNum/exp.pm
 lib/Math/AnyNum/floor.pm
+lib/Math/AnyNum/gcd.pm
+lib/Math/AnyNum/iadd.pm
 lib/Math/AnyNum/idiv.pm
 lib/Math/AnyNum/imod.pm
+lib/Math/AnyNum/imul.pm
 lib/Math/AnyNum/inc.pm
 lib/Math/AnyNum/inv.pm
 lib/Math/AnyNum/ipow.pm
 lib/Math/AnyNum/irand.pm
 lib/Math/AnyNum/iroot.pm
+lib/Math/AnyNum/irootrem.pm
+lib/Math/AnyNum/isqrtrem.pm
+lib/Math/AnyNum/isub.pm
 lib/Math/AnyNum/LambertW.pm
+lib/Math/AnyNum/lcm.pm
 lib/Math/AnyNum/lgrt.pm
 lib/Math/AnyNum/log.pm
 lib/Math/AnyNum/mod.pm
@@ -78,7 +90,6 @@ lib/Math/AnyNum/stringify.pm
 lib/Math/AnyNum/sub.pm
 lib/Math/AnyNum/tan.pm
 lib/Math/AnyNum/tanh.pm
-lib/Math/AnyNum/template.pm
 LICENSE
 Makefile.PL
 MANIFEST			This list of files

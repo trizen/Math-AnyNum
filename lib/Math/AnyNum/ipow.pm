@@ -3,7 +3,9 @@ use warnings;
 
 our ($ROUND, $PREC);
 
-Class::Multimethods::multimethod __ipow__ => qw(Math::GMPz $) => sub {
+#Class::Multimethods::multimethod __ipow__ => qw(Math::GMPz $) => sub {
+
+sub __ipow__ {
     my ($x, $y) = @_;
 
     Math::GMPz::Rmpz_pow_ui($x, $x, CORE::abs($y));
@@ -15,6 +17,6 @@ Class::Multimethods::multimethod __ipow__ => qw(Math::GMPz $) => sub {
     }
 
     $x;
-};
+}
 
 1;

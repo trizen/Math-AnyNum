@@ -9,13 +9,14 @@
     mod             -- added/tested
     pow             -- added/tested
     inv             -- added/tested
-    sqr
+    sqr             -- added
     sqrt            -- added/tested
-    cbrt
+    cbrt            -- added
     root            -- added
     exp             -- added/tested
     exp2
     exp10
+    ln              -- added
     log             -- added/tested
     log2            -- added/tested
     log10           -- added/tested
@@ -74,18 +75,19 @@
 
 # Add the following integer methods:
 
-    iadd
-    isub
-    imul
+    iadd                -- added
+    isub                -- added
+    imul                -- added
     idiv                -- added
     ipow                -- added
     ilog                -- added/tested
     ilog2               -- added/tested
     ilog10              -- added/tested
     isqrt               -- added
-    isqrtrem
+    icbrt               -- added
+    isqrtrem            -- added
     iroot               -- added/tested
-    irootrem
+    irootrem            -- added
     imod                -- added/tested
     divmod
 
@@ -94,7 +96,7 @@
     invmod              -- added
     powmod              -- added
     gcd                 -- added
-    lcm
+    lcm                 -- added
     valuation
     remove
     kronecker

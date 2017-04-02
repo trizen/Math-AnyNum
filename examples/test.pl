@@ -9,7 +9,7 @@ use strict;
 use warnings;
 
 use lib qw(../lib);
-use Math::AnyNum qw(rand floor ilog log beta round irand pow atan2 :trig complex rat int);
+use Math::AnyNum qw(rand floor ilog log beta round irand pow atan2 :trig complex rat int lcm gcd);
 
 my @arr = (1, 2, 3, 4);
 say rand(23);
@@ -50,3 +50,6 @@ say atan2(complex('3+4i'), complex('1+3i'));
 say atan2(4, complex(3));
 say atan(rat('4/3'));
 say int('42/12');
+
+say gcd(20, 12);
+say lcm(20, 15);

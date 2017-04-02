@@ -3,7 +3,7 @@ use warnings;
 
 our ($ROUND, $PREC);
 
-sub __idiv__ {          # takes two Math::GMPz objects
+sub __idiv__ {    # takes two Math::GMPz objects
     my ($x, $y) = @_;
 
     # Detect division by zero
