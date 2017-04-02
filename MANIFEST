@@ -68,8 +68,10 @@ lib/Math/AnyNum/ipow.pm
 lib/Math/AnyNum/irand.pm
 lib/Math/AnyNum/iroot.pm
 lib/Math/AnyNum/irootrem.pm
+lib/Math/AnyNum/is_power.pm
 lib/Math/AnyNum/isqrtrem.pm
 lib/Math/AnyNum/isub.pm
+lib/Math/AnyNum/kronecker.pm
 lib/Math/AnyNum/LambertW.pm
 lib/Math/AnyNum/lcm.pm
 lib/Math/AnyNum/lgrt.pm
@@ -83,6 +85,7 @@ lib/Math/AnyNum/pow.pm
 lib/Math/AnyNum/round.pm
 lib/Math/AnyNum/sec.pm
 lib/Math/AnyNum/sech.pm
+lib/Math/AnyNum/sign.pm
 lib/Math/AnyNum/sin.pm
 lib/Math/AnyNum/sinh.pm
 lib/Math/AnyNum/sqrt.pm
@@ -90,6 +93,7 @@ lib/Math/AnyNum/stringify.pm
 lib/Math/AnyNum/sub.pm
 lib/Math/AnyNum/tan.pm
 lib/Math/AnyNum/tanh.pm
+lib/Math/AnyNum/valuation.pm
 LICENSE
 Makefile.PL
 MANIFEST			This list of files

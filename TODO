@@ -14,8 +14,8 @@
     cbrt            -- added
     root            -- added
     exp             -- added/tested
-    exp2
-    exp10
+    exp2  [?]
+    exp10 [?]
     ln              -- added
     log             -- added/tested
     log2            -- added/tested
@@ -97,13 +97,13 @@
     powmod              -- added
     gcd                 -- added
     lcm                 -- added
-    valuation
-    remove
-    kronecker
-    is_square
-    is_power
-    is_prime
-    next_prime
+    valuation           -- added
+    remdiv              -- added
+    kronecker           -- added
+    is_square           -- added
+    is_power            -- added
+    is_prime            -- added
+    next_prime          -- added
     primorial           -- added
     fibonacci           -- added
     lucas               -- added
@@ -129,44 +129,45 @@
 
 # Add the following introspective methods:
 
-    is_zero
-    is_one
-    is_mone
-    is_pos
-    is_neg
-    is_int
-    is_rat
-    is_real
-    is_inf
-    is_nan
-    is_ninf
-    is_odd
-    is_even
+    is_zero         -- added
+    is_one          -- added
+    is_mone         -- added
+    is_pos          -- added
+    is_neg          -- added
+    is_int          -- added
+    is_rat          -- added
+    is_real         -- added
+    is_inf          -- added
+    is_nan          -- added
+    is_ninf         -- added
+    is_odd          -- added
+    is_even         -- added
+    is_complex      -- added
     is_div
-    sign
-    length
+    sign            -- added
+    length          -- added
 
 # Add the following conversion methods:
 
     stringify           -- added/tested
     numify              -- added
     boolify             -- added
-    as_frac
+    as_frac             -- added
     as_rat   [?]
     as_float [?]
-    as_int
+    as_int              -- added
     as_bin              -- added
-    as_oct
-    as_hex
-    in_base
+    as_oct              -- added
+    as_hex              -- added
+    in_base  [?]
     deg2rad
     rad2deg
 
 # Add the following dissection methods:
 
-    digits
-    numerator   [?]
-    denominator [?]
+    digits              -- added
+    numerator           -- added
+    denominator         -- added
 
 # Add the following method/functions:
 

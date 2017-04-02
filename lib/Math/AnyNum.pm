@@ -82,9 +82,9 @@ The following functions are exportable:
     :misc
         irand iseed floor ceil round sign
         as_bin as_hex as_oct as_int digits
-        is_inf is_neg is_pos is_nan is_rat
-        is_int is_real is_complex is_zero
-        is_even is_odd is_div is_one abs
+        is_inf is_ninf is_neg is_pos is_nan
+        is_rat is_int is_real is_complex is_zero
+        is_even is_odd is_div is_one is_mone abs
         int rat float complex
 
 Nothing is exported by default.
@@ -244,8 +244,11 @@ use overload
                    Ei       => sub ($)   { goto &Ei },
                    Li       => sub ($)   { goto &Li },
                    Li2      => sub ($)   { goto &Li2 },
+                   sqrt     => sub (_)   { goto &sqrt },       # built-in keyword
+                   cbrt     => sub ($)   { goto &cbrt },
                    root     => sub ($$)  { goto &root },
                    pow      => sub ($$)  { goto &pow },
+                   sqr      => sub ($)   { goto &sqr },
                    lgrt     => sub ($)   { goto &lgrt },
                    LambertW => sub ($)   { goto &LambertW },
                    ln       => sub ($)   { goto &ln },
@@ -253,9 +256,6 @@ use overload
                    log10    => sub ($)   { goto &log10 },
                    log2     => sub ($)   { goto &log2 },
                    exp      => sub (_)   { goto &exp },        # built-in keyword
-                   sqrt     => sub (_)   { goto &sqrt },       # built-in keyword
-                   sqr      => sub ($)   { goto &sqr },
-                   cbrt     => sub ($)   { goto &cbrt },
                    erf      => sub ($)   { goto &erf },
                    erfc     => sub ($)   { goto &erfc },
                    digamma  => sub ($)   { goto &digamma },
@@ -276,7 +276,7 @@ use overload
         lucas     => sub ($) { goto &lucas },
 
         bernfrac => sub ($) { goto &bernfrac },
-        harmfrac => sub($)  { goto &harmfrac },
+        harmfrac => sub ($) { goto &harmfrac },
 
         lcm       => sub ($$) { goto &lcm },
         gcd       => sub ($$) { goto &gcd },
@@ -297,7 +297,7 @@ use overload
         is_prime   => sub ($;$) { goto &is_prime },
         next_prime => sub ($)   { goto &next_prime },
 
-        iroot    => sub ($)   { goto &iroot },
+        iroot    => sub ($$)  { goto &iroot },
         isqrt    => sub ($)   { goto &isqrt },
         icbrt    => sub ($)   { goto &icbrt },
         divmod   => sub ($$)  { goto &divmod },
@@ -325,12 +325,12 @@ use overload
 
         abs => sub (_) { goto &abs },    # built-in keyword
 
-        as_bin => sub ($) { goto &as_bin },
-        as_hex => sub ($) { goto &as_hex },
-        as_oct => sub ($) { goto &as_oct },
+        as_bin => sub ($)   { goto &as_bin },
+        as_hex => sub ($)   { goto &as_hex },
+        as_oct => sub ($)   { goto &as_oct },
+        as_int => sub ($;$) { goto &as_int },
 
         digits => sub ($) { goto &digits },
-        as_int => sub ($) { goto &as_int },
         sign   => sub ($) { goto &sign },
 
         is_inf     => sub ($) { goto &is_inf },
@@ -3348,6 +3348,441 @@ Class::Multimethods::multimethod lcm => qw(* *) => sub {
 };
 
 #
+## next_prime
+#
+
+sub next_prime {
+    my $r = _star2mpz($_[0]) // (goto &nan);
+    Math::Math::GMPz::Rmpz_nextprime($r, $r);
+    bless \$r, __PACKAGE__;
+}
+
+#
+## is_prime
+#
+
+sub is_prime {
+    my ($x, $y) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    $x->is_int() || return 0;
+    $y = defined($y) ? (CORE::abs(CORE::int($y)) || 20) : 20;
+
+    Math::GMPz::Rmpz_probab_prime_p(_any2mpz($$x), $y);
+}
+
+sub is_int {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    my $r   = $$x;
+    my $ref = ref($r);
+
+    $ref eq 'Math::GMPz' && return 1;
+    $ref eq 'Math::GMPq' && return Math::GMPq::Rmpq_integer_p($r);
+    $ref eq 'Math::MPFR' && return Math::MPFR::Rmpfr_integer_p($r);
+
+    (@_) = _any2mpfr($r);
+    goto &is_int;
+}
+
+sub is_rat {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    my $r   = $$x;
+    my $ref = ref($r);
+
+    ($ref eq 'Math::GMPz' or $ref eq 'Math::GMPq')
+      ? 1
+      : 0;
+}
+
+sub numerator {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    my $r   = $$x;
+    my $ref = ref($r);
+
+    ref($r) eq 'Math::GMPz' && return $x;    # is an integer
+
+    if (ref($r) eq 'Math::GMPq') {
+        my $z = Math::GMPz::Rmpz_init();
+        Math::GMPq::Rmpq_get_num($z, $r);
+        return bless \$z, __PACKAGE__;
+    }
+
+    (@_) = _any2mpq($r) // (goto &nan);
+    goto &numerator;
+}
+
+sub denominator {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    my $r   = $$x;
+    my $ref = ref($r);
+
+    ref($r) eq 'Math::GMPz' && return $x;    # is an integer
+
+    if (ref($r) eq 'Math::GMPq') {
+        my $z = Math::GMPz::Rmpz_init();
+        Math::GMPq::Rmpq_get_den($z, $r);
+        return bless \$z, __PACKAGE__;
+    }
+
+    (@_) = _any2mpq($r) // (goto &nan);
+    goto &denominator;
+}
+
+sub as_frac {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    my $num = $x->numerator;
+    my $den = $x->denominator;
+
+    "$num/$den";
+}
+
+sub sign {
+    require Math::AnyNum::sign;
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    __sign__($$x);
+}
+
+sub is_real {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    my $r   = $$x;
+    my $ref = ref($r);
+
+    $ref eq 'Math::GMPz' && return 1;
+    $ref eq 'Math::GMPq' && return 1;
+    $ref eq 'Math::MPFR' && return Math::MPFR::Rmpfr_number_p($r);
+
+    (@_) = _any2mpfr($r);
+    goto &is_real;
+}
+
+sub is_complex {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    my $r   = $$x;
+    my $ref = ref($r);
+
+    $ref eq 'Math::GMPz' && return 0;
+    $ref eq 'Math::GMPq' && return 0;
+    $ref eq 'Math::MPFR' && return 0;
+
+    my $imag = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPC::RMPC_IM($imag, $r);
+    Math::MPFR::Rmpfr_zero_p($imag) ? 0 : 1;
+}
+
+sub is_inf {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    my $r   = $$x;
+    my $ref = ref($r);
+
+    $ref eq 'Math::GMPz' && return 0;
+    $ref eq 'Math::GMPq' && return 0;
+    $ref eq 'Math::MPFR' && return (Math::MPFR::Rmpfr_inf_p($r) and Math::MPFR::Rmpfr_sgn_p($r) > 0);
+
+    (@_) = _any2mpfr($r);
+    goto &is_inf;
+}
+
+sub is_ninf {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    my $r   = $$x;
+    my $ref = ref($r);
+
+    $ref eq 'Math::GMPz' && return 0;
+    $ref eq 'Math::GMPq' && return 0;
+    $ref eq 'Math::MPFR' && return (Math::MPFR::Rmpfr_inf_p($r) and Math::MPFR::Rmpfr_sgn_p($r) < 0);
+
+    (@_) = _any2mpfr($r);
+    goto &is_ninf;
+}
+
+sub is_nan {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    my $r   = $$x;
+    my $ref = ref($r);
+
+    $ref eq 'Math::GMPz' && return 0;
+    $ref eq 'Math::GMPq' && return 0;
+    $ref eq 'Math::MPFR' && return Math::MPFR::Rmpfr_nan_p($r);
+
+    my $real = Math::MPFR::Rmpfr_init2($PREC);
+    my $imag = Math::MPFR::Rmpfr_init2($PREC);
+
+    Math::MPC::RMPC_RE($real, $r);
+    Math::MPC::RMPC_IM($imag, $r);
+
+    if (   Math::MPFR::Rmpfr_nan_p($real)
+        or Math::MPFR::Rmpfr_nan_p($imag)) {
+        return 1;
+    }
+
+    return 0;
+}
+
+sub is_even {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    $x->is_int()
+      && Math::GMPz::Rmpz_even_p(_any2mpz($$x));
+}
+
+sub is_odd {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    $x->is_int()
+      && Math::GMPz::Rmpz_odd_p(_any2mpz($$x));
+}
+
+sub is_zero {
+    require Math::AnyNum::eq;
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    __eq__($$x, 0);
+}
+
+sub is_one {
+    require Math::AnyNum::eq;
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    __eq__($$x, 1);
+}
+
+sub is_mone {
+    require Math::AnyNum::eq;
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    __eq__($$x, -1);
+}
+
+sub is_pos {
+    require Math::AnyNum::cmp;
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    __cmp__($$x, 0) > 0;
+}
+
+sub is_neg {
+    require Math::AnyNum::cmp;
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    __cmp__($$x, 0) < 0;
+}
+
+#
+## is_square
+#
+sub is_square {
+    my ($x, $y) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    $x->is_int()
+      and Math::GMPz::Rmpz_perfect_square_p(_any2mpz($$x));
+}
+
+#
+## is_power
+#
+
+sub is_power {
+    my ($x, $y) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    $x->is_int() || return 0;
+
+    if (defined($y)) {
+        require Math::AnyNum::is_power;
+        __is_power__(_any2mpz($$x), CORE::int($y));
+    }
+    else {
+        Math::GMPz::Rmpz_perfect_power_p(_any2mpz($$x));
+    }
+}
+
+#
+## kronecker
+#
+
+Class::Multimethods::multimethod kronecker => qw(Math::AnyNum Math::AnyNum) => sub {
+    require Math::AnyNum::kronecker;
+    my ($x, $y) = @_;
+    my $r = __kronecker__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
+    bless \$r, __PACKAGE__;
+};
+
+Class::Multimethods::multimethod kronecker => qw(Math::AnyNum *) => sub {
+    require Math::AnyNum::kronecker;
+    my ($x, $y) = @_;
+    my $r = __kronecker__(_copy2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan));
+    bless \$r, __PACKAGE__;
+};
+
+Class::Multimethods::multimethod kronecker => qw(* Math::AnyNum) => sub {
+    require Math::AnyNum::kronecker;
+    my ($x, $y) = @_;
+    my $r = __kronecker__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
+    bless \$r, __PACKAGE__;
+};
+
+Class::Multimethods::multimethod kronecker => qw(* *) => sub {
+    require Math::AnyNum::kronecker;
+    my $r = __kronecker__(_star2mpz($_[0]) // (goto &nan), _star2mpz($_[1]) // (goto &nan));
+    bless \$r, __PACKAGE__;
+};
+
+#
+## valuation
+#
+
+Class::Multimethods::multimethod valuation => qw(Math::AnyNum Math::AnyNum) => sub {
+    require Math::AnyNum::valuation;
+    my ($x, $y) = @_;
+    __valuation__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
+};
+
+Class::Multimethods::multimethod valuation => qw(Math::AnyNum *) => sub {
+    require Math::AnyNum::valuation;
+    my ($x, $y) = @_;
+    __valuation__(_copy2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan));
+};
+
+Class::Multimethods::multimethod valuation => qw(* Math::AnyNum) => sub {
+    require Math::AnyNum::valuation;
+    my ($x, $y) = @_;
+    __valuation__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
+};
+
+Class::Multimethods::multimethod valuation => qw(* *) => sub {
+    require Math::AnyNum::valuation;
+    __valuation__(_star2mpz($_[0]) // (goto &nan), _star2mpz($_[1]) // (goto &nan));
+};
+
+#
+## remdiv
+#
+
+Class::Multimethods::multimethod remdiv => qw(Math::AnyNum Math::AnyNum) => sub {
+    require Math::AnyNum::valuation;
+    my ($x, $y) = @_;
+    my $r = _copy2mpz($$x) // (goto &nan);
+    __valuation__($r, _any2mpz($$y) // (goto &nan));
+    bless \$r, __PACKAGE__;
+};
+
+Class::Multimethods::multimethod remdiv => qw(Math::AnyNum *) => sub {
+    require Math::AnyNum::valuation;
+    my ($x, $y) = @_;
+    my $r = _copy2mpz($$x) // (goto &nan);
+    __valuation__($r, _star2mpz($y) // (goto &nan));
+    bless \$r, __PACKAGE__;
+};
+
+Class::Multimethods::multimethod remdiv => qw(* Math::AnyNum) => sub {
+    require Math::AnyNum::valuation;
+    my ($x, $y) = @_;
+    my $r = _star2mpz($x) // (goto &nan);
+    __valuation__($r, _any2mpz($$y) // (goto &nan));
+    bless \$r, __PACKAGE__;
+};
+
+Class::Multimethods::multimethod remdiv => qw(* *) => sub {
+    require Math::AnyNum::valuation;
+    my $r = _star2mpz($_[0]) // (goto &nan);
+    __valuation__($r, _star2mpz($_[1]) // (goto &nan));
+    bless \$r, __PACKAGE__;
+};
+
+#
 ## Invmod
 #
 
@@ -3668,19 +4103,50 @@ sub popcount {
 }
 
 #
-## Introspection
+## Conversions
 #
 
 sub as_bin {
     my ($x) = @_;
-    my $z = _any2mpz($$x) // return undef;
-    Math::GMPz::Rmpz_get_str($z, 2);
+
+    if (ref($x) eq __PACKAGE__) {
+        $x = _any2mpz($$x) // return undef;
+    }
+    else {
+        $x = _star2mpz($x) // return undef;
+    }
+
+    Math::GMPz::Rmpz_get_str($x, 2);
+}
+
+sub as_oct {
+    my ($x) = @_;
+
+    if (ref($x) eq __PACKAGE__) {
+        $x = _any2mpz($$x) // return undef;
+    }
+    else {
+        $x = _star2mpz($x) // return undef;
+    }
+
+    Math::GMPz::Rmpz_get_str($x, 8);
+}
+
+sub as_hex {
+    my ($x) = @_;
+
+    if (ref($x) eq __PACKAGE__) {
+        $x = _any2mpz($$x) // return undef;
+    }
+    else {
+        $x = _star2mpz($x) // return undef;
+    }
+
+    Math::GMPz::Rmpz_get_str($x, 16);
 }
 
 sub as_int {
     my ($x, $y) = @_;
-
-    my $z = _any2mpz($$x) // return undef;
 
     my $base = 10;
     if (defined($y)) {
@@ -3690,7 +4156,22 @@ sub as_int {
         }
     }
 
-    Math::GMPz::Rmpz_get_str($z, $base);
+    if (ref($x) eq __PACKAGE__) {
+        $x = _any2mpz($$x) // return undef;
+    }
+    else {
+        $x = _star2mpz($x) // return undef;
+    }
+
+    Math::GMPz::Rmpz_get_str($x, $base);
+}
+
+sub digits {
+    my ($x, $y) = @_;
+    my $str = as_int($x, $y) // return ();
+    my @digits = split(//, $str);
+    shift(@digits) if $digits[0] eq '-';
+    (@digits);
 }
 
 =head1 LICENSE AND COPYRIGHT

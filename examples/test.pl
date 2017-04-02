@@ -9,7 +9,7 @@ use strict;
 use warnings;
 
 use lib qw(../lib);
-use Math::AnyNum qw(rand floor ilog log beta round irand pow atan2 :trig complex rat int lcm gcd);
+use Math::AnyNum qw(rand floor ilog log beta round irand pow atan2 :trig complex rat int lcm gcd is_prime :all);
 
 my @arr = (1, 2, 3, 4);
 say rand(23);
@@ -53,3 +53,15 @@ say int('42/12');
 
 say gcd(20, 12);
 say lcm(20, 15);
+
+foreach my $n (100 .. 110) {
+    say "$n -> ", as_int($n, 36);
+}
+
+my $c = Math::AnyNum->new_c('-3');
+say $c;
+say $c->is_int;
+
+say $c->sign;
+
+say $c->sqrt->sqr->is_complex;
