@@ -11,12 +11,22 @@ my $builder = Module::Build->new(
      dist_author        => q{Daniel Șuteu <trizenx@gmail.com>},
      dist_version_from  => 'lib/Math/AnyNum.pm',
      release_status     => 'stable',
+     dist_abstract      => 'Arbitrary size precision for integers, rationals, floating-points and complex numbers.',
      configure_requires => {
                             'Module::Build' => 0,
                            },
      build_requires => {
                         'Test::More' => 0,
                        },
+
+    meta_merge => {
+                   resources => {
+                                 bugtracker => "https://github.com/trizen/Math-AnyNum/issues",
+                                 homepage   => "https://github.com/trizen/Math-AnyNum",
+                                 repository => "https://github.com/trizen/Math-AnyNum",
+                                },
+                  },
+
      requires => {
                   'perl'                => 5.014,
                   'POSIX'               => 0,
