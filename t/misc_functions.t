@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 167;
+plan tests => 179;
 
 use Math::AnyNum qw(:misc);
 
@@ -240,3 +240,19 @@ ok(is_div('17',           complex('3.4')));
 ok(is_div(float('17'),    complex('3.4')));
 ok(is_div(rat('17'),      complex('3.4')));
 ok(is_div(complex('17'),  complex('3.4')));
+
+ok(is_real(complex('4')));           # true
+ok(not is_real(complex('4i')));      # false (is imaginary)
+ok(not is_real(complex('3+4i')));    # false (is complex)
+
+ok(not is_imag(complex('4')));       # false (is real)
+ok(is_imag(complex('4i')));          # true
+ok(not is_imag(complex('3+4i')));    # false (is complex)
+
+ok(not is_complex(complex('4')));    # false (is real)
+ok(not is_complex(complex('4i')));   # false (is imaginary)
+ok(is_complex(complex('3+4i')));     # true
+
+is(round('1234.567'), '1235');
+is(round('1234.567',     2),  '1200');
+is(round('3.123+4.567i', -2), '3.12+4.57i');
