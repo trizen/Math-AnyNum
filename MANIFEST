@@ -108,6 +108,7 @@ META.yml
 README.md
 t/00-load.t
 t/bernoulli.t
+t/constants.t
 t/exp.t
 t/fib.t
 t/floor_ceil.t

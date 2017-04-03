@@ -134,6 +134,27 @@ The syntax for disabling the C<:overload> behavior in the current scope, is:
 
     no Math::AnyNum;        # :overload will be disabled in the current scope
 
+In addition to the exportable functions, Math::AnyNum also provides a list with
+useful mathematical constants that can be exported.
+
+This constants are:
+
+    i           # imaginary unit             sqrt(-1)
+    e           # e mathematical constant    2.718281828459...
+    pi          # PI constant                3.141592653589...
+    tau         # TAU constant               6.283185307179...
+    ln2         # natural logarithm of 2     0.693147180559...
+    phi         # golden ratio               1.618033988749...
+    euler       # Euler-Mascheroni constant  0.577215664901...
+    catalan     # Catalan constant           0.915965594177...
+    Inf         # positive infinity
+    NaN         # Not-a-Number
+
+The syntax for importing a constant, is:
+
+    use Math::AnyNum qw(pi);
+    say pi;                          # 3.141592653589...
+
 Nothing is exported by default.
 
 =head1 PRECISION
