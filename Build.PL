@@ -18,6 +18,7 @@ my $builder = Module::Build->new(
                         'Test::More' => 0,
                        },
      requires => {
+                  'perl'                => 5.014,
                   'POSIX'               => 0,
                   'Math::GMPq'          => 0.41,
                   'Math::GMPz'          => 0.39,
