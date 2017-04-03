@@ -34,7 +34,7 @@ Math::AnyNum provides a transparent and easy-to-use interface to L<Math::GMPq>, 
 
 =head1 DESCRIPTION
 
-Math::AnyNum focuses primarily on providing a friendly user-interface and a good performance. In most cases, it can be used as
+Math::AnyNum focuses primarily on providing a friendly interface and good performance. In most cases, it can be used as
 a drop-in replacement for the L<bignum> and L<bigrat> pragmas.
 
 The philosophy of Math::AnyNum is that mathematics should just work, therefore the support for complex number is virtually transparent,
