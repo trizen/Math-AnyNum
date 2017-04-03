@@ -41,7 +41,7 @@ The philosophy of Math::AnyNum is that mathematics should just work, therefore t
 without requiring any explicit conversions. All the needed conversions are done implicitly, using a sophisticated promotion system,
 that tries really hard to do the right thing and as efficiently as possible.
 
-In addition, any Math::AnyNum object is B<immutable>.
+In addition, each Math::AnyNum object is B<immutable>.
 
 =head1 HOW IT WORKS
 
