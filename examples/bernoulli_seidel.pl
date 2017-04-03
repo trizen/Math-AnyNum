@@ -7,6 +7,7 @@ use 5.010;
 use strict;
 use warnings;
 
+use lib qw(../lib);
 use Math::AnyNum;
 
 sub bernoulli_seidel {
@@ -43,5 +44,5 @@ my $from = shift(@ARGV) // 1;
 my $to   = shift(@ARGV) // 50;
 
 foreach my $n ($from .. $to) {
-    say join('/', bernoulli_seidel(2 * $n));
+    say "B(", 2 * $n, ") = ", join('/', bernoulli_seidel(2 * $n));
 }
