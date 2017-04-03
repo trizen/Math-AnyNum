@@ -212,48 +212,6 @@ The returned types are noted as follows:
 When two or more types are separated with pipe characters (B<|>), it means that the
 corresponding function can return any of the specified types.
 
-=head1 PERFORMANCE
-
-The performance varies greatly, but, in most cases, Math::AnyNum is between 2x up to 15x
-faster than L<Math::BigFloat> with the B<GMP> backend, and about 100x faster than L<Math::BigFloat>
-without the B<GMP> backend (to be modest).
-
-Math::AnyNum is fast because of the following facts:
-
-=over 4
-
-=item *
-
-minimal overhead in object creations and conversions.
-
-=item *
-
-minimal Perl code is executed per operation.
-
-=item *
-
-the B<GMP>, B<MPFR> and B<MPC> libraries are extremely efficient.
-
-=back
-
-To achieve the best performance, try to follow this rules:
-
-=over 4
-
-=item *
-
-use the B<i*> functions/methods wherever applicable.
-
-=item *
-
-use floating-point numbers when accuracy is not important.
-
-=item *
-
-pass Perl numbers as arguments to methods, if you can.
-
-=back
-
 =head1 INITIALIZATION / CONSTANTS
 
 This section includes methods for creating new B<Math::AnyNum> objects
@@ -1521,6 +1479,48 @@ Returns a true value when C<x> is equal or less than C<y>.
 
 Compares C<x> to C<y> and returns a negative value when C<x> is less than C<y>,
 0 when C<x> and C<y> are equal, and a positive value when C<x> is greater than C<y>.
+
+=head1 PERFORMANCE
+
+The performance varies greatly, but, in most cases, Math::AnyNum is between 2x up to 10x
+faster than L<Math::BigFloat> with the B<GMP> backend, and about 100x faster than L<Math::BigFloat>
+without the B<GMP> backend (to be modest).
+
+Math::AnyNum is fast because of the following facts:
+
+=over 4
+
+=item *
+
+minimal overhead in object creations and conversions.
+
+=item *
+
+minimal Perl code is executed per operation.
+
+=item *
+
+the B<GMP>, B<MPFR> and B<MPC> libraries are extremely efficient.
+
+=back
+
+To achieve the best performance, try to follow this rules:
+
+=over 4
+
+=item *
+
+use the B<i*> functions/methods wherever applicable.
+
+=item *
+
+use floating-point numbers when accuracy is not important.
+
+=item *
+
+pass Perl numbers as arguments to methods, if you can.
+
+=back
 
 =head1 MOTIVATION
 
