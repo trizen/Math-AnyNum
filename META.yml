@@ -16,7 +16,7 @@ name: Math-AnyNum
 provides:
   Math::AnyNum:
     file: lib/Math/AnyNum.pm
-    version: '0.01'
+    version: '0.02'
 requires:
   Class::Multimethods: '1.7'
   Math::GMPq: '0.41'
@@ -27,5 +27,5 @@ requires:
   perl: '5.014'
 resources:
   license: http://www.perlfoundation.org/artistic_license_2_0
-version: '0.01'
+version: '0.02'
 x_serialization_backend: 'CPAN::Meta::YAML version 0.018'

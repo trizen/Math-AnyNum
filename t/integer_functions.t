@@ -27,6 +27,16 @@ is(binomial($o->new(42), $o->new(39)), 11480);
 is(fibonacci(12), 144);
 is(lucas(15),     1364);
 
+# The following two functions require GMP >= 5.1.0.
+#   dfactorial
+#   mfactorial
+
+#~ is(mfactorial(10, 2), '3840');
+#~ is(mfactorial(11, 2), '10395');
+
+#~ is(dfactorial(10), '3840');
+#~ is(dfactorial(11), '10395');
+
 is(fibonacci($o->new(12)), 144);
 is(lucas($o->new(15)),     1364);
 

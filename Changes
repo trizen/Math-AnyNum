@@ -1,5 +1,9 @@
 Revision history for Math-AnyNum
 
+0.02    2017-04-03
+
+        Require perl>=5.014.
+
 0.01    2017-04-03
 
         First release.
