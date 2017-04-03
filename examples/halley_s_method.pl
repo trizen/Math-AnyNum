@@ -1,13 +1,13 @@
 #!/usr/bin/perl
 
-# Approximate nth-roots using Newton's method.
+# Approximate nth-roots using Halley's method.
 
 use 5.010;
 use strict;
 use warnings;
 
 use lib qw(../lib);
-use Math::AnyNum qw(:overload);
+use Math::AnyNum qw(:overload float);
 
 sub derivatives {
     my ($x, $m, $k) = @_;
@@ -21,8 +21,8 @@ sub halleys_method {
     my ($x0, $m0, $k0) = @_;
 
     my $x = $x0;
-    my $m = $m0->float;
-    my $k = $k0->float;
+    my $m = float($m0);
+    my $k = float($k0);
 
     my @fx  = derivatives($x, $m, $k);
     my $eps = 10**-($Math::AnyNum::PREC / 4);
