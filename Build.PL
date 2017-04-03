@@ -28,7 +28,7 @@ my $builder = Module::Build->new(
                   },
 
      requires => {
-                  'perl'                => 5.014,
+                  'perl'                => '5.14.0',
                   'POSIX'               => 0,
                   'Math::GMPq'          => 0.41,
                   'Math::GMPz'          => 0.39,
