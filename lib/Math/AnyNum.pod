@@ -176,7 +176,7 @@ For example, if we change the precision to 3 decimal digits (where C<4> is the c
 we get the following results:
 
     local $Math::AnyNum::PREC = 3*4;
-    say sqrt(2);                                  #=> 1.414
+    say sqrt(2);                                  #=> 1.41
     say 98**7;                                    #=> 86812553324672
     say 1 / 98**7                                 #=> 1/86812553324672
 
