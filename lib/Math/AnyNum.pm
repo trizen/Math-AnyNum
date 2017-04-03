@@ -103,6 +103,11 @@ use overload
         atan  => sub ($) { goto &atan },
         atanh => sub ($) { goto &atanh },
 
+        cot   => sub ($) { goto &cot },
+        coth  => sub ($) { goto &coth },
+        acot  => sub ($) { goto &acot },
+        acoth => sub ($) { goto &acoth },
+
         sec   => sub ($) { goto &sec },
         sech  => sub ($) { goto &sech },
         asec  => sub ($) { goto &asec },
@@ -125,27 +130,29 @@ use overload
                    gamma    => sub ($)   { goto &gamma },
                    lgamma   => sub ($)   { goto &lgamma },
                    lngamma  => sub ($)   { goto &lngamma },
+                   digamma  => sub ($)   { goto &digamma },
                    Ai       => sub ($)   { goto &Ai },
                    Ei       => sub ($)   { goto &Ei },
                    Li       => sub ($)   { goto &Li },
                    Li2      => sub ($)   { goto &Li2 },
+                   LambertW => sub ($)   { goto &LambertW },
+                   BesselJ  => sub ($$)  { goto &BesselJ },
+                   BesselY  => sub ($$)  { goto &BesselY },
+                   lgrt     => sub ($)   { goto &lgrt },
+                   pow      => sub ($$)  { goto &pow },
+                   sqr      => sub ($)   { goto &sqr },
                    sqrt     => sub (_)   { goto &sqrt },       # built-in keyword
                    cbrt     => sub ($)   { goto &cbrt },
                    root     => sub ($$)  { goto &root },
-                   pow      => sub ($$)  { goto &pow },
-                   sqr      => sub ($)   { goto &sqr },
-                   lgrt     => sub ($)   { goto &lgrt },
-                   LambertW => sub ($)   { goto &LambertW },
+                   exp      => sub (_)   { goto &exp },        # built-in keyword
                    ln       => sub ($)   { goto &ln },
                    log      => sub (_;$) { goto &log },        # built-in keyword
                    log10    => sub ($)   { goto &log10 },
                    log2     => sub ($)   { goto &log2 },
-                   exp      => sub (_)   { goto &exp },        # built-in keyword
+                   mod      => sub ($$)  { goto &mod },
+                   abs      => sub (_)   { goto &abs },        # built-in keyword
                    erf      => sub ($)   { goto &erf },
                    erfc     => sub ($)   { goto &erfc },
-                   digamma  => sub ($)   { goto &digamma },
-                   BesselJ  => sub ($$)  { goto &BesselJ },
-                   BesselY  => sub ($$)  { goto &BesselY },
                    hypot    => sub ($$)  { goto &hypot },
                    agm      => sub ($$)  { goto &agm },
                    bernreal => sub ($)   { goto &bernreal },
@@ -153,14 +160,14 @@ use overload
                   );
 
     my %ntheory = (
-        primorial => sub ($)  { goto &primorial },
-        factorial => sub ($)  { goto &factorial },
-        dfactorial => sub ($) { goto &dfactorial },
+        factorial  => sub ($)  { goto &factorial },
+        dfactorial => sub ($)  { goto &dfactorial },
         mfactorial => sub ($$) { goto &mfactorial },
-        binomial  => sub ($$) { goto &binomial },
+        primorial  => sub ($)  { goto &primorial },
+        binomial   => sub ($$) { goto &binomial },
 
-        fibonacci => sub ($) { goto &fibonacci },
         lucas     => sub ($) { goto &lucas },
+        fibonacci => sub ($) { goto &fibonacci },
 
         bernfrac => sub ($) { goto &bernfrac },
         harmfrac => sub ($) { goto &harmfrac },
@@ -169,84 +176,89 @@ use overload
         gcd       => sub ($$) { goto &gcd },
         valuation => sub ($$) { goto &valuation },
         kronecker => sub ($$) { goto &kronecker },
-        remdiv    => sub ($$) { goto &remdiv },
+
+        remdiv => sub ($$) { goto &remdiv },
+        divmod => sub ($$) { goto &divmod },
 
         iadd => sub ($$) { goto &iadd },
         isub => sub ($$) { goto &isub },
         imul => sub ($$) { goto &imul },
         idiv => sub ($$) { goto &idiv },
+        imod => sub ($$) { goto &imod },
 
-        invmod => sub ($$)  { goto &invmod },
+        ipow  => sub ($$) { goto &ipow },
+        iroot => sub ($$) { goto &iroot },
+        isqrt => sub ($)  { goto &isqrt },
+        icbrt => sub ($)  { goto &icbrt },
+
+        ilog   => sub ($;$) { goto &ilog },
+        ilog2  => sub ($)   { goto &ilog2 },
+        ilog10 => sub ($)   { goto &ilog10 },
+
+        isqrtrem => sub ($)  { goto &isqrtrem },
+        irootrem => sub ($$) { goto &irootrem },
+
         powmod => sub ($$$) { goto &powmod },
+        invmod => sub ($$)  { goto &invmod },
 
-        is_square  => sub ($)   { goto &is_square },
         is_power   => sub ($;$) { goto &is_power },
+        is_square  => sub ($)   { goto &is_square },
         is_prime   => sub ($;$) { goto &is_prime },
         next_prime => sub ($)   { goto &next_prime },
-
-        iroot    => sub ($$)  { goto &iroot },
-        isqrt    => sub ($)   { goto &isqrt },
-        icbrt    => sub ($)   { goto &icbrt },
-        divmod   => sub ($$)  { goto &divmod },
-        isqrtrem => sub ($$)  { goto &isqrtrem },
-        irootrem => sub ($$)  { goto &irootrem },
-        imod     => sub ($$)  { goto &imod },
-        ipow     => sub ($$)  { goto &ipow },
-        ilog     => sub ($;$) { goto &ilog },
-        ilog2    => sub ($)   { goto &ilog2 },
-        ilog10   => sub ($)   { goto &ilog10 },
                   );
 
     my %misc = (
         rand => sub (;$;$) {
             @_ ? (goto &rand) : do { (@_) = (1); goto &rand }
         },
-        seed => sub ($) { goto &seed },
-
         irand => sub ($;$) { goto &irand },
-        iseed => sub ($)   { goto &iseed },
+
+        seed  => sub ($) { goto &seed },
+        iseed => sub ($) { goto &iseed },
 
         floor => sub ($)   { goto &floor },
         ceil  => sub ($)   { goto &ceil },
         round => sub ($;$) { goto &round },
-        mod      => sub ($$)  { goto &mod },
+        sgn   => sub ($)   { goto &sgn },
 
         popcount => sub ($) { goto &popcount },
-        abs => sub (_) { goto &abs },    # built-in keyword
-
-        as_bin => sub ($)   { goto &as_bin },
-        as_hex => sub ($)   { goto &as_hex },
-        as_oct => sub ($)   { goto &as_oct },
-        as_int => sub ($;$) { goto &as_int },
-
-        digits => sub ($;$) { goto &digits },
-        sign   => sub ($) { goto &sign },
-
-        numerator => sub ($) { goto &numerator},
-        denominator => sub ($) { goto &denominator },
 
         real => sub ($) { goto &real },
         imag => sub ($) { goto &imag },
 
+        int     => sub (_) { goto &int },       # built-in keyword
+        rat     => sub ($) { goto &rat },
+        float   => sub ($) { goto &float },
+        complex => sub ($) { goto &complex },
+
+        numerator   => sub ($) { goto &numerator },
+        denominator => sub ($) { goto &denominator },
+
+        digits => sub ($;$) { goto &digits },
+
+        as_bin  => sub ($)   { goto &as_bin },
+        as_hex  => sub ($)   { goto &as_hex },
+        as_oct  => sub ($)   { goto &as_oct },
+        as_int  => sub ($;$) { goto &as_int },
+        as_frac => sub ($)   { goto &as_frac },
+
         is_inf     => sub ($) { goto &is_inf },
+        is_ninf    => sub ($) { goto &is_ninf },
         is_neg     => sub ($) { goto &is_neg },
         is_pos     => sub ($) { goto &is_pos },
         is_nan     => sub ($) { goto &is_nan },
         is_rat     => sub ($) { goto &is_rat },
         is_real    => sub ($) { goto &is_real },
+        is_imag    => sub ($) { goto &is_imag },
         is_int     => sub ($) { goto &is_int },
         is_complex => sub ($) { goto &is_complex },
         is_zero    => sub ($) { goto &is_zero },
         is_one     => sub ($) { goto &is_one },
+        is_mone    => sub ($) { goto &is_mone },
 
         is_odd  => sub ($)  { goto &is_odd },
         is_even => sub ($)  { goto &is_even },
         is_div  => sub ($$) { goto &is_div },
-
-        float   => sub ($) { goto &float },
-        int     => sub (_) { goto &int },       # built-in keyword
-        rat     => sub ($) { goto &rat },
-        complex => sub ($) { goto &complex },
                );
 
     sub import {
@@ -924,16 +936,12 @@ sub new {
     bless \(_str2obj("$num")), $class;
 }
 
-
-
 sub new_si {
     my (undef, $si) = @_;
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_set_si($r, $si);
     bless \$r, __PACKAGE__;
 }
-
-
 
 sub new_ui {
     my (undef, $ui) = @_;
@@ -1077,15 +1085,11 @@ sub mone {
 ## CONSTANTS
 #
 
-
-
 sub pi {
     my $pi = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_const_pi($pi, $ROUND);
     bless \$pi, __PACKAGE__;
 }
-
-
 
 sub tau {
     my $tau = Math::MPFR::Rmpfr_init2($PREC);
@@ -1094,15 +1098,11 @@ sub tau {
     bless \$tau, __PACKAGE__;
 }
 
-
-
 sub ln2 {
     my $ln2 = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_const_log2($ln2, $ROUND);
     bless \$ln2, __PACKAGE__;
 }
-
-
 
 sub euler {
     my $euler = Math::MPFR::Rmpfr_init2($PREC);
@@ -1110,15 +1110,11 @@ sub euler {
     bless \$euler, __PACKAGE__;
 }
 
-
-
 sub catalan {
     my $catalan = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_const_catalan($catalan, $ROUND);
     bless \$catalan, __PACKAGE__;
 }
-
-
 
 sub i {
     my $i = Math::MPC::Rmpc_init2($PREC);
@@ -1126,16 +1122,12 @@ sub i {
     bless \$i, __PACKAGE__;
 }
 
-
-
 sub e {
     state $one_f = (Math::MPFR::Rmpfr_init_set_ui_nobless(1, $ROUND))[0];
     my $e = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_exp($e, $one_f, $ROUND);
     bless \$e, __PACKAGE__;
 }
-
-
 
 sub phi {
     state $five4_f = (Math::MPFR::Rmpfr_init_set_str_nobless("1.25", 10, $ROUND))[0];
@@ -1463,6 +1455,11 @@ sub neg {
 sub abs {
     require Math::AnyNum::abs;
     my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
     my $r = __abs__(ref($$x) eq 'Math::MPC' ? $$x : _copy($$x));
     bless \$r, __PACKAGE__;
 }
@@ -1910,9 +1907,11 @@ Class::Multimethods::multimethod ipow => qw($ $) => sub {
 
     my $r;
     if (    CORE::int($x) eq $x
-        and CORE::abs($x) <= ULONG_MAX
+        and $x >= 0
+        and $x <= ULONG_MAX
         and CORE::int($y) eq $y
-        and CORE::abs($y) <= ULONG_MAX) {
+        and $y >= 0
+        and $y <= ULONG_MAX) {
         $r = Math::GMPz::Rmpz_init();
         Math::GMPz::Rmpz_ui_pow_ui($r, $x, $y);
     }
@@ -2024,7 +2023,7 @@ Class::Multimethods::multimethod iroot => qw(* *) => sub {
 
 sub isqrtrem {
     require Math::AnyNum::isqrtrem;
-    my ($root, $rem) = __isqrtrem__(_star2mpz($_[0]));
+    my ($root, $rem) = __isqrtrem__(_star2mpz($_[0]) // (return (nan(), nan())));
     ((bless \$root, __PACKAGE__), (bless \$rem, __PACKAGE__));
 }
 
@@ -2035,11 +2034,12 @@ Class::Multimethods::multimethod irootrem => qw(* $) => sub {
     require Math::AnyNum::irootrem;
     my ($x, $y) = @_;
     if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        my ($root, $rem) = __irootrem__(_star2mpz($x), $y);
+        my ($root, $rem) = __irootrem__(_star2mpz($x) // (return (nan(), nan())), $y);
         return ((bless \$root, __PACKAGE__), (bless \$rem, __PACKAGE__));
     }
     else {
-        my ($root, $rem) = __irootrem__(_star2mpz($x), _any2si(${__PACKAGE__->new($y)}) // (return (nan(), nan())));
+        my ($root, $rem) =
+          __irootrem__(_star2mpz($x) // (return (nan(), nan())), _any2si(${__PACKAGE__->new($y)}) // (return (nan(), nan())));
         return ((bless \$root, __PACKAGE__), (bless \$rem, __PACKAGE__));
     }
 };
@@ -2047,7 +2047,8 @@ Class::Multimethods::multimethod irootrem => qw(* $) => sub {
 Class::Multimethods::multimethod irootrem => qw(* *) => sub {
     require Math::AnyNum::irootrem;
     my ($x, $y) = @_;
-    my ($root, $rem) = __irootrem__(_star2mpz($x), _any2si(${__PACKAGE__->new($y)}) // (return (nan(), nan())));
+    my ($root, $rem) =
+      __irootrem__(_star2mpz($x) // (return (nan(), nan())), _any2si(${__PACKAGE__->new($y)}) // (return (nan(), nan())));
     ((bless \$root, __PACKAGE__), (bless \$rem, __PACKAGE__));
 };
 
@@ -2117,6 +2118,7 @@ Class::Multimethods::multimethod imod => qw(Math::AnyNum $) => sub {
 };
 
 Class::Multimethods::multimethod imod => qw(* *) => sub {
+    require Math::AnyNum::imod;
     my ($x, $y) = @_;
     my $r = __imod__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
     bless \$r, __PACKAGE__;
@@ -2129,7 +2131,7 @@ Class::Multimethods::multimethod imod => qw(* *) => sub {
 sub divmod {
     require Math::AnyNum::divmod;
     my ($x, $y) = @_;
-    my ($r1, $r2) = __divmod__(_star2mpz($x) // (return (nan(), nan())), _star2mpz($y) // (return(nan(), nan())));
+    my ($r1, $r2) = __divmod__(_star2mpz($x) // (return (nan(), nan())), _star2mpz($y) // (return (nan(), nan())));
     ((bless \$r1, __PACKAGE__), (bless \$r2, __PACKAGE__));
 }
 
@@ -2460,7 +2462,7 @@ sub deg2rad {
     my $f = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_const_pi($f, $ROUND);
     Math::MPFR::Rmpfr_div_ui($f, $f, 180, $ROUND);
-    my $r = __mul__(_star2mpfr($x), $f);
+    my $r = __mul__(_star2mpfr_mpc($x), $f);
     bless \$r, __PACKAGE__;
 }
 
@@ -2470,7 +2472,7 @@ sub rad2deg {
     my $f = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_const_pi($f, $ROUND);
     Math::MPFR::Rmpfr_ui_div($f, 180, $f, $ROUND);
-    my $r = __mul__(_star2mpfr($x), $f);
+    my $r = __mul__(_star2mpfr_mpc($x), $f);
     bless \$r, __PACKAGE__;
 }
 
@@ -2804,16 +2806,12 @@ Class::Multimethods::multimethod round => qw(* *) => sub {
             goto &rand;
         };
 
-
-
         sub seed {
             my $z = _star2mpz($_[0]) // die "invalid seed: <<$_[0]>> (expected an integer)";
             Math::MPFR::Rmpfr_randseed($state, $z);
             bless \$z, __PACKAGE__;
         }
     }
-
-
 
     {
         state $state = Math::GMPz::zgmp_randinit_mt_nobless();
@@ -2851,8 +2849,6 @@ Class::Multimethods::multimethod round => qw(* *) => sub {
             my $r = __irand__(_star2mpz($_[0]) // (goto &nan), _star2mpz($_[1]) // (goto &nan), $state);
             bless \$r, __PACKAGE__;
         };
-
-
 
         sub iseed {
             my $z = _star2mpz($_[0]) // die "invalid seed: <<$_[0]>> (expected an integer)";
@@ -3043,7 +3039,6 @@ sub dfactorial {
     bless \$z, __PACKAGE__;
 }
 
-
 #
 ## M-factorial
 #
@@ -3059,7 +3054,7 @@ sub mfactorial {
     }
 
     if (ref($y) eq __PACKAGE__) {
-        $y = $$y
+        $y = $$y;
     }
     else {
         $y = ${__PACKAGE__->new($y)};
@@ -3067,7 +3062,7 @@ sub mfactorial {
 
     my $ui1 = _any2ui($x) // (goto &nan);
     my $ui2 = _any2ui($y) // (goto &nan);
-    my $z = Math::GMPz::Rmpz_init();
+    my $z   = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_mfac_uiui($z, $ui1, $ui2);
     bless \$z, __PACKAGE__;
 }
@@ -3141,7 +3136,7 @@ Class::Multimethods::multimethod lcm => qw(* *) => sub {
 
 sub next_prime {
     my $r = _star2mpz($_[0]) // (goto &nan);
-    Math::Math::GMPz::Rmpz_nextprime($r, $r);
+    Math::GMPz::Rmpz_nextprime($r, $r);
     bless \$r, __PACKAGE__;
 }
 
@@ -3159,7 +3154,7 @@ sub is_prime {
     $x->is_int() || return 0;
     $y = defined($y) ? (CORE::abs(CORE::int($y)) || 20) : 20;
 
-    Math::GMPz::Rmpz_probab_prime_p(_any2mpz($$x), $y);
+    Math::GMPz::Rmpz_probab_prime_p(_any2mpz($$x) // (return 0), $y);
 }
 
 sub is_int {
@@ -3227,7 +3222,7 @@ sub denominator {
     my $r   = $$x;
     my $ref = ref($r);
 
-    ref($r) eq 'Math::GMPz' && return $x;    # is an integer
+    ref($r) eq 'Math::GMPz' && (goto &one);    # is an integer
 
     if (ref($r) eq 'Math::GMPq') {
         my $z = Math::GMPz::Rmpz_init();
@@ -3252,15 +3247,16 @@ sub as_frac {
     "$num/$den";
 }
 
-sub sign {
-    require Math::AnyNum::sign;
+sub sgn {
+    require Math::AnyNum::sgn;
     my ($x) = @_;
 
     if (ref($x) ne __PACKAGE__) {
         $x = __PACKAGE__->new($x);
     }
 
-    __sign__($$x);
+    my $r = __sgn__($$x);
+    ref($r) ? (bless \$r, __PACKAGE__) : $r;
 }
 
 sub is_real {
@@ -3281,6 +3277,23 @@ sub is_real {
     goto &is_real;
 }
 
+sub is_imag {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    my $r = $$x;
+    ref($r) eq 'Math::MPC' or return 0;
+
+    my $f = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPC::RMPC_RE($f, $r);
+    Math::MPFR::Rmpfr_zero_p($f) || return 0;    # is complex
+    Math::MPC::RMPC_IM($f, $r);
+    !Math::MPFR::Rmpfr_zero_p($f);
+}
+
 sub is_complex {
     my ($x) = @_;
 
@@ -3288,16 +3301,14 @@ sub is_complex {
         $x = __PACKAGE__->new($x);
     }
 
-    my $r   = $$x;
-    my $ref = ref($r);
+    my $r = $$x;
+    ref($r) eq 'Math::MPC' or return 0;
 
-    $ref eq 'Math::GMPz' && return 0;
-    $ref eq 'Math::GMPq' && return 0;
-    $ref eq 'Math::MPFR' && return 0;
-
-    my $imag = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPC::RMPC_IM($imag, $r);
-    Math::MPFR::Rmpfr_zero_p($imag) ? 0 : 1;
+    my $f = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPC::RMPC_IM($f, $r);
+    Math::MPFR::Rmpfr_zero_p($f) && return 0;    # is real
+    Math::MPC::RMPC_RE($f, $r);
+    !Math::MPFR::Rmpfr_zero_p($f);
 }
 
 sub is_inf {
@@ -3372,7 +3383,7 @@ sub is_even {
     }
 
     $x->is_int()
-      && Math::GMPz::Rmpz_even_p(_any2mpz($$x));
+      && Math::GMPz::Rmpz_even_p(_any2mpz($$x) // (return 0));
 }
 
 sub is_odd {
@@ -3383,7 +3394,7 @@ sub is_odd {
     }
 
     $x->is_int()
-      && Math::GMPz::Rmpz_odd_p(_any2mpz($$x));
+      && Math::GMPz::Rmpz_odd_p(_any2mpz($$x) // (return 0));
 }
 
 sub is_zero {
@@ -3452,7 +3463,7 @@ sub is_square {
     }
 
     $x->is_int()
-      and Math::GMPz::Rmpz_perfect_square_p(_any2mpz($$x));
+      and Math::GMPz::Rmpz_perfect_square_p(_any2mpz($$x) // (return 0));
 }
 
 #
@@ -3470,10 +3481,10 @@ sub is_power {
 
     if (defined($y)) {
         require Math::AnyNum::is_power;
-        __is_power__(_any2mpz($$x), CORE::int($y));
+        __is_power__(_any2mpz($$x) // (return 0), CORE::int($y));
     }
     else {
-        Math::GMPz::Rmpz_perfect_power_p(_any2mpz($$x));
+        Math::GMPz::Rmpz_perfect_power_p(_any2mpz($$x) // (return 0));
     }
 }
 
@@ -3963,7 +3974,5 @@ sub digits {
     shift(@digits) if $digits[0] eq '-';
     (@digits);
 }
-
-
 
 1;    # End of Math::AnyNum

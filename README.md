@@ -13,21 +13,21 @@ use 5.014;
 use Math::AnyNum qw(:overload factorial);
 
 # Integers
-say factorial(30);                #=> 265252859812191058636308480000000
+say factorial(30);                            #=> 265252859812191058636308480000000
 
 # Floating-point numbers
-say sqrt(1 / factorial(100));     #=> 1.03513781117562647132049459165[...]e-79
+say sqrt(1 / factorial(100));                 #=> 1.0351378111756264713204945[...]e-79
 
 # Rational numbers
 my $x = 2/3;
-say ($x * 3);           #=> 2
-say (2 / $x);           #=> 3
-say $x;                 #=> 2/3
+say ($x * 3);                                 #=> 2
+say (2 / $x);                                 #=> 3
+say $x;                                       #=> 2/3
 
 # Complex numbers
-say 3 + 4*i;            #=> 3+4i
-say sqrt(-4);           #=> 2i
-say log(-1);            #=> 3.141592653589793238462643383279502884197169[...]i
+say 3 + 4*i;                                  #=> 3+4i
+say sqrt(-4);                                 #=> 2i
+say log(-1);                                  #=> 3.1415926535897932384626433832[...]i
 ```
 
 # INSTALLATION

@@ -23,7 +23,7 @@ sub is_prime {
     $d >>= $s;
 
   LOOP: for (1 .. $k) {
-        my $a = 2 + irand(0, $n - 3);
+        my $a = irand(2, $n - 1);
 
         my $x = powmod($a, $d, $n);
         next if $x == 1 or $x == $n - 1;

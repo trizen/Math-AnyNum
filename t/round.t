@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 84;
+plan tests => 132;
 
 use Math::AnyNum;
 
@@ -71,6 +71,68 @@ use Math::AnyNum;
         my ($orig, $expected, $places) = @{$group};
         my $rounded = $orig->round($places);
         is("$rounded", "$expected", "($orig, $expected, $places)");
+        ok($rounded == $expected);
+    }
+}
+
+# Round half-to-even, using rationals.
+{
+    use Math::AnyNum qw(:overload rat);
+
+    sub round_nth {
+        my ($orig, $nth) = @_;
+
+        my $n = abs($orig);
+        my $p = 10**$nth;
+
+        $n *= $p;
+        $n += 1 / 2;
+
+        if ($n == int($n) and $n % 2 != 0) {
+            $n -= 1 / 2;
+        }
+
+        $n = int($n);
+        $n /= $p;
+        $n = -$n if ($orig < 0);
+
+        return $n;
+    }
+
+    my @tests = (
+
+        # original | rounded | places
+        [+1.6,            +2,            0],
+        [+1.5,            +2,            0],
+        [+1.4,            +1,            0],
+        [+0.6,            +1,            0],
+        [+0.5,            0,             0],
+        [+0.4,            0,             0],
+        [-0.4,            0,             0],
+        [-0.5,            0,             0],
+        [-0.6,            -1,            0],
+        [-1.4,            -1,            0],
+        [-1.5,            -2,            0],
+        [-1.6,            -2,            0],
+        [377 / 125,       151 / 50,      2],
+        [3013 / 1000,     301 / 100,     2],
+        [603 / 200,       151 / 50,      2],
+        [609 / 200,       76 / 25,       2],
+        [304501 / 100000, 61 / 20,       2],
+        [-246911 / 200,   -1000,         -3],
+        [-246911 / 200,   -1200,         -2],
+        [-246911 / 200,   -1230,         -1],
+        [-246911 / 200,   -1235,         0],
+        [-246911 / 200,   -6173 / 5,     1],
+        [-246911 / 200,   -30864 / 25,   2],
+        [-246911 / 200,   -246911 / 200, 3],
+    );
+
+    foreach my $pair (@tests) {
+        my ($n, $expected, $places) = @$pair;
+        my $rounded = round_nth($n, $places);
+
+        is(ref($rounded), 'Math::AnyNum');
         ok($rounded == $expected);
     }
 }

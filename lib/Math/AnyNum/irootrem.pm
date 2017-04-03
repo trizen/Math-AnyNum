@@ -9,8 +9,8 @@ sub __irootrem__ {
 
     if ($y == 0) {
         require Math::AnyNum::dec;
-        Math::GMPz::Rmpz_sgn($x) || return (Math::AnyNum::_zero(), &Math::AnyNum::_mone());    # 0^Inf = 0
-        Math::GMPz::Rmpz_cmpabs_ui($x, 1) == 0 and return (&Math::AnyNum::_one(), __dec__($x));    # 1^Inf = 1 ; (-1)^Inf = 1
+        Math::GMPz::Rmpz_sgn($x) || return (&Math::AnyNum::_zero(), &Math::AnyNum::_mone());    # 0^Inf = 0
+        Math::GMPz::Rmpz_cmpabs_ui($x, 1) == 0 and return (&Math::AnyNum::_one(), __dec__($x)); # 1^Inf = 1 ; (-1)^Inf = 1
         return (&Math::AnyNum::_inf(), __dec__($x));
     }
     elsif ($y < 0) {

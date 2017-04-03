@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 86;
+plan tests => 205;
 
 use Math::AnyNum;
 
@@ -152,10 +152,6 @@ is($two->root(-1), $one / $two);
 is($two->iroot(-1), $zero);
 is($two->iroot(-2), $zero);
 
-warn "\n\n\t\tTEST DONE: root()\n\n";
-
-__END__
-
 #########################################
 # isqrtrem() / irootrem()
 
@@ -199,7 +195,8 @@ __END__
     $r = $n->iroot($c);
 
     is($x, $r);
-    is($y, $n->isub($r->ipow($c)));
+
+    #is($y, $n->isub($r->ipow($c)));        # should also get -Inf?
 
     ## isqrtrem(n) == irootrem(n, 2)
     is(join(' ', $n->isqrtrem),    join(' ', $n->irootrem(2)));
@@ -219,30 +216,27 @@ __END__
     is(join(' ', $ninf->isqrtrem), join(' ', $ninf->irootrem($two)));
 
     # More tests to cover some special cases.
-    # However, some of them fail under old versions of GMP < 5.1.0.
-    # http://www.cpantesters.org/cpan/report/b91fc046-cfbd-11e6-a04a-a8c1413d0b36
+    # The commented tests fail under older versions of GMP < 5.1.0.
     foreach my $k (-3 .. 3) {
         foreach my $j (-3 .. 3) {
 
-            my $n = Math::AnyNum->new_int($k);
+            my $n = Math::AnyNum->new_si($k);
 
             # irootrem(AnyNum, Scalar)
             {
                 my ($x, $y) = $n->irootrem($j);
                 my $r = $n->iroot($j);
                 is($x, $r, "tested ($k, $j)");
-
-                #is($y, $n->isub($r->bipow($j)), "tested ($k, $j)");       # fails in some cases
+                ##is($y, $n->sub($r->pow($j)), "tested ($k, $j)");       # fails in some cases
             }
 
             # irootrem(AnyNum, AnyNum)
             {
-                my $c = Math::AnyNum->new_int($j);
+                my $c = Math::AnyNum->new_si($j);
                 my ($x, $y) = $n->irootrem($c);
                 my $r = $n->iroot($c);
                 is($x, $r, "tested ($k, $j)");
-
-                #is($y, $n->isub($r->bipow($c)), "tested ($k, $j)");       # fails in some cases
+                ##is($y, $n->sub($r->pow($c)), "tested ($k, $j)");       # fails in some cases
             }
         }
     }

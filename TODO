@@ -1,177 +1,19 @@
 ## TODO list for Math::AnyNum
 
+# More examples.
+
+# Better documentation.
+
 # Add the following methods:
 
-    add             -- added/tested/documented
-    sub             -- added/tested/documented
-    mul             -- added/tested/documented
-    div             -- added/tested/documented
-    mod             -- added/tested/documented
-    pow             -- added/tested/documented
-    inv             -- added/tested/documented
-    sqr             -- added/documented
-    sqrt            -- added/tested/documented
-    cbrt            -- added/documented
-    root            -- added/documented
-    exp             -- added/tested/documented
     exp2  [?]
     exp10 [?]
-    ln              -- added/documented
-    log             -- added/tested/documented
-    log2            -- added/tested/documented
-    log10           -- added/tested/documented
-
-# Add the following trigonometric methods:
-    sin             -- added/documented
-    asin            -- added/documented
-    sinh            -- added/documented
-    asinh           -- added/documented
-    cos             -- added/documented
-    acos            -- added/documented
-    cosh            -- added/documented
-    acosh           -- added/documented
-    tan             -- added/documented
-    atan            -- added/documented
-    tanh            -- added/documented
-    atanh           -- added/documented
-    sec             -- added/documented
-    asec            -- added/documented
-    sech            -- added/documented
-    asech           -- added/documented
-    csc             -- added/documented
-    acsc            -- added/documented
-    csch            -- added/documented
-    acsch           -- added/documented
-    cot             -- added/documented
-    acot            -- added/documented
-    coth            -- added/documented
-    acoth           -- added/documented
-    atan2           -- added/documented
-
-# Add the following special methods:
-
-    lgrt            -- added/documented
-    LambertW        -- added/tested/documented
-    bernfrac        -- added/documented
-    bernreal        -- added/documented
-    harmfrac        -- added/documented
-    harmreal        -- added/documented
-    agm             -- added/documented
-    hypot           -- added/documented
-    gamma           -- added/documented
-    lngamma         -- added/documented
-    lgamma          -- added/documented
-    digamma         -- added/documented
-    beta            -- added/documented
-    zeta            -- added/tested/documented
-    eta             -- added/documented
-    BesselY         -- added/documented
-    BesselY         -- added/documented
-    erf             -- added/documented
-    erfc            -- added/documented
-    Ai              -- added/documented
-    Ei              -- added/documented
-    Li              -- added/documented
-    Li2             -- added/documented
-
-# Add the following integer methods:
-
-    iadd                -- added/documented
-    isub                -- added/documented
-    imul                -- added/documented
-    idiv                -- added/documented
-    ipow                -- added/documented
-    ilog                -- added/tested/documented
-    ilog2               -- added/tested/documented
-    ilog10              -- added/tested/documented
-    isqrt               -- added/documented
-    icbrt               -- added/documented
-    isqrtrem            -- added/documented
-    iroot               -- added/tested/documented
-    irootrem            -- added/documented
-    imod                -- added/tested/documented
-    divmod              -- added/documented
-
-# Add the following number theory methods:
-
-    invmod              -- added/documented
-    powmod              -- added/documented
-    gcd                 -- added/documented
-    lcm                 -- added/documented
-    valuation           -- added/documented
-    remdiv              -- added/documented
-    kronecker           -- added/documented
-    is_square           -- added
-    is_power            -- added
-    is_prime            -- added
-    next_prime          -- added
-    primorial           -- added/documented
-    fibonacci           -- added/documented
-    lucas               -- added/documented
-    binomial            -- added/documented
-    factorial           -- added/documented
-    dfactorial          -- added/documented
-    mfactorial          -- added/documented
-
-# Add the following miscellaneous methods:
-
-    rand            -- added/documented
-    seed            -- added/documented
-    irand           -- added/documented
-    iseed           -- added/documented
-    copy            -- added
-    floor           -- added/tested/documented
-    ceil            -- added/tested/documented
-    rat             -- added
-    int             -- added
-    float           -- added
-    round           -- added/tested
-    neg             -- added/tested
-    abs             -- added
-    inc             -- added/tested
-    dec             -- added/tested
-
-# Add the following introspective methods:
-
-    is_zero         -- added
-    is_one          -- added
-    is_mone         -- added
-    is_pos          -- added
-    is_neg          -- added
-    is_int          -- added
-    is_rat          -- added
-    is_real         -- added
-    is_inf          -- added
-    is_nan          -- added
-    is_ninf         -- added
-    is_odd          -- added
-    is_even         -- added
-    is_complex      -- added
-    is_div          -- added
-    sign            -- added
-    length          -- added
 
 # Add the following conversion methods:
 
-    stringify           -- added/tested
-    numify              -- added
-    boolify             -- added
-    as_frac             -- added
     as_rat   [?]
     as_float [?]
-    as_int              -- added
-    as_bin              -- added
-    as_oct              -- added
-    as_hex              -- added
     in_base  [?]
-    deg2rad             -- added
-    rad2deg             -- added
-
-# Add the following dissection methods:
-
-    digits              -- added
-    numerator           -- added
-    denominator         -- added
 
 # Add the following method/functions:
 

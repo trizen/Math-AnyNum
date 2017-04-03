@@ -93,13 +93,12 @@ Class::Multimethods::multimethod __mod__ => qw(Math::GMPz Math::MPC) => sub {
 Class::Multimethods::multimethod __mod__ => qw(Math::MPFR Math::MPFR) => sub {
     my ($x, $y) = @_;
 
-    Math::MPFR::Rmpfr_fmod($x, $x, $y, $ROUND);
-
-    if (my $sgn_x = Math::MPFR::Rmpfr_sgn($x)) {
-        if ($sgn_x > 0 xor Math::MPFR::Rmpfr_sgn($y) > 0) {
-            Math::MPFR::Rmpfr_add($x, $x, $y, $ROUND);
-        }
-    }
+    my $quo = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_set($quo, $x, $ROUND);
+    Math::MPFR::Rmpfr_div($quo, $quo, $y, $ROUND);
+    Math::MPFR::Rmpfr_floor($quo, $quo);
+    Math::MPFR::Rmpfr_mul($quo, $quo, $y, $ROUND);
+    Math::MPFR::Rmpfr_sub($x, $x, $quo, $ROUND);
 
     $x;
 };

@@ -1,5 +1,5 @@
 {
-   "abstract" : "Transparent interface to Math::GMPq, Math::GMPz, Math::MPFR and Math::MPC.",
+   "abstract" : "Arbitrary size precision for integers, rationals, floating-points and complex numbers.",
    "author" : [
       "Daniel Șuteu <trizenx@gmail.com>"
    ],

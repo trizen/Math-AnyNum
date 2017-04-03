@@ -7,8 +7,9 @@ sub __powmod__ {    # takes three Math::GMPz objects
     Math::GMPz::Rmpz_sgn($z) || return;
 
     if (Math::GMPz::Rmpz_sgn($y) < 0) {
-        Math::GMPz::Rmpz_gcd($x, $x, $z);
-        Math::GMPz::Rmpz_cmp_ui($x, 1) == 0 or return;
+        my $t = Math::GMPz::Rmpz_init();
+        Math::GMPz::Rmpz_gcd($t, $x, $z);
+        Math::GMPz::Rmpz_cmp_ui($t, 1) == 0 or return;
     }
 
     Math::GMPz::Rmpz_powm($x, $x, $y, $z);

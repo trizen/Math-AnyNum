@@ -87,7 +87,7 @@ Class::Multimethods::multimethod __lgrt__ => qw(Math::MPC) => sub {
         last if ++$count > $PREC;
     }
 
-    bless \$x, __PACKAGE__;
+    $x;
 };
 
 1;

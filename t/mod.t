@@ -51,10 +51,10 @@ is($f1 % "-43", -30.2);
 
 #is($x % Inf,      $x);
 #is("$x" % Inf,    $x);
-is(-$x % Inf,   Inf);
-is("-$x" % Inf, Inf);
-is($x % -Inf,   -Inf);
-is("$x" % -Inf, -Inf);
+is(-$x % Inf,   NaN);    # should be Inf?
+is("-$x" % Inf, NaN);    # =//=
+is($x % -Inf,   NaN);    # should be -Inf?
+is("$x" % -Inf, NaN);    # =//=
 
 #is(-$x % -Inf,    -$x);
 #is("-$x" % -Inf,  -$x);
@@ -210,5 +210,3 @@ foreach my $n (-5 .. 5) {
         is($x % $y, Math::AnyNum->new(shift @list), "$x % $y");
     }
 }
-
-warn "\n\n\t\t--MOD-- TEST FINISHED\n\n";
