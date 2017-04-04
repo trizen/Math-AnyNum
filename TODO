@@ -15,7 +15,11 @@
     as_float [?]
     in_base  [?]
 
-# Add the following method/functions:
+# Add the following comparison methods:
+
+    acmp
+
+# Add the following useful functions:
 
     max
     min
