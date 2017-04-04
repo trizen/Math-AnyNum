@@ -45,9 +45,8 @@ In addition, each Math::AnyNum object is B<immutable>.
 
 =head1 HOW IT WORKS
 
-Internally, each Math::AnyNum object holds a reference to an object with one of the following
-types: Math::GMPz, Math::GMPq, Math::MPFR or Math::MPC. Based on the internal types, it decides
-what functions to call on each operation and does automatic promotion whenever necessarily.
+Internally, each Math::AnyNum object holds a reference to an object of type Math::GMPz, Math::GMPq, Math::MPFR or Math::MPC.
+Based on the internal types, it decides what functions to call on each operation and does automatic promotion whenever necessarily.
 
 The promotion rules can be summarized as follows:
 
