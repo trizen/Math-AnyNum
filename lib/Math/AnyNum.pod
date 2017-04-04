@@ -447,19 +447,19 @@ Implemented as:
 
 =head2 inv
 
-    $x->inv
+    $x->inv                                       #=> Any
 
 Inverse of C<x>. Equivalent with C<1/x>.
 
 =head2 neg
 
-    $x->neg
+    $x->neg                                       #=> Any
 
 Negation of C<x>. Equivalent with C<-x>.
 
 =head2 abs
 
-    abs(x)
+    abs(x)                                        #=> Float | Inf | NaN
 
 Absolute value of C<x>.
 
