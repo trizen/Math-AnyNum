@@ -1126,7 +1126,7 @@ the method dies with an appropriate error message.
 
 Returns C<-1> when C<x> is negative, C<1> when C<x> is positive, and C<0> when C<x> is zero.
 
-When C<x> is a complex numbers, it computes the sign using the identity:
+When C<x> is a complex number, it computes the sign using the identity:
 
     sgn(x) = x / abs(x)
 
