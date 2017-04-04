@@ -447,13 +447,13 @@ Implemented as:
 
 =head2 inv
 
-    1/x
+    $x->inv
 
 Inverse of C<x>. Equivalent with C<1/x>.
 
 =head2 neg
 
-    -x
+    $x->neg
 
 Negation of C<x>. Equivalent with C<-x>.
 
