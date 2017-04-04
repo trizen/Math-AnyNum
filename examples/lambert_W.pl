@@ -1,11 +1,6 @@
 #!/usr/bin/perl
 
-# Daniel "Trizen" Șuteu
-# License: GPLv3
-# Date: 27 December 2016
-# https://github.com/trizen
-
-# A simple implementation of Lambert's W function in real numbers.
+# A simple implementation of Lambert's W function.
 
 # Example: x^x = 100
 #            x = exp(lambert_w(log(100)))
@@ -34,6 +29,9 @@ sub lambert_w {
     log($x);
 }
 
-say exp(lambert_w(log(+100)));    # 3.59728502354041750549765225178228606913554305489
-say exp(lambert_w(log(-100)))
-  ;    # 3.70202936660214594290193962952737102802777010583+1.34823128471151901327831464969872480416292147614i
+#<<<
+say exp(lambert_w(log(+100)));      # 3.59728502354041750549765225178228606913554305489
+say exp(lambert_w(log(-100)));      # 3.70202936660214594290193962952737102802777010583+1.34823128471151901327831464969872480416292147614i
+#>>>
+
+say lambert_w(-1 / exp(1));
