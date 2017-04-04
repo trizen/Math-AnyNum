@@ -101,7 +101,7 @@ The following functions are exportable:
         next_prime
 
     :misc
-        rand irand seed iseed floor ceil round sign
+        rand irand seed iseed floor ceil round sgn
         popcount real imag int rat float complex
         numerator denominator digits as_bin as_hex
         as_oct as_int as_frac is_pos is_neg is_int
