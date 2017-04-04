@@ -109,16 +109,18 @@ The following functions are exportable:
         is_ninf is_nan is_zero is_one is_mone is_even
         is_odd is_div
 
-Each function can be exported individually, such as:
+Each function can be exported individually, as:
 
     use Math::AnyNum qw(zeta);
 
 There is also the possibility of exporting an entire group of
-functions, such as:
+functions, as:
 
     use Math::AnyNum qw(:trig);
 
-This exports the entire C<:trig> group of functions.
+Additionally, by specifying the C<:all> keyword, will export all the exportable functions and all the constants.
+
+    use Math::AnyNum qw(:all);
 
 The C<:overload> keyword enables constant overloading, which makes
 each number a Math::AnyNum object and also exports the C<i>, C<Inf>
@@ -147,7 +149,7 @@ This constants are:
     phi         # golden ratio               1.618033988749...
     euler       # Euler-Mascheroni constant  0.577215664901...
     catalan     # Catalan constant           0.915965594177...
-    Inf         # positive infinity
+    Inf         # positive Infinity
     NaN         # Not-a-Number
 
 The syntax for importing a constant, is:
@@ -278,6 +280,7 @@ Example:
 =head2 new_q
 
     Math::AnyNum->new_q(frac)                     #=> Rat
+    Math::AnyNum->new_q(num, den)                 #=> Rat
     Math::AnyNum->new_q(num, den, base)           #=> Rat
 
 Sets an arbitrary large rational from a given string.
@@ -406,7 +409,7 @@ Returns the value of the golden ratio, which is C<1.61803...>.
 
 =head1 ARITHMETIC OPERATIONS
 
-This sections includes basic arithmetic operations.
+This section includes basic arithmetic operations.
 
 =head2 add
 
@@ -469,7 +472,7 @@ Multiplies C<x> with itself and returns the result. Equivalent with C<x*x>.
 
 =head1 SPECIAL FUNCTIONS
 
-This sections includes special functions.
+This section includes the special functions.
 
 =head2 sqrt
 
@@ -803,7 +806,7 @@ All operations in this section are done with integers.
 
 =head2 iadd / isub / imul / idiv / ipow
 
-Integer addition, substitution, multiplication, division and integer exponentiation.
+Integer addition, subtraction, multiplication, division and exponentiation.
 
 =head2 imod
 
@@ -1206,7 +1209,7 @@ Example:
 
     is_complex(x)                                 #=> Bool
 
-Returns a true value when C<x> is a complex number (i.e.: when the imaginary part is not zero).
+Returns a true value when C<x> is a complex number (i.e.: when the real part and the imaginary part are non-zero).
 
 Example:
 
