@@ -60,7 +60,7 @@ The promotion rules can be summarized as follows:
     (Rational, Float)    -> Float | Complex
     (Rational, Complex)  -> Complex
 
-    (Float, Float)       -> Float, Complex
+    (Float, Float)       -> Float | Complex
     (Float, Complex)     -> Complex
 
     (Complex, Complex)   -> Complex
