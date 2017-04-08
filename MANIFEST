@@ -12,6 +12,7 @@ examples/fibonacci.pl
 examples/fibonacci_validation.pl
 examples/halley_s_method.pl
 examples/inverse_of_factorial.pl
+examples/is_power.pl
 examples/lambert_W.pl
 examples/miller_rabin_primality_test.pl
 examples/newton_s_method.pl
