@@ -67,7 +67,20 @@ Class::Multimethods::multimethod __log2__ => qw(Math::MPC) => sub {
 
 Class::Multimethods::multimethod __log10__ => qw(Math::MPC) => sub {
     my ($x) = @_;
-    Math::MPC::Rmpc_log10($x, $x, $ROUND);
+
+    state $MPC_VERSION = Math::MPC::MPC_VERSION();
+
+    if ($MPC_VERSION >= 65536) {    # available only in mpc>=1.0.0
+        Math::MPC::Rmpc_log10($x, $x, $ROUND);
+    }
+    else {
+        my $ln10 = Math::MPFR::Rmpfr_init2($PREC);
+        Math::MPFR::Rmpfr_set_ui($ln10, 10, $ROUND);
+        Math::MPFR::Rmpfr_log($ln10, $ln10, $ROUND);
+        Math::MPC::Rmpc_log($x, $x, $ROUND);
+        Math::MPC::Rmpc_div_fr($x, $x, $ln10, $ROUND);
+    }
+
     $x;
 };
 
