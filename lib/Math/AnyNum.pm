@@ -23,6 +23,25 @@ BEGIN {
     $PREC  = 192;
 }
 
+BEGIN {
+    use Math::GMPz::V qw();
+
+    state $GMP_V_MAJOR = Math::GMPz::V::___GNU_MP_VERSION();
+    state $GMP_V_MINOR = Math::GMPz::V::___GNU_MP_VERSION_MINOR();
+
+    # Rmpq_cmp_z() is available only in gmp>=6.1.0
+    # https://rt.cpan.org/Public/Bug/Display.html?id=120910
+    if ($GMP_V_MAJOR < 6 or ($GMP_V_MAJOR == 6 and $GMP_V_MINOR < 1)) {
+        no warnings 'redefine';
+        *Math::GMPq::Rmpq_cmp_z = sub {
+            my ($q1, $z) = @_;
+            my $q2 = Math::GMPq::Rmpq_init();
+            Math::GMPq::Rmpq_set_z($q2, $z);
+            Math::GMPq::Rmpq_cmp($q1, $q2);
+        };
+    }
+}
+
 use overload
   '""' => \&stringify,
   '0+' => \&numify,

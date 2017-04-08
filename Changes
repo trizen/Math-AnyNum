@@ -1,5 +1,16 @@
 Revision history for Math-AnyNum
 
+0.03    2017-04-08
+
+        [IMPROVEMENTS]
+
+        - Minor optimization in overloaded '-' and '/'.
+
+        [FIXES]
+
+        - Workaround for Math::GMPq::Rmpq_cmp_z() with a version of GMP older than 6.1.0. (https://rt.cpan.org/Public/Bug/Display.html?id=120910)
+        - Minor-fix in the stringification of Math::MPFR objects with exponents and trailing zeros.
+
 0.02    2017-04-03
 
         Require perl>=5.014.

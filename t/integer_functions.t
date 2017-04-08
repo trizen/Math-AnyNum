@@ -32,10 +32,14 @@ is(lucas(15),     1364);
 #   mfactorial
 
 #~ is(mfactorial(10, 2), '3840');
-#~ is(mfactorial(11, 2), '10395');
+#~ is(mfactorial(11, 3), '880');
 
-#~ is(dfactorial(10), '3840');
-#~ is(dfactorial(11), '10395');
+#~ is(mfactorial($o->new(10), 2),          '3840');
+#~ is(mfactorial(11,          $o->new(2)), '10395');
+#~ is(mfactorial($o->new(10), $o->new(2)), '3840');
+
+#~ is(dfactorial(10),          '3840');
+#~ is(dfactorial($o->new(11)), '10395');
 
 is(fibonacci($o->new(12)), 144);
 is(lucas($o->new(15)),     1364);

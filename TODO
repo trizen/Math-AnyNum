@@ -4,6 +4,11 @@
 
 # Better documentation.
 
+# Optimizations:
+
+    gcd(AnyNum, Scalar)
+    lcm(AnyNum, Scalar)
+
 # Add the following methods:
 
     exp2  [?]
