@@ -2810,7 +2810,10 @@ Class::Multimethods::multimethod round => qw(* *) => sub {
         };
 
         sub seed {
-            my $z = _star2mpz($_[0]) // die "invalid seed: <<$_[0]>> (expected an integer)";
+            my $z = _star2mpz($_[0]) // do {
+                require Carp;
+                Carp::croak("invalid seed: <<$_[0]>> (expected an integer)");
+            };
             Math::MPFR::Rmpfr_randseed($state, $z);
             bless \$z, __PACKAGE__;
         }
@@ -2854,7 +2857,10 @@ Class::Multimethods::multimethod round => qw(* *) => sub {
         };
 
         sub iseed {
-            my $z = _star2mpz($_[0]) // die "invalid seed: <<$_[0]>> (expected an integer)";
+            my $z = _star2mpz($_[0]) // do {
+                require Carp;
+                Carp::croak("invalid seed: <<$_[0]>> (expected an integer)");
+            };
             Math::GMPz::zgmp_randseed($state, $z);
             bless \$z, __PACKAGE__;
         }
@@ -3956,7 +3962,8 @@ sub as_int {
     if (defined($y)) {
         $base = CORE::int($y);
         if ($base < 2 or $base > 36) {
-            die "[ERROR] base must be between 2 and 36, got $y\n";
+            require Carp;
+            Carp::croak("base must be between 2 and 36, got $y");
         }
     }
 
