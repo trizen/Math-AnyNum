@@ -6,7 +6,7 @@ Math::AnyNum - Arbitrary size precision for integers, rationals, floating-points
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =head1 SYNOPSIS
 
@@ -112,8 +112,7 @@ Each function can be exported individually, as:
 
     use Math::AnyNum qw(zeta);
 
-There is also the possibility of exporting an entire group of
-functions, as:
+There is also the possibility of exporting an entire group of functions, as:
 
     use Math::AnyNum qw(:trig);
 
@@ -126,8 +125,10 @@ each number a Math::AnyNum object and also exports the C<i>, C<Inf>
 and C<NaN> constants:
 
     use Math::AnyNum qw(:overload);
-    say sqrt(-16);                                #=> 4i
-    say 3 + 4*i;                                  #=> 3+4i
+    say 42;                                       #=> "42"   (as Int)
+    say 1/2;                                      #=> "1/2"  (as Rat)
+    say 0.5;                                      #=> "0.5"  (as Float)
+    say 3 + 4*i;                                  #=> "3+4i" (as Complex)
 
 B<NOTE:> C<:overload> is lexical to the current scope only.
 
@@ -184,7 +185,7 @@ we get the following results:
 As shown above, integers and rational numbers do not obey this precision, because they can grow and
 shrink dynamically, without a specific limit.
 
-A rational number never losses precision in rational operations, therefore if we say:
+A rational number never losses accuracy in rational operations, therefore if we say:
 
     my $x = 1/3;
     say $x*3;                                     #=> 1

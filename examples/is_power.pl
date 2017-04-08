@@ -12,7 +12,7 @@ use Math::AnyNum qw(iroot ipow is_power);
 
 sub my_is_power {
     my ($n, $k) = @_;
-    ipow(iroot($n, $k), $k) == $n;
+    ipow(iroot($n, $k), $k) eq $n;
 }
 
 my $pow = shift(@ARGV) // 3;
