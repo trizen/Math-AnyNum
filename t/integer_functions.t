@@ -140,7 +140,7 @@ is(remdiv(37,           5),          37);
 is(remdiv($o->new(576), 3),          64);
 is(remdiv(576,          $o->new(3)), 64);
 is(remdiv($o->new(576), $o->new(3)), 64);
-is(remdiv(1,            1),          1);
+is(remdiv(1,            1),          1);    # see: https://github.com/trizen/Math-AnyNum/issues/1#issuecomment-292738550
 is(remdiv(0,            0),          0);
 
 is(iadd(3,          4),           7);

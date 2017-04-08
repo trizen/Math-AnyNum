@@ -1,5 +1,12 @@
 Revision history for Math-AnyNum
 
+0.04    2017-04-xx
+
+        [FIXES]
+
+        - Fixed some tests under GMP < 5.1.0 (thanks to Slaven Rezić; https://github.com/trizen/Math-AnyNum/issues/1).
+        - Workaround in log10() with MPC < 1.0 (thanks to Slaven Rezić; https://github.com/trizen/Math-AnyNum/issues/1).
+
 0.03    2017-04-08
 
         [IMPROVEMENTS]
