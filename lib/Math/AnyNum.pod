@@ -945,7 +945,7 @@ Factorial of C<n>. Returns NaN when C<n> is negative. (C<1*2*3*...*n>)
 
     dfactorial(n)                                 #=> Int | NaN
 
-Double-factorial of C<n> (denoted as C<n!!>). Returns NaN when C<n> is negative.
+Double-factorial of C<n> (denoted as C<n!!>). Returns NaN when C<n> is negative. (requires GMP>=5.1.0)
 
 Example:
 
@@ -956,7 +956,7 @@ Example:
 
     mfactorial(n, m)                              #=> Int | NaN
 
-Generalized m-factorial of C<n>. Returns NaN when C<n> is negative.
+Generalized m-factorial of C<n>. Returns NaN when C<n> is negative. (requires GMP>=5.1.0)
 
 =head2 binomial
 
@@ -973,7 +973,7 @@ Calculates the binomial coefficient C<n> over C<k>, also called the
 
     primorial(n)                                  #=> Int
 
-Returns the product of all the primes less than or equal to C<n>.
+Returns the product of all the primes less than or equal to C<n>. (requires GMP>=5.1.0)
 
 =head2 next_prime
 

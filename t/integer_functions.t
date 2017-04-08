@@ -5,16 +5,42 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 188;
+plan tests => 218;
 
 use Math::AnyNum qw(:ntheory);
+use Math::GMPz::V qw();
+
+my $GMP_V_MAJOR = Math::GMPz::V::___GNU_MP_VERSION();
+my $GMP_V_MINOR = Math::GMPz::V::___GNU_MP_VERSION_MINOR();
 
 my $o = 'Math::AnyNum';
 
-is(factorial(0), 1);
-is(factorial(5), 120);
+is(lucas(-1),            'NaN');
+is(lucas(0),             '2');
+is(lucas(1),             '1');
+is(lucas(15),            '1364');
+is(lucas($o->new('15')), '1364');
+is(lucas($o->new('-4')), 'NaN');
 
-is(factorial($o->new(5)), 120);
+is(factorial(0),          '1');
+is(factorial(5),          '120');
+is(factorial(-1),         'NaN');
+is(factorial($o->new(5)), '120');
+
+is(fibonacci(0),           '0');
+is(fibonacci(12),          '144');
+is(fibonacci(-3),          'NaN');
+is(fibonacci($o->new(12)), '144');
+
+is(binomial(12,   5),  '792');
+is(binomial(0,    0),  '1');
+is(binomial(-15,  12), '9657700');
+is(binomial(124,  -2), '0');
+is(binomial(-124, -3), '0');
+
+is(binomial($o->new(12),  5),           '792');
+is(binomial(-15,          $o->new(12)), '9657700');
+is(binomial($o->new(124), $o->new(-2)), '0');
 
 is(binomial(42, 39),  11480);
 is(binomial(-4, -42), 10660);
@@ -28,18 +54,29 @@ is(fibonacci(12), 144);
 is(lucas(15),     1364);
 
 # The following two functions require GMP >= 5.1.0.
+#   primorial
 #   dfactorial
 #   mfactorial
 
-#~ is(mfactorial(10, 2), '3840');
-#~ is(mfactorial(11, 3), '880');
+SKIP: {
+    my $OLD_GMP = ($GMP_V_MAJOR < 5 or ($GMP_V_MAJOR == 5 and $GMP_V_MINOR < 1));
+    skip("old version of GMP detected", 11) if $OLD_GMP;
 
-#~ is(mfactorial($o->new(10), 2),          '3840');
-#~ is(mfactorial(11,          $o->new(2)), '10395');
-#~ is(mfactorial($o->new(10), $o->new(2)), '3840');
+    is(mfactorial(10, 2), '3840');
+    is(mfactorial(11, 3), '880');
 
-#~ is(dfactorial(10),          '3840');
-#~ is(dfactorial($o->new(11)), '10395');
+    is(mfactorial($o->new(10), 2),          '3840');
+    is(mfactorial(11,          $o->new(2)), '10395');
+    is(mfactorial($o->new(10), $o->new(2)), '3840');
+
+    is(dfactorial(10),          '3840');
+    is(dfactorial($o->new(11)), '10395');
+
+    is(primorial(15),            '30030');
+    is(primorial(-5),            'NaN');
+    is(primorial($o->new('15')), '30030');
+    is(primorial($o->new('-6')), 'NaN');
+}
 
 is(fibonacci($o->new(12)), 144);
 is(lucas($o->new(15)),     1364);

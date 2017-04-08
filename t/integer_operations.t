@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 67;
+plan tests => 41;
 
 use Math::AnyNum;
 
@@ -185,47 +185,4 @@ use Math::AnyNum;
         my $z = $n->abs->idiv($f);
         is($z, '2');
     }
-}
-
-{
-    # Import functions
-    use Math::AnyNum qw(
-      lucas
-      factorial
-      fibonacci
-      binomial
-      primorial
-      );
-
-    is(lucas(-1),                      'NaN');
-    is(lucas(0),                       '2');
-    is(lucas(1),                       '1');
-    is(lucas(15),                      '1364');
-    is(lucas(Math::AnyNum->new('15')), '1364');
-    is(lucas(Math::AnyNum->new('-4')), 'NaN');
-
-    is(primorial(15),                      '30030');
-    is(primorial(-5),                      'NaN');
-    is(primorial(Math::AnyNum->new('15')), '30030');
-    is(primorial(Math::AnyNum->new('-6')), 'NaN');
-
-    is(factorial(0),                    '1');
-    is(factorial(5),                    '120');
-    is(factorial(-1),                   'NaN');
-    is(factorial(Math::AnyNum->new(5)), '120');
-
-    is(fibonacci(0),                     '0');
-    is(fibonacci(12),                    '144');
-    is(fibonacci(-3),                    'NaN');
-    is(fibonacci(Math::AnyNum->new(12)), '144');
-
-    is(binomial(12,   5),  '792');
-    is(binomial(0,    0),  '1');
-    is(binomial(-15,  12), '9657700');
-    is(binomial(124,  -2), '0');
-    is(binomial(-124, -3), '0');
-
-    is(binomial(Math::AnyNum->new(12),  5),                     '792');
-    is(binomial(-15,                    Math::AnyNum->new(12)), '9657700');
-    is(binomial(Math::AnyNum->new(124), Math::AnyNum->new(-2)), '0');
 }
