@@ -1,5 +1,8 @@
 #!/usr/bin/perl
 
+use 5.014;
+use warnings;
+
 use lib qw(../lib);
 use Math::AnyNum qw(:overload tau fibonacci);
 
@@ -9,7 +12,7 @@ my $U = 2 / (1 + $S);
 
 sub fib_cf {
     my ($n) = @_;
-    (($T**$n - ($U**$n * cos(tau * $n))) / $S)->round(0);
+    (($T**$n - ($U**$n * cos(tau * $n))) / $S)->round;
 }
 
 for (my $i = 10 ; $i <= 100 ; $i += 10) {

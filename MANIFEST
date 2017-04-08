@@ -6,9 +6,9 @@ examples/bernoulli_numbers_recursive.pl
 examples/bernoulli_seidel.pl
 examples/binary_arithmetic_coding.pl
 examples/binradix_arithmetic_coding.pl
-examples/closed_form_fib.pl
 examples/computing_pi.pl
 examples/faulhaber_s_formula.pl
+examples/fibonacci.pl
 examples/fibonacci_validation.pl
 examples/halley_s_method.pl
 examples/inverse_of_factorial.pl
@@ -19,6 +19,7 @@ examples/power_pairs.pl
 examples/prime_count_approx.pl
 examples/rsa_algorithm.pl
 examples/tac-compressor.pl
+examples/tribonacci.pl
 examples/zeta_2n.pl
 examples/zeta_2n_fast.pl
 ignore.txt
