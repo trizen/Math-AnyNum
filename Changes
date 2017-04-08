@@ -1,5 +1,11 @@
 Revision history for Math-AnyNum
 
+0.05    2017-04-xx
+
+        [FIXES]
+
+        - Fixed the (in)equality checks when one of the arguments is NaN.
+
 0.04    2017-04-08
 
         [FIXES]

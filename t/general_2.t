@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 443;
+plan tests => 491;
 
 {
     use Math::AnyNum;
@@ -14,6 +14,16 @@ plan tests => 443;
     my $z = Math::AnyNum->new_z('3');
     my $f = Math::AnyNum->new_f('4');
     my $c = Math::AnyNum->new_c('5');
+
+    ok($q == 2);
+    ok($z == 3);
+    ok($f == 4);
+    ok($c == 5);
+
+    ok(not $q != 2);
+    ok(not $z != 3);
+    ok(not $f != 4);
+    ok(not $c != 5);
 
     is($q, 2);
     is($z, 3);
@@ -576,6 +586,61 @@ plan tests => 443;
     like($z->log10, qr/^0\.47712125471966243729502\d*\z/);
     like($f->log10, qr/^0\.60205999132796239042747\d*\z/);
     like($c->log10, qr/^0\.69897000433601880478626110527\d*\z/);
+
+    my $NaN = Math::AnyNum->nan;
+    my $Inf = Math::AnyNum->inf;
+
+    ok($z != $NaN);
+    ok($q != $NaN);
+    ok($f != $NaN);
+    ok($c != $NaN);
+
+    ok($NaN != $z);
+    ok($NaN != $q);
+    ok($NaN != $f);
+    ok($NaN != $c);
+
+    ok($z != $Inf);
+    ok($q != $Inf);
+    ok($f != $Inf);
+    ok($c != $Inf);
+
+    ok($Inf != $z);
+    ok($Inf != $q);
+    ok($Inf != $f);
+    ok($Inf != $c);
+
+    ok(not $z == $NaN);
+    ok(not $q == $NaN);
+    ok(not $f == $NaN);
+    ok(not $c == $NaN);
+
+    ok(not $z == $Inf);
+    ok(not $q == $Inf);
+    ok(not $f == $Inf);
+    ok(not $c == $Inf);
+
+    ok(not $NaN == $z);
+    ok(not $NaN == $q);
+    ok(not $NaN == $f);
+    ok(not $NaN == $c);
+
+    ok(not $Inf == $z);
+    ok(not $Inf == $q);
+    ok(not $Inf == $f);
+    ok(not $Inf == $c);
+
+    ok(not $NaN == 2);
+    ok(not $Inf == 2);
+
+    ok($NaN != 2);
+    ok($Inf != 2);
+
+    ok(2 != $NaN);
+    ok(2 != $Inf);
+
+    ok(not 2 == $NaN);
+    ok(not 2 == $Inf);
 }
 
 {

@@ -8,14 +8,14 @@ use strict;
 use warnings;
 
 use lib qw(../lib);
-use Math::AnyNum qw(iroot ipow is_power);
+use Math::AnyNum qw(iroot ipow is_power irand);
 
 sub my_is_power {
     my ($n, $k) = @_;
-    ipow(iroot($n, $k), $k) eq $n;
+    ipow(iroot($n, $k), $k) == $n;
 }
 
-my $pow = shift(@ARGV) // 3;
+my $pow = shift(@ARGV) // irand(3, 4);
 my @bools = qw(false true);
 
 foreach my $i (-1000 .. 1000) {
