@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 66;
+plan tests => 67;
 
 {
     use Math::AnyNum qw(:overload);
@@ -100,4 +100,7 @@ plan tests => 66;
     is(Math::AnyNum->new('ff/ae', 16), '85/58');
 
     #is(2.5, 5/2);
+
+    # Stringification of very small values
+    like(1 / exp(Math::AnyNum->new('459')), qr/^4\.5586138580111498673250123473364\d*e-200\z/);
 }

@@ -6,6 +6,7 @@ WriteMakefile
   'NAME' => 'Math::AnyNum',
   'VERSION_FROM' => 'lib/Math/AnyNum.pm',
   'PREREQ_PM' => {
+                   'Carp' => 0,
                    'Class::Multimethods' => '1.7',
                    'Math::GMPq' => '0.41',
                    'Math::GMPz' => '0.39',
