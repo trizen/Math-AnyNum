@@ -74,14 +74,13 @@ Class::Multimethods::multimethod __stringify__ => qw(Math::MPFR) => sub {
 Class::Multimethods::multimethod __stringify__ => qw(Math::MPC) => sub {
     my ($x) = @_;
 
-    my $real = Math::MPFR::Rmpfr_init2($PREC);
-    my $imag = Math::MPFR::Rmpfr_init2($PREC);
+    my $fr = Math::MPFR::Rmpfr_init2($PREC);
 
-    Math::MPC::RMPC_RE($real, $x);
-    Math::MPC::RMPC_IM($imag, $x);
+    Math::MPC::RMPC_RE($fr, $x);
+    my $re = __stringify__($fr);
 
-    my $re = __stringify__($real);
-    my $im = __stringify__($imag);
+    Math::MPC::RMPC_IM($fr, $x);
+    my $im = __stringify__($fr);
 
     if ($im eq '0' or $im eq '-0') {
         return $re;
