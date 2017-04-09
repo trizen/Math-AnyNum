@@ -301,38 +301,33 @@ use overload
                         $prefix eq '0x' ? __PACKAGE__->new(substr($const, 2), 16)
                       : $prefix eq '0b' ? __PACKAGE__->new(substr($const, 2), 2)
                       :                   __PACKAGE__->new(substr($const, 1), 8);
-                  },
-                  ;
+                  };
 
                 # Export 'Inf', 'NaN' and 'i' as constants
-                no strict 'refs';
-
                 foreach my $pair (['Inf', inf()], ['NaN', nan()], ['i', i()]) {
                     my $sub = $caller . '::' . $pair->[0];
-                    if (!defined &$sub) {
-                        my $value = $pair->[1];
-                        *$sub = sub () { $value };
-                    }
+                    no strict 'refs';
+                    no warnings 'redefine';
+                    my $value = $pair->[1];
+                    *$sub = sub () { $value };
                 }
             }
             elsif (exists $const{$name}) {
                 no strict 'refs';
+                no warnings 'redefine';
                 my $caller_sub = $caller . '::' . $name;
-                if (!defined &$caller_sub) {
-                    my $sub   = $const{$name};
-                    my $value = Math::AnyNum->$sub;
-                    *$caller_sub = sub() { $value }
-                }
+                my $sub        = $const{$name};
+                my $value      = $sub->();
+                *$caller_sub = sub() { $value }
             }
             elsif (   exists($special{$name})
                    or exists($trig{$name})
                    or exists($ntheory{$name})
                    or exists($misc{$name})) {
                 no strict 'refs';
+                no warnings 'redefine';
                 my $caller_sub = $caller . '::' . $name;
-                if (!defined &$caller_sub) {
-                    *$caller_sub = $ntheory{$name} // $special{$name} // $trig{$name} // $misc{$name};
-                }
+                *$caller_sub = $ntheory{$name} // $special{$name} // $trig{$name} // $misc{$name};
             }
             elsif ($name eq ':trig') {
                 push @_, keys(%trig);
