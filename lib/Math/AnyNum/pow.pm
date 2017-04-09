@@ -57,7 +57,7 @@ Class::Multimethods::multimethod __pow__ => qw(Math::GMPq Math::GMPq) => sub {
 
     # (-x)^(a/b) is a complex number
     elsif (Math::GMPq::Rmpq_sgn($x) < 0) {
-        (@_) = (_mpq2mpc($x), _mpq2mpfr($y));
+        (@_) = (_mpq2mpc($x), _mpq2mpc($y));
         goto &__pow__;
     }
 
