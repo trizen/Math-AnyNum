@@ -12,7 +12,6 @@ Class::Multimethods::multimethod __lgrt__ => qw(Math::MPFR) => sub {
         goto &__lgrt__;
     }
 
-    $PREC = CORE::int($PREC);
     Math::MPFR::Rmpfr_log($d, $d, $ROUND);
 
     my $p = Math::MPFR::Rmpfr_init2($PREC);
@@ -48,8 +47,6 @@ Class::Multimethods::multimethod __lgrt__ => qw(Math::MPFR) => sub {
 
 Class::Multimethods::multimethod __lgrt__ => qw(Math::MPC) => sub {
     my ($c) = @_;
-
-    $PREC = CORE::int($PREC);
 
     my $p = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_ui_pow_ui($p, 10, CORE::int($PREC >> 2), $ROUND);
