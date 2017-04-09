@@ -63,7 +63,7 @@ use overload
   '>='  => sub { $_[2] ?   $_[0]->le ($_[1])  : $_[0]->ge ($_[1]) },
   '<'   => sub { $_[2] ?   $_[0]->gt ($_[1])  : $_[0]->lt ($_[1]) },
   '<='  => sub { $_[2] ?   $_[0]->ge ($_[1])  : $_[0]->le ($_[1]) },
-  '<=>' => sub { $_[2] ? -($_[0]->cmp($_[1])) : $_[0]->cmp($_[1]) },
+  '<=>' => sub { $_[2] ? -($_[0]->cmp($_[1]) // return undef) : $_[0]->cmp($_[1]) },
 #>>>
 
   '>>' => sub { $_[2] ? __PACKAGE__->new($_[1])->rsft($_[0]) : $_[0]->rsft($_[1]) },
@@ -1277,7 +1277,7 @@ Class::Multimethods::multimethod cmp => qw(Math::AnyNum *) => sub {
 Class::Multimethods::multimethod gt => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
-    __cmp__($$x, $$y) > 0;
+    (__cmp__($$x, $$y) // return undef) > 0;
 };
 
 Class::Multimethods::multimethod gt => qw(Math::AnyNum $) => sub {
@@ -1285,17 +1285,17 @@ Class::Multimethods::multimethod gt => qw(Math::AnyNum $) => sub {
     my ($x, $y) = @_;
 
     if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        __cmp__($$x, $y) > 0;
+        (__cmp__($$x, $y) // return undef) > 0;
     }
     else {
-        __cmp__($$x, _str2obj($y)) > 0;
+        (__cmp__($$x, _str2obj($y)) // return undef) > 0;
     }
 };
 
 Class::Multimethods::multimethod gt => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
-    __cmp__($$x, ${__PACKAGE__->new($y)}) > 0;
+    (__cmp__($$x, ${__PACKAGE__->new($y)}) // return undef) > 0;
 };
 
 #
@@ -1305,24 +1305,24 @@ Class::Multimethods::multimethod gt => qw(Math::AnyNum *) => sub {
 Class::Multimethods::multimethod ge => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
-    __cmp__($$x, $$y) >= 0;
+    (__cmp__($$x, $$y) // return undef) >= 0;
 };
 
 Class::Multimethods::multimethod ge => qw(Math::AnyNum $) => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
     if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        __cmp__($$x, $y) >= 0;
+        (__cmp__($$x, $y) // return undef) >= 0;
     }
     else {
-        __cmp__($$x, _str2obj($y)) >= 0;
+        (__cmp__($$x, _str2obj($y)) // return undef) >= 0;
     }
 };
 
 Class::Multimethods::multimethod ge => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
-    __cmp__($$x, ${__PACKAGE__->new($y)}) >= 0;
+    (__cmp__($$x, ${__PACKAGE__->new($y)}) // return undef) >= 0;
 };
 
 #
@@ -1331,24 +1331,24 @@ Class::Multimethods::multimethod ge => qw(Math::AnyNum *) => sub {
 Class::Multimethods::multimethod lt => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
-    __cmp__($$x, $$y) < 0;
+    (__cmp__($$x, $$y) // return undef) < 0;
 };
 
 Class::Multimethods::multimethod lt => qw(Math::AnyNum $) => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
     if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        __cmp__($$x, $y) < 0;
+        (__cmp__($$x, $y) // return undef) < 0;
     }
     else {
-        __cmp__($$x, _str2obj($y)) < 0;
+        (__cmp__($$x, _str2obj($y)) // return undef) < 0;
     }
 };
 
 Class::Multimethods::multimethod lt => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
-    __cmp__($$x, ${__PACKAGE__->new($y)}) < 0;
+    (__cmp__($$x, ${__PACKAGE__->new($y)}) // return undef) < 0;
 };
 
 #
@@ -1357,24 +1357,24 @@ Class::Multimethods::multimethod lt => qw(Math::AnyNum *) => sub {
 Class::Multimethods::multimethod le => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
-    __cmp__($$x, $$y) <= 0;
+    (__cmp__($$x, $$y) // return undef) <= 0;
 };
 
 Class::Multimethods::multimethod le => qw(Math::AnyNum $) => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
     if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        __cmp__($$x, $y) <= 0;
+        (__cmp__($$x, $y) // return undef) <= 0;
     }
     else {
-        __cmp__($$x, _str2obj($y)) <= 0;
+        (__cmp__($$x, _str2obj($y)) // return undef) <= 0;
     }
 };
 
 Class::Multimethods::multimethod le => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
-    __cmp__($$x, ${__PACKAGE__->new($y)}) <= 0;
+    (__cmp__($$x, ${__PACKAGE__->new($y)}) // return undef) <= 0;
 };
 
 sub _copy {
@@ -3479,7 +3479,7 @@ sub is_zero {
         $x = __PACKAGE__->new($x);
     }
 
-    __cmp__($$x, 0) == 0;
+    (__cmp__($$x, 0) // return undef) == 0;
 }
 
 sub is_one {
@@ -3490,7 +3490,7 @@ sub is_one {
         $x = __PACKAGE__->new($x);
     }
 
-    __cmp__($$x, 1) == 0;
+    (__cmp__($$x, 1) // return undef) == 0;
 }
 
 sub is_mone {
@@ -3501,7 +3501,7 @@ sub is_mone {
         $x = __PACKAGE__->new($x);
     }
 
-    __cmp__($$x, -1) == 0;
+    (__cmp__($$x, -1) // return undef) == 0;
 }
 
 sub is_pos {
@@ -3512,7 +3512,7 @@ sub is_pos {
         $x = __PACKAGE__->new($x);
     }
 
-    __cmp__($$x, 0) > 0;
+    (__cmp__($$x, 0) // return undef) > 0;
 }
 
 sub is_neg {
@@ -3523,7 +3523,7 @@ sub is_neg {
         $x = __PACKAGE__->new($x);
     }
 
-    __cmp__($$x, 0) < 0;
+    (__cmp__($$x, 0) // return undef) < 0;
 }
 
 #

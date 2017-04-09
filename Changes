@@ -5,6 +5,7 @@ Revision history for Math-AnyNum
         [FIXES]
 
         - Fixed the (in)equality checks when one of the operands is NaN.
+        - Comparing anything to NaN, now returns `undef` instead of `0`.
 
         [IMPROVEMENTS]
 

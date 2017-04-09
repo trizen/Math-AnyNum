@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 499;
+plan tests => 542;
 
 {
     use Math::AnyNum;
@@ -654,6 +654,65 @@ plan tests => 499;
 
     ok($NaN != $zero);
     ok($zero != $NaN);
+
+    ok(not defined($NaN <=> 42));
+    ok(not defined($NaN <=> Math::AnyNum->new_f(42)));
+    ok(not defined(Math::AnyNum->new_f(42) <=> $NaN));
+    ok(not defined(42 <=> $NaN));
+
+    my $NaN_NaN = Math::AnyNum->new_c("NaN", "NaN");
+    ok(not defined($NaN_NaN <=> 42));
+    ok(not defined(42 <=> $NaN_NaN));
+    ok(not defined($NaN_NaN <=> $NaN_NaN));
+    ok(not defined($NaN <=> $NaN_NaN));
+    ok(not defined($NaN_NaN <=> $NaN));
+
+    ok(not $NaN == $NaN);
+    ok(not $NaN == $NaN_NaN);
+    ok(not $NaN_NaN == $NaN_NaN);
+    ok(not $NaN_NaN == $NaN);
+
+    ok($NaN_NaN != $Inf);
+    ok(not $NaN_NaN == $Inf);
+
+    ok($NaN != $NaN);
+    ok($NaN != $NaN_NaN);
+    ok($NaN_NaN != $NaN_NaN);
+    ok($NaN_NaN != $NaN);
+
+    ok(not defined(42 < $NaN));
+    ok(not defined(42 > $NaN));
+
+    ok(not defined(42 <= $NaN));
+    ok(not defined(42 >= $NaN));
+
+    ok(not defined($NaN < 42));
+    ok(not defined($NaN > 42));
+
+    ok(not defined($NaN <= 42));
+    ok(not defined($NaN >= 42));
+
+    ok(not defined(42 < $NaN_NaN));
+    ok(not defined(42 > $NaN_NaN));
+
+    ok(not defined(42 <= $NaN_NaN));
+    ok(not defined(42 >= $NaN_NaN));
+
+    ok(not defined($NaN_NaN < 42));
+    ok(not defined($NaN_NaN > 42));
+
+    ok(not defined($NaN_NaN <= 42));
+    ok(not defined($NaN_NaN >= 42));
+
+    ok(not defined($NaN < $NaN));
+    ok(not defined($NaN > $NaN));
+    ok(not defined($NaN <= $NaN));
+    ok(not defined($NaN >= $NaN));
+
+    ok(not defined($NaN_NaN < $NaN));
+    ok(not defined($NaN_NaN > $NaN));
+    ok(not defined($NaN_NaN <= $NaN));
+    ok(not defined($NaN_NaN >= $NaN));
 }
 
 {
