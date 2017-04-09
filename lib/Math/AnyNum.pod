@@ -845,19 +845,19 @@ The integer square root of C<n> and the integer cube root of C<n>. Returns NaN w
 
 =head2 isqrtrem
 
-    isqrtrem(n)     => (Int, Int) | (NaN, NaN)
+    isqrtrem(n)                                   #=> (Int, Int) | (NaN, NaN)
 
 The integer part of the square root of C<n> and the remainder C<n - isqrt(n)**2>, which will be zero when <n> is a perfect square.
 
 =head2 iroot
 
-    iroot(n, m)     => Int | NaN
+    iroot(n, m)                                   #=> Int | NaN
 
 The integer C<m-th> root of C<n>. Returns NaN when the root is not real.
 
 =head2 irootrem
 
-    irootrem(n, m)    => (Int, Int) | (NaN, NaN)
+    irootrem(n, m)                                #=> (Int, Int) | (NaN, NaN)
 
 The integer part of the root of C<n> and the remainder C<n - iroot(n,m)**m>.
 
@@ -932,7 +932,7 @@ The n-th Lucas number. Returns NaN when C<n> is negative.
 
 =head2 fibonacci
 
-    fibonacci(n)        => Int | NaN
+    fibonacci(n)                                  #=> Int | NaN
 
 The n-th Fibonacci number. Returns NaN when C<n> is negative.
 
@@ -1392,7 +1392,7 @@ Example:
 
 =head2 as_frac
 
-    as_frac(x)      => Scalar
+    as_frac(x)                                    #=> Scalar
 
 Returns a string representing the number as a base-10 fraction.
 
