@@ -66,7 +66,7 @@ Class::Multimethods::multimethod __pow__ => qw(Math::GMPq Math::GMPq) => sub {
 };
 
 Class::Multimethods::multimethod __pow__ => qw(Math::GMPq Math::GMPz) => sub {
-    (@_) = ($_[0], _mpz2mpq($_[1]));
+    (@_) = ($_[0], Math::GMPz::Rmpz_get_d($_[1]));
     goto &__pow__;
 };
 
