@@ -26,11 +26,12 @@ Class::Multimethods::multimethod __eq__ => qw(Math::MPFR Math::MPC) => sub {
 };
 
 Class::Multimethods::multimethod __eq__ => qw(Math::MPFR $) => sub {
-    Math::MPFR::Rmpfr_integer_p($_[0])
+    my ($x, $y) = @_;
+    Math::MPFR::Rmpfr_integer_p($x)
       and (
-           $_[1] < 0
-           ? Math::MPFR::Rmpfr_cmp_si($_[0], $_[1])
-           : Math::MPFR::Rmpfr_cmp_ui($_[0], $_[1])
+           $y < 0
+           ? Math::MPFR::Rmpfr_cmp_si($x, $y)
+           : Math::MPFR::Rmpfr_cmp_ui($x, $y)
           ) == 0;
 };
 
@@ -58,11 +59,12 @@ Class::Multimethods::multimethod __eq__ => qw(Math::GMPq Math::MPC) => sub {
 
 Class::Multimethods::multimethod __eq__ => qw(Math::GMPq $) => sub {
     my ($x, $y) = @_;
-    (
-     $y < 0
-     ? Math::GMPq::Rmpq_cmp_si($x, $y, 1)
-     : Math::GMPq::Rmpq_cmp_ui($x, $y, 1)
-    ) == 0;
+    Math::GMPq::Rmpq_integer_p($_[0])
+      and (
+           $y < 0
+           ? Math::GMPq::Rmpq_cmp_si($x, $y, 1)
+           : Math::GMPq::Rmpq_cmp_ui($x, $y, 1)
+          ) == 0;
 };
 
 #
