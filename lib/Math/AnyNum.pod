@@ -6,7 +6,7 @@ Math::AnyNum - Arbitrary size precision for integers, rationals, floating-points
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =head1 SYNOPSIS
 
@@ -1482,6 +1482,13 @@ Returns a true value when C<x> is equal or less than C<y>.
 
 Compares C<x> to C<y> and returns a negative value when C<x> is less than C<y>,
 0 when C<x> and C<y> are equal, and a positive value when C<x> is greater than C<y>.
+
+Complex numbers are compared as:
+
+    (real(x) <=> real(y)) ||
+    (imag(x) <=> imag(y))
+
+Comparing anything to NaN (including NaN itself), returns C<undef>.
 
 =head1 PERFORMANCE
 

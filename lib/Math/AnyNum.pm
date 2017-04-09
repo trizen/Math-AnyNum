@@ -15,7 +15,7 @@ use POSIX qw(ULONG_MAX LONG_MIN);
 
 use Class::Multimethods qw();
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 our ($ROUND, $PREC);
 
 BEGIN {
