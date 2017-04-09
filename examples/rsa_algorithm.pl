@@ -38,8 +38,8 @@ my $phi = ($p - 1) * ($q - 1);
     do {
         $e = irand(65537, $n);
     } until (
-             $e < $phi
-        and gcd($e, $phi) == 1
+                $e   <  $phi
+        and gcd($e,     $phi  ) == 1
         and gcd($e - 1, $p - 1) == 2
         and gcd($e - 1, $q - 1) == 2
     );

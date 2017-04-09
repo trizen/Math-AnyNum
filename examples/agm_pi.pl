@@ -19,7 +19,8 @@ sub agm_pi {
     local $Math::AnyNum::PREC = 4 * $digits;
 
     my $HALF = Math::AnyNum->new_f(0.5);
-    my ($an, $bn, $tn, $pn) = (Math::AnyNum->new_ui(1), sqrt($HALF), $HALF * $HALF, Math::AnyNum->new_ui(1));
+    my $ONE  = Math::AnyNum->new_ui(1);
+    my ($an, $bn, $tn, $pn) = ($ONE, sqrt($HALF), $HALF * $HALF, $ONE);
     while ($pn < $acc) {
         my $prev_an = $an;
         $an += $bn;

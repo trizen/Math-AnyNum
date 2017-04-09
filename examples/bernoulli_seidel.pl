@@ -44,5 +44,5 @@ my $from = shift(@ARGV) // 1;
 my $to   = shift(@ARGV) // 50;
 
 foreach my $n ($from .. $to) {
-    say "B(", 2 * $n, ") = ", join('/', bernoulli_seidel(2 * $n));
+    say "B(", 2 * $n, ") = ", bernoulli_seidel(2 * $n);
 }

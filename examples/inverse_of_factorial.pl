@@ -23,10 +23,9 @@ sub inv_fac_lgrt {
     (T * $n**(1 / e))->lgrt * e - 0.5;
 }
 
-for my $z (1 .. 100) {
-    my $n = Math::AnyNum->new($z);
+for my $n (1 .. 100) {
 
-    my $f = factorial($z);
+    my $f = factorial($n);
     my $i = inv_fac_W($f);
     my $j = inv_fac_lgrt($f);
 
