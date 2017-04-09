@@ -14,13 +14,12 @@ Class::Multimethods::multimethod __stringify__ => qw(Math::GMPq) => sub {
 Class::Multimethods::multimethod __stringify__ => qw(Math::MPFR) => sub {
     my ($x) = @_;
 
-    if (!Math::MPFR::Rmpfr_number_p($x)) {
-        return (
-                  Math::MPFR::Rmpfr_nan_p($x)   ? 'NaN'
-                : Math::MPFR::Rmpfr_sgn($x) < 0 ? '-Inf'
-                :                                 'Inf'
-               );
-    }
+    Math::MPFR::Rmpfr_number_p($x)
+      || return (
+                   Math::MPFR::Rmpfr_nan_p($x)   ? 'NaN'
+                 : Math::MPFR::Rmpfr_sgn($x) < 0 ? '-Inf'
+                 :                                 'Inf'
+                );
 
     # log(10)/log(2) =~ 3.3219280948873623
     my $digits = CORE::int($PREC >> 2);
