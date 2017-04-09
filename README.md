@@ -4,7 +4,7 @@ Arbitrary size precision for integers, rationals, floating-points and complex nu
 
 # DESCRIPTION
 
-Math::AnyNum provides a correct, intuitive and transparent interface to the [GMP](https://gmplib.org/), [MPFR](http://www.mpfr.org/) and [MPC](http://www.multiprecision.org/) libraries, using [Math::GMPq](https://metacpan.org/release/Math-GMPq), [Math::GMPz](https://metacpan.org/release/Math-GMPz), [Math::MPFR](https://metacpan.org/release/Math-MPFR) and [Math::MPC](https://metacpan.org/release/Math-MPC).
+[Math::AnyNum](https://metacpan.org/pod/Math::AnyNum) provides a correct, intuitive and transparent interface to the [GMP](https://gmplib.org/), [MPFR](http://www.mpfr.org/) and [MPC](http://www.multiprecision.org/) libraries, using [Math::GMPq](https://metacpan.org/release/Math-GMPq), [Math::GMPz](https://metacpan.org/release/Math-GMPz), [Math::MPFR](https://metacpan.org/release/Math-MPFR) and [Math::MPC](https://metacpan.org/release/Math-MPC).
 
 # SYNOPSIS
 
