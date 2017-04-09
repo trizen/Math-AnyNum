@@ -6,6 +6,11 @@ Revision history for Math-AnyNum
 
         - Fixed the (in)equality checks when one of the operands is NaN.
 
+        [IMPROVEMENTS]
+
+        - Refactored the method `is_power` to handle scalar arguments more efficiently.
+        - Optimized the `root` and `iroot` method when the second argument is a scalar.
+
 0.04    2017-04-08
 
         [FIXES]

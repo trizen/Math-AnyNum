@@ -1817,6 +1817,13 @@ Class::Multimethods::multimethod idiv => qw(Math::AnyNum Math::AnyNum) => sub {
     bless \$r, __PACKAGE__;
 };
 
+Class::Multimethods::multimethod idiv => qw(* Math::AnyNum) => sub {
+    require Math::AnyNum::idiv;
+    my ($x, $y) = @_;
+    my $r = __idiv__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
+    bless \$r, __PACKAGE__;
+};
+
 Class::Multimethods::multimethod idiv => qw(* $) => sub {
     my ($x, $y) = @_;
 
@@ -1869,6 +1876,13 @@ Class::Multimethods::multimethod pow => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::pow;
     my ($x, $y) = @_;
     my $r = __pow__(_copy($$x), ${__PACKAGE__->new($y)});
+    bless \$r, __PACKAGE__;
+};
+
+Class::Multimethods::multimethod pow => qw(* Math::AnyNum) => sub {
+    require Math::AnyNum::pow;
+    my ($x, $y) = @_;
+    my $r = __pow__(${__PACKAGE__->new($x)}, $$y);
     bless \$r, __PACKAGE__;
 };
 
@@ -1939,6 +1953,13 @@ Class::Multimethods::multimethod ipow => qw($ $) => sub {
     bless \$r, __PACKAGE__;
 };
 
+Class::Multimethods::multimethod ipow => qw(* Math::AnyNum) => sub {
+    require Math::AnyNum::ipow;
+    my ($x, $y) = @_;
+    my $r = __ipow__(_star2mpz($x) // (goto &nan), _any2si($$y) // (goto &nan));
+    bless \$r, __PACKAGE__;
+};
+
 Class::Multimethods::multimethod ipow => qw(* *) => sub {
     require Math::AnyNum::ipow;
     my ($x, $y) = @_;
@@ -1963,6 +1984,14 @@ Class::Multimethods::multimethod root => qw(Math::AnyNum $) => sub {
     require Math::AnyNum::inv;
     my ($x, $y) = @_;
     my $r = __pow__(_copy($$x), __inv__(_str2obj($y)));
+    bless \$r, __PACKAGE__;
+};
+
+Class::Multimethods::multimethod root => qw(* $) => sub {
+    require Math::AnyNum::pow;
+    require Math::AnyNum::inv;
+    my ($x, $y) = @_;
+    my $r = __pow__(${__PACKAGE__->new($x)}, __inv__(_str2obj($y)));
     bless \$r, __PACKAGE__;
 };
 
@@ -2024,6 +2053,28 @@ Class::Multimethods::multimethod iroot => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::iroot;
     my ($x, $y) = @_;
     my $r = __iroot__(_copy2mpz($$x) // (goto &nan), _any2si(${__PACKAGE__->new($y)}) // (goto &nan));
+    bless \$r, __PACKAGE__;
+};
+
+Class::Multimethods::multimethod iroot => qw(* $) => sub {
+    require Math::AnyNum::iroot;
+    my ($x, $y) = @_;
+
+    my $r;
+    if (CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
+        $r = __iroot__(_star2mpz($x) // (goto &nan), $y);
+    }
+    else {
+        $r = __iroot__(_star2mpz($x) // (goto &nan), _any2si(_str2obj($y)) // (goto &nan));
+    }
+
+    bless \$r, __PACKAGE__;
+};
+
+Class::Multimethods::multimethod iroot => qw(* Math::AnyNum) => sub {
+    require Math::AnyNum::iroot;
+    my ($x, $y) = @_;
+    my $r = __iroot__(_star2mpz($x) // (goto &nan), _any2si($$y) // (goto &nan));
     bless \$r, __PACKAGE__;
 };
 
@@ -3493,23 +3544,69 @@ sub is_square {
 ## is_power
 #
 
-sub is_power {
+Class::Multimethods::multimethod is_power => qw(Math::AnyNum Math::AnyNum) => sub {
+    require Math::AnyNum::is_power;
+    my ($x, $y) = @_;
+    $x->is_int()
+      and __is_power__(_any2mpz($$x) // (return 0), _any2si($$y) // (return 0));
+};
+
+Class::Multimethods::multimethod is_power => qw(Math::AnyNum $) => sub {
+    require Math::AnyNum::is_power;
     my ($x, $y) = @_;
 
-    if (ref($x) ne __PACKAGE__) {
-        $x = __PACKAGE__->new($x);
-    }
-
     $x->is_int() || return 0;
-
-    if (defined($y)) {
-        require Math::AnyNum::is_power;
-        __is_power__(_any2mpz($$x) // (return 0), CORE::int($y));
+    if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
+        __is_power__(_star2mpz($x) // (return 0), $y);
     }
     else {
-        Math::GMPz::Rmpz_perfect_power_p(_any2mpz($$x) // (return 0));
+        __is_power__(_any2mpz($$x) // (return 0), _any2si(${__PACKAGE__->new($y)}) // (return 0));
     }
-}
+};
+
+Class::Multimethods::multimethod is_power => qw(* $) => sub {
+    require Math::AnyNum::is_power;
+    my ($x, $y) = @_;
+
+    $x = __PACKAGE__->new($x);
+    $x->is_int() || return 0;
+
+    if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
+        __is_power__(_any2mpz($$x) // (return 0), $y);
+    }
+    else {
+        __is_power__(_any2mpz($$x) // (return 0), _any2si(${__PACKAGE__->new($y)}) // (return 0));
+    }
+};
+
+Class::Multimethods::multimethod is_power => qw(* Math::AnyNum) => sub {
+    require Math::AnyNum::is_power;
+    my ($x, $y) = @_;
+    $x = __PACKAGE__->new($x);
+    $x->is_int()
+      and __is_power__(_any2mpz($$x) // (return 0), _any2si($$y) // (return 0));
+};
+
+Class::Multimethods::multimethod is_power => qw(* *) => sub {
+    require Math::AnyNum::is_power;
+    my ($x, $y) = @_;
+    $x = __PACKAGE__->new($x);
+    $x->is_int()
+      and __is_power__(_any2mpz($$x) // (return 0), _any2si(${__PACKAGE__->new($y)}) // (return 0));
+};
+
+Class::Multimethods::multimethod is_power => qw(Math::AnyNum) => sub {
+    my ($x) = @_;
+    $x->is_int()
+      and Math::GMPz::Rmpz_perfect_power_p(_any2mpz($$x) // (return 0));
+};
+
+Class::Multimethods::multimethod is_power => qw(*) => sub {
+    my ($x) = @_;
+    $x = __PACKAGE__->new($x);
+    $x->is_int()
+      and Math::GMPz::Rmpz_perfect_power_p(_any2mpz($$x) // (return 0));
+};
 
 #
 ## kronecker
@@ -3974,7 +4071,17 @@ sub as_int {
 
     my $base = 10;
     if (defined($y)) {
-        $base = CORE::int($y);
+
+        if (ref($y) eq '' and CORE::int($y) eq $y) {
+            $base = $y;
+        }
+        elsif (ref($y) eq __PACKAGE__) {
+            $base = _any2ui($$y) // 0;
+        }
+        else {
+            $base = _any2ui(${__PACKAGE__->new($y)}) // 0;
+        }
+
         if ($base < 2 or $base > 36) {
             require Carp;
             Carp::croak("base must be between 2 and 36, got $y");
