@@ -7,17 +7,16 @@ use warnings;
 Class::Multimethods::multimethod __irand__ => qw(Math::GMPz Math::GMPz *) => sub {
     my ($x, $y, $state) = @_;
 
-    my $r = Math::GMPz::Rmpz_init();
     my $cmp = Math::GMPz::Rmpz_cmp($y, $x);
 
     if ($cmp == 0) {
-        Math::GMPz::Rmpz_set($r, $x);
-        return $r;
+        return Math::GMPz::Rmpz_init_set($x);
     }
     elsif ($cmp < 0) {
         ($x, $y) = ($y, $x);
     }
 
+    my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_sub($r, $y, $x);
     Math::GMPz::Rmpz_add_ui($r, $r, 1);
     Math::GMPz::Rmpz_urandomm($r, $state, $r, 1);

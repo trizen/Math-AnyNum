@@ -370,11 +370,8 @@ use overload
 sub _str2obj {
     my ($s) = @_;
 
-    $s || do {
-        my $r = Math::GMPz::Rmpz_init();
-        Math::GMPz::Rmpz_set_ui($r, 0);
-        return $r;
-    };
+    $s
+      || return Math::GMPz::Rmpz_init_set_ui(0);
 
     $s = lc($s);
 
@@ -399,13 +396,11 @@ sub _str2obj {
 
     # Performance improvement for Perl integers
     if (CORE::int($s) eq $s and $s >= LONG_MIN and $s <= ULONG_MAX) {
-        my $r = Math::GMPz::Rmpz_init();
-
-        $s < 0
-          ? Math::GMPz::Rmpz_set_si($r, $s)
-          : Math::GMPz::Rmpz_set_ui($r, $s);
-
-        return $r;
+        return (
+                $s < 0
+                ? Math::GMPz::Rmpz_init_set_si($s)
+                : Math::GMPz::Rmpz_init_set_ui($s)
+               );
     }
 
     # Complex number
@@ -497,13 +492,11 @@ sub _str2obj {
 
     $s =~ s/^\+//;
 
-    my $r = Math::GMPz::Rmpz_init();
-    eval { Math::GMPz::Rmpz_set_str($r, $s, 10); 1 } // do {
+    eval { Math::GMPz::Rmpz_init_set_str($s, 10) } // do {
         my $r = Math::MPFR::Rmpfr_init2($PREC);
         Math::MPFR::Rmpfr_set_nan($r);
-        return $r;
+        $r;
     };
-    return $r;
 }
 
 #
@@ -741,9 +734,7 @@ sub _star2mpz {
     }
 
     if (ref($x) eq 'Math::GMPz') {
-        my $r = Math::GMPz::Rmpz_init();
-        Math::GMPz::Rmpz_set($r, $x);
-        return $r;
+        return Math::GMPz::Rmpz_init_set($x);
     }
 
     (@_) = $x;
@@ -759,9 +750,7 @@ sub _copy2mpz {
     my ($x) = @_;
 
     if (ref($x) eq 'Math::GMPz') {
-        my $r = Math::GMPz::Rmpz_init();
-        Math::GMPz::Rmpz_set($r, $x);
-        return $r;
+        return Math::GMPz::Rmpz_init_set($x);
     }
 
     ref($x) eq 'Math::GMPq' and goto &_mpq2mpz;
@@ -849,8 +838,7 @@ sub new {
 
     # GMPz
     elsif ($ref eq 'Math::GMPz') {
-        my $r = Math::GMPz::Rmpz_init();
-        Math::GMPz::Rmpz_set($r, $num);
+        my $r = Math::GMPz::Rmpz_init_set($num);
         return bless \$r, $class;
     }
 
@@ -880,8 +868,7 @@ sub new {
 
     # BigInt
     if ($ref eq 'Math::BigInt') {
-        my $r = Math::GMPz::Rmpz_init();
-        Math::GMPz::Rmpz_set_str($r, $num->bstr, 10);
+        my $r = Math::GMPz::Rmpz_init_set_str($num->bstr, 10);
         return bless \$r, __PACKAGE__;
     }
 
@@ -940,11 +927,10 @@ sub new {
             return bless \$r, $class;
         }
         else {
-            my $r = Math::GMPz::Rmpz_init();
-            eval { Math::GMPz::Rmpz_set_str($r, $num, $int_base); 1 } // do {
+            my $r = eval { Math::GMPz::Rmpz_init_set_str($num, $int_base) } // do {
                 my $r = Math::MPFR::Rmpfr_init2($PREC);
                 Math::MPFR::Rmpfr_set_nan($r);
-                return bless \$r, $class;
+                $r;
             };
             return bless \$r, $class;
         }
@@ -955,22 +941,19 @@ sub new {
 
 sub new_si {
     my (undef, $si) = @_;
-    my $r = Math::GMPz::Rmpz_init();
-    Math::GMPz::Rmpz_set_si($r, $si);
+    my $r = Math::GMPz::Rmpz_init_set_si($si);
     bless \$r, __PACKAGE__;
 }
 
 sub new_ui {
     my (undef, $ui) = @_;
-    my $r = Math::GMPz::Rmpz_init();
-    Math::GMPz::Rmpz_set_ui($r, $ui);
+    my $r = Math::GMPz::Rmpz_init_set_ui($ui);
     bless \$r, __PACKAGE__;
 }
 
 sub new_z {
     my (undef, $str, $base) = @_;
-    my $r = Math::GMPz::Rmpz_init();
-    Math::GMPz::Rmpz_set_str($r, $str, $base // 10);
+    my $r = Math::GMPz::Rmpz_init_set_str($str, $base // 10);
     bless \$r, __PACKAGE__;
 }
 
@@ -1382,9 +1365,7 @@ sub _copy {
     my $ref = ref($x);
 
     if ($ref eq 'Math::GMPz') {
-        my $r = Math::GMPz::Rmpz_init();
-        Math::GMPz::Rmpz_set($r, $x);
-        return $r;
+        return Math::GMPz::Rmpz_init_set($x);
     }
     elsif ($ref eq 'Math::MPFR') {
         my $r = Math::MPFR::Rmpfr_init2($PREC);
