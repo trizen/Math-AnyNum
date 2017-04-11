@@ -438,29 +438,21 @@ sub _str2obj {
 
             my $r = Math::MPC::Rmpc_init2($PREC);
 
-            if ($im eq '+') {
-                $im = 1;
-            }
-            elsif ($im eq '-') {
-                $im = -1;
-            }
-
             $re = _str2obj($re);
             $im = _str2obj($im);
 
-            my $re_type = ref($re);
-            my $im_type = ref($im);
+            my $sig = join(' | ', ref($re), ref($im));
 
-            if ($re_type eq 'Math::MPFR' and $im_type eq 'Math::MPFR') {
+            if ($sig eq q{Math::MPFR | Math::MPFR}) {
                 Math::MPC::Rmpc_set_fr_fr($r, $re, $im, $ROUND);
             }
-            elsif ($re_type eq 'Math::GMPz' and $im_type eq 'Math::GMPz') {
+            elsif ($sig eq q{Math::GMPz | Math::GMPz}) {
                 Math::MPC::Rmpc_set_z_z($r, $re, $im, $ROUND);
             }
-            elsif ($re_type eq 'Math::GMPz' and $im_type eq 'Math::MPFR') {
+            elsif ($sig eq q{Math::GMPz | Math::MPFR}) {
                 Math::MPC::Rmpc_set_z_fr($r, $re, $im, $ROUND);
             }
-            elsif ($re_type eq 'Math::MPFR' and $im_type eq 'Math::GMPz') {
+            elsif ($sig eq q{Math::MPFR | Math::GMPz}) {
                 Math::MPC::Rmpc_set_fr_z($r, $re, $im, $ROUND);
             }
             else {    # this should never happen
