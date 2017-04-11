@@ -28,9 +28,7 @@ Class::Multimethods::multimethod __div__ => qw(Math::GMPq Math::GMPz) => sub {
         goto &__div__;
     };
 
-    my $q = Math::GMPq::Rmpq_init();
-    Math::GMPq::Rmpq_set_z($q, $y);
-    Math::GMPq::Rmpq_div($x, $x, $q);
+    Math::GMPq::Rmpq_div_z($x, $x, $y);
     $x;
 };
 
@@ -79,8 +77,7 @@ Class::Multimethods::multimethod __div__ => qw(Math::GMPz Math::GMPq) => sub {
     };
 
     my $q = Math::GMPq::Rmpq_init();
-    Math::GMPq::Rmpq_set_z($q, $x);
-    Math::GMPq::Rmpq_div($q, $q, $y);
+    Math::GMPq::Rmpq_z_div($q, $x, $y);
     $q;
 };
 

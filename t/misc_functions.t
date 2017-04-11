@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 179;
+plan tests => 193;
 
 use Math::AnyNum qw(:misc);
 
@@ -107,26 +107,47 @@ is(imag('3+4i'),          '4');
 is(imag('4i'),            '4');
 is(imag(complex('4i')),   '4');
 
+is(round('123499999/100000',  0), '1235');
+is(round('-123499999/100000', 0), '-1235');
+
+is(round('1234567/1000'),  '1235');     #  1234.567 ->  1235
+is(round('-1234567/1000'), '-1235');    # -1234.567 -> -1235
+
+is(round('6170617/5000'),  '1234');     #  1234.1234 ->  1234
+is(round('-6170617/5000'), '-1234');    # -1234.1234 -> -1234
+
+is(round('6170617/5000',  -2), '30853/25');     #  1234.1234 ->  1234.12
+is(round('-6170617/5000', -2), '-30853/25');    # -1234.1234 -> -1234.12
+
+is(round('3086219/2500', -3), '154311/125');    # 1234.4876 -> 1234.488
+
+is(round('123456', 2), '123500');
+is(round('123456', 3), '123000');
+is(round('123456', 0), '123456');
+
+is(round('-123456', 2), '-123500');
+is(round('-123456', 3), '-123000');
+
 is(numerator('3/4'),           '3');
-is(numerator('123/567'),       '41');    # simplifies to '41/189'
+is(numerator('123/567'),       '41');           # simplifies to '41/189'
 is(numerator(int(42)),         '42');
-is(numerator(rat('123/567')),  '41');    # simplifies to '41/189'
+is(numerator(rat('123/567')),  '41');           # simplifies to '41/189'
 is(numerator(float('12')),     '12');
-is(numerator(float('0.75')),   '3');     # '3/4'
+is(numerator(float('0.75')),   '3');            # '3/4'
 is(numerator(complex('12')),   '12');
-is(numerator(complex('0.75')), '3');     # '3/4'
-is(numerator('0.75'),          '3');     # '3/4'
+is(numerator(complex('0.75')), '3');            # '3/4'
+is(numerator('0.75'),          '3');            # '3/4'
 is(numerator(complex('3+4i')), 'NaN');
 
 is(denominator('3/4'),           '4');
-is(denominator('123/567'),       '189');    # simplifies to '41/189'
+is(denominator('123/567'),       '189');        # simplifies to '41/189'
 is(denominator(int(42)),         '1');
-is(denominator(rat('123/567')),  '189');    # simplifies to '41/189'
+is(denominator(rat('123/567')),  '189');        # simplifies to '41/189'
 is(denominator(float('12')),     '1');
-is(denominator(float('0.75')),   '4');      # '3/4'
+is(denominator(float('0.75')),   '4');          # '3/4'
 is(denominator(complex('12')),   '1');
-is(denominator(complex('0.75')), '4');      # '3/4'
-is(denominator('0.75'),          '4');      # '3/4'
+is(denominator(complex('0.75')), '4');          # '3/4'
+is(denominator('0.75'),          '4');          # '3/4'
 is(denominator(complex('3+4i')), 'NaN');
 
 is(join(' ', digits('1234')),      '1 2 3 4');

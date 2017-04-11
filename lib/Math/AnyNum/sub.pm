@@ -14,9 +14,7 @@ Class::Multimethods::multimethod __sub__ => qw(Math::GMPq Math::GMPq) => sub {
 
 Class::Multimethods::multimethod __sub__ => qw(Math::GMPq Math::GMPz) => sub {
     my ($x, $y) = @_;
-    my $q = Math::GMPq::Rmpq_init();
-    Math::GMPq::Rmpq_set_z($q, $y);
-    Math::GMPq::Rmpq_sub($x, $x, $q);
+    Math::GMPq::Rmpq_sub_z($x, $x, $y);
     $x;
 };
 
@@ -56,8 +54,7 @@ Class::Multimethods::multimethod __sub__ => qw(Math::GMPz $) => sub {
 Class::Multimethods::multimethod __sub__ => qw(Math::GMPz Math::GMPq) => sub {
     my ($x, $y) = @_;
     my $q = Math::GMPq::Rmpq_init();
-    Math::GMPq::Rmpq_set_z($q, $x);
-    Math::GMPq::Rmpq_sub($q, $q, $y);
+    Math::GMPq::Rmpq_z_sub($q, $x, $y);
     $q;
 };
 

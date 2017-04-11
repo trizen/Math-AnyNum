@@ -56,16 +56,15 @@ Class::Multimethods::multimethod __round__ => qw(Math::GMPq $) => sub {
     my $nth = -CORE::int($prec);
     my $sgn = Math::GMPq::Rmpq_sgn($n);
 
-    Math::GMPq::Rmpq_abs($n, $n) if $sgn < 0;
+    Math::GMPq::Rmpq_neg($n, $n) if $sgn < 0;
 
-    my $p = Math::GMPq::Rmpq_init();
-    Math::GMPq::Rmpq_set_str($p, '1' . ('0' x CORE::abs($nth)), 10);
+    my $p = Math::GMPz::Rmpz_init_set_str('1' . ('0' x CORE::abs($nth)), 10);
 
     if ($nth < 0) {
-        Math::GMPq::Rmpq_div($n, $n, $p);
+        Math::GMPq::Rmpq_div_z($n, $n, $p);
     }
     else {
-        Math::GMPq::Rmpq_mul($n, $n, $p);
+        Math::GMPq::Rmpq_mul_z($n, $n, $p);
     }
 
     state $half = do {
@@ -86,10 +85,10 @@ Class::Multimethods::multimethod __round__ => qw(Math::GMPq $) => sub {
     Math::GMPq::Rmpq_set_z($n, $z);
 
     if ($nth < 0) {
-        Math::GMPq::Rmpq_mul($n, $n, $p);
+        Math::GMPq::Rmpq_mul_z($n, $n, $p);
     }
     else {
-        Math::GMPq::Rmpq_div($n, $n, $p);
+        Math::GMPq::Rmpq_div_z($n, $n, $p);
     }
 
     if ($sgn < 0) {

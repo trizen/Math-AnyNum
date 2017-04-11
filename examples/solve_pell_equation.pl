@@ -9,6 +9,7 @@ use 5.010;
 use strict;
 use warnings;
 
+use lib qw(../lib);
 use Math::AnyNum qw(is_square isqrt);
 
 sub sqrt_convergents {

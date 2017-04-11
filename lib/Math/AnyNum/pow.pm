@@ -9,41 +9,19 @@ our ($ROUND, $PREC);
 Class::Multimethods::multimethod __pow__ => qw(Math::GMPq $) => sub {
     my ($x, $y) = @_;
 
-    if (Math::GMPq::Rmpq_integer_p($x)) {
+    Math::GMPq::Rmpq_pow_ui($x, $x, CORE::abs($y));
 
-        my $z = Math::GMPz::Rmpz_init();
-        Math::GMPq::Rmpq_numref($z, $x);
-        Math::GMPz::Rmpz_pow_ui($z, $z, CORE::abs($y));
-
-        if ($y < 0) {
-            if (!Math::GMPz::Rmpz_sgn($z)) {
-                my $inf = Math::MPFR::Rmpfr_init2($PREC);
-                Math::MPFR::Rmpfr_set_inf($inf, 1);
-                return $inf;
-            }
-
-            my $q = Math::GMPq::Rmpq_init();
-            Math::GMPq::Rmpq_set_z($q, $z);
-            Math::GMPq::Rmpq_inv($q, $q);
-            return $q;
+    if ($y < 0) {
+        if (!Math::GMPq::Rmpq_sgn($x)) {
+            my $inf = Math::MPFR::Rmpfr_init2($PREC);
+            Math::MPFR::Rmpfr_set_inf($inf, 1);
+            return $inf;
         }
 
-        return $z;
+        Math::GMPq::Rmpq_inv($x, $x);
     }
 
-    my $q = Math::GMPq::Rmpq_init();
-    my $z = Math::GMPz::Rmpz_init();
-
-    Math::GMPq::Rmpq_numref($z, $x);
-    Math::GMPz::Rmpz_pow_ui($z, $z, CORE::abs($y));
-
-    Math::GMPq::Rmpq_set_num($q, $z);
-    Math::GMPq::Rmpq_denref($z, $x);
-    Math::GMPz::Rmpz_pow_ui($z, $z, CORE::abs($y));
-
-    Math::GMPq::Rmpq_set_den($q, $z);
-    Math::GMPq::Rmpq_inv($q, $q) if $y < 0;
-    return $q;
+    $x;
 };
 
 Class::Multimethods::multimethod __pow__ => qw(Math::GMPq Math::GMPq) => sub {
@@ -111,7 +89,12 @@ Class::Multimethods::multimethod __pow__ => qw(Math::GMPz Math::GMPz) => sub {
 };
 
 Class::Multimethods::multimethod __pow__ => qw(Math::GMPz Math::GMPq) => sub {
-    (@_) = (_mpz2mpq($_[0]), $_[1]);
+    if (Math::GMPq::Rmpq_integer_p($_[1])) {
+        (@_) = ($_[0], Math::GMPq::Rmpq_get_d($_[1]));
+    }
+    else {
+        (@_) = (_mpz2mpfr($_[0]), _mpq2mpfr($_[1]));
+    }
     goto &__pow__;
 };
 

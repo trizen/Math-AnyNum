@@ -14,17 +14,14 @@ Class::Multimethods::multimethod __mul__ => qw(Math::GMPq Math::GMPq) => sub {
 
 Class::Multimethods::multimethod __mul__ => qw(Math::GMPq Math::GMPz) => sub {
     my ($x, $y) = @_;
-    my $q = Math::GMPq::Rmpq_init();
-    Math::GMPq::Rmpq_set_z($q, $y);
-    Math::GMPq::Rmpq_mul($x, $x, $q);
+    Math::GMPq::Rmpq_mul_z($x, $x, $y);
     $x;
 };
 
 Class::Multimethods::multimethod __mul__ => qw(Math::GMPq Math::MPFR) => sub {
     my ($x, $y) = @_;
     my $f = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_set_q($f, $x, $ROUND);
-    Math::MPFR::Rmpfr_mul($f, $f, $y, $ROUND);
+    Math::MPFR::Rmpfr_mul_q($f, $y, $x, $ROUND);
     $f;
 };
 
@@ -56,16 +53,14 @@ Class::Multimethods::multimethod __mul__ => qw(Math::GMPz $) => sub {
 Class::Multimethods::multimethod __mul__ => qw(Math::GMPz Math::GMPq) => sub {
     my ($x, $y) = @_;
     my $q = Math::GMPq::Rmpq_init();
-    Math::GMPq::Rmpq_set_z($q, $x);
-    Math::GMPq::Rmpq_mul($q, $q, $y);
+    Math::GMPq::Rmpq_mul_z($q, $y, $x);
     $q;
 };
 
 Class::Multimethods::multimethod __mul__ => qw(Math::GMPz Math::MPFR) => sub {
     my ($x, $y) = @_;
     my $f = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_set_z($f, $x, $ROUND);
-    Math::MPFR::Rmpfr_mul($f, $f, $y, $ROUND);
+    Math::MPFR::Rmpfr_mul_z($f, $y, $x, $ROUND);
     $f;
 };
 

@@ -11,12 +11,8 @@ Class::Multimethods::multimethod __inc__ => qw(Math::MPFR) => sub {
 
 Class::Multimethods::multimethod __inc__ => qw(Math::GMPq) => sub {
     my ($x) = @_;
-    state $ONE = do {
-        my $r = Math::GMPq::Rmpq_init_nobless();
-        Math::GMPq::Rmpq_set_ui($r, 1, 1);
-        $r;
-    };
-    Math::GMPq::Rmpq_add($x, $x, $ONE);
+    state $one = Math::GMPz::Rmpz_init_set_ui_nobless(1);
+    Math::GMPq::Rmpq_add_z($x, $x, $one);
     $x;
 };
 

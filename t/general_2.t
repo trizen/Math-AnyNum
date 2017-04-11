@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 542;
+plan tests => 550;
 
 {
     use Math::AnyNum;
@@ -170,6 +170,26 @@ plan tests => 542;
     is(14 / $c,    2.8);
     is(13.5 / $c,  2.7);
     is((-42) / $c, -8.4);
+
+    #
+    ## mpq [+, -] mpz
+    #
+
+    is(Math::AnyNum->new_q('5/12') + Math::AnyNum->new_z('100'), '1205/12');
+    is(Math::AnyNum->new_q('5/12') - Math::AnyNum->new_z('100'), '-1195/12');
+
+    is(Math::AnyNum->new_z('100') + Math::AnyNum->new_q('5/12'), '1205/12');
+    is(Math::AnyNum->new_z('100') - Math::AnyNum->new_q('5/12'), '1195/12');
+
+    #
+    ## mpq [*, /] mpz
+    #
+
+    is(Math::AnyNum->new_q('5/12') * Math::AnyNum->new_z('100'), '125/3');
+    is(Math::AnyNum->new_q('5/12') / Math::AnyNum->new_z('42'),  '5/504');
+
+    is(Math::AnyNum->new_z('100') * Math::AnyNum->new_q('5/12'), '125/3');
+    is(Math::AnyNum->new_z('42') / Math::AnyNum->new_q('5/12'),  '504/5');
 
     #
     ## Negation
