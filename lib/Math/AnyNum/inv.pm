@@ -13,8 +13,8 @@ Class::Multimethods::multimethod __inv__ => qw(Math::GMPq) => sub {
     my ($x) = @_;
 
     # Check for division by zero
-    if (!Math::GMPq::Rmpq_sgn($_[0])) {
-        (@_) = _mpq2mpfr($_[0]);
+    if (!Math::GMPq::Rmpq_sgn($x)) {
+        (@_) = _mpq2mpfr($x);
         goto &__inv__;
     }
 
