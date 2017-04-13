@@ -3426,36 +3426,39 @@ sub is_odd {
 }
 
 sub is_zero {
-    require Math::AnyNum::cmp;
+    require Math::AnyNum::eq;
     my ($x) = @_;
 
     if (ref($x) ne __PACKAGE__) {
         $x = __PACKAGE__->new($x);
     }
 
-    (__cmp__($$x, 0) // return undef) == 0;
+    (@_) = ($$x, 0);
+    goto &__eq__;
 }
 
 sub is_one {
-    require Math::AnyNum::cmp;
+    require Math::AnyNum::eq;
     my ($x) = @_;
 
     if (ref($x) ne __PACKAGE__) {
         $x = __PACKAGE__->new($x);
     }
 
-    (__cmp__($$x, 1) // return undef) == 0;
+    (@_) = ($$x, 1);
+    goto &__eq__;
 }
 
 sub is_mone {
-    require Math::AnyNum::cmp;
+    require Math::AnyNum::eq;
     my ($x) = @_;
 
     if (ref($x) ne __PACKAGE__) {
         $x = __PACKAGE__->new($x);
     }
 
-    (__cmp__($$x, -1) // return undef) == 0;
+    (@_) = ($$x, -1);
+    goto &__eq__;
 }
 
 sub is_pos {
