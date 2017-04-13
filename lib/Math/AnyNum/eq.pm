@@ -59,7 +59,7 @@ Class::Multimethods::multimethod __eq__ => qw(Math::GMPq Math::MPC) => sub {
 
 Class::Multimethods::multimethod __eq__ => qw(Math::GMPq $) => sub {
     my ($x, $y) = @_;
-    Math::GMPq::Rmpq_integer_p($_[0])
+    Math::GMPq::Rmpq_integer_p($x)
       and (
            $y < 0
            ? Math::GMPq::Rmpq_cmp_si($x, $y, 1)
