@@ -2162,7 +2162,9 @@ sub divmod {
 #
 
 sub is_div {
-    mod($_[0], $_[1])->is_zero;
+    require Math::AnyNum::eq;
+    (@_) = (${mod($_[0], $_[1])}, 0);
+    goto &__eq__;
 }
 
 #
