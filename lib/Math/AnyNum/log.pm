@@ -12,7 +12,7 @@ Class::Multimethods::multimethod __log__ => qw(Math::MPFR) => sub {
 
     # Complex for x < 0
     if (Math::MPFR::Rmpfr_sgn($x) < 0) {
-        (@_) = _mpfr2mpc($_[0]);
+        (@_) = _mpfr2mpc($x);
         goto &__log__;
     }
 
@@ -25,7 +25,7 @@ Class::Multimethods::multimethod __log2__ => qw(Math::MPFR) => sub {
 
     # Complex for x < 0
     if (Math::MPFR::Rmpfr_sgn($x) < 0) {
-        (@_) = _mpfr2mpc($_[0]);
+        (@_) = _mpfr2mpc($x);
         goto &__log2__;
     }
 
@@ -38,7 +38,7 @@ Class::Multimethods::multimethod __log10__ => qw(Math::MPFR) => sub {
 
     # Complex for x < 0
     if (Math::MPFR::Rmpfr_sgn($x) < 0) {
-        (@_) = _mpfr2mpc($_[0]);
+        (@_) = _mpfr2mpc($x);
         goto &__log10__;
     }
 
