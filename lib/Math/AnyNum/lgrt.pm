@@ -46,17 +46,15 @@ Class::Multimethods::multimethod __lgrt__ => qw(Math::MPFR) => sub {
 };
 
 Class::Multimethods::multimethod __lgrt__ => qw(Math::MPC) => sub {
-    my ($c) = @_;
+    my ($x) = @_;
 
     my $p = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_ui_pow_ui($p, 10, CORE::int($PREC >> 2), $ROUND);
     Math::MPFR::Rmpfr_ui_div($p, 1, $p, $ROUND);
 
     my $d = Math::MPC::Rmpc_init2($PREC);
-    Math::MPC::Rmpc_log($d, $c, $ROUND);
+    Math::MPC::Rmpc_log($d, $x, $ROUND);
 
-    my $x = Math::MPC::Rmpc_init2($PREC);
-    Math::MPC::Rmpc_set($x, $c, $ROUND);
     Math::MPC::Rmpc_sqr($x, $x, $ROUND);
     Math::MPC::Rmpc_add_ui($x, $x, 1, $ROUND);
     Math::MPC::Rmpc_log($x, $x, $ROUND);
