@@ -842,7 +842,7 @@ sub new {
     # BigInt
     if ($ref eq 'Math::BigInt') {
         my $r = Math::GMPz::Rmpz_init_set_str($num->bstr, 10);
-        return bless \$r, __PACKAGE__;
+        return bless \$r, $class;
     }
 
     # BigFloat
@@ -3194,15 +3194,16 @@ sub is_int {
         $x = __PACKAGE__->new($x);
     }
 
-    my $r   = $$x;
-    my $ref = ref($r);
+    my $r = $$x;
+    while (1) {
+        my $ref = ref($r);
 
-    $ref eq 'Math::GMPz' && return 1;
-    $ref eq 'Math::GMPq' && return Math::GMPq::Rmpq_integer_p($r);
-    $ref eq 'Math::MPFR' && return Math::MPFR::Rmpfr_integer_p($r);
+        $ref eq 'Math::GMPz' && return 1;
+        $ref eq 'Math::GMPq' && return Math::GMPq::Rmpq_integer_p($r);
+        $ref eq 'Math::MPFR' && return Math::MPFR::Rmpfr_integer_p($r);
 
-    (@_) = _any2mpfr($r);
-    goto &is_int;
+        $r = _any2mpfr($r);
+    }
 }
 
 sub is_rat {
@@ -3227,19 +3228,19 @@ sub numerator {
         $x = __PACKAGE__->new($x);
     }
 
-    my $r   = $$x;
-    my $ref = ref($r);
+    my $r = $$x;
+    while (1) {
+        my $ref = ref($r);
+        ref($r) eq 'Math::GMPz' && return $x;    # is an integer
 
-    ref($r) eq 'Math::GMPz' && return $x;    # is an integer
+        if (ref($r) eq 'Math::GMPq') {
+            my $z = Math::GMPz::Rmpz_init();
+            Math::GMPq::Rmpq_get_num($z, $r);
+            return bless \$z, __PACKAGE__;
+        }
 
-    if (ref($r) eq 'Math::GMPq') {
-        my $z = Math::GMPz::Rmpz_init();
-        Math::GMPq::Rmpq_get_num($z, $r);
-        return bless \$z, __PACKAGE__;
+        $r = _any2mpq($r) // (goto &nan);
     }
-
-    (@_) = _any2mpq($r) // (goto &nan);
-    goto &numerator;
 }
 
 sub denominator {
@@ -3249,19 +3250,18 @@ sub denominator {
         $x = __PACKAGE__->new($x);
     }
 
-    my $r   = $$x;
-    my $ref = ref($r);
+    my $r = $$x;
+    while (1) {
+        my $ref = ref($r);
+        ref($r) eq 'Math::GMPz' && (goto &one);    # is an integer
 
-    ref($r) eq 'Math::GMPz' && (goto &one);    # is an integer
-
-    if (ref($r) eq 'Math::GMPq') {
-        my $z = Math::GMPz::Rmpz_init();
-        Math::GMPq::Rmpq_get_den($z, $r);
-        return bless \$z, __PACKAGE__;
+        if (ref($r) eq 'Math::GMPq') {
+            my $z = Math::GMPz::Rmpz_init();
+            Math::GMPq::Rmpq_get_den($z, $r);
+            return bless \$z, __PACKAGE__;
+        }
+        $r = _any2mpq($r) // (goto &nan);
     }
-
-    (@_) = _any2mpq($r) // (goto &nan);
-    goto &denominator;
 }
 
 sub as_frac {
@@ -3296,15 +3296,16 @@ sub is_real {
         $x = __PACKAGE__->new($x);
     }
 
-    my $r   = $$x;
-    my $ref = ref($r);
+    my $r = $$x;
+    while (1) {
+        my $ref = ref($r);
 
-    $ref eq 'Math::GMPz' && return 1;
-    $ref eq 'Math::GMPq' && return 1;
-    $ref eq 'Math::MPFR' && return Math::MPFR::Rmpfr_number_p($r);
+        $ref eq 'Math::GMPz' && return 1;
+        $ref eq 'Math::GMPq' && return 1;
+        $ref eq 'Math::MPFR' && return Math::MPFR::Rmpfr_number_p($r);
 
-    (@_) = _any2mpfr($r);
-    goto &is_real;
+        $r = _any2mpfr($r);
+    }
 }
 
 sub is_imag {
@@ -3348,15 +3349,16 @@ sub is_inf {
         $x = __PACKAGE__->new($x);
     }
 
-    my $r   = $$x;
-    my $ref = ref($r);
+    my $r = $$x;
+    while (1) {
+        my $ref = ref($r);
 
-    $ref eq 'Math::GMPz' && return 0;
-    $ref eq 'Math::GMPq' && return 0;
-    $ref eq 'Math::MPFR' && return (Math::MPFR::Rmpfr_inf_p($r) and Math::MPFR::Rmpfr_sgn_p($r) > 0);
+        $ref eq 'Math::GMPz' && return 0;
+        $ref eq 'Math::GMPq' && return 0;
+        $ref eq 'Math::MPFR' && return (Math::MPFR::Rmpfr_inf_p($r) and Math::MPFR::Rmpfr_sgn_p($r) > 0);
 
-    (@_) = _any2mpfr($r);
-    goto &is_inf;
+        $r = _any2mpfr($r);
+    }
 }
 
 sub is_ninf {
@@ -3366,15 +3368,16 @@ sub is_ninf {
         $x = __PACKAGE__->new($x);
     }
 
-    my $r   = $$x;
-    my $ref = ref($r);
+    my $r = $$x;
+    while (1) {
+        my $ref = ref($r);
 
-    $ref eq 'Math::GMPz' && return 0;
-    $ref eq 'Math::GMPq' && return 0;
-    $ref eq 'Math::MPFR' && return (Math::MPFR::Rmpfr_inf_p($r) and Math::MPFR::Rmpfr_sgn_p($r) < 0);
+        $ref eq 'Math::GMPz' && return 0;
+        $ref eq 'Math::GMPq' && return 0;
+        $ref eq 'Math::MPFR' && return (Math::MPFR::Rmpfr_inf_p($r) and Math::MPFR::Rmpfr_sgn_p($r) < 0);
 
-    (@_) = _any2mpfr($r);
-    goto &is_ninf;
+        $r = _any2mpfr($r);
+    }
 }
 
 sub is_nan {
