@@ -3517,7 +3517,7 @@ Class::Multimethods::multimethod is_power => qw(Math::AnyNum $) => sub {
         __is_power__(_star2mpz($x) // (return 0), $y);
     }
     else {
-        __is_power__(_any2mpz($$x) // (return 0), _any2si(${__PACKAGE__->new($y)}) // (return 0));
+        __is_power__(_any2mpz($$x) // (return 0), _any2si(_str2obj($y)) // (return 0));
     }
 };
 
@@ -3532,7 +3532,7 @@ Class::Multimethods::multimethod is_power => qw(* $) => sub {
         __is_power__(_any2mpz($$x) // (return 0), $y);
     }
     else {
-        __is_power__(_any2mpz($$x) // (return 0), _any2si(${__PACKAGE__->new($y)}) // (return 0));
+        __is_power__(_any2mpz($$x) // (return 0), _any2si(_str2obj($y)) // (return 0));
     }
 };
 
