@@ -1151,11 +1151,12 @@ Class::Multimethods::multimethod eq => qw(Math::AnyNum $) => sub {
     my ($x, $y) = @_;
 
     if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        __eq__($$x, $y);
+        (@_) = ($$x, $y);
     }
     else {
-        __eq__($$x, _str2obj($y));
+        (@_) = ($$x, _str2obj($y));
     }
+    goto &__eq__;
 };
 
 Class::Multimethods::multimethod eq => qw(Math::AnyNum *) => sub {
@@ -1181,11 +1182,12 @@ Class::Multimethods::multimethod ne => qw(Math::AnyNum $) => sub {
     my ($x, $y) = @_;
 
     if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        __ne__($$x, $y);
+        (@_) = ($$x, $y);
     }
     else {
-        __ne__($$x, _str2obj($y));
+        (@_) = ($$x, _str2obj($y));
     }
+    goto &__ne__;
 };
 
 Class::Multimethods::multimethod ne => qw(Math::AnyNum *) => sub {
@@ -1211,12 +1213,11 @@ Class::Multimethods::multimethod cmp => qw(Math::AnyNum $) => sub {
     my ($x, $y) = @_;
     if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
         (@_) = ($$x, $y);
-        goto &__cmp__;
     }
     else {
         (@_) = ($$x, _str2obj($y));
-        goto &__cmp__;
     }
+    goto &__cmp__;
 };
 
 Class::Multimethods::multimethod cmp => qw(Math::AnyNum *) => sub {
