@@ -1339,25 +1339,26 @@ sub _copy {
     my $ref = ref($x);
 
     if ($ref eq 'Math::GMPz') {
-        return Math::GMPz::Rmpz_init_set($x);
+        Math::GMPz::Rmpz_init_set($x);
     }
     elsif ($ref eq 'Math::MPFR') {
         my $r = Math::MPFR::Rmpfr_init2($PREC);
         Math::MPFR::Rmpfr_set($r, $x, $ROUND);
-        return $r;
+        $r;
     }
     elsif ($ref eq 'Math::GMPq') {
         my $r = Math::GMPq::Rmpq_init();
         Math::GMPq::Rmpq_set($r, $x);
-        return $r;
+        $r;
     }
     elsif ($ref eq 'Math::MPC') {
         my $r = Math::MPC::Rmpc_init2($PREC);
         Math::MPC::Rmpc_set($r, $x, $ROUND);
-        return $r;
+        $r;
     }
-
-    ${__PACKAGE__->new($x)};    # this should not happen
+    else {
+        ${__PACKAGE__->new($x)};    # this should not happen
+    }
 }
 
 sub copy {
