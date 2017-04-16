@@ -2438,16 +2438,10 @@ sub eta {
 #
 ## beta
 #
-Class::Multimethods::multimethod beta => qw(Math::AnyNum Math::AnyNum) => sub {
-    require Math::AnyNum::beta;
-    my ($x, $y) = @_;
-    bless \__beta__(_star2mpfr($x), _any2mpfr($$y));
-};
-
-Class::Multimethods::multimethod beta => qw(* *) => sub {
+sub beta {
     require Math::AnyNum::beta;
     bless \__beta__(_star2mpfr($_[0]), _star2mpfr($_[1]));
-};
+}
 
 #
 ## Airy function (Ai)

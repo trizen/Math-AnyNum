@@ -7,7 +7,7 @@ our ($ROUND, $PREC);
 #    beta(x,y) = gamma(x)*gamma(y) / gamma(x+y)
 
 sub __beta__ {
-    my ($x, $y) = @_;
+    my ($x, $y) = @_;    # takes two MPFR objects; both are modified
 
     my $t = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_add($t, $x, $y, $ROUND);
