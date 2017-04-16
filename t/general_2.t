@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 550;
+plan tests => 559;
 
 {
     use Math::AnyNum;
@@ -655,6 +655,17 @@ plan tests => 550;
 
     ok($NaN != 2);
     ok($Inf != 2);
+
+    ok($Inf->is_inf);
+    ok((-$Inf)->is_ninf);
+    ok($NaN->is_nan);
+
+    ok(not $NaN->is_inf);
+    ok(not $NaN->is_ninf);
+    ok(not $Inf->is_nan);
+    ok(not $Inf->is_ninf);
+    ok(not((-$Inf)->is_inf));
+    ok(not((-$Inf)->is_nan));
 
     ok(2 != $NaN);
     ok(2 != $Inf);

@@ -3357,7 +3357,7 @@ sub is_inf {
 
         $ref eq 'Math::GMPz' && return 0;
         $ref eq 'Math::GMPq' && return 0;
-        $ref eq 'Math::MPFR' && return (Math::MPFR::Rmpfr_inf_p($r) and Math::MPFR::Rmpfr_sgn_p($r) > 0);
+        $ref eq 'Math::MPFR' && return (Math::MPFR::Rmpfr_inf_p($r) and Math::MPFR::Rmpfr_sgn($r) > 0);
 
         $r = _any2mpfr($r);
     }
@@ -3376,7 +3376,7 @@ sub is_ninf {
 
         $ref eq 'Math::GMPz' && return 0;
         $ref eq 'Math::GMPq' && return 0;
-        $ref eq 'Math::MPFR' && return (Math::MPFR::Rmpfr_inf_p($r) and Math::MPFR::Rmpfr_sgn_p($r) < 0);
+        $ref eq 'Math::MPFR' && return (Math::MPFR::Rmpfr_inf_p($r) and Math::MPFR::Rmpfr_sgn($r) < 0);
 
         $r = _any2mpfr($r);
     }
