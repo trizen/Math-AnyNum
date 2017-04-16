@@ -552,12 +552,9 @@ sub _any2mpfr {
     my $fr = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPC::RMPC_IM($fr, $x);
 
-    if (Math::MPFR::Rmpfr_zero_p($fr)) {
-        Math::MPC::RMPC_RE($fr, $x);
-    }
-    else {
-        Math::MPFR::Rmpfr_set_nan($fr);
-    }
+    Math::MPFR::Rmpfr_zero_p($fr)
+      ? Math::MPC::RMPC_RE($fr, $x)
+      : Math::MPFR::Rmpfr_set_nan($fr);
 
     $fr;
 }
@@ -671,10 +668,7 @@ sub _star2mpfr {
     }
     else {
         $x = ref($x) ? ${__PACKAGE__->new($x)} : _str2obj($x);
-
-        if (ref($x) eq 'Math::MPFR') {
-            return $x;
-        }
+        ref($x) eq 'Math::MPFR' and return $x;
     }
 
     if (ref($x) eq 'Math::MPFR') {
@@ -700,15 +694,11 @@ sub _star2mpz {
     }
     else {
         $x = ref($x) ? ${__PACKAGE__->new($x)} : _str2obj($x);
-
-        if (ref($x) eq 'Math::GMPz') {
-            return $x;
-        }
+        ref($x) eq 'Math::GMPz' and return $x;
     }
 
-    if (ref($x) eq 'Math::GMPz') {
-        return Math::GMPz::Rmpz_init_set($x);
-    }
+    ref($x) eq 'Math::GMPz'
+      and return Math::GMPz::Rmpz_init_set($x);
 
     (@_) = $x;
     ref($x) eq 'Math::GMPq' and goto &_mpq2mpz;
@@ -811,8 +801,7 @@ sub new {
 
     # GMPz
     elsif ($ref eq 'Math::GMPz') {
-        my $r = Math::GMPz::Rmpz_init_set($num);
-        return bless \$r, $class;
+        return bless(\Math::GMPz::Rmpz_init_set($num), $class);
     }
 
     # BigNum
@@ -913,25 +902,25 @@ sub new {
 }
 
 sub new_si {
-    my (undef, $si) = @_;
+    my ($class, $si) = @_;
     my $r = Math::GMPz::Rmpz_init_set_si($si);
-    bless \$r, __PACKAGE__;
+    bless \$r, $class;
 }
 
 sub new_ui {
-    my (undef, $ui) = @_;
+    my ($class, $ui) = @_;
     my $r = Math::GMPz::Rmpz_init_set_ui($ui);
-    bless \$r, __PACKAGE__;
+    bless \$r, $class;
 }
 
 sub new_z {
-    my (undef, $str, $base) = @_;
+    my ($class, $str, $base) = @_;
     my $r = Math::GMPz::Rmpz_init_set_str($str, $base // 10);
-    bless \$r, __PACKAGE__;
+    bless \$r, $class;
 }
 
 sub new_q {
-    my (undef, $num, $den, $base) = @_;
+    my ($class, $num, $den, $base) = @_;
     my $r = Math::GMPq::Rmpq_init();
 
     if (defined($den)) {
@@ -942,18 +931,18 @@ sub new_q {
     }
 
     Math::GMPq::Rmpq_canonicalize($r);
-    bless \$r, __PACKAGE__;
+    bless \$r, $class;
 }
 
 sub new_f {
-    my (undef, $str, $base) = @_;
+    my ($class, $str, $base) = @_;
     my $r = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_set_str($r, $str, $base // 10, $ROUND);
-    bless \$r, __PACKAGE__;
+    bless \$r, $class;
 }
 
 sub new_c {
-    my (undef, $real, $imag, $base) = @_;
+    my ($class, $real, $imag, $base) = @_;
 
     my $c = Math::MPC::Rmpc_init2($PREC);
 
@@ -970,7 +959,7 @@ sub new_c {
         Math::MPC::Rmpc_set_str($c, $real, $base // 10, $ROUND);
     }
 
-    bless \$c, __PACKAGE__;
+    bless \$c, $class;
 }
 
 sub _nan {
@@ -985,7 +974,7 @@ sub nan {
     state $nan = do {
         my $r = Math::MPFR::Rmpfr_init2($PREC);
         Math::MPFR::Rmpfr_set_nan($r);
-        bless \$r, __PACKAGE__;
+        bless \$r;
     };
 }
 
@@ -1001,7 +990,7 @@ sub inf {
     state $inf = do {
         my $r = Math::MPFR::Rmpfr_init2($PREC);
         Math::MPFR::Rmpfr_set_inf($r, 1);
-        bless \$r, __PACKAGE__;
+        bless \$r;
     };
 }
 
@@ -1017,7 +1006,7 @@ sub ninf {
     state $ninf = do {
         my $r = Math::MPFR::Rmpfr_init2($PREC);
         Math::MPFR::Rmpfr_set_inf($r, -1);
-        bless \$r, __PACKAGE__;
+        bless \$r;
     };
 }
 
@@ -1028,7 +1017,7 @@ sub _zero {
 sub zero {
     state $zero = do {
         my $r = Math::GMPz::Rmpz_init_set_ui(0);
-        bless \$r, __PACKAGE__;
+        bless \$r;
     };
 }
 
@@ -1039,7 +1028,7 @@ sub _one {
 sub one {
     state $one = do {
         my $r = Math::GMPz::Rmpz_init_set_ui(1);
-        bless \$r, __PACKAGE__;
+        bless \$r;
     };
 }
 
@@ -1050,7 +1039,7 @@ sub _mone {
 sub mone {
     state $mone = do {
         my $r = Math::GMPz::Rmpz_init_set_si(-1);
-        bless \$r, __PACKAGE__;
+        bless \$r;
     };
 }
 
@@ -1061,45 +1050,45 @@ sub mone {
 sub pi {
     my $pi = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_const_pi($pi, $ROUND);
-    bless \$pi, __PACKAGE__;
+    bless \$pi;
 }
 
 sub tau {
     my $tau = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_const_pi($tau, $ROUND);
     Math::MPFR::Rmpfr_mul_ui($tau, $tau, 2, $ROUND);
-    bless \$tau, __PACKAGE__;
+    bless \$tau;
 }
 
 sub ln2 {
     my $ln2 = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_const_log2($ln2, $ROUND);
-    bless \$ln2, __PACKAGE__;
+    bless \$ln2;
 }
 
 sub euler {
     my $euler = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_const_euler($euler, $ROUND);
-    bless \$euler, __PACKAGE__;
+    bless \$euler;
 }
 
 sub catalan {
     my $catalan = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_const_catalan($catalan, $ROUND);
-    bless \$catalan, __PACKAGE__;
+    bless \$catalan;
 }
 
 sub i {
     my $i = Math::MPC::Rmpc_init2($PREC);
     Math::MPC::Rmpc_set_ui_ui($i, 0, 1, $ROUND);
-    bless \$i, __PACKAGE__;
+    bless \$i;
 }
 
 sub e {
     state $one_f = (Math::MPFR::Rmpfr_init_set_ui_nobless(1, $ROUND))[0];
     my $e = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_exp($e, $one_f, $ROUND);
-    bless \$e, __PACKAGE__;
+    bless \$e;
 }
 
 sub phi {
@@ -1110,7 +1099,7 @@ sub phi {
     Math::MPFR::Rmpfr_sqrt($phi, $five4_f, $ROUND);
     Math::MPFR::Rmpfr_add($phi, $phi, $half_f, $ROUND);
 
-    bless \$phi, __PACKAGE__;
+    bless \$phi;
 }
 
 #
@@ -1363,27 +1352,23 @@ sub _copy {
 
 sub copy {
     my ($x) = @_;
-    my $r = _copy($$x);
-    bless \$r, __PACKAGE__;
+    bless \_copy($$x);
 }
 
 sub int {
     my ($x) = @_;
     if (ref($x) eq __PACKAGE__) {
-        my $r = _any2mpz($$x) // (goto &nan);
-        bless \$r, __PACKAGE__;
+        bless \(_any2mpz($$x) // (goto &nan));
     }
     else {
-        my $r = _star2mpz($x) // (goto &nan);
-        bless \$r, __PACKAGE__;
+        bless \(_star2mpz($x) // (goto &nan));
     }
 }
 
 sub rat {
     my ($x) = @_;
     if (ref($x) eq __PACKAGE__) {
-        my $r = _any2mpq($$x) // (goto &nan);
-        bless \$r, __PACKAGE__;
+        bless \(_any2mpq($$x) // (goto &nan));
     }
     else {
         my $r = __PACKAGE__->new($x);
@@ -1395,8 +1380,7 @@ sub rat {
 sub float {
     my ($x) = @_;
     if (ref($x) eq __PACKAGE__) {
-        my $r = _any2mpfr($$x);
-        bless \$r, __PACKAGE__;
+        bless \_any2mpfr($$x);
     }
     else {
         my $r = __PACKAGE__->new($x);
@@ -1408,8 +1392,7 @@ sub float {
 sub complex {
     my ($x) = @_;
     if (ref($x) eq __PACKAGE__) {
-        my $r = _any2mpc($$x);
-        bless \$r, __PACKAGE__;
+        bless \_any2mpc($$x);
     }
     else {
         my $r = __PACKAGE__->new($x);
@@ -1421,8 +1404,7 @@ sub complex {
 sub neg {
     require Math::AnyNum::neg;
     my ($x) = @_;
-    my $r = __neg__(_copy($$x));
-    bless \$r, __PACKAGE__;
+    bless \__neg__(_copy($$x));
 }
 
 sub abs {
@@ -1433,29 +1415,25 @@ sub abs {
         $x = __PACKAGE__->new($x);
     }
 
-    my $r = __abs__(ref($$x) eq 'Math::MPC' ? $$x : _copy($$x));
-    bless \$r, __PACKAGE__;
+    bless \__abs__(ref($$x) eq 'Math::MPC' ? $$x : _copy($$x));
 }
 
 sub inv {
     require Math::AnyNum::inv;
     my ($x) = @_;
-    my $r = __inv__(_copy($$x));
-    bless \$r, __PACKAGE__;
+    bless \__inv__(_copy($$x));
 }
 
 sub inc {
     require Math::AnyNum::inc;
     my ($x) = @_;
-    my $r = __inc__(_copy($$x));
-    bless \$r, __PACKAGE__;
+    bless \__inc__(_copy($$x));
 }
 
 sub dec {
     require Math::AnyNum::dec;
     my ($x) = @_;
-    my $r = __dec__(_copy($$x));
-    bless \$r, __PACKAGE__;
+    bless \__dec__(_copy($$x));
 }
 
 sub real {
@@ -1468,10 +1446,11 @@ sub real {
     if (ref($$x) eq 'Math::MPC') {
         my $r = Math::MPFR::Rmpfr_init2($PREC);
         Math::MPC::RMPC_RE($r, $$x);
-        return bless \$r, __PACKAGE__;
+        bless \$r;
     }
-
-    $x;
+    else {
+        $x;
+    }
 }
 
 sub imag {
@@ -1484,10 +1463,11 @@ sub imag {
     if (ref($$x) eq 'Math::MPC') {
         my $r = Math::MPFR::Rmpfr_init2($PREC);
         Math::MPC::RMPC_IM($r, $$x);
-        return bless \$r, __PACKAGE__;
+        bless \$r;
     }
-
-    goto &zero;
+    else {
+        goto &zero;
+    }
 }
 
 #
@@ -1497,8 +1477,7 @@ sub imag {
 Class::Multimethods::multimethod add => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::add;
     my ($x, $y) = @_;
-    my $r = __add__(_copy($$x), $$y);
-    bless \$r, __PACKAGE__;
+    bless \__add__(_copy($$x), $$y);
 };
 
 Class::Multimethods::multimethod add => qw(Math::AnyNum $) => sub {
@@ -1513,29 +1492,26 @@ Class::Multimethods::multimethod add => qw(Math::AnyNum $) => sub {
               ? Math::GMPq::Rmpq_set_si($r, $y, 1)
               : Math::GMPq::Rmpq_set_ui($r, $y, 1);
             Math::GMPq::Rmpq_add($r, $r, $$x);
-            return bless \$r, __PACKAGE__;
+            return bless \$r;
         }
 
-        my $r = __add__(_copy($$x), $y);
-        return bless \$r, __PACKAGE__;
+        bless \__add__(_copy($$x), $y);
     }
-
-    my $r = __add__(_copy($$x), _str2obj($y));
-    bless \$r, __PACKAGE__;
+    else {
+        bless \__add__(_str2obj($y), $$x);
+    }
 };
 
 Class::Multimethods::multimethod add => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::add;
     my ($x, $y) = @_;
-    my $r = __add__(_copy($$x), ${__PACKAGE__->new($y)});
-    bless \$r, __PACKAGE__;
+    bless \__add__(${__PACKAGE__->new($y)}, $$x);
 };
 
 Class::Multimethods::multimethod sub => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::sub;
     my ($x, $y) = @_;
-    my $r = __sub__(_copy($$x), $$y);
-    bless \$r, __PACKAGE__;
+    bless \__sub__(_copy($$x), $$y);
 };
 
 Class::Multimethods::multimethod sub => qw(Math::AnyNum $) => sub {
@@ -1550,22 +1526,20 @@ Class::Multimethods::multimethod sub => qw(Math::AnyNum $) => sub {
               ? Math::GMPq::Rmpq_set_si($r, $y, 1)
               : Math::GMPq::Rmpq_set_ui($r, $y, 1);
             Math::GMPq::Rmpq_sub($r, $$x, $r);
-            return bless \$r, __PACKAGE__;
+            return bless \$r;
         }
 
-        my $r = __sub__(_copy($$x), $y);
-        return bless \$r, __PACKAGE__;
+        bless \__sub__(_copy($$x), $y);
     }
-
-    my $r = __sub__(_copy($$x), _str2obj($y));
-    bless \$r, __PACKAGE__;
+    else {
+        bless \__sub__(_copy($$x), _str2obj($y));
+    }
 };
 
 Class::Multimethods::multimethod sub => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::sub;
     my ($x, $y) = @_;
-    my $r = __sub__(_copy($$x), ${__PACKAGE__->new($y)});
-    bless \$r, __PACKAGE__;
+    bless \__sub__(_copy($$x), ${__PACKAGE__->new($y)});
 };
 
 #
@@ -1575,8 +1549,7 @@ Class::Multimethods::multimethod sub => qw(Math::AnyNum *) => sub {
 Class::Multimethods::multimethod mul => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::mul;
     my ($x, $y) = @_;
-    my $r = __mul__(_copy($$x), $$y);
-    bless \$r, __PACKAGE__;
+    bless \__mul__(_copy($$x), $$y);
 };
 
 Class::Multimethods::multimethod mul => qw(Math::AnyNum $) => sub {
@@ -1591,22 +1564,20 @@ Class::Multimethods::multimethod mul => qw(Math::AnyNum $) => sub {
               ? Math::GMPq::Rmpq_set_si($r, $y, 1)
               : Math::GMPq::Rmpq_set_ui($r, $y, 1);
             Math::GMPq::Rmpq_mul($r, $r, $$x);
-            return bless \$r, __PACKAGE__;
+            return bless \$r;
         }
 
-        my $r = __mul__(_copy($$x), $y);
-        return bless \$r, __PACKAGE__;
+        bless \__mul__(_copy($$x), $y);
     }
-
-    my $r = __mul__(_copy($$x), _str2obj($y));
-    bless \$r, __PACKAGE__;
+    else {
+        bless \__mul__(_str2obj($y), $$x);
+    }
 };
 
 Class::Multimethods::multimethod mul => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::mul;
     my ($x, $y) = @_;
-    my $r = __mul__(_copy($$x), ${__PACKAGE__->new($y)});
-    bless \$r, __PACKAGE__;
+    bless \__mul__(${__PACKAGE__->new($y)}, $$x);
 };
 
 #
@@ -1616,8 +1587,7 @@ Class::Multimethods::multimethod mul => qw(Math::AnyNum *) => sub {
 Class::Multimethods::multimethod div => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::div;
     my ($x, $y) = @_;
-    my $r = __div__(_copy($$x), $$y);
-    bless \$r, __PACKAGE__;
+    bless \__div__(_copy($$x), $$y);
 };
 
 Class::Multimethods::multimethod div => qw(Math::AnyNum $) => sub {
@@ -1632,7 +1602,7 @@ Class::Multimethods::multimethod div => qw(Math::AnyNum $) => sub {
               ? Math::GMPq::Rmpq_set_si($r, -1, -$y)
               : Math::GMPq::Rmpq_set_ui($r, 1, $y);
             Math::GMPq::Rmpq_mul($r, $r, $$x);
-            return bless \$r, __PACKAGE__;
+            return bless \$r;
         }
         elsif (ref($$x) eq 'Math::GMPz') {
             my $r = Math::GMPq::Rmpq_init();
@@ -1640,22 +1610,20 @@ Class::Multimethods::multimethod div => qw(Math::AnyNum $) => sub {
             Math::GMPq::Rmpq_set_num($r, $$x);
             Math::GMPq::Rmpq_neg($r, $r) if $y < 0;
             Math::GMPq::Rmpq_canonicalize($r);
-            return bless \$r, __PACKAGE__;
+            return bless \$r;
         }
 
-        my $r = __div__(_copy($$x), $y);
-        return bless \$r, __PACKAGE__;
+        bless \__div__(_copy($$x), $y);
     }
-
-    my $r = __div__(_copy($$x), _str2obj($y));
-    bless \$r, __PACKAGE__;
+    else {
+        bless \__div__(_copy($$x), _str2obj($y));
+    }
 };
 
 Class::Multimethods::multimethod div => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::div;
     my ($x, $y) = @_;
-    my $r = __div__(_copy($$x), ${__PACKAGE__->new($y)});
-    bless \$r, __PACKAGE__;
+    bless \__div__(_copy($$x), ${__PACKAGE__->new($y)});
 };
 
 #
@@ -1665,8 +1633,7 @@ Class::Multimethods::multimethod div => qw(Math::AnyNum *) => sub {
 Class::Multimethods::multimethod iadd => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::iadd;
     my ($x, $y) = @_;
-    my $r = __iadd__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__iadd__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod iadd => qw(* $) => sub {
@@ -1677,20 +1644,18 @@ Class::Multimethods::multimethod iadd => qw(* $) => sub {
         $y < 0
           ? Math::GMPz::Rmpz_sub_ui($n, $n, -$y)
           : Math::GMPz::Rmpz_add_ui($n, $n, $y);
-        bless \$n, __PACKAGE__;
+        bless \$n;
     }
     else {
         require Math::AnyNum::iadd;
-        my $r = __iadd__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
-        bless \$r, __PACKAGE__;
+        bless \__iadd__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
     }
 };
 
 Class::Multimethods::multimethod iadd => qw(* *) => sub {
     require Math::AnyNum::iadd;
     my ($x, $y) = @_;
-    my $r = __iadd__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__iadd__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
 };
 
 #
@@ -1700,8 +1665,7 @@ Class::Multimethods::multimethod iadd => qw(* *) => sub {
 Class::Multimethods::multimethod isub => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::isub;
     my ($x, $y) = @_;
-    my $r = __isub__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__isub__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod isub => qw(* $) => sub {
@@ -1712,20 +1676,18 @@ Class::Multimethods::multimethod isub => qw(* $) => sub {
         $y < 0
           ? Math::GMPz::Rmpz_add_ui($n, $n, -$y)
           : Math::GMPz::Rmpz_sub_ui($n, $n, $y);
-        bless \$n, __PACKAGE__;
+        bless \$n;
     }
     else {
         require Math::AnyNum::isub;
-        my $r = __isub__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
-        bless \$r, __PACKAGE__;
+        bless \__isub__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
     }
 };
 
 Class::Multimethods::multimethod isub => qw(* *) => sub {
     require Math::AnyNum::isub;
     my ($x, $y) = @_;
-    my $r = __isub__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__isub__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
 };
 
 #
@@ -1735,8 +1697,7 @@ Class::Multimethods::multimethod isub => qw(* *) => sub {
 Class::Multimethods::multimethod imul => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::imul;
     my ($x, $y) = @_;
-    my $r = __imul__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__imul__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod imul => qw(* $) => sub {
@@ -1746,20 +1707,18 @@ Class::Multimethods::multimethod imul => qw(* $) => sub {
         my $n = _star2mpz($x) // goto &nan;
         Math::GMPz::Rmpz_mul_ui($n, $n, CORE::abs($y));
         Math::GMPz::Rmpz_neg($n, $n) if $y < 0;
-        bless \$n, __PACKAGE__;
+        bless \$n;
     }
     else {
         require Math::AnyNum::imul;
-        my $r = __imul__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
-        bless \$r, __PACKAGE__;
+        bless \__imul__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
     }
 };
 
 Class::Multimethods::multimethod imul => qw(* *) => sub {
     require Math::AnyNum::imul;
     my ($x, $y) = @_;
-    my $r = __imul__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__imul__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
 };
 
 #
@@ -1769,15 +1728,13 @@ Class::Multimethods::multimethod imul => qw(* *) => sub {
 Class::Multimethods::multimethod idiv => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::idiv;
     my ($x, $y) = @_;
-    my $r = __idiv__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__idiv__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod idiv => qw(* Math::AnyNum) => sub {
     require Math::AnyNum::idiv;
     my ($x, $y) = @_;
-    my $r = __idiv__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__idiv__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod idiv => qw(* $) => sub {
@@ -1787,20 +1744,18 @@ Class::Multimethods::multimethod idiv => qw(* $) => sub {
         my $n = _star2mpz($x) // goto &nan;
         Math::GMPz::Rmpz_tdiv_q_ui($n, $n, CORE::abs($y));
         Math::GMPz::Rmpz_neg($n, $n) if $y < 0;
-        bless \$n, __PACKAGE__;
+        bless \$n;
     }
     else {
         require Math::AnyNum::idiv;
-        my $r = __idiv__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
-        bless \$r, __PACKAGE__;
+        bless \__idiv__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
     }
 };
 
 Class::Multimethods::multimethod idiv => qw(* *) => sub {
     require Math::AnyNum::idiv;
     my ($x, $y) = @_;
-    my $r = __idiv__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__idiv__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
 };
 
 #
@@ -1810,57 +1765,49 @@ Class::Multimethods::multimethod idiv => qw(* *) => sub {
 Class::Multimethods::multimethod pow => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::pow;
     my ($x, $y) = @_;
-    my $r = __pow__(_copy($$x), $$y);
-    bless \$r, __PACKAGE__;
+    bless \__pow__(_copy($$x), $$y);
 };
 
 Class::Multimethods::multimethod pow => qw(Math::AnyNum $) => sub {
     require Math::AnyNum::pow;
     my ($x, $y) = @_;
 
-    my $r;
     if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        $r = __pow__(_copy($$x), $y);
+        bless \__pow__(_copy($$x), $y);
     }
     else {
-        $r = __pow__(_copy($$x), _str2obj($y));
+        bless \__pow__(_copy($$x), _str2obj($y));
     }
-    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod pow => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::pow;
     my ($x, $y) = @_;
-    my $r = __pow__(_copy($$x), ${__PACKAGE__->new($y)});
-    bless \$r, __PACKAGE__;
+    bless \__pow__(_copy($$x), ${__PACKAGE__->new($y)});
 };
 
 Class::Multimethods::multimethod pow => qw(* Math::AnyNum) => sub {
     require Math::AnyNum::pow;
     my ($x, $y) = @_;
-    my $r = __pow__(${__PACKAGE__->new($x)}, $$y);
-    bless \$r, __PACKAGE__;
+    bless \__pow__(${__PACKAGE__->new($x)}, $$y);
 };
 
 Class::Multimethods::multimethod pow => qw(* $) => sub {
     require Math::AnyNum::pow;
     my ($x, $y) = @_;
 
-    my $r;
     if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        $r = __pow__(${__PACKAGE__->new($x)}, $y);
+        bless \__pow__(${__PACKAGE__->new($x)}, $y);
     }
     else {
-        $r = __pow__(${__PACKAGE__->new($x)}, _str2obj($y));
+        bless \__pow__(${__PACKAGE__->new($x)}, _str2obj($y));
     }
-    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod pow => qw(* *) => sub {
     require Math::AnyNum::pow;
     my ($x, $y) = @_;
-    my $r = __pow__(${__PACKAGE__->new($x)}, ${__PACKAGE__->new($y)});
-    bless \$r, __PACKAGE__;
+    bless \__pow__(${__PACKAGE__->new($x)}, ${__PACKAGE__->new($y)});
 };
 
 #
@@ -1870,57 +1817,50 @@ Class::Multimethods::multimethod pow => qw(* *) => sub {
 Class::Multimethods::multimethod ipow => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::ipow;
     my ($x, $y) = @_;
-    my $r = __ipow__(_copy2mpz($$x) // (goto &nan), _any2si($$y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__ipow__(_copy2mpz($$x) // (goto &nan), _any2si($$y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod ipow => qw(Math::AnyNum $) => sub {
     require Math::AnyNum::ipow;
     my ($x, $y) = @_;
 
-    my $r;
     if (CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
-        $r = __ipow__(_copy2mpz($$x) // (goto &nan), $y);
+        bless \__ipow__(_copy2mpz($$x) // (goto &nan), $y);
     }
     else {
-        $r = __ipow__(_copy2mpz($$x) // (goto &nan), _any2si(_str2obj($y)) // (goto &nan));
+        bless \__ipow__(_copy2mpz($$x) // (goto &nan), _any2si(_str2obj($y)) // (goto &nan));
     }
-    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod ipow => qw($ $) => sub {
     require Math::AnyNum::ipow;
     my ($x, $y) = @_;
 
-    my $r;
     if (    CORE::int($x) eq $x
         and $x >= 0
         and $x <= ULONG_MAX
         and CORE::int($y) eq $y
         and $y >= 0
         and $y <= ULONG_MAX) {
-        $r = Math::GMPz::Rmpz_init();
+        my $r = Math::GMPz::Rmpz_init();
         Math::GMPz::Rmpz_ui_pow_ui($r, $x, $y);
+        bless \$r;
     }
     else {
-        $r = __ipow__(_star2mpz($x) // (goto &nan), _any2si(_str2obj($y)) // goto &nan);
+        bless \__ipow__(_star2mpz($x) // (goto &nan), _any2si(_str2obj($y)) // goto &nan);
     }
-
-    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod ipow => qw(* Math::AnyNum) => sub {
     require Math::AnyNum::ipow;
     my ($x, $y) = @_;
-    my $r = __ipow__(_star2mpz($x) // (goto &nan), _any2si($$y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__ipow__(_star2mpz($x) // (goto &nan), _any2si($$y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod ipow => qw(* *) => sub {
     require Math::AnyNum::ipow;
     my ($x, $y) = @_;
-    my $r = __ipow__(_star2mpz($x) // (goto &nan), _any2si(${__PACKAGE__->new($y)}) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__ipow__(_star2mpz($x) // (goto &nan), _any2si(${__PACKAGE__->new($y)}) // (goto &nan));
 };
 
 #
@@ -1931,32 +1871,28 @@ Class::Multimethods::multimethod root => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::pow;
     require Math::AnyNum::inv;
     my ($x, $y) = @_;
-    my $r = __pow__(_copy($$x), __inv__(_copy($$y)));
-    bless \$r, __PACKAGE__;
+    bless \__pow__(_copy($$x), __inv__(_copy($$y)));
 };
 
 Class::Multimethods::multimethod root => qw(Math::AnyNum $) => sub {
     require Math::AnyNum::pow;
     require Math::AnyNum::inv;
     my ($x, $y) = @_;
-    my $r = __pow__(_copy($$x), __inv__(_str2obj($y)));
-    bless \$r, __PACKAGE__;
+    bless \__pow__(_copy($$x), __inv__(_str2obj($y)));
 };
 
 Class::Multimethods::multimethod root => qw(* $) => sub {
     require Math::AnyNum::pow;
     require Math::AnyNum::inv;
     my ($x, $y) = @_;
-    my $r = __pow__(${__PACKAGE__->new($x)}, __inv__(_str2obj($y)));
-    bless \$r, __PACKAGE__;
+    bless \__pow__(${__PACKAGE__->new($x)}, __inv__(_str2obj($y)));
 };
 
 Class::Multimethods::multimethod root => qw(* *) => sub {
     require Math::AnyNum::pow;
     require Math::AnyNum::inv;
     my ($x, $y) = @_;
-    my $r = __pow__(${__PACKAGE__->new($x)}, __inv__(${__PACKAGE__->new($y)}));
-    bless \$r, __PACKAGE__;
+    bless \__pow__(${__PACKAGE__->new($x)}, __inv__(${__PACKAGE__->new($y)}));
 };
 
 #
@@ -1967,7 +1903,7 @@ sub isqrt {
     my $z = _star2mpz($_[0]) // goto &nan;
     Math::GMPz::Rmpz_sgn($z) < 0 and goto &nan;
     Math::GMPz::Rmpz_sqrt($z, $z);
-    bless \$z, __PACKAGE__;
+    bless \$z;
 }
 
 #
@@ -1976,8 +1912,7 @@ sub isqrt {
 
 sub icbrt {
     require Math::AnyNum::iroot;
-    my $r = __iroot__(_star2mpz($_[0]) // (goto &nan), 3);
-    bless \$r, __PACKAGE__;
+    bless \__iroot__(_star2mpz($_[0]) // (goto &nan), 3);
 }
 
 #
@@ -1986,59 +1921,49 @@ sub icbrt {
 Class::Multimethods::multimethod iroot => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::iroot;
     my ($x, $y) = @_;
-    my $r = __iroot__(_copy2mpz($$x) // (goto &nan), _any2si($$y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__iroot__(_copy2mpz($$x) // (goto &nan), _any2si($$y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod iroot => qw(Math::AnyNum $) => sub {
     require Math::AnyNum::iroot;
     my ($x, $y) = @_;
 
-    my $r;
     if (CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
-        $r = __iroot__(_copy2mpz($$x) // (goto &nan), $y);
+        bless \__iroot__(_copy2mpz($$x) // (goto &nan), $y);
     }
     else {
-        $r = __iroot__(_copy2mpz($$x) // (goto &nan), _any2si(_str2obj($y)) // (goto &nan));
+        bless \__iroot__(_copy2mpz($$x) // (goto &nan), _any2si(_str2obj($y)) // (goto &nan));
     }
-
-    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod iroot => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::iroot;
     my ($x, $y) = @_;
-    my $r = __iroot__(_copy2mpz($$x) // (goto &nan), _any2si(${__PACKAGE__->new($y)}) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__iroot__(_copy2mpz($$x) // (goto &nan), _any2si(${__PACKAGE__->new($y)}) // (goto &nan));
 };
 
 Class::Multimethods::multimethod iroot => qw(* $) => sub {
     require Math::AnyNum::iroot;
     my ($x, $y) = @_;
 
-    my $r;
     if (CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
-        $r = __iroot__(_star2mpz($x) // (goto &nan), $y);
+        bless \__iroot__(_star2mpz($x) // (goto &nan), $y);
     }
     else {
-        $r = __iroot__(_star2mpz($x) // (goto &nan), _any2si(_str2obj($y)) // (goto &nan));
+        bless \__iroot__(_star2mpz($x) // (goto &nan), _any2si(_str2obj($y)) // (goto &nan));
     }
-
-    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod iroot => qw(* Math::AnyNum) => sub {
     require Math::AnyNum::iroot;
     my ($x, $y) = @_;
-    my $r = __iroot__(_star2mpz($x) // (goto &nan), _any2si($$y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__iroot__(_star2mpz($x) // (goto &nan), _any2si($$y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod iroot => qw(* *) => sub {
     require Math::AnyNum::iroot;
     my ($x, $y) = @_;
-    my $r = __iroot__(_star2mpz($x) // (goto &nan), _any2si(${__PACKAGE__->new($y)}) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__iroot__(_star2mpz($x) // (goto &nan), _any2si(${__PACKAGE__->new($y)}) // (goto &nan));
 };
 
 #
@@ -2048,7 +1973,7 @@ Class::Multimethods::multimethod iroot => qw(* *) => sub {
 sub isqrtrem {
     require Math::AnyNum::isqrtrem;
     my ($root, $rem) = __isqrtrem__(_star2mpz($_[0]) // (return (nan(), nan())));
-    ((bless \$root, __PACKAGE__), (bless \$rem, __PACKAGE__));
+    ((bless \$root), (bless \$rem));
 }
 
 #
@@ -2059,12 +1984,12 @@ Class::Multimethods::multimethod irootrem => qw(* $) => sub {
     my ($x, $y) = @_;
     if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
         my ($root, $rem) = __irootrem__(_star2mpz($x) // (return (nan(), nan())), $y);
-        return ((bless \$root, __PACKAGE__), (bless \$rem, __PACKAGE__));
+        return ((bless \$root), (bless \$rem));
     }
     else {
         my ($root, $rem) =
           __irootrem__(_star2mpz($x) // (return (nan(), nan())), _any2si(${__PACKAGE__->new($y)}) // (return (nan(), nan())));
-        return ((bless \$root, __PACKAGE__), (bless \$rem, __PACKAGE__));
+        return ((bless \$root), (bless \$rem));
     }
 };
 
@@ -2073,7 +1998,7 @@ Class::Multimethods::multimethod irootrem => qw(* *) => sub {
     my ($x, $y) = @_;
     my ($root, $rem) =
       __irootrem__(_star2mpz($x) // (return (nan(), nan())), _any2si(${__PACKAGE__->new($y)}) // (return (nan(), nan())));
-    ((bless \$root, __PACKAGE__), (bless \$rem, __PACKAGE__));
+    ((bless \$root), (bless \$rem));
 };
 
 #
@@ -2083,8 +2008,7 @@ Class::Multimethods::multimethod irootrem => qw(* *) => sub {
 Class::Multimethods::multimethod mod => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::mod;
     my ($x, $y) = @_;
-    my $r = __mod__(_copy($$x), $$y);
-    bless \$r, __PACKAGE__;
+    bless \__mod__(_copy($$x), $$y);
 };
 
 Class::Multimethods::multimethod mod => qw(Math::AnyNum $) => sub {
@@ -2095,26 +2019,23 @@ Class::Multimethods::multimethod mod => qw(Math::AnyNum $) => sub {
         and CORE::int($y) eq $y
         and $y > 0
         and $y <= ULONG_MAX) {
-        my $r = __mod__(_copy($$x), $y);
-        return bless \$r, __PACKAGE__;
+        bless \__mod__(_copy($$x), $y);
     }
-
-    my $r = __mod__(_copy($$x), _str2obj($y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    else {
+        bless \__mod__(_copy($$x), _str2obj($y) // (goto &nan));
+    }
 };
 
 Class::Multimethods::multimethod mod => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::mod;
     my ($x, $y) = @_;
-    my $r = __mod__(_copy($$x), ${__PACKAGE__->new($y)});
-    bless \$r, __PACKAGE__;
+    bless \__mod__(_copy($$x), ${__PACKAGE__->new($y)});
 };
 
 Class::Multimethods::multimethod mod => qw(* *) => sub {
     require Math::AnyNum::mod;
     my ($x, $y) = @_;
-    my $r = __mod__(${__PACKAGE__->new($x)}, ${__PACKAGE__->new($y)});
-    bless \$r, __PACKAGE__;
+    bless \__mod__(${__PACKAGE__->new($x)}, ${__PACKAGE__->new($y)});
 };
 
 #
@@ -2123,29 +2044,25 @@ Class::Multimethods::multimethod mod => qw(* *) => sub {
 Class::Multimethods::multimethod imod => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::imod;
     my ($x, $y) = @_;
-    my $r = __imod__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__imod__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod imod => qw(Math::AnyNum $) => sub {
     require Math::AnyNum::imod;
     my ($x, $y) = @_;
 
-    my $r;
     if (CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
-        $r = __imod__(_copy2mpz($$x) // (goto &nan), $y);
+        bless \__imod__(_copy2mpz($$x) // (goto &nan), $y);
     }
     else {
-        $r = __imod__(_copy2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan));
+        bless \__imod__(_copy2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan));
     }
-    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod imod => qw(* *) => sub {
     require Math::AnyNum::imod;
     my ($x, $y) = @_;
-    my $r = __imod__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__imod__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
 };
 
 #
@@ -2156,7 +2073,7 @@ sub divmod {
     require Math::AnyNum::divmod;
     my ($x, $y) = @_;
     my ($r1, $r2) = __divmod__(_star2mpz($x) // (return (nan(), nan())), _star2mpz($y) // (return (nan(), nan())));
-    ((bless \$r1, __PACKAGE__), (bless \$r2, __PACKAGE__));
+    ((bless \$r1), (bless \$r2));
 }
 
 #
@@ -2175,20 +2092,17 @@ sub is_div {
 
 sub ln {
     require Math::AnyNum::log;
-    my $r = __log__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__log__(_star2mpfr_mpc($_[0]));
 }
 
 sub log2 {
     require Math::AnyNum::log;
-    my $r = __log2__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__log2__(_star2mpfr_mpc($_[0]));
 }
 
 sub log10 {
     require Math::AnyNum::log;
-    my $r = __log10__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__log10__(_star2mpfr_mpc($_[0]));
 }
 
 sub length {
@@ -2204,9 +2118,7 @@ sub length {
 Class::Multimethods::multimethod log => qw(* *) => sub {
     require Math::AnyNum::log;
     require Math::AnyNum::div;
-    my ($x, $y) = @_;
-    my $r = __div__(__log__(_star2mpfr_mpc($x)), __log__(_star2mpfr_mpc($y)));
-    bless \$r, __PACKAGE__;
+    bless \__div__(__log__(_star2mpfr_mpc($_[0])), __log__(_star2mpfr_mpc($_[1])));
 };
 
 Class::Multimethods::multimethod log => qw(*) => \&ln;
@@ -2217,27 +2129,23 @@ Class::Multimethods::multimethod log => qw(*) => \&ln;
 
 sub ilog2 {
     require Math::AnyNum::log;
-    my $r = _any2mpz(__log2__(_star2mpfr_mpc($_[0]))) // goto &nan;
-    bless \$r, __PACKAGE__;
+    bless \(_any2mpz(__log2__(_star2mpfr_mpc($_[0]))) // goto &nan);
 }
 
 sub ilog10 {
     require Math::AnyNum::log;
-    my $r = _any2mpz(__log10__(_star2mpfr_mpc($_[0]))) // goto &nan;
-    bless \$r, __PACKAGE__;
+    bless \(_any2mpz(__log10__(_star2mpfr_mpc($_[0]))) // goto &nan);
 }
 
 Class::Multimethods::multimethod ilog => qw(* *) => sub {
     require Math::AnyNum::log;
     require Math::AnyNum::div;
-    my $r = _any2mpz(__div__(__log__(_star2mpfr_mpc($_[0])), __log__(_star2mpfr_mpc($_[1])))) // goto &nan;
-    bless \$r, __PACKAGE__;
+    bless \(_any2mpz(__div__(__log__(_star2mpfr_mpc($_[0])), __log__(_star2mpfr_mpc($_[1])))) // goto &nan);
 };
 
 Class::Multimethods::multimethod ilog => qw(*) => sub {
     require Math::AnyNum::log;
-    my $r = _any2mpz(__log__(_star2mpfr_mpc($_[0]))) // goto &nan;
-    bless \$r, __PACKAGE__;
+    bless \(_any2mpz(__log__(_star2mpfr_mpc($_[0]))) // goto &nan);
 };
 
 #
@@ -2246,14 +2154,12 @@ Class::Multimethods::multimethod ilog => qw(*) => sub {
 
 sub sqrt {
     require Math::AnyNum::sqrt;
-    my $r = __sqrt__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__sqrt__(_star2mpfr_mpc($_[0]));
 }
 
 sub cbrt {
     require Math::AnyNum::cbrt;
-    my $r = __cbrt__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__cbrt__(_star2mpfr_mpc($_[0]));
 }
 
 sub sqr {
@@ -2261,8 +2167,7 @@ sub sqr {
     my ($x) = @_;
     if (ref($x) eq __PACKAGE__) {
         my $r = _copy($$x);
-        $r = __mul__($r, $r);
-        bless \$r, __PACKAGE__;
+        bless \__mul__($r, $r);
     }
     else {
         my $r = __PACKAGE__->new($x);
@@ -2273,8 +2178,7 @@ sub sqr {
 
 sub exp {
     require Math::AnyNum::exp;
-    my $r = __exp__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__exp__(_star2mpfr_mpc($_[0]));
 }
 
 sub floor {
@@ -2284,8 +2188,7 @@ sub floor {
     if (ref($x) eq __PACKAGE__) {
         my $r = $$x;
         ref($r) eq 'Math::GMPz' and return $x;    # already an integer
-        $r = __floor__(ref($r) eq 'Math::GMPq' ? $r : _copy($r));
-        bless \$r, __PACKAGE__;
+        bless \__floor__(ref($r) eq 'Math::GMPq' ? $r : _copy($r));
     }
     else {
         __PACKAGE__->new($x)->floor;
@@ -2299,8 +2202,7 @@ sub ceil {
     if (ref($x) eq __PACKAGE__) {
         my $r = $$x;
         ref($r) eq 'Math::GMPz' and return $x;    # already an integer
-        $r = __ceil__(ref($r) eq 'Math::GMPq' ? $r : _copy($r));
-        bless \$r, __PACKAGE__;
+        bless \__ceil__(ref($r) eq 'Math::GMPq' ? $r : _copy($r));
     }
     else {
         __PACKAGE__->new($x)->ceil;
@@ -2313,26 +2215,22 @@ sub ceil {
 
 sub sin {
     require Math::AnyNum::sin;
-    my $r = __sin__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__sin__(_star2mpfr_mpc($_[0]));
 }
 
 sub sinh {
     require Math::AnyNum::sinh;
-    my $r = __sinh__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__sinh__(_star2mpfr_mpc($_[0]));
 }
 
 sub asin {
     require Math::AnyNum::asin;
-    my $r = __asin__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__asin__(_star2mpfr_mpc($_[0]));
 }
 
 sub asinh {
     require Math::AnyNum::asinh;
-    my $r = __asinh__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__asinh__(_star2mpfr_mpc($_[0]));
 }
 
 #
@@ -2341,26 +2239,22 @@ sub asinh {
 
 sub cos {
     require Math::AnyNum::cos;
-    my $r = __cos__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__cos__(_star2mpfr_mpc($_[0]));
 }
 
 sub cosh {
     require Math::AnyNum::cosh;
-    my $r = __cosh__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__cosh__(_star2mpfr_mpc($_[0]));
 }
 
 sub acos {
     require Math::AnyNum::acos;
-    my $r = __acos__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__acos__(_star2mpfr_mpc($_[0]));
 }
 
 sub acosh {
     require Math::AnyNum::acosh;
-    my $r = __acosh__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__acosh__(_star2mpfr_mpc($_[0]));
 }
 
 #
@@ -2369,33 +2263,27 @@ sub acosh {
 
 sub tan {
     require Math::AnyNum::tan;
-    my $r = __tan__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__tan__(_star2mpfr_mpc($_[0]));
 }
 
 sub tanh {
     require Math::AnyNum::tanh;
-    my $r = __tanh__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__tanh__(_star2mpfr_mpc($_[0]));
 }
 
 sub atan {
     require Math::AnyNum::atan;
-    my $r = __atan__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__atan__(_star2mpfr_mpc($_[0]));
 }
 
 sub atanh {
     require Math::AnyNum::atanh;
-    my $r = __atanh__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__atanh__(_star2mpfr_mpc($_[0]));
 }
 
 sub atan2 {
     require Math::AnyNum::atan2;
-    my ($x, $y) = @_;
-    my $r = __atan2__(_star2mpfr_mpc($x), _star2mpfr_mpc($y));
-    bless \$r, __PACKAGE__;
+    bless \__atan2__(_star2mpfr_mpc($_[0]), _star2mpfr_mpc($_[1]));
 }
 
 #
@@ -2404,26 +2292,22 @@ sub atan2 {
 
 sub sec {
     require Math::AnyNum::sec;
-    my $r = __sec__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__sec__(_star2mpfr_mpc($_[0]));
 }
 
 sub sech {
     require Math::AnyNum::sech;
-    my $r = __sech__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__sech__(_star2mpfr_mpc($_[0]));
 }
 
 sub asec {
     require Math::AnyNum::asec;
-    my $r = __asec__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__asec__(_star2mpfr_mpc($_[0]));
 }
 
 sub asech {
     require Math::AnyNum::asech;
-    my $r = __asech__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__asech__(_star2mpfr_mpc($_[0]));
 }
 
 #
@@ -2432,26 +2316,22 @@ sub asech {
 
 sub csc {
     require Math::AnyNum::csc;
-    my $r = __csc__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__csc__(_star2mpfr_mpc($_[0]));
 }
 
 sub csch {
     require Math::AnyNum::csch;
-    my $r = __csch__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__csch__(_star2mpfr_mpc($_[0]));
 }
 
 sub acsc {
     require Math::AnyNum::acsc;
-    my $r = __acsc__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__acsc__(_star2mpfr_mpc($_[0]));
 }
 
 sub acsch {
     require Math::AnyNum::acsch;
-    my $r = __acsch__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__acsch__(_star2mpfr_mpc($_[0]));
 }
 
 #
@@ -2460,26 +2340,22 @@ sub acsch {
 
 sub cot {
     require Math::AnyNum::cot;
-    my $r = __cot__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__cot__(_star2mpfr_mpc($_[0]));
 }
 
 sub coth {
     require Math::AnyNum::coth;
-    my $r = __coth__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__coth__(_star2mpfr_mpc($_[0]));
 }
 
 sub acot {
     require Math::AnyNum::acot;
-    my $r = __acot__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__acot__(_star2mpfr_mpc($_[0]));
 }
 
 sub acoth {
     require Math::AnyNum::acoth;
-    my $r = __acoth__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__acoth__(_star2mpfr_mpc($_[0]));
 }
 
 sub deg2rad {
@@ -2488,8 +2364,7 @@ sub deg2rad {
     my $f = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_const_pi($f, $ROUND);
     Math::MPFR::Rmpfr_div_ui($f, $f, 180, $ROUND);
-    my $r = __mul__(_star2mpfr_mpc($x), $f);
-    bless \$r, __PACKAGE__;
+    bless \__mul__(_star2mpfr_mpc($x), $f);
 }
 
 sub rad2deg {
@@ -2498,8 +2373,7 @@ sub rad2deg {
     my $f = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_const_pi($f, $ROUND);
     Math::MPFR::Rmpfr_ui_div($f, 180, $f, $ROUND);
-    my $r = __mul__(_star2mpfr_mpc($x), $f);
-    bless \$r, __PACKAGE__;
+    bless \__mul__(_star2mpfr_mpc($x), $f);
 }
 
 #
@@ -2509,7 +2383,7 @@ sub rad2deg {
 sub gamma {
     my $r = _star2mpfr($_[0]);
     Math::MPFR::Rmpfr_gamma($r, $r, $ROUND);
-    bless \$r, __PACKAGE__;
+    bless \$r;
 }
 
 #
@@ -2519,7 +2393,7 @@ sub gamma {
 sub lgamma {
     my $r = _star2mpfr($_[0]);
     Math::MPFR::Rmpfr_lgamma($r, $r, $ROUND);
-    bless \$r, __PACKAGE__;
+    bless \$r;
 }
 
 #
@@ -2529,7 +2403,7 @@ sub lgamma {
 sub lngamma {
     my $r = _star2mpfr($_[0]);
     Math::MPFR::Rmpfr_lngamma($r, $r, $ROUND);
-    bless \$r, __PACKAGE__;
+    bless \$r;
 }
 
 #
@@ -2539,7 +2413,7 @@ sub lngamma {
 sub digamma {
     my $r = _star2mpfr($_[0]);
     Math::MPFR::Rmpfr_digamma($r, $r, $ROUND);
-    bless \$r, __PACKAGE__;
+    bless \$r;
 }
 
 #
@@ -2549,7 +2423,7 @@ sub digamma {
 sub zeta {
     my $r = _star2mpfr($_[0]);
     Math::MPFR::Rmpfr_zeta($r, $r, $ROUND);
-    bless \$r, __PACKAGE__;
+    bless \$r;
 }
 
 #
@@ -2558,8 +2432,7 @@ sub zeta {
 
 sub eta {
     require Math::AnyNum::eta;
-    my $r = __eta__(_star2mpfr($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__eta__(_star2mpfr($_[0]));
 }
 
 #
@@ -2568,14 +2441,12 @@ sub eta {
 Class::Multimethods::multimethod beta => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::beta;
     my ($x, $y) = @_;
-    my $r = __beta__(_star2mpfr($x), _any2mpfr($$y));
-    bless \$r, __PACKAGE__;
+    bless \__beta__(_star2mpfr($x), _any2mpfr($$y));
 };
 
 Class::Multimethods::multimethod beta => qw(* *) => sub {
     require Math::AnyNum::beta;
-    my $r = __beta__(_star2mpfr($_[0]), _star2mpfr($_[1]));
-    bless \$r, __PACKAGE__;
+    bless \__beta__(_star2mpfr($_[0]), _star2mpfr($_[1]));
 };
 
 #
@@ -2585,7 +2456,7 @@ Class::Multimethods::multimethod beta => qw(* *) => sub {
 sub Ai {
     my $r = _star2mpfr($_[0]);
     Math::MPFR::Rmpfr_ai($r, $r, $ROUND);
-    bless \$r, __PACKAGE__;
+    bless \$r;
 }
 
 #
@@ -2595,7 +2466,7 @@ sub Ai {
 sub Ei {
     my $r = _star2mpfr($_[0]);
     Math::MPFR::Rmpfr_eint($r, $r, $ROUND);
-    bless \$r, __PACKAGE__;
+    bless \$r;
 }
 
 #
@@ -2605,7 +2476,7 @@ sub Li {
     my $r = _star2mpfr($_[0]);
     Math::MPFR::Rmpfr_log($r, $r, $ROUND);
     Math::MPFR::Rmpfr_eint($r, $r, $ROUND);
-    bless \$r, __PACKAGE__;
+    bless \$r;
 }
 
 #
@@ -2614,7 +2485,7 @@ sub Li {
 sub Li2 {
     my $r = _star2mpfr($_[0]);
     Math::MPFR::Rmpfr_li2($r, $r, $ROUND);
-    bless \$r, __PACKAGE__;
+    bless \$r;
 }
 
 #
@@ -2623,7 +2494,7 @@ sub Li2 {
 sub erf {
     my $r = _star2mpfr($_[0]);
     Math::MPFR::Rmpfr_erf($r, $r, $ROUND);
-    bless \$r, __PACKAGE__;
+    bless \$r;
 }
 
 #
@@ -2632,7 +2503,7 @@ sub erf {
 sub erfc {
     my $r = _star2mpfr($_[0]);
     Math::MPFR::Rmpfr_erfc($r, $r, $ROUND);
-    bless \$r, __PACKAGE__;
+    bless \$r;
 }
 
 #
@@ -2641,8 +2512,7 @@ sub erfc {
 
 sub LambertW {
     require Math::AnyNum::LambertW;
-    my $r = __LambertW__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__LambertW__(_star2mpfr_mpc($_[0]));
 }
 
 #
@@ -2651,8 +2521,7 @@ sub LambertW {
 
 sub lgrt {
     require Math::AnyNum::lgrt;
-    my $r = __lgrt__(_star2mpfr_mpc($_[0]));
-    bless \$r, __PACKAGE__;
+    bless \__lgrt__(_star2mpfr_mpc($_[0]));
 }
 
 #
@@ -2660,9 +2529,7 @@ sub lgrt {
 #
 sub agm {
     require Math::AnyNum::agm;
-    my ($x, $y) = @_;
-    my $r = __agm__(_star2mpfr($x), _star2mpfr($y));
-    bless \$r, __PACKAGE__;
+    bless \__agm__(_star2mpfr($_[0]), _star2mpfr($_[1]));
 }
 
 #
@@ -2671,9 +2538,7 @@ sub agm {
 
 sub hypot {
     require Math::AnyNum::hypot;
-    my ($x, $y) = @_;
-    my $r = __hypot__(_star2mpfr_mpc($x), _star2mpfr_mpc($y));
-    bless \$r, __PACKAGE__;
+    bless \__hypot__(_star2mpfr_mpc($_[0]), _star2mpfr_mpc($_[1]));
 }
 
 #
@@ -2684,22 +2549,18 @@ Class::Multimethods::multimethod BesselJ => qw(* $) => sub {
     require Math::AnyNum::BesselJ;
     my ($x, $y) = @_;
 
-    my $r;
     if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        $r = __BesselJ__(_star2mpfr($x), $y);
+        bless \__BesselJ__(_star2mpfr($x), $y);
     }
     else {
-        $r = __BesselJ__(_star2mpfr($x), _star2mpz($y) // (goto &nan));
+        bless \__BesselJ__(_star2mpfr($x), _star2mpz($y) // (goto &nan));
     }
-
-    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod BesselJ => qw(* *) => sub {
     require Math::AnyNum::BesselJ;
     my ($x, $y) = @_;
-    my $r = __BesselJ__(_star2mpfr($x), _star2mpz($y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__BesselJ__(_star2mpfr($x), _star2mpz($y) // (goto &nan));
 };
 
 #
@@ -2710,22 +2571,18 @@ Class::Multimethods::multimethod BesselY => qw(* $) => sub {
     require Math::AnyNum::BesselY;
     my ($x, $y) = @_;
 
-    my $r;
     if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        $r = __BesselY__(_star2mpfr($x), $y);
+        bless \__BesselY__(_star2mpfr($x), $y);
     }
     else {
-        $r = __BesselY__(_star2mpfr($x), _star2mpz($y) // (goto &nan));
+        bless \__BesselY__(_star2mpfr($x), _star2mpz($y) // (goto &nan));
     }
-
-    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod BesselY => qw(* *) => sub {
     require Math::AnyNum::BesselY;
     my ($x, $y) = @_;
-    my $r = __BesselY__(_star2mpfr($x), _star2mpz($y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__BesselY__(_star2mpfr($x), _star2mpz($y) // (goto &nan));
 };
 
 #
@@ -2735,43 +2592,35 @@ Class::Multimethods::multimethod BesselY => qw(* *) => sub {
 Class::Multimethods::multimethod round => qw(Math::AnyNum) => sub {
     require Math::AnyNum::round;
     my ($x) = @_;
-    my $r = __round__(_copy($$x), 0);
-    bless \$r, __PACKAGE__;
+    bless \__round__(_copy($$x), 0);
 };
 
 Class::Multimethods::multimethod round => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::round;
     my ($x, $y) = @_;
-    my $r = __round__(_copy($$x), _any2si($$y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__round__(_copy($$x), _any2si($$y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod round => qw(Math::AnyNum $) => sub {
     require Math::AnyNum::round;
     my ($x, $y) = @_;
 
-    my $r;
     if (CORE::int($y) eq $y and $y >= LONG_MIN and $y <= ULONG_MAX) {
-        $r = __round__(_copy($$x), $y);
+        bless \__round__(_copy($$x), $y);
     }
     else {
-        $r = __round__(_copy($$x), _any2si(_str2obj($y)) // (goto &nan));
+        bless \__round__(_copy($$x), _any2si(_str2obj($y)) // (goto &nan));
     }
-    bless \$r, __PACKAGE__;
 };
 
 Class::Multimethods::multimethod round => qw(*) => sub {
     require Math::AnyNum::round;
-    my ($x) = @_;
-    my $r = __round__(${__PACKAGE__->new($x)}, 0);
-    bless \$r, __PACKAGE__;
+    bless \__round__(${__PACKAGE__->new($_[0])}, 0);
 };
 
 Class::Multimethods::multimethod round => qw(* *) => sub {
     require Math::AnyNum::round;
-    my ($x, $y) = @_;
-    my $r = __round__(${__PACKAGE__->new($x)}, _any2si(${__PACKAGE__->new($y)}) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__round__(${__PACKAGE__->new($_[0])}, _any2si(${__PACKAGE__->new($_[1])}) // (goto &nan));
 };
 
 #
@@ -2787,29 +2636,21 @@ Class::Multimethods::multimethod round => qw(* *) => sub {
 
         Class::Multimethods::multimethod rand => qw(Math::AnyNum) => sub {
             require Math::AnyNum::mul;
-
             my ($x) = @_;
-
             my $rand = Math::MPFR::Rmpfr_init2($PREC);
             Math::MPFR::Rmpfr_urandom($rand, $state, $ROUND);
-            $rand = __mul__($rand, $$x);
-
-            bless \$rand, __PACKAGE__;
+            bless \__mul__($rand, $$x);
         };
 
         Class::Multimethods::multimethod rand => qw(Math::AnyNum Math::AnyNum) => sub {
             require Math::AnyNum::mul;
             require Math::AnyNum::sub;
             require Math::AnyNum::add;
-
             my ($x, $y) = @_;
-
             my $rand = Math::MPFR::Rmpfr_init2($PREC);
             Math::MPFR::Rmpfr_urandom($rand, $state, $ROUND);
             $rand = __mul__($rand, __sub__(_copy($$y), $$x));
-            $rand = __add__($rand, $$x);
-
-            bless \$rand, __PACKAGE__;
+            bless \__add__($rand, $$x);
         };
 
         Class::Multimethods::multimethod rand => qw(Math::AnyNum *) => sub {
@@ -2835,10 +2676,10 @@ Class::Multimethods::multimethod round => qw(* *) => sub {
         sub seed {
             my $z = _star2mpz($_[0]) // do {
                 require Carp;
-                Carp::croak("invalid seed: <<$_[0]>> (expected an integer)");
+                Carp::croak("seed(): invalid seed value <<$_[0]>> (expected an integer)");
             };
             Math::MPFR::Rmpfr_randseed($state, $z);
-            bless \$z, __PACKAGE__;
+            bless \$z;
         }
     }
 
@@ -2849,43 +2690,38 @@ Class::Multimethods::multimethod round => qw(* *) => sub {
         Class::Multimethods::multimethod irand => qw(Math::AnyNum Math::AnyNum) => sub {
             require Math::AnyNum::irand;
             my ($x, $y) = @_;
-            my $r = __irand__(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan), $state);
-            bless \$r, __PACKAGE__;
+            bless \__irand__(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan), $state);
         };
 
         Class::Multimethods::multimethod irand => qw(Math::AnyNum *) => sub {
             require Math::AnyNum::irand;
             my ($x, $y) = @_;
-            my $r = __irand__(_any2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan), $state);
-            bless \$r, __PACKAGE__;
+            bless \__irand__(_any2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan), $state);
         };
 
         Class::Multimethods::multimethod irand => qw(* Math::AnyNum) => sub {
             require Math::AnyNum::irand;
             my ($x, $y) = @_;
-            my $r = __irand__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan), $state);
-            bless \$r, __PACKAGE__;
+            bless \__irand__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan), $state);
         };
 
         Class::Multimethods::multimethod irand => qw(*) => sub {
             require Math::AnyNum::irand;
-            my $r = __irand__(_star2mpz($_[0]) // (goto &nan), $state);
-            bless \$r, __PACKAGE__;
+            bless \__irand__(_star2mpz($_[0]) // (goto &nan), $state);
         };
 
         Class::Multimethods::multimethod irand => qw(* *) => sub {
             require Math::AnyNum::irand;
-            my $r = __irand__(_star2mpz($_[0]) // (goto &nan), _star2mpz($_[1]) // (goto &nan), $state);
-            bless \$r, __PACKAGE__;
+            bless \__irand__(_star2mpz($_[0]) // (goto &nan), _star2mpz($_[1]) // (goto &nan), $state);
         };
 
         sub iseed {
             my $z = _star2mpz($_[0]) // do {
                 require Carp;
-                Carp::croak("invalid seed: <<$_[0]>> (expected an integer)");
+                Carp::croak("iseed(): invalid seed value <<$_[0]>> (expected an integer)");
             };
             Math::GMPz::zgmp_randseed($state, $z);
-            bless \$z, __PACKAGE__;
+            bless \$z;
         }
     }
 }
@@ -2900,7 +2736,7 @@ sub fibonacci {
         if (CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
             my $z = Math::GMPz::Rmpz_init();
             Math::GMPz::Rmpz_fib_ui($z, CORE::int($x));
-            return bless \$z, __PACKAGE__;
+            return bless \$z;
         }
         return __PACKAGE__->new($x)->fibonacci;
     }
@@ -2908,7 +2744,7 @@ sub fibonacci {
     my $ui = _any2ui($$x) // (goto &nan);
     my $z = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_fib_ui($z, $ui);
-    bless \$z, __PACKAGE__;
+    bless \$z;
 }
 
 #
@@ -2921,7 +2757,7 @@ sub lucas {
         if (CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
             my $z = Math::GMPz::Rmpz_init();
             Math::GMPz::Rmpz_lucnum_ui($z, CORE::int($x));
-            return bless \$z, __PACKAGE__;
+            return bless \$z;
         }
         return __PACKAGE__->new($x)->lucas;
     }
@@ -2929,7 +2765,7 @@ sub lucas {
     my $ui = _any2ui($$x) // (goto &nan);
     my $z = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_lucnum_ui($z, $ui);
-    bless \$z, __PACKAGE__;
+    bless \$z;
 }
 
 #
@@ -2942,7 +2778,7 @@ sub primorial {
         if (CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
             my $z = Math::GMPz::Rmpz_init();
             Math::GMPz::Rmpz_primorial_ui($z, CORE::int($x));
-            return bless \$z, __PACKAGE__;
+            return bless \$z;
         }
         return __PACKAGE__->new($x)->primorial;
     }
@@ -2950,7 +2786,7 @@ sub primorial {
     my $ui = _any2ui($$x) // (goto &nan);
     my $z = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_primorial_ui($z, $ui);
-    bless \$z, __PACKAGE__;
+    bless \$z;
 }
 
 #
@@ -2964,14 +2800,14 @@ sub bernfrac {
     if (ref($x) ne __PACKAGE__) {    # called as a function
         if (CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
             my $q = __bernfrac__(CORE::int($x));
-            return bless \$q, __PACKAGE__;
+            return bless \$q;
         }
         return __PACKAGE__->new($x)->bernfrac;
     }
 
     my $n = _any2ui($$x) // goto &nan;
     my $q = __bernfrac__($n);
-    bless \$q, __PACKAGE__;
+    bless \$q;
 }
 
 #
@@ -2985,14 +2821,14 @@ sub harmfrac {
     if (ref($x) ne __PACKAGE__) {    # called as a function
         if (CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
             my $q = __harmfrac__(CORE::int($x));
-            return bless \$q, __PACKAGE__;
+            return bless \$q;
         }
         return __PACKAGE__->new($x)->harmfrac;
     }
 
     my $n = _any2ui($$x) // (goto &nan);
     my $q = __harmfrac__($n);
-    bless \$q, __PACKAGE__;
+    bless \$q;
 }
 
 #
@@ -3006,14 +2842,14 @@ sub bernreal {
     if (ref($x) ne __PACKAGE__) {    # called as a function
         if (CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
             my $f = __bernreal__(CORE::int($x));
-            return bless \$f, __PACKAGE__;
+            return bless \$f;
         }
         return __PACKAGE__->new($x)->bernreal;
     }
 
     my $n = _any2ui($$x) // (goto &nan);
     my $f = __bernreal__($n);
-    bless \$f, __PACKAGE__;
+    bless \$f;
 }
 
 #
@@ -3022,10 +2858,7 @@ sub bernreal {
 
 sub harmreal {
     require Math::AnyNum::harmreal;
-    my ($x) = @_;
-    my $n = _star2mpfr($x) // (goto &nan);
-    my $f = __harmreal__($n);
-    bless \$f, __PACKAGE__;
+    bless \__harmreal__(_star2mpfr($_[0]) // (goto &nan));
 }
 
 #
@@ -3038,7 +2871,7 @@ sub factorial {
         if (CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
             my $z = Math::GMPz::Rmpz_init();
             Math::GMPz::Rmpz_fac_ui($z, CORE::int($x));
-            return bless \$z, __PACKAGE__;
+            return bless \$z;
         }
         return __PACKAGE__->new($x)->factorial;
     }
@@ -3046,7 +2879,7 @@ sub factorial {
     my $ui = _any2ui($$x) // (goto &nan);
     my $z = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_fac_ui($z, $ui);
-    bless \$z, __PACKAGE__;
+    bless \$z;
 }
 
 #
@@ -3060,7 +2893,7 @@ sub dfactorial {
         if (CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
             my $z = Math::GMPz::Rmpz_init();
             Math::GMPz::Rmpz_2fac_ui($z, CORE::int($x));
-            return bless \$z, __PACKAGE__;
+            return bless \$z;
         }
         return __PACKAGE__->new($x)->dfactorial;
     }
@@ -3068,7 +2901,7 @@ sub dfactorial {
     my $ui = _any2ui($$x) // (goto &nan);
     my $z = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_2fac_ui($z, $ui);
-    bless \$z, __PACKAGE__;
+    bless \$z;
 }
 
 #
@@ -3096,7 +2929,7 @@ sub mfactorial {
     my $ui2 = _any2ui($y) // (goto &nan);
     my $z   = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_mfac_uiui($z, $ui1, $ui2);
-    bless \$z, __PACKAGE__;
+    bless \$z;
 }
 
 #
@@ -3106,29 +2939,25 @@ sub mfactorial {
 Class::Multimethods::multimethod gcd => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::gcd;
     my ($x, $y) = @_;
-    my $r = __gcd__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__gcd__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod gcd => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::gcd;
     my ($x, $y) = @_;
-    my $r = __gcd__(_copy2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__gcd__(_copy2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod gcd => qw(* Math::AnyNum) => sub {
     require Math::AnyNum::gcd;
     my ($x, $y) = @_;
-    my $r = __gcd__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__gcd__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod gcd => qw(* *) => sub {
     require Math::AnyNum::gcd;
     my ($x, $y) = @_;
-    my $r = __gcd__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__gcd__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
 };
 
 #
@@ -3138,28 +2967,24 @@ Class::Multimethods::multimethod gcd => qw(* *) => sub {
 Class::Multimethods::multimethod lcm => qw(Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::lcm;
     my ($x, $y) = @_;
-    my $r = __lcm__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__lcm__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod lcm => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::lcm;
     my ($x, $y) = @_;
-    my $r = __lcm__(_copy2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__lcm__(_copy2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod lcm => qw(* Math::AnyNum) => sub {
     require Math::AnyNum::lcm;
     my ($x, $y) = @_;
-    my $r = __lcm__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__lcm__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
 Class::Multimethods::multimethod lcm => qw(* *) => sub {
     require Math::AnyNum::lcm;
-    my $r = __lcm__(_star2mpz($_[0]) // (goto &nan), _star2mpz($_[1]) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \__lcm__(_star2mpz($_[0]) // (goto &nan), _star2mpz($_[1]) // (goto &nan));
 };
 
 #
@@ -3169,7 +2994,7 @@ Class::Multimethods::multimethod lcm => qw(* *) => sub {
 sub next_prime {
     my $r = _star2mpz($_[0]) // (goto &nan);
     Math::GMPz::Rmpz_nextprime($r, $r);
-    bless \$r, __PACKAGE__;
+    bless \$r;
 }
 
 #
@@ -3238,7 +3063,7 @@ sub numerator {
         if (ref($r) eq 'Math::GMPq') {
             my $z = Math::GMPz::Rmpz_init();
             Math::GMPq::Rmpq_get_num($z, $r);
-            return bless \$z, __PACKAGE__;
+            return bless \$z;
         }
 
         $r = _any2mpq($r) // (goto &nan);
@@ -3260,7 +3085,7 @@ sub denominator {
         if (ref($r) eq 'Math::GMPq') {
             my $z = Math::GMPz::Rmpz_init();
             Math::GMPq::Rmpq_get_den($z, $r);
-            return bless \$z, __PACKAGE__;
+            return bless \$z;
         }
         $r = _any2mpq($r) // (goto &nan);
     }
@@ -3288,7 +3113,7 @@ sub sgn {
     }
 
     my $r = __sgn__($$x);
-    ref($r) ? (bless \$r, __PACKAGE__) : $r;
+    ref($r) ? (bless \$r) : $r;
 }
 
 sub is_real {
@@ -3631,7 +3456,7 @@ Class::Multimethods::multimethod remdiv => qw(Math::AnyNum Math::AnyNum) => sub 
     my ($x, $y) = @_;
     my $r = _copy2mpz($$x) // (goto &nan);
     __valuation__($r, _any2mpz($$y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \$r;
 };
 
 Class::Multimethods::multimethod remdiv => qw(Math::AnyNum *) => sub {
@@ -3639,7 +3464,7 @@ Class::Multimethods::multimethod remdiv => qw(Math::AnyNum *) => sub {
     my ($x, $y) = @_;
     my $r = _copy2mpz($$x) // (goto &nan);
     __valuation__($r, _star2mpz($y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \$r;
 };
 
 Class::Multimethods::multimethod remdiv => qw(* Math::AnyNum) => sub {
@@ -3647,14 +3472,14 @@ Class::Multimethods::multimethod remdiv => qw(* Math::AnyNum) => sub {
     my ($x, $y) = @_;
     my $r = _star2mpz($x) // (goto &nan);
     __valuation__($r, _any2mpz($$y) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \$r;
 };
 
 Class::Multimethods::multimethod remdiv => qw(* *) => sub {
     require Math::AnyNum::valuation;
     my $r = _star2mpz($_[0]) // (goto &nan);
     __valuation__($r, _star2mpz($_[1]) // (goto &nan));
-    bless \$r, __PACKAGE__;
+    bless \$r;
 };
 
 #
@@ -3669,7 +3494,7 @@ Class::Multimethods::multimethod invmod => qw(Math::AnyNum Math::AnyNum) => sub 
 
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_invert($r, $n, $z) || (goto &nan);
-    bless \$r, __PACKAGE__;
+    bless \$r;
 };
 
 Class::Multimethods::multimethod invmod => qw(Math::AnyNum *) => sub {
@@ -3694,61 +3519,57 @@ Class::Multimethods::multimethod invmod => qw(* *) => sub {
 Class::Multimethods::multimethod powmod => qw(Math::AnyNum Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::powmod;
     my ($x, $y, $z) = @_;
-    my $r = __powmod__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan), _any2mpz($$z) // (goto &nan))
-      // goto(&nan);
-    bless \$r, __PACKAGE__;
+    bless \(__powmod__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan), _any2mpz($$z) // (goto &nan))
+            // goto(&nan));
 };
 
 Class::Multimethods::multimethod powmod => qw(Math::AnyNum * Math::AnyNum) => sub {
     require Math::AnyNum::powmod;
     my ($x, $y, $z) = @_;
-    my $r = __powmod__(_copy2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan), _any2mpz($$z) // (goto &nan))
-      // goto(&nan);
-    bless \$r, __PACKAGE__;
+    bless \(__powmod__(_copy2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan), _any2mpz($$z) // (goto &nan))
+            // goto(&nan));
 };
 
 Class::Multimethods::multimethod powmod => qw(Math::AnyNum Math::AnyNum *) => sub {
     require Math::AnyNum::powmod;
     my ($x, $y, $z) = @_;
-    my $r = __powmod__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan), _star2mpz($z) // (goto &nan))
-      // goto(&nan);
-    bless \$r, __PACKAGE__;
+    bless \(__powmod__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan), _star2mpz($z) // (goto &nan))
+            // goto(&nan));
 };
 
 Class::Multimethods::multimethod powmod => qw(Math::AnyNum * *) => sub {
     require Math::AnyNum::powmod;
     my ($x, $y, $z) = @_;
-    my $r = __powmod__(_copy2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan), _star2mpz($z) // (goto &nan))
-      // goto(&nan);
-    bless \$r, __PACKAGE__;
+    bless \(__powmod__(_copy2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan), _star2mpz($z) // (goto &nan))
+            // goto(&nan));
 };
 
 Class::Multimethods::multimethod powmod => qw(* Math::AnyNum *) => sub {
     require Math::AnyNum::powmod;
     my ($x, $y, $z) = @_;
-    my $r = __powmod__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan), _star2mpz($z) // (goto &nan)) // goto(&nan);
-    bless \$r, __PACKAGE__;
+    bless \(__powmod__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan), _star2mpz($z) // (goto &nan))
+            // goto(&nan));
 };
 
 Class::Multimethods::multimethod powmod => qw(* Math::AnyNum Math::AnyNum) => sub {
     require Math::AnyNum::powmod;
     my ($x, $y, $z) = @_;
-    my $r = __powmod__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan), _any2mpz($$z) // (goto &nan)) // goto(&nan);
-    bless \$r, __PACKAGE__;
+    bless \(__powmod__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan), _any2mpz($$z) // (goto &nan))
+            // goto(&nan));
 };
 
 Class::Multimethods::multimethod powmod => qw(* * Math::AnyNum) => sub {
     require Math::AnyNum::powmod;
     my ($x, $y, $z) = @_;
-    my $r = __powmod__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan), _any2mpz($$z) // (goto &nan)) // goto(&nan);
-    bless \$r, __PACKAGE__;
+    bless \(__powmod__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan), _any2mpz($$z) // (goto &nan))
+            // goto(&nan));
 };
 
 Class::Multimethods::multimethod powmod => qw(* * *) => sub {
     require Math::AnyNum::powmod;
     my ($x, $y, $z) = @_;
-    my $r = __powmod__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan), _star2mpz($z) // (goto &nan)) // goto(&nan);
-    bless \$r, __PACKAGE__;
+    bless \(__powmod__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan), _star2mpz($z) // (goto &nan))
+            // goto(&nan));
 };
 
 #
@@ -3767,7 +3588,7 @@ Class::Multimethods::multimethod binomial => qw(Math::AnyNum Math::AnyNum) => su
       ? Math::GMPz::Rmpz_bin_si($r, $z, $n)
       : Math::GMPz::Rmpz_bin_ui($r, $z, $n);
 
-    bless \$r, __PACKAGE__;
+    bless \$r;
 };
 
 Class::Multimethods::multimethod binomial => qw(Math::AnyNum $) => sub {
@@ -3780,7 +3601,7 @@ Class::Multimethods::multimethod binomial => qw(Math::AnyNum $) => sub {
           ? Math::GMPz::Rmpz_bin_si($r, $z, $y)
           : Math::GMPz::Rmpz_bin_ui($r, $z, $y);
 
-        bless \$r, __PACKAGE__;
+        bless \$r;
     }
     else {
         (@_) = ($x, __PACKAGE__->new($y));
@@ -3799,7 +3620,7 @@ Class::Multimethods::multimethod binomial => qw($ $) => sub {
         and $y <= ULONG_MAX) {
         my $z = Math::GMPz::Rmpz_init();
         Math::GMPz::Rmpz_bin_uiui($z, $x, $y);
-        return bless \$z, __PACKAGE__;
+        return bless \$z;
     }
 
     (@_) = (__PACKAGE__->new($x), $y);
@@ -3828,7 +3649,7 @@ Class::Multimethods::multimethod and => qw(Math::AnyNum Math::AnyNum) => sub {
 
     Math::GMPz::Rmpz_and($z, $z, $n);
 
-    bless \$z, __PACKAGE__;
+    bless \$z;
 };
 
 Class::Multimethods::multimethod and => qw(Math::AnyNum *) => sub {
@@ -3848,7 +3669,7 @@ Class::Multimethods::multimethod or => qw(Math::AnyNum Math::AnyNum) => sub {
 
     Math::GMPz::Rmpz_ior($z, $z, $n);
 
-    bless \$z, __PACKAGE__;
+    bless \$z;
 };
 
 Class::Multimethods::multimethod or => qw(Math::AnyNum *) => sub {
@@ -3868,7 +3689,7 @@ Class::Multimethods::multimethod xor => qw(Math::AnyNum Math::AnyNum) => sub {
 
     Math::GMPz::Rmpz_xor($z, $z, $n);
 
-    bless \$z, __PACKAGE__;
+    bless \$z;
 };
 
 Class::Multimethods::multimethod xor => qw(Math::AnyNum *) => sub {
@@ -3884,7 +3705,7 @@ sub not {
     my ($x) = @_;
     my $z = _copy2mpz($$x) // (goto &nan);
     Math::GMPz::Rmpz_com($z, $z);
-    bless \$z, __PACKAGE__;
+    bless \$z;
 }
 
 #
@@ -3901,7 +3722,7 @@ Class::Multimethods::multimethod lsft => qw(Math::AnyNum Math::AnyNum) => sub {
       ? Math::GMPz::Rmpz_div_2exp($z, $z, -$n)
       : Math::GMPz::Rmpz_mul_2exp($z, $z, $n);
 
-    bless \$z, __PACKAGE__;
+    bless \$z;
 };
 
 Class::Multimethods::multimethod lsft => qw(Math::AnyNum $) => sub {
@@ -3914,7 +3735,7 @@ Class::Multimethods::multimethod lsft => qw(Math::AnyNum $) => sub {
           ? Math::GMPz::Rmpz_div_2exp($z, $z, -$y)
           : Math::GMPz::Rmpz_mul_2exp($z, $z, $y);
 
-        bless \$z, __PACKAGE__;
+        bless \$z;
     }
     else {
         (@_) = ($x, __PACKAGE__->new($y));
@@ -3941,7 +3762,7 @@ Class::Multimethods::multimethod rsft => qw(Math::AnyNum Math::AnyNum) => sub {
       ? Math::GMPz::Rmpz_mul_2exp($z, $z, -$n)
       : Math::GMPz::Rmpz_div_2exp($z, $z, $n);
 
-    bless \$z, __PACKAGE__;
+    bless \$z;
 };
 
 Class::Multimethods::multimethod rsft => qw(Math::AnyNum $) => sub {
@@ -3954,7 +3775,7 @@ Class::Multimethods::multimethod rsft => qw(Math::AnyNum $) => sub {
           ? Math::GMPz::Rmpz_mul_2exp($z, $z, -$y)
           : Math::GMPz::Rmpz_div_2exp($z, $z, $y);
 
-        bless \$z, __PACKAGE__;
+        bless \$z;
     }
     else {
         (@_) = ($x, __PACKAGE__->new($y));
