@@ -1,5 +1,19 @@
 Revision history for Math-AnyNum
 
+0.06    2017-04-xx
+
+        [ADDITIONS]
+
+        - Added the `as_float(n, digits)` function, which returns `n` as a decimal expansion string.
+
+        [IMPROVEMENTS]
+
+        - Many simplifications and optimizations.
+
+        [FIXES]
+
+        - Fixed a typo in `is_inf()` and `is_ninf()`.
+
 0.05    2017-04-09
 
         [FIXES]

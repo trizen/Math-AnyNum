@@ -10,7 +10,7 @@ Class::Multimethods::multimethod __irand__ => qw(Math::GMPz Math::GMPz *) => sub
     my $cmp = Math::GMPz::Rmpz_cmp($y, $x);
 
     if ($cmp == 0) {
-        return Math::GMPz::Rmpz_init_set($x);
+        return $x;
     }
     elsif ($cmp < 0) {
         ($x, $y) = ($y, $x);

@@ -103,8 +103,8 @@ The following functions are exportable:
         rand irand seed iseed floor ceil round sgn
         popcount real imag int rat float complex
         numerator denominator digits as_bin as_hex
-        as_oct as_int as_frac is_pos is_neg is_int
-        is_rat is_real is_imag is_complex is_inf
+        as_oct as_int as_float as_frac is_pos is_neg
+        is_int is_rat is_real is_imag is_complex is_inf
         is_ninf is_nan is_zero is_one is_mone is_even
         is_odd is_div
 
@@ -1382,8 +1382,8 @@ Example:
     as_int(n)                                     #=> Scalar
     as_int(n, b)                                  #=> Scalar
 
-Returns the integer part of C<n> in a given base. When the base is omitted, it
-defaults to base 10.
+Returns the integer part of C<n> in a given base as a string.
+When the base is omitted, it defaults to base 10.
 
 Example:
 
@@ -1392,9 +1392,30 @@ Example:
 
 =head2 as_frac
 
-    as_frac(x)                                    #=> Scalar
+    as_frac(n)                                    #=> Scalar
 
 Returns a string representing the number as a base-10 fraction.
+
+Example:
+
+    as_frac(42)  = "42/1"
+    as_frac(1/2) = "1/2"
+
+=head2 as_float
+
+    as_float(n)                                   #=> Scalar
+    as_float(n, digits)                           #=> Scalar
+
+Returns a decimal expansion as a string, representing  the number C<n>,
+with an optional number of digits. When the second argument is undefined,
+it uses the default precision.
+
+Number C<n> can also be a complex number.
+
+Example:
+
+    as_float(1/2)        = "0.5"
+    as_float(sqrt(2), 3) = "1.41"
 
 =head1 * Dissections
 

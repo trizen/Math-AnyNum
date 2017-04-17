@@ -239,11 +239,12 @@ use overload
 
         digits => sub ($;$) { goto &digits },
 
-        as_bin  => sub ($)   { goto &as_bin },
-        as_hex  => sub ($)   { goto &as_hex },
-        as_oct  => sub ($)   { goto &as_oct },
-        as_int  => sub ($;$) { goto &as_int },
-        as_frac => sub ($)   { goto &as_frac },
+        as_bin   => sub ($)   { goto &as_bin },
+        as_hex   => sub ($)   { goto &as_hex },
+        as_oct   => sub ($)   { goto &as_oct },
+        as_int   => sub ($;$) { goto &as_int },
+        as_frac  => sub ($)   { goto &as_frac },
+        as_float => sub ($;$) { goto &as_float },
 
         is_inf     => sub ($) { goto &is_inf },
         is_ninf    => sub ($) { goto &is_ninf },
@@ -3085,19 +3086,6 @@ sub denominator {
     }
 }
 
-sub as_frac {
-    my ($x) = @_;
-
-    if (ref($x) ne __PACKAGE__) {
-        $x = __PACKAGE__->new($x);
-    }
-
-    my $num = $x->numerator;
-    my $den = $x->denominator;
-
-    "$num/$den";
-}
-
 sub sgn {
     require Math::AnyNum::sgn;
     my ($x) = @_;
@@ -3875,6 +3863,59 @@ sub as_int {
     }
 
     Math::GMPz::Rmpz_get_str($x, $base);
+}
+
+sub as_frac {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    my $num = $x->numerator;
+    my $den = $x->denominator;
+
+    "$num/$den";
+}
+
+sub as_float {
+    my ($x, $y) = @_;
+
+    my $prec = $PREC;
+
+    if (defined($y)) {
+        if (ref($y) eq '' and CORE::int($y) eq $y) {
+            $prec = $y;
+        }
+        elsif (ref($y) eq __PACKAGE__) {
+            $prec = _any2ui($$y) // 0;
+        }
+        else {
+            $prec = _any2ui(${__PACKAGE__->new($y)}) // 0;
+        }
+
+        $prec <<= 2;
+
+        state $min_prec = Math::MPFR::RMPFR_PREC_MIN();
+        state $max_prec = Math::MPFR::RMPFR_PREC_MAX();
+
+        if ($prec < $min_prec or $prec > $max_prec) {
+            require Carp;
+            Carp::croak("precision must be between $min_prec and $max_prec, got ", $prec >> 2);
+        }
+    }
+
+    require Math::AnyNum::stringify;
+    local $PREC = $prec;
+
+    if (ref($x) eq __PACKAGE__) {
+        $x = ref($$x) eq 'Math::MPC' ? $$x : _any2mpfr($$x);
+    }
+    else {
+        $x = _star2mpfr_mpc($x);
+    }
+
+    __stringify__($x);
 }
 
 sub digits {

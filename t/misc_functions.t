@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 193;
+plan tests => 212;
 
 use Math::AnyNum qw(:misc);
 
@@ -168,10 +168,35 @@ is(as_bin(complex(42)), '101010');
 is(as_oct(rat(42)),     '52');
 is(as_hex(float(42)),   '2a');
 
+is(as_int('255',          16), 'ff');
+is(as_int(rat('255'),     16), 'ff');
+is(as_int(float('255'),   16), 'ff');
+is(as_int(complex('255'), 16), 'ff');
+
+is(as_int('42.99',  10),        '42');
+is(as_int('-42.99', "10.0001"), '-42');
+
+is(as_int('12.5',  rat(16)),     'c');
+is(as_int('-12.5', float(16)),   '-c');
+is(as_int('-12.5', complex(16)), '-c');
+
 is(as_frac('123/567'),       '41/189');
 is(as_frac('42'),            '42/1');
 is(as_frac(complex('0.75')), '3/4');
 is(as_frac(float('0.75')),   '3/4');
+
+is(as_float(sqrt(float(2)),   3), '1.41');
+is(as_float(sqrt(rat(2)),     4), '1.414');
+is(as_float(sqrt(complex(2)), 5), '1.4142');
+
+is(as_float('0.5'), '0.5');
+is(as_float('0.5',      10), '0.5');
+is(as_float(rat('0.5'), 10), '0.5');
+is(as_float(complex('0.5')), '0.5');
+
+is(as_float(complex('3+4i')), '3+4i');
+is(as_float(complex('3.142421+4.123213i'), rat(3)),     '3.14+4.12i');
+is(as_float(complex('3.142421+4.123213i'), complex(3)), '3.14+4.12i');
 
 ok(is_pos(int(42)));
 ok(is_pos(float('42.3')));
