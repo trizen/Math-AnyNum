@@ -100,13 +100,12 @@ The following functions are exportable:
         next_prime
 
     :misc
-        rand irand seed iseed floor ceil round sgn
-        conj int rat float complex real imag reals
-        digits numerator denominator nude popcount
-        as_bin as_hex as_oct as_int as_dec as_frac
-        is_pos is_neg is_int is_rat is_real is_imag
-        is_complex is_inf is_ninf is_nan is_zero
-        is_one is_mone is_even is_odd is_div
+        rand irand seed iseed floor ceil round sgn inv
+        conj int rat float complex real imag reals digits
+        numerator denominator nude popcount as_bin as_hex
+        as_oct as_int as_dec as_frac is_pos is_neg is_int
+        is_rat is_real is_imag is_complex is_inf is_ninf
+        is_nan is_zero is_one is_mone is_even is_odd is_div
 
 Each function can be exported individually, as:
 
@@ -448,15 +447,15 @@ Implemented as:
 
 =head2 inv
 
-    $x->inv                                       #=> Any
+    inv(x)                                        #=> Any
 
-Inverse of C<x>. Equivalent with C<1/x>.
+Multiplicative inverse of C<x>. Equivalent with C<1/x>.
 
 =head2 neg
 
     $x->neg                                       #=> Any
 
-Negation of C<x>. Equivalent with C<-x>.
+Additive inverse of C<x>. Equivalent with C<-x>.
 
 =head2 abs
 

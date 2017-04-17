@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 559;
+plan tests => 564;
 
 {
     use Math::AnyNum;
@@ -606,6 +606,12 @@ plan tests => 559;
     like($z->log10, qr/^0\.47712125471966243729502\d*\z/);
     like($f->log10, qr/^0\.60205999132796239042747\d*\z/);
     like($c->log10, qr/^0\.69897000433601880478626110527\d*\z/);
+
+    is(Math::AnyNum->new(),      '0');
+    is(Math::AnyNum->new(''),    '0');
+    is(Math::AnyNum->new(undef), '0');
+    is(Math::AnyNum->new(undef, 10), '0');
+    is(Math::AnyNum->new(undef, 36), '0');
 
     my $NaN = Math::AnyNum->nan;
     my $Inf = Math::AnyNum->inf;

@@ -8,11 +8,13 @@ Revision history for Math-AnyNum
         - Added the `conj(x)` function.
         - Added the `reals(x)` function.
         - Added the `as_dec(x,y)` function.
+        - Function `inv(x)` became exportable.
 
         [IMPROVEMENTS]
 
         - Many simplifications and optimizations.
         - Extended the `agm()` function to support complex numbers.
+        - `Math::AnyNum->new()` became considerably faster.
 
         [FIXES]
 

@@ -226,6 +226,7 @@ use overload
 
         popcount => sub ($) { goto &popcount },
 
+        inv   => sub ($) { goto &inv },
         conj  => sub ($) { goto &conj },
         real  => sub ($) { goto &real },
         imag  => sub ($) { goto &imag },
@@ -764,43 +765,14 @@ sub new {
 
     my $ref = ref($num);
 
-    # Be forgetful about undefined values or empty strings
-    if ($ref eq '' and !$num) {
-        goto &zero;
-    }
-
     # Special string values
-    elsif (!defined($base) and $ref eq '') {
-        my $lc = lc($num);
-        if ($lc eq 'inf' or $lc eq '+inf') {
-            goto &inf;
-        }
-        elsif ($lc eq '-inf') {
-            goto &ninf;
-        }
-        elsif ($lc eq 'nan') {
-            goto &nan;
-        }
+    if ($ref eq '' and (!defined($base) or CORE::int($base) == 10)) {
+        return bless \_str2obj($num), $class;
     }
 
     # Special objects
-    elsif ($ref eq 'Math::AnyNum') {
+    elsif ($ref eq __PACKAGE__) {
         return $num->copy;
-    }
-
-    # Special values as Big{Int,Float,Rat}
-    elsif (   $ref eq 'Math::BigInt'
-           or $ref eq 'Math::BigFloat'
-           or $ref eq 'Math::BigRat') {
-        if ($num->is_nan) {
-            goto &nan;
-        }
-        elsif ($num->is_inf('-')) {
-            goto &ninf;
-        }
-        elsif ($num->is_inf('+')) {
-            goto &inf;
-        }
     }
 
     # GMPz
@@ -821,32 +793,11 @@ sub new {
         Math::MPFR::Rmpfr_set($r, $num, $ROUND);
         return bless \$r, $class;
     }
+
+    # MPC
     elsif ($ref eq 'Math::MPC') {
         my $r = Math::MPC::Rmpc_init2($PREC);
         Math::MPC::Rmpc_set($r, $num, $ROUND);
-        return bless \$r, $class;
-    }
-
-    # Plain scalar
-    if ($ref eq '' and (!defined($base) or CORE::int($base) == 10)) {    # it's a base 10 scalar
-        return bless \(_str2obj($num)), $class;                          # so we can return faster
-    }
-
-    # BigInt
-    if ($ref eq 'Math::BigInt') {
-        my $r = Math::GMPz::Rmpz_init_set_str($num->bstr, 10);
-        return bless \$r, $class;
-    }
-
-    # BigFloat
-    elsif ($ref eq 'Math::BigFloat') {
-        return bless \(_str2obj($num->bstr)), $class;
-    }
-
-    # BigRat
-    elsif ($ref eq 'Math::BigRat') {
-        my $r = Math::GMPq::Rmpq_init();
-        Math::GMPq::Rmpq_set_str($r, $num->bstr, 10);
         return bless \$r, $class;
     }
 
@@ -858,7 +809,7 @@ sub new {
     }
 
     # Number with base
-    elsif (defined($base) and $ref eq '') {
+    elsif (defined($base) and CORE::int($base) != 10) {
 
         my $int_base = CORE::int($base);
 
@@ -866,6 +817,8 @@ sub new {
             require Carp;
             Carp::croak("base must be between 2 and 36, got $base");
         }
+
+        $num = defined($num) ? "$num" : '0';
 
         if (index($num, '/') != -1) {
             my $r = Math::GMPq::Rmpq_init();
@@ -902,7 +855,7 @@ sub new {
         }
     }
 
-    bless \(_str2obj("$num")), $class;
+    bless \_str2obj("$num"), $class;
 }
 
 sub new_si {
@@ -1362,6 +1315,7 @@ sub copy {
 sub int {
     my ($x) = @_;
     if (ref($x) eq __PACKAGE__) {
+        ref($$x) eq 'Math::GMPz' && return $x;
         bless \(_any2mpz($$x) // (goto &nan));
     }
     else {
@@ -1372,6 +1326,7 @@ sub int {
 sub rat {
     my ($x) = @_;
     if (ref($x) eq __PACKAGE__) {
+        ref($$x) eq 'Math::GMPq' && return $x;
         bless \(_any2mpq($$x) // (goto &nan));
     }
     else {
@@ -1384,6 +1339,7 @@ sub rat {
 sub float {
     my ($x) = @_;
     if (ref($x) eq __PACKAGE__) {
+        ref($$x) eq 'Math::MPFR' && return $x;
         bless \_any2mpfr($$x);
     }
     else {
@@ -1396,6 +1352,7 @@ sub float {
 sub complex {
     my ($x) = @_;
     if (ref($x) eq __PACKAGE__) {
+        ref($$x) eq 'Math::MPC' && return $x;
         bless \_any2mpc($$x);
     }
     else {
@@ -1415,17 +1372,28 @@ sub abs {
     require Math::AnyNum::abs;
     my ($x) = @_;
 
-    if (ref($x) ne __PACKAGE__) {
-        $x = __PACKAGE__->new($x);
+    if (ref($x) eq __PACKAGE__) {
+        $x = ref($$x) eq 'Math::MPC' ? $$x : _copy($$x);
+    }
+    else {
+        $x = ${__PACKAGE__->new($x)};
     }
 
-    bless \__abs__(ref($$x) eq 'Math::MPC' ? $$x : _copy($$x));
+    bless \__abs__($x);
 }
 
 sub inv {
     require Math::AnyNum::inv;
     my ($x) = @_;
-    bless \__inv__(_copy($$x));
+
+    if (ref($x) eq __PACKAGE__) {
+        $x = _copy($$x);
+    }
+    else {
+        $x = ${__PACKAGE__->new($x)};
+    }
+
+    bless \__inv__($x);
 }
 
 sub inc {

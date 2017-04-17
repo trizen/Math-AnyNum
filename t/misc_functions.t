@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 224;
+plan tests => 231;
 
 use Math::AnyNum qw(:misc);
 
@@ -103,6 +103,15 @@ is(conj(complex('-3-4i')), '-3+4i');
 is(conj('4'),              '4');
 is(conj(rat('-3')),        '-3');
 is(conj('3/4'),            '3/4');
+
+is(inv('3/4'),      '4/3');
+is(inv(rat('3/4')), '4/3');
+is(inv('42'),       '1/42');
+is(inv('-42'),      '-1/42');
+is(inv('0'),        'Inf');
+is(inv('-1'),       '-1');
+
+is(ref(${Math::AnyNum->new('0')}), 'Math::GMPz');
 
 is(real(complex('3+4i')), '3');
 is(real('12.34'),         '12.34');
