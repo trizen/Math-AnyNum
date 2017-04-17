@@ -1070,9 +1070,9 @@ before the decimal point.
 
 Example:
 
-    round('1234.567')           # 1235
-    round('1234.567', 2)        # 1200
-    round('3.123+4.567i', -2)   # 3.12+4.57i
+    round('1234.567')         = 1235
+    round('1234.567', 2)      = 1200
+    round('3.123+4.567i', -2) = 3.12+4.57*i
 
 =head2 rand
 
@@ -1302,8 +1302,8 @@ Convert C<x> to a rational number. Returns C<NaN> when this conversion is not po
 
 Example:
 
-    rat('0.5')              # 1/2
-    rat('1234/5678')        # 617/2839
+    rat('0.5')       = 1/2
+    rat('1234/5678') = 617/2839
 
 =head2 float
 
@@ -1314,8 +1314,8 @@ Converts C<x> to a floating-point real number.
 
 Example:
 
-    float('3.14159')        # 3.14159
-    float('777/222')        # 3.5
+    float('3.14159') = 3.14159
+    float('777/222') = 3.5
 
 =head2 complex
 
@@ -1326,7 +1326,7 @@ Converts C<x> to a complex number.
 
 Example:
 
-    complex("3+4i")     # 3+4i
+    complex("3+4i") = 3+4*i
 
 =head2 stringify
 
