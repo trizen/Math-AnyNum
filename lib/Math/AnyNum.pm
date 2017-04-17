@@ -239,12 +239,12 @@ use overload
 
         digits => sub ($;$) { goto &digits },
 
-        as_bin   => sub ($)   { goto &as_bin },
-        as_hex   => sub ($)   { goto &as_hex },
-        as_oct   => sub ($)   { goto &as_oct },
-        as_int   => sub ($;$) { goto &as_int },
-        as_frac  => sub ($)   { goto &as_frac },
-        as_float => sub ($;$) { goto &as_float },
+        as_bin  => sub ($)   { goto &as_bin },
+        as_hex  => sub ($)   { goto &as_hex },
+        as_oct  => sub ($)   { goto &as_oct },
+        as_int  => sub ($;$) { goto &as_int },
+        as_frac => sub ($)   { goto &as_frac },
+        as_dec  => sub ($;$) { goto &as_dec },
 
         is_inf     => sub ($) { goto &is_inf },
         is_ninf    => sub ($) { goto &is_ninf },
@@ -3878,11 +3878,11 @@ sub as_frac {
     "$num/$den";
 }
 
-sub as_float {
+sub as_dec {
     my ($x, $y) = @_;
+    require Math::AnyNum::stringify;
 
     my $prec = $PREC;
-
     if (defined($y)) {
         if (ref($y) eq '' and CORE::int($y) eq $y) {
             $prec = $y;
@@ -3905,7 +3905,6 @@ sub as_float {
         }
     }
 
-    require Math::AnyNum::stringify;
     local $PREC = $prec;
 
     if (ref($x) eq __PACKAGE__) {

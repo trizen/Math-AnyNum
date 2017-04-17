@@ -185,18 +185,18 @@ is(as_frac('42'),            '42/1');
 is(as_frac(complex('0.75')), '3/4');
 is(as_frac(float('0.75')),   '3/4');
 
-is(as_float(sqrt(float(2)),   3), '1.41');
-is(as_float(sqrt(rat(2)),     4), '1.414');
-is(as_float(sqrt(complex(2)), 5), '1.4142');
+is(as_dec(sqrt(float(2)),   3), '1.41');
+is(as_dec(sqrt(rat(2)),     4), '1.414');
+is(as_dec(sqrt(complex(2)), 5), '1.4142');
 
-is(as_float('0.5'), '0.5');
-is(as_float('0.5',      10), '0.5');
-is(as_float(rat('0.5'), 10), '0.5');
-is(as_float(complex('0.5')), '0.5');
+is(as_dec('0.5'), '0.5');
+is(as_dec('0.5',      10), '0.5');
+is(as_dec(rat('0.5'), 10), '0.5');
+is(as_dec(complex('0.5')), '0.5');
 
-is(as_float(complex('3+4i')), '3+4i');
-is(as_float(complex('3.142421+4.123213i'), rat(3)),     '3.14+4.12i');
-is(as_float(complex('3.142421+4.123213i'), complex(3)), '3.14+4.12i');
+is(as_dec(complex('3+4i')), '3+4i');
+is(as_dec(complex('3.142421+4.123213i'), rat(3)),     '3.14+4.12i');
+is(as_dec(complex('3.142421+4.123213i'), complex(3)), '3.14+4.12i');
 
 ok(is_pos(int(42)));
 ok(is_pos(float('42.3')));

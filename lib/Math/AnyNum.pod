@@ -103,7 +103,7 @@ The following functions are exportable:
         rand irand seed iseed floor ceil round sgn
         popcount real imag int rat float complex
         numerator denominator digits as_bin as_hex
-        as_oct as_int as_float as_frac is_pos is_neg
+        as_oct as_int as_dec as_frac is_pos is_neg
         is_int is_rat is_real is_imag is_complex is_inf
         is_ninf is_nan is_zero is_one is_mone is_even
         is_odd is_div
@@ -1401,21 +1401,20 @@ Example:
     as_frac(42)  = "42/1"
     as_frac(1/2) = "1/2"
 
-=head2 as_float
+=head2 as_dec
 
-    as_float(n)                                   #=> Scalar
-    as_float(n, digits)                           #=> Scalar
+    as_dec(n)                                     #=> Scalar
+    as_dec(n, digits)                             #=> Scalar
 
-Returns a decimal expansion as a string, representing  the number C<n>,
-with an optional number of digits. When the second argument is undefined,
-it uses the default precision.
+Returns a decimal expansion of the number C<n>, as a string, with an optional number of digits.
+When the second argument is undefined, it uses the default precision.
 
 Number C<n> can also be a complex number.
 
 Example:
 
-    as_float(1/2)        = "0.5"
-    as_float(sqrt(2), 3) = "1.41"
+    as_dec(1/2)        = "0.5"
+    as_dec(sqrt(2), 3) = "1.41"
 
 =head1 * Dissections
 
