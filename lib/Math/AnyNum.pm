@@ -226,8 +226,9 @@ use overload
 
         popcount => sub ($) { goto &popcount },
 
-        real => sub ($) { goto &real },
-        imag => sub ($) { goto &imag },
+        real  => sub ($) { goto &real },
+        imag  => sub ($) { goto &imag },
+        reals => sub ($) { goto &reals },
 
         int     => sub (_) { goto &int },       # built-in keyword
         rat     => sub ($) { goto &rat },
@@ -236,6 +237,7 @@ use overload
 
         numerator   => sub ($) { goto &numerator },
         denominator => sub ($) { goto &denominator },
+        nude        => sub ($) { goto &nude },
 
         digits => sub ($;$) { goto &digits },
 
@@ -423,18 +425,18 @@ sub _str2obj {
             $re = _str2obj($re);
             $im = _str2obj($im);
 
-            my $sig = join(' | ', ref($re), ref($im));
+            my $sig = join(' ', ref($re), ref($im));
 
-            if ($sig eq q{Math::MPFR | Math::MPFR}) {
+            if ($sig eq q{Math::MPFR Math::MPFR}) {
                 Math::MPC::Rmpc_set_fr_fr($r, $re, $im, $ROUND);
             }
-            elsif ($sig eq q{Math::GMPz | Math::GMPz}) {
+            elsif ($sig eq q{Math::GMPz Math::GMPz}) {
                 Math::MPC::Rmpc_set_z_z($r, $re, $im, $ROUND);
             }
-            elsif ($sig eq q{Math::GMPz | Math::MPFR}) {
+            elsif ($sig eq q{Math::GMPz Math::MPFR}) {
                 Math::MPC::Rmpc_set_z_fr($r, $re, $im, $ROUND);
             }
-            elsif ($sig eq q{Math::MPFR | Math::GMPz}) {
+            elsif ($sig eq q{Math::MPFR Math::GMPz}) {
                 Math::MPC::Rmpc_set_fr_z($r, $re, $im, $ROUND);
             }
             else {    # this should never happen
@@ -1469,6 +1471,16 @@ sub imag {
     else {
         goto &zero;
     }
+}
+
+sub reals {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    ($x->real, $x->imag);
 }
 
 #
@@ -3017,7 +3029,7 @@ sub is_int {
     }
 
     my $r = $$x;
-    while (1) {
+    {
         my $ref = ref($r);
 
         $ref eq 'Math::GMPz' && return 1;
@@ -3025,6 +3037,7 @@ sub is_int {
         $ref eq 'Math::MPFR' && return Math::MPFR::Rmpfr_integer_p($r);
 
         $r = _any2mpfr($r);
+        redo;
     }
 }
 
@@ -3051,7 +3064,7 @@ sub numerator {
     }
 
     my $r = $$x;
-    while (1) {
+    {
         my $ref = ref($r);
         ref($r) eq 'Math::GMPz' && return $x;    # is an integer
 
@@ -3062,6 +3075,7 @@ sub numerator {
         }
 
         $r = _any2mpq($r) // (goto &nan);
+        redo;
     }
 }
 
@@ -3073,7 +3087,7 @@ sub denominator {
     }
 
     my $r = $$x;
-    while (1) {
+    {
         my $ref = ref($r);
         ref($r) eq 'Math::GMPz' && (goto &one);    # is an integer
 
@@ -3083,7 +3097,18 @@ sub denominator {
             return bless \$z;
         }
         $r = _any2mpq($r) // (goto &nan);
+        redo;
     }
+}
+
+sub nude {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    ($x->numerator, $x->denominator);
 }
 
 sub sgn {
@@ -3106,7 +3131,7 @@ sub is_real {
     }
 
     my $r = $$x;
-    while (1) {
+    {
         my $ref = ref($r);
 
         $ref eq 'Math::GMPz' && return 1;
@@ -3114,6 +3139,7 @@ sub is_real {
         $ref eq 'Math::MPFR' && return Math::MPFR::Rmpfr_number_p($r);
 
         $r = _any2mpfr($r);
+        redo;
     }
 }
 
@@ -3159,7 +3185,7 @@ sub is_inf {
     }
 
     my $r = $$x;
-    while (1) {
+    {
         my $ref = ref($r);
 
         $ref eq 'Math::GMPz' && return 0;
@@ -3167,6 +3193,7 @@ sub is_inf {
         $ref eq 'Math::MPFR' && return (Math::MPFR::Rmpfr_inf_p($r) and Math::MPFR::Rmpfr_sgn($r) > 0);
 
         $r = _any2mpfr($r);
+        redo;
     }
 }
 
@@ -3178,7 +3205,7 @@ sub is_ninf {
     }
 
     my $r = $$x;
-    while (1) {
+    {
         my $ref = ref($r);
 
         $ref eq 'Math::GMPz' && return 0;
@@ -3186,6 +3213,7 @@ sub is_ninf {
         $ref eq 'Math::MPFR' && return (Math::MPFR::Rmpfr_inf_p($r) and Math::MPFR::Rmpfr_sgn($r) < 0);
 
         $r = _any2mpfr($r);
+        redo;
     }
 }
 

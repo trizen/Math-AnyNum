@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 212;
+plan tests => 219;
 
 use Math::AnyNum qw(:misc);
 
@@ -88,6 +88,15 @@ is(popcount(123),           6);
 is(popcount($o->new(-123)), 6);
 is(popcount(16),            1);
 is(popcount(-16),           1);
+
+is(join(' ', reals('3-4i')),           "3 -4");
+is(join(' ', reals(complex('-3-4i'))), "-3 -4");
+
+is(join(' ', nude('3/4')),      '3 4');
+is(join(' ', nude('-3/4')),     '-3 4');
+is(join(' ', nude('-3/-4')),    '3 4');
+is(join(' ', nude('3/-4')),     '-3 4');
+is(join(' ', nude(rat('3/4'))), '3 4');
 
 is(real(complex('3+4i')), '3');
 is(real('12.34'),         '12.34');

@@ -101,12 +101,12 @@ The following functions are exportable:
 
     :misc
         rand irand seed iseed floor ceil round sgn
-        popcount real imag int rat float complex
-        numerator denominator digits as_bin as_hex
-        as_oct as_int as_dec as_frac is_pos is_neg
-        is_int is_rat is_real is_imag is_complex is_inf
-        is_ninf is_nan is_zero is_one is_mone is_even
-        is_odd is_div
+        int rat float complex real imag reals digits
+        numerator denominator nude popcount as_bin
+        as_hex as_oct as_int as_dec as_frac is_pos
+        is_neg is_int is_rat is_real is_imag is_complex
+        is_inf is_ninf is_nan is_zero is_one is_mone
+        is_even is_odd is_div
 
 Each function can be exported individually, as:
 
@@ -1425,7 +1425,11 @@ Example:
     numerator(x)                                  #=> Int | NaN
 
 Returns the numerator as a signed Math::AnyNum object. When C<x> is not a rational number,
-it tries to convert it to a rational. When this is not possible, it returns NaN.
+it tries to convert it to a rational. Returns NaN when this is not possible.
+
+Example:
+
+    numerator("-3/4") = -3
 
 =head2 denominator
 
@@ -1434,17 +1438,49 @@ it tries to convert it to a rational. When this is not possible, it returns NaN.
 Returns the numerator as an unsigned Math::AnyNum object. When C<x> is not a rational number,
 it tries to convert it to a rational. Returns NaN when this is not possible.
 
+Example:
+
+    denominator("-3/4") = 4
+
+=head2 nude
+
+    nude(x)                                       #=> (Int | NaN, Int | NaN)
+
+Returns the numerator and the denominator of C<x>.
+
+Example:
+
+    nude("-3/4") = (-3, 4)
+
 =head2 real
 
     real(x)                                       #=> Any
 
 Returns the real part of C<x>.
 
+Example:
+
+    real("3-4i") = 3
+
 =head2 imag
 
     imag(x)                                       #=> Any
 
 Returns the imaginary part of C<x>, if any. Otherwise, returns zero.
+
+Example:
+
+    imag("3-4i") = -4
+
+=head2 reals
+
+    reals(x)                                      #=> (Any, Any)
+
+Return the real and the imaginary part of C<x> as real numbers.
+
+Example:
+
+    reals("3-4i") = (3, -4)
 
 =head2 digits
 
