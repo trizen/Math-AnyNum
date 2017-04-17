@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 147;
+plan tests => 171;
 
 use Math::AnyNum qw(:special rat float complex);
 
@@ -56,6 +56,34 @@ like(beta(complex(0.5), complex(0.5)), qr/^3\.1415926535897932384626433\d*\z/);
     is($f1, '0.5');
     is($f2, '1.5');
 }
+
+is(rat(42) / 0,      'Inf');
+is(rat(-42) / 0,     '-Inf');
+is(float(42) / 0,    'Inf');
+is(float(-42) / 0,   '-Inf');
+is(complex(42) / 0,  'Inf+NaNi');
+is(complex(-42) / 0, '-Inf+NaNi');
+
+is(rat(42) / rat(0),      'Inf');
+is(rat(-42) / rat(0),     '-Inf');
+is(float(42) / rat(0),    'Inf');
+is(float(-42) / rat(0),   '-Inf');
+is(complex(42) / rat(0),  'Inf+NaNi');
+is(complex(-42) / rat(0), '-Inf+NaNi');
+
+is(rat(0) / rat(42),      '0');
+is(rat(0) / rat(-42),     '0');
+is(rat(0) / float(42),    '0');
+is(rat(0) / float(-42),   '0');
+is(rat(0) / complex(42),  '0');
+is(rat(0) / complex(-42), '0');
+
+is(0 / rat(42),      '0');
+is(0 / rat(-42),     '0');
+is(0 / float(42),    '0');
+is(0 / float(-42),   '0');
+is(0 / complex(42),  '0');
+is(0 / complex(-42), '0');
 
 is(eta(-3), '-0.125');
 like(eta('1/2'),           qr/^0\.604898643421630370247265914235955\d*\z/);
