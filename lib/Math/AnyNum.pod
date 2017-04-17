@@ -100,7 +100,7 @@ The following functions are exportable:
         next_prime
 
     :misc
-        rand irand seed iseed floor ceil round sgn inv
+        rand irand seed iseed floor ceil round sgn neg inv
         conj int rat float complex real imag reals digits
         numerator denominator nude popcount as_bin as_hex
         as_oct as_int as_dec as_frac is_pos is_neg is_int
@@ -445,6 +445,16 @@ Implemented as:
 
     x % y = x - y*floor(x/y)
 
+=head2 conj
+
+    conj(x)                                       #=> Any
+
+Complex conjugate of C<x>. Return C<x> when C<x> is a real number.
+
+Example:
+
+    conj("3+4i") = 3-4*i
+
 =head2 inv
 
     inv(x)                                        #=> Any
@@ -453,7 +463,7 @@ Multiplicative inverse of C<x>. Equivalent with C<1/x>.
 
 =head2 neg
 
-    $x->neg                                       #=> Any
+    neg(x)                                        #=> Any
 
 Additive inverse of C<x>. Equivalent with C<-x>.
 

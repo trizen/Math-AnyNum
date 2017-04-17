@@ -226,6 +226,7 @@ use overload
 
         popcount => sub ($) { goto &popcount },
 
+        neg   => sub ($) { goto &neg },
         inv   => sub ($) { goto &inv },
         conj  => sub ($) { goto &conj },
         real  => sub ($) { goto &real },
@@ -1365,7 +1366,13 @@ sub complex {
 sub neg {
     require Math::AnyNum::neg;
     my ($x) = @_;
-    bless \__neg__(_copy($$x));
+
+    if (ref($x) eq __PACKAGE__) {
+        bless \__neg__(_copy($$x));
+    }
+    else {
+        bless \__neg__(${__PACKAGE__->new($x)});
+    }
 }
 
 sub abs {
@@ -1373,13 +1380,11 @@ sub abs {
     my ($x) = @_;
 
     if (ref($x) eq __PACKAGE__) {
-        $x = ref($$x) eq 'Math::MPC' ? $$x : _copy($$x);
+        bless \__abs__(ref($$x) eq 'Math::MPC' ? $$x : _copy($$x));
     }
     else {
-        $x = ${__PACKAGE__->new($x)};
+        bless \__abs__(${__PACKAGE__->new($x)});
     }
-
-    bless \__abs__($x);
 }
 
 sub inv {
@@ -1387,13 +1392,11 @@ sub inv {
     my ($x) = @_;
 
     if (ref($x) eq __PACKAGE__) {
-        $x = _copy($$x);
+        bless \__inv__(_copy($$x));
     }
     else {
-        $x = ${__PACKAGE__->new($x)};
+        bless \__inv__(${__PACKAGE__->new($x)});
     }
-
-    bless \__inv__($x);
 }
 
 sub inc {
