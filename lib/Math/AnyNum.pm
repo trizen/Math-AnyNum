@@ -226,6 +226,7 @@ use overload
 
         popcount => sub ($) { goto &popcount },
 
+        conj  => sub ($) { goto &conj },
         real  => sub ($) { goto &real },
         imag  => sub ($) { goto &imag },
         reals => sub ($) { goto &reals },
@@ -1437,6 +1438,23 @@ sub dec {
     require Math::AnyNum::dec;
     my ($x) = @_;
     bless \__dec__(_copy($$x));
+}
+
+sub conj {
+    my ($x) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    if (ref($$x) eq 'Math::MPC') {
+        my $r = Math::MPC::Rmpc_init2($PREC);
+        Math::MPC::Rmpc_conj($r, $$x, $ROUND);
+        bless \$r;
+    }
+    else {
+        $x;
+    }
 }
 
 sub real {

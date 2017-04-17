@@ -4,8 +4,10 @@ Revision history for Math-AnyNum
 
         [ADDITIONS]
 
-        - Added the `as_dec(n, digits)` function, which returns `n` as a decimal expansion string.
-        - Added the `reals(x)` and `nude(x)` functions.
+        - Added the `nude(x)` function.
+        - Added the `conj(x)` function.
+        - Added the `reals(x)` function.
+        - Added the `as_dec(x,y)` function.
 
         [IMPROVEMENTS]
 

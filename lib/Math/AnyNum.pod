@@ -101,12 +101,12 @@ The following functions are exportable:
 
     :misc
         rand irand seed iseed floor ceil round sgn
-        int rat float complex real imag reals digits
-        numerator denominator nude popcount as_bin
-        as_hex as_oct as_int as_dec as_frac is_pos
-        is_neg is_int is_rat is_real is_imag is_complex
-        is_inf is_ninf is_nan is_zero is_one is_mone
-        is_even is_odd is_div
+        conj int rat float complex real imag reals
+        digits numerator denominator nude popcount
+        as_bin as_hex as_oct as_int as_dec as_frac
+        is_pos is_neg is_int is_rat is_real is_imag
+        is_complex is_inf is_ninf is_nan is_zero
+        is_one is_mone is_even is_odd is_div
 
 Each function can be exported individually, as:
 

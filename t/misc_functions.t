@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 219;
+plan tests => 224;
 
 use Math::AnyNum qw(:misc);
 
@@ -97,6 +97,12 @@ is(join(' ', nude('-3/4')),     '-3 4');
 is(join(' ', nude('-3/-4')),    '3 4');
 is(join(' ', nude('3/-4')),     '-3 4');
 is(join(' ', nude(rat('3/4'))), '3 4');
+
+is(conj('3+4i'),           '3-4i');
+is(conj(complex('-3-4i')), '-3+4i');
+is(conj('4'),              '4');
+is(conj(rat('-3')),        '-3');
+is(conj('3/4'),            '3/4');
 
 is(real(complex('3+4i')), '3');
 is(real('12.34'),         '12.34');
