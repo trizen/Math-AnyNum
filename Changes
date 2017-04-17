@@ -9,6 +9,7 @@ Revision history for Math-AnyNum
         [IMPROVEMENTS]
 
         - Many simplifications and optimizations.
+        - Extended the `agm()` function to support complex numbers.
 
         [FIXES]
 

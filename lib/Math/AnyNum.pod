@@ -595,9 +595,11 @@ where C<euler> is the Euler-Mascheroni constant.
 
 =head2 agm
 
-    agm(x, y)                                     #=> Float | NaN
+    agm(x, y)                                     #=> Any
 
-Arithmetic-geometric mean of C<x> and C<y>. Currently defined only for real numbers.
+Arithmetic-geometric mean of C<x> and C<y>.
+
+Also defined for complex numbers.
 
 =head2 hypot
 

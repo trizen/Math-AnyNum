@@ -2524,7 +2524,7 @@ sub lgrt {
 #
 sub agm {
     require Math::AnyNum::agm;
-    bless \__agm__(_star2mpfr($_[0]), _star2mpfr($_[1]));
+    bless \__agm__(_star2mpfr_mpc($_[0]), _star2mpfr_mpc($_[1]));
 }
 
 #
