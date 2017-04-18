@@ -14,15 +14,9 @@ Class::Multimethods::multimethod __lgrt__ => qw(Math::MPFR) => sub {
 
     Math::MPFR::Rmpfr_log($d, $d, $ROUND);
 
-    my $p = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_ui_pow_ui($p, 10, CORE::int($PREC >> 2), $ROUND);
-    Math::MPFR::Rmpfr_ui_div($p, 1, $p, $ROUND);
-
-    my $x = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_set_ui($x, 1, $ROUND);
-
-    my $y = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_set_ui($y, 0, $ROUND);
+    Math::MPFR::Rmpfr_set_str((my $p = Math::MPFR::Rmpfr_init2($PREC)), '1e-' . CORE::int($PREC >> 2), 10, $ROUND);
+    Math::MPFR::Rmpfr_set_ui((my $x = Math::MPFR::Rmpfr_init2($PREC)), 1, $ROUND);
+    Math::MPFR::Rmpfr_set_ui((my $y = Math::MPFR::Rmpfr_init2($PREC)), 0, $ROUND);
 
     my $count = 0;
     my $tmp   = Math::MPFR::Rmpfr_init2($PREC);
@@ -49,8 +43,7 @@ Class::Multimethods::multimethod __lgrt__ => qw(Math::MPC) => sub {
     my ($x) = @_;
 
     my $p = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_ui_pow_ui($p, 10, CORE::int($PREC >> 2), $ROUND);
-    Math::MPFR::Rmpfr_ui_div($p, 1, $p, $ROUND);
+    Math::MPFR::Rmpfr_set_str($p, '1e-' . CORE::int($PREC >> 2), 10, $ROUND);
 
     my $d = Math::MPC::Rmpc_init2($PREC);
     Math::MPC::Rmpc_log($d, $x, $ROUND);
