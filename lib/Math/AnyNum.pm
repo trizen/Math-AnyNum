@@ -3889,6 +3889,18 @@ sub as_frac {
         $x = __PACKAGE__->new($x);
     }
 
+    my $ref = ref($$x);
+    if (   $ref eq 'Math::GMPq'
+        or $ref eq 'Math::GMPz') {
+        my $str = (
+                   $ref eq 'Math::GMPq'
+                   ? Math::GMPq::Rmpq_get_str($$x, 10)
+                   : Math::GMPz::Rmpz_get_str($$x, 10)
+                  );
+        $str .= '/1' if (index($str, '/') == -1);
+        return $str;
+    }
+
     my $num = $x->numerator;
     my $den = $x->denominator;
 
