@@ -6,6 +6,7 @@ Revision history for Math-AnyNum
 
         - Added the `nude(x)` function.
         - Added the `conj(x)` function.
+        - Added the `norm(x)` function.
         - Added the `reals(x)` function.
         - Added the `as_dec(x,y)` function.
         - Functions `inv(x)` and `neg(x)` became exportable.

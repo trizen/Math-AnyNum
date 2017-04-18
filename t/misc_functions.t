@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 238;
+plan tests => 248;
 
 use Math::AnyNum qw(:misc);
 
@@ -91,12 +91,18 @@ is(popcount(-16),           1);
 
 is(join(' ', reals('3-4i')),           "3 -4");
 is(join(' ', reals(complex('-3-4i'))), "-3 -4");
+is(join(' ', reals(float("42"))),      '42 0');
+is(join(' ', reals("42i")),            '0 42');
+is(join(' ', reals("-42i")),           '0 -42');
+is(join(' ', reals("-13-42i")),        '-13 -42');
 
 is(join(' ', nude('3/4')),      '3 4');
 is(join(' ', nude('-3/4')),     '-3 4');
 is(join(' ', nude('-3/-4')),    '3 4');
 is(join(' ', nude('3/-4')),     '-3 4');
 is(join(' ', nude(rat('3/4'))), '3 4');
+is(join(' ', nude('42')),       '42 1');
+is(join(' ', nude('-42')),      '-42 1');
 
 is(neg('3'),        '-3');
 is(neg('3+4i'),     '-3-4i');
@@ -125,6 +131,7 @@ is(real(float('-1.2')),   '-1.2');
 is(real('3+4i'),          '3');
 is(real('4i'),            '0');
 is(real(complex('4i')),   '0');
+is(real("42"),            '42');
 
 is(imag(complex('3+4i')), '4');
 is(imag('12.34'),         '0');
@@ -134,6 +141,7 @@ is(imag(float('-1.2')),   '0');
 is(imag('3+4i'),          '4');
 is(imag('4i'),            '4');
 is(imag(complex('4i')),   '4');
+is(imag("42"),            '0');
 
 is(round('123499999/100000',  0), '1235');
 is(round('-123499999/100000', 0), '-1235');
@@ -166,6 +174,7 @@ is(numerator(complex('12')),   '12');
 is(numerator(complex('0.75')), '3');            # '3/4'
 is(numerator('0.75'),          '3');            # '3/4'
 is(numerator(complex('3+4i')), 'NaN');
+is(numerator("-42"),           "-42");
 
 is(denominator('3/4'),           '4');
 is(denominator('123/567'),       '189');        # simplifies to '41/189'
@@ -177,6 +186,7 @@ is(denominator(complex('12')),   '1');
 is(denominator(complex('0.75')), '4');          # '3/4'
 is(denominator('0.75'),          '4');          # '3/4'
 is(denominator(complex('3+4i')), 'NaN');
+is(denominator("-42"),           "1");
 
 is(join(' ', digits('1234')),      '1 2 3 4');
 is(join(' ', digits('1234.5678')), '1 2 3 4');    # only the integer part is considered

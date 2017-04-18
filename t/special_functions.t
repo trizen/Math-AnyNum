@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 181;
+plan tests => 189;
 
 use Math::AnyNum qw(:special rat float complex);
 
@@ -155,8 +155,17 @@ is(pow('-1/2', float('-4')),   '16');
 is(pow('-1/2', complex('-4')), '16');
 is(pow('-1/2', '3'),           '-1/8');
 
-is(sqr(3),      9);
-is(sqr('3+4i'), '-7+24i');
+is(sqr(3),               '9');
+is(sqr(rat('-3')),       '9');
+is(sqr(rat('-3/4')),     '9/16');
+is(sqr('3+4i'),          '-7+24i');
+is(sqr(complex('3+4i')), '-7+24i');
+
+is(norm('3+4i'),          '25');
+is(norm(complex('3+4i')), '25');
+is(norm('-3'),            '9');
+is(norm('-3.5'),          '12.25');
+is(norm(rat('-3/4')),     '9/16');
 
 is(root('64',        '2'), '8');
 is(root(float(64),   2),   8);

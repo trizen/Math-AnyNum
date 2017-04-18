@@ -91,6 +91,7 @@ lib/Math/AnyNum/mod.pm
 lib/Math/AnyNum/mul.pm
 lib/Math/AnyNum/ne.pm
 lib/Math/AnyNum/neg.pm
+lib/Math/AnyNum/norm.pm
 lib/Math/AnyNum/numify.pm
 lib/Math/AnyNum/pow.pm
 lib/Math/AnyNum/powmod.pm

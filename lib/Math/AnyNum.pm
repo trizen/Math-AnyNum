@@ -144,6 +144,7 @@ use overload
                    lgrt     => sub ($)   { goto &lgrt },
                    pow      => sub ($$)  { goto &pow },
                    sqr      => sub ($)   { goto &sqr },
+                   norm     => sub ($)   { goto &norm },
                    sqrt     => sub (_)   { goto &sqrt },       # built-in keyword
                    cbrt     => sub ($)   { goto &cbrt },
                    root     => sub ($$)  { goto &root },
@@ -2176,6 +2177,20 @@ sub sqr {
         $$r = __mul__($$r, $$r);
         $r;
     }
+}
+
+sub norm {
+    require Math::AnyNum::norm;
+    my ($x) = @_;
+
+    if (ref($x) eq __PACKAGE__) {
+        $x = ref($$x) eq 'Math::MPC' ? $$x : _copy($$x);
+    }
+    else {
+        $x = ${__PACKAGE__->new($x)};
+    }
+
+    bless \__norm__($x);
 }
 
 sub exp {

@@ -87,8 +87,8 @@ The following functions are exportable:
     :special
         beta eta gamma lgamma lngamma digamma zeta
         Ai Ei Li Li2 LambertW BesselJ BesselY lgrt
-        pow sqr sqrt cbrt root exp ln log log2 log10
-        mod abs erf erfc hypot agm bernreal harmreal
+        pow sqrt cbrt root exp ln log log2 log10 mod
+        abs erf erfc sqr norm hypot agm bernreal harmreal
 
     :ntheory
         factorial dfactorial mfactorial primorial
@@ -478,6 +478,12 @@ Absolute value of C<x>.
     sqr(x)                                        #=> Any
 
 Multiplies C<x> with itself and returns the result. Equivalent with C<x*x>.
+
+=head2 norm
+
+    norm(x)                                       #=> Any
+
+The square of the absolute value of C<x>. Equivalent with C<abs(x)**2>.
 
 =head1 SPECIAL FUNCTIONS
 
@@ -1441,6 +1447,7 @@ it tries to convert it to a rational. Returns NaN when this is not possible.
 
 Example:
 
+    numerator("-42")  = -42
     numerator("-3/4") = -3
 
 =head2 denominator
@@ -1452,6 +1459,7 @@ it tries to convert it to a rational. Returns NaN when this is not possible.
 
 Example:
 
+    denominator("-42")  = 1
     denominator("-3/4") = 4
 
 =head2 nude
@@ -1462,6 +1470,7 @@ Returns the numerator and the denominator of C<x>.
 
 Example:
 
+    nude("42")   = (42, 1)
     nude("-3/4") = (-3, 4)
 
 =head2 real
@@ -1472,6 +1481,8 @@ Returns the real part of C<x>.
 
 Example:
 
+    real("42")   = 42
+    real("42i")  = 0
     real("3-4i") = 3
 
 =head2 imag
@@ -1482,6 +1493,8 @@ Returns the imaginary part of C<x>, if any. Otherwise, returns zero.
 
 Example:
 
+    imag("42")   =  0
+    imag("42i")  = 42
     imag("3-4i") = -4
 
 =head2 reals
@@ -1492,6 +1505,8 @@ Return the real and the imaginary part of C<x> as real numbers.
 
 Example:
 
+    reals("42")   = (42, 0)
+    reals("42i")  = (0, 42)
     reals("3-4i") = (3, -4)
 
 =head2 digits
