@@ -64,7 +64,7 @@ The promotion rules can be summarized as follows:
 
     (Complex, Complex)   -> Complex
 
-For explicit conversion, Math::AnyNum provides the following methods:
+For explicit conversions, Math::AnyNum provides the following methods:
 
     int(x)          # converts x to an integer (NaN if not possible)
     rat(x)          # converts x to a rational (NaN if not possible)
