@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 234;
+plan tests => 238;
 
 use Math::AnyNum qw(:misc);
 
@@ -212,6 +212,11 @@ is(as_frac('123/567'),       '41/189');
 is(as_frac('42'),            '42/1');
 is(as_frac(complex('0.75')), '3/4');
 is(as_frac(float('0.75')),   '3/4');
+
+is(as_frac('123/567',     16),          '29/bd');
+is(as_frac(rat('43/255'), 16),          '2b/ff');
+is(as_frac(rat('43/255'), complex(16)), '2b/ff');
+is(as_frac(float('0.75'), rat(2)),      '11/100');
 
 is(as_dec(sqrt(float(2)),   3), '1.41');
 is(as_dec(sqrt(rat(2)),     4), '1.414');

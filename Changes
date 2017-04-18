@@ -14,6 +14,7 @@ Revision history for Math-AnyNum
 
         - Many simplifications and optimizations.
         - Extended the `agm()` function to support complex numbers.
+        - Extended the `as_frac()` function to accept an optional base.
         - `Math::AnyNum->new()` became considerably faster.
 
         [FIXES]

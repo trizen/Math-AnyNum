@@ -1404,13 +1404,16 @@ Example:
 =head2 as_frac
 
     as_frac(n)                                    #=> Scalar
+    as_frac(n, b)                                 #=> Scalar
 
-Returns a string representing the number as a base-10 fraction.
+Returns a string representing C<n> as a fraction in a given base.
+When the base is omitted, it defaults to base 10.
 
 Example:
 
-    as_frac(42)  = "42/1"
-    as_frac(1/2) = "1/2"
+    as_frac(42)      = "42/1"
+    as_frac("1/2")   = "1/2"
+    as_frac(255, 16) = "ff/1"
 
 =head2 as_dec
 

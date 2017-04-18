@@ -248,7 +248,7 @@ use overload
         as_hex  => sub ($)   { goto &as_hex },
         as_oct  => sub ($)   { goto &as_oct },
         as_int  => sub ($;$) { goto &as_int },
-        as_frac => sub ($)   { goto &as_frac },
+        as_frac => sub ($;$) { goto &as_frac },
         as_dec  => sub ($;$) { goto &as_dec },
 
         is_inf     => sub ($) { goto &is_inf },
@@ -3883,28 +3883,51 @@ sub as_int {
 }
 
 sub as_frac {
-    my ($x) = @_;
+    my ($x, $y) = @_;
 
-    if (ref($x) ne __PACKAGE__) {
-        $x = __PACKAGE__->new($x);
+    my $base = 10;
+    if (defined($y)) {
+
+        if (ref($y) eq '' and CORE::int($y) eq $y) {
+            $base = $y;
+        }
+        elsif (ref($y) eq __PACKAGE__) {
+            $base = _any2ui($$y) // 0;
+        }
+        else {
+            $base = _any2ui(${__PACKAGE__->new($y)}) // 0;
+        }
+
+        if ($base < 2 or $base > 36) {
+            require Carp;
+            Carp::croak("base must be between 2 and 36, got $y");
+        }
     }
 
-    my $ref = ref($$x);
+    if (ref($x) eq __PACKAGE__) {
+        $x = $$x;
+    }
+    else {
+        $x = ${__PACKAGE__->new($x)};
+    }
+
+    my $ref = ref($x);
     if (   $ref eq 'Math::GMPq'
         or $ref eq 'Math::GMPz') {
-        my $str = (
-                   $ref eq 'Math::GMPq'
-                   ? Math::GMPq::Rmpq_get_str($$x, 10)
-                   : Math::GMPz::Rmpz_get_str($$x, 10)
-                  );
-        $str .= '/1' if (index($str, '/') == -1);
-        return $str;
+        my $frac = (
+                    $ref eq 'Math::GMPq'
+                    ? Math::GMPq::Rmpq_get_str($x, $base)
+                    : Math::GMPz::Rmpz_get_str($x, $base)
+                   );
+        $frac .= '/1' if (index($frac, '/') == -1);
+        return $frac;
     }
 
-    my $num = $x->numerator;
-    my $den = $x->denominator;
+    $x = _any2mpq($x) // return undef;
 
-    "$num/$den";
+    my $frac = Math::GMPq::Rmpq_get_str($x, $base);
+    if (index($frac, '/') == -1) { $frac .= '/1' }
+    $frac;
 }
 
 sub as_dec {
