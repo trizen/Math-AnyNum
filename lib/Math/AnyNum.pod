@@ -1362,7 +1362,7 @@ Returns a false value when the number is zero. True otherwise.
 
     $x->numify                                    #=> Scalar
 
-Returns a Perl numerical scalar containing the value of C<x>, truncated if needed.
+Returns a Perl numerical scalar containing the value of C<x>, truncated if necessary.
 
 =head2 as_bin
 
@@ -1388,7 +1388,7 @@ Example:
 
     as_hex(n)                                     #=> Scalar
 
-Returns a string representing the value of C<n> in hexadecimal (base 16).
+Returns a string representing the integer part of C<n> in hexadecimal (base 16).
 
 Example:
 
@@ -1399,7 +1399,7 @@ Example:
     as_int(n)                                     #=> Scalar
     as_int(n, b)                                  #=> Scalar
 
-Returns the integer part of C<n> in a given base as a string.
+Returns the integer part of C<n> as a string, in a given base.
 When the base is omitted, it defaults to base 10.
 
 Example:
@@ -1412,7 +1412,7 @@ Example:
     as_frac(n)                                    #=> Scalar
     as_frac(n, b)                                 #=> Scalar
 
-Returns a string representing C<n> as a fraction in a given base.
+Returns C<n> as a fraction in a given base.
 When the base is omitted, it defaults to base 10.
 
 Example:
@@ -1426,10 +1426,10 @@ Example:
     as_dec(n)                                     #=> Scalar
     as_dec(n, digits)                             #=> Scalar
 
-Returns a decimal expansion of the number C<n>, as a string, with an optional number of digits.
+Returns C<n> as a decimal expansion string, with an optional number of digits.
 When the second argument is undefined, it uses the default precision.
 
-Number C<n> can also be a complex number.
+The value of C<n> can also be a complex number.
 
 Example:
 
