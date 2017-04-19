@@ -356,6 +356,18 @@ Returns an object containing the value C<-1>.
 
 Returns an object containing the value C<0>.
 
+=head2 i
+
+    Math::AnyNum->i                               #=> Float
+
+Returns the imaginary unit, which is C<sqrt(-1)>.
+
+=head2 e
+
+    Math::AnyNum->e                               #=> Float
+
+Returns the e mathematical constant, which is C<2.718...>.
+
 =head2 pi
 
     Math::AnyNum->pi                              #=> Float
@@ -374,6 +386,12 @@ Returns the number TAU, which is C<2*pi>.
 
 Returns the natural logarithm of C<2>.
 
+=head2 phi
+
+    Math::AnyNum->phi                             #=> Float
+
+Returns the value of the golden ratio, which is C<1.61803...>.
+
 =head2 euler
 
     Math::AnyNum->euler                           #=> Float
@@ -386,24 +404,6 @@ Returns the Euler-Mascheroni constant, which is C<0.57721...>.
 
 Returns the value of Catalan's constant, also known
 as Beta(2) or G, and starts as: C<0.91596...>.
-
-=head2 i
-
-    Math::AnyNum->i                               #=> Float
-
-Returns the imaginary unit, which is C<sqrt(-1)>.
-
-=head2 e
-
-    Math::AnyNum->e                               #=> Float
-
-Returns the e mathematical constant, which is C<2.718...>.
-
-=head2 phi
-
-    Math::AnyNum->phi                             #=> Float
-
-Returns the value of the golden ratio, which is C<1.61803...>.
 
 
 =head1 ARITHMETIC OPERATIONS
@@ -612,17 +612,13 @@ where C<euler> is the Euler-Mascheroni constant.
 
     agm(x, y)                                     #=> Any
 
-Arithmetic-geometric mean of C<x> and C<y>.
-
-Also defined for complex numbers.
+Arithmetic-geometric mean of C<x> and C<y>. Also defined for complex numbers.
 
 =head2 hypot
 
     hypot(x, y)                                   #=> Any
 
-The value of the hypotenuse for catheti C<x> and C<y>. Equivalent to C<sqrt(x**2 + y**2)>.
-
-Also defined for complex numbers.
+The value of the hypotenuse for catheti C<x> and C<y>. Equivalent to C<sqrt(x**2 + y**2)>. Also defined for complex numbers.
 
 =head2 gamma
 
@@ -823,6 +819,12 @@ All operations in this section are done with integers.
 
 =head2 iadd / isub / imul / idiv / ipow
 
+    iadd(x, y)                                    #=> Int | NaN
+    isub(x, y)                                    #=> Int | NaN
+    imul(x, y)                                    #=> Int | NaN
+    idiv(x, y)                                    #=> Int | NaN
+    ipow(x, y)                                    #=> Int | NaN
+
 Integer addition, subtraction, multiplication, division and exponentiation.
 
 =head2 imod
@@ -849,9 +851,9 @@ When no inverse exists, the NaN value is returned.
 
     powmod(x, y, z)                               #=> Int | NaN
 
-Calculates C<(x ** y) % z>, where all three values are integers.
+Computes C<(x ** y) % z>, where all three values are integers.
 
-Returns NaN when the third argument is 0.
+Returns NaN when the third argument is 0, or when C<y> is negative and C<gcd(x, z) != 1>.
 
 =head2 isqrt / icbrt
 
@@ -864,13 +866,13 @@ The integer square root of C<n> and the integer cube root of C<n>. Returns NaN w
 
     isqrtrem(n)                                   #=> (Int, Int) | (NaN, NaN)
 
-The integer part of the square root of C<n> and the remainder C<n - isqrt(n)**2>, which will be zero when <n> is a perfect square.
+The integer part of the square root of C<n> and the remainder C<n - isqrt(n)**2>, which will be zero when C<n> is a perfect square.
 
 =head2 iroot
 
     iroot(n, m)                                   #=> Int | NaN
 
-The integer C<m-th> root of C<n>. Returns NaN when the root is not real.
+The integer C<m-th> root of C<n>. Returns NaN when a real does not exists.
 
 =head2 irootrem
 
@@ -878,7 +880,7 @@ The integer C<m-th> root of C<n>. Returns NaN when the root is not real.
 
 The integer part of the root of C<n> and the remainder C<n - iroot(n,m)**m>.
 
-Returns C<(NaN,NaN)> when C<n> is negative.
+Returns C<(NaN,NaN)> when a real root does not exists.
 
 =head2 ilog
 
@@ -1152,8 +1154,8 @@ When C<x> is a complex number, it computes the sign using the identity:
 
     length(x)                                     #=> Scalar
 
-Returns the number digits in the integer part of C<x>.
-Returns C<-1> when C<x> cannot be converted to an integer.
+Returns the number of digits in the integer part of C<x>.
+Returns C<-1> when C<x> cannot be truncated to an integer.
 
 For C<-1234.56>, it returns C<4>.
 
@@ -1442,7 +1444,7 @@ Example:
 
     numerator(x)                                  #=> Int | NaN
 
-Returns the numerator as a signed Math::AnyNum object. When C<x> is not a rational number,
+Returns the numerator as a signed C<Math::AnyNum> object. When C<x> is not a rational number,
 it tries to convert it to a rational. Returns NaN when this is not possible.
 
 Example:
@@ -1454,7 +1456,7 @@ Example:
 
     denominator(x)                                #=> Int | NaN
 
-Returns the numerator as an unsigned Math::AnyNum object. When C<x> is not a rational number,
+Returns the numerator as an unsigned C<Math::AnyNum> object. When C<x> is not a rational number,
 it tries to convert it to a rational. Returns NaN when this is not possible.
 
 Example:
