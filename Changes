@@ -1,5 +1,12 @@
 Revision history for Math-AnyNum
 
+0.07    2017-04-xx
+
+        [IMPROVEMENTS]
+
+        - Minor optimization in `numify()` for integers and rationals.
+        - Documentation improvements.
+
 0.06    2017-04-18
 
         [ADDITIONS]

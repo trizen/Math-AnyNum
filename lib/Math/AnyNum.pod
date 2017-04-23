@@ -1107,8 +1107,8 @@ numbers of very good quality, it is B<NOT> cryptographically secure!
 
 Example:
 
-    rand(10)        # a random number in the range [0, 10)
-    rand(10, 20)    # a random number in the range [10, 20)
+    rand(10)        # a random number in the interval [0, 10)
+    rand(10, 20)    # a random number in the interval [10, 20)
 
 =head2 irand
 
@@ -1127,8 +1127,8 @@ Although it generates high-quality pseudorandom integers, it is B<NOT> cryptogra
 
 Example:
 
-    irand(10)        # a random integer in the range [0, 10]
-    irand(10, 20)    # a random integer in the range [10, 20]
+    irand(10)        # a random integer in the interval [0, 10]
+    irand(10, 20)    # a random integer in the interval [10, 20]
 
 =head2 seed / iseed
 
