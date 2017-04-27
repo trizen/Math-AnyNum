@@ -282,7 +282,7 @@ use overload
             if ($name eq ':overload') {
                 overload::constant
                   integer => sub { __PACKAGE__->new_ui($_[0]) },
-                  float   => sub { __PACKAGE__->new_f($_[0]) },
+                  float   => sub { bless \_str2obj($_[0]) },
                   binary  => sub {
                     my ($const) = @_;
                     my $prefix = substr($const, 0, 2);
