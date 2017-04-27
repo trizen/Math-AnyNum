@@ -284,11 +284,13 @@ use overload
                   integer => sub { bless \Math::GMPz::Rmpz_init_set_ui($_[0]) },
                   float   => sub { bless \_str2obj($_[0]) },
                   binary  => sub {
-                    my ($const) = @_;
+                    my $const = ($_[0] =~ tr/_//dr);
                     my $prefix = substr($const, 0, 2);
-                        $prefix eq '0x' ? __PACKAGE__->new(substr($const, 2), 16)
-                      : $prefix eq '0b' ? __PACKAGE__->new(substr($const, 2), 2)
-                      :                   __PACKAGE__->new(substr($const, 1), 8);
+                    bless \(
+                              $prefix eq '0x' ? Math::GMPz::Rmpz_init_set_str(substr($const, 2) || 0, 16)
+                            : $prefix eq '0b' ? Math::GMPz::Rmpz_init_set_str(substr($const, 2) || 0, 2)
+                            :                   Math::GMPz::Rmpz_init_set_str(substr($const, 1) || 0, 8)
+                           );
                   };
 
                 # Export 'Inf', 'NaN' and 'i' as constants
