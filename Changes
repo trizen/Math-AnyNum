@@ -8,6 +8,10 @@ Revision history for Math-AnyNum
         - Added checks for exact divisibility of two integers.
         - Documentation improvements.
 
+        [FIXES]
+
+        - Fixed the creation of very large constant integers in `:overload` mode.
+
 0.06    2017-04-18
 
         [ADDITIONS]

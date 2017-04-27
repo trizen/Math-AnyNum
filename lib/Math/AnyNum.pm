@@ -281,7 +281,7 @@ use overload
 
             if ($name eq ':overload') {
                 overload::constant
-                  integer => sub { __PACKAGE__->new_ui($_[0]) },
+                  integer => sub { bless \Math::GMPz::Rmpz_init_set_ui($_[0]) },
                   float   => sub { bless \_str2obj($_[0]) },
                   binary  => sub {
                     my ($const) = @_;
