@@ -5,6 +5,7 @@ Revision history for Math-AnyNum
         [IMPROVEMENTS]
 
         - Minor optimization in `numify()` for integers and rationals.
+        - Added checks for exact divisibility of two integers.
         - Documentation improvements.
 
 0.06    2017-04-18

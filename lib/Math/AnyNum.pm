@@ -1607,14 +1607,6 @@ Class::Multimethods::multimethod div => qw(Math::AnyNum $) => sub {
             Math::GMPq::Rmpq_mul($r, $r, $$x);
             return bless \$r;
         }
-        elsif (ref($$x) eq 'Math::GMPz') {
-            my $r = Math::GMPq::Rmpq_init();
-            Math::GMPq::Rmpq_set_ui($r, 1, CORE::abs($y));
-            Math::GMPq::Rmpq_set_num($r, $$x);
-            Math::GMPq::Rmpq_neg($r, $r) if $y < 0;
-            Math::GMPq::Rmpq_canonicalize($r);
-            return bless \$r;
-        }
 
         bless \__div__(_copy($$x), $y);
     }

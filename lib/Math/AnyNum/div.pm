@@ -60,9 +60,33 @@ Class::Multimethods::multimethod __div__ => qw(Math::GMPz Math::GMPz) => sub {
         goto &__div__;
     };
 
+    # Check for exact divisibility
+    if (Math::GMPz::Rmpz_divisible_p($x, $y)) {
+        Math::GMPz::Rmpz_divexact($x, $x, $y);
+        return $x;
+    }
+
     my $r = Math::GMPq::Rmpq_init();
     Math::GMPq::Rmpq_set_num($r, $x);
     Math::GMPq::Rmpq_set_den($r, $y);
+    Math::GMPq::Rmpq_canonicalize($r);
+    $r;
+};
+
+Class::Multimethods::multimethod __div__ => qw(Math::GMPz $) => sub {
+    my ($x, $y) = @_;
+
+    # Check for exact divisibility
+    if (Math::GMPz::Rmpz_divisible_ui_p($x, CORE::abs($y))) {
+        Math::GMPz::Rmpz_divexact_ui($x, $x, CORE::abs($y));
+        Math::GMPz::Rmpz_neg($x, $x) if $y < 0;
+        return $x;
+    }
+
+    my $r = Math::GMPq::Rmpq_init();
+    Math::GMPq::Rmpq_set_ui($r, 1, CORE::abs($y));
+    Math::GMPq::Rmpq_set_num($r, $x);
+    Math::GMPq::Rmpq_neg($r, $r) if $y < 0;
     Math::GMPq::Rmpq_canonicalize($r);
     $r;
 };
