@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 220;
+plan tests => 224;
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -108,10 +108,16 @@ is(lcm(14,          $o->new(13)), 182);
 is(lcm($o->new(14), 13),          182);
 is(lcm($o->new(13), $o->new(14)), 182);
 
+is(lcm($o->new(42), "1210923789812382173912783"), '7265542738874293043476698');
+is(lcm(42,          "1210923789812382173912783"), '7265542738874293043476698');
+
 is(gcd(20,          12),          4);
 is(gcd($o->new(20), 12),          4);
 is(gcd(20,          $o->new(12)), 4);
 is(gcd($o->new(12), $o->new(20)), 4);
+
+is(gcd($o->new(42), "1210923789812382173912783"), 7);
+is(gcd(42,          "1210923789812382173912783"), 7);
 
 is(bernfrac(-2),          'NaN');
 is(bernfrac(-1),          'NaN');
