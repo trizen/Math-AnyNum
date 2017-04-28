@@ -1868,18 +1868,22 @@ Class::Multimethods::multimethod root => qw(Math::AnyNum $) => sub {
     bless \__pow__(_copy($$x), __inv__(_str2obj($y)));
 };
 
+Class::Multimethods::multimethod root => qw($ $) => sub {
+    require Math::AnyNum::pow;
+    require Math::AnyNum::inv;
+    bless \__pow__(_str2obj($_[0]), __inv__(_str2obj($_[1])));
+};
+
 Class::Multimethods::multimethod root => qw(* $) => sub {
     require Math::AnyNum::pow;
     require Math::AnyNum::inv;
-    my ($x, $y) = @_;
-    bless \__pow__(${__PACKAGE__->new($x)}, __inv__(_str2obj($y)));
+    bless \__pow__(${__PACKAGE__->new($_[0])}, __inv__(_str2obj($_[1])));
 };
 
 Class::Multimethods::multimethod root => qw(* *) => sub {
     require Math::AnyNum::pow;
     require Math::AnyNum::inv;
-    my ($x, $y) = @_;
-    bless \__pow__(${__PACKAGE__->new($x)}, __inv__(${__PACKAGE__->new($y)}));
+    bless \__pow__(${__PACKAGE__->new($_[0])}, __inv__(${__PACKAGE__->new($_[1])}));
 };
 
 #
