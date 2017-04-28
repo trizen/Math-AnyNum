@@ -11,6 +11,7 @@ Revision history for Math-AnyNum
         [FIXES]
 
         - Fixed the creation of very large constant integers in `:overload` mode.
+        - Fixed the creation of binary, octal and hexadecimal constants that contain underscores (in `:overload` mode).
 
 0.06    2017-04-18
 

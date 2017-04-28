@@ -469,7 +469,7 @@ Additive inverse of C<x>. Equivalent with C<-x>.
 
 =head2 abs
 
-    abs(x)                                        #=> Float | Inf | NaN
+    abs(x)                                        #=> Any
 
 Absolute value of C<x>.
 
