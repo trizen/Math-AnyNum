@@ -35,7 +35,7 @@ for my $n (1 .. 100) {
         die "$i != $j";
     }
 
-    if ($i->round(0) != $n) {
-        die "However that is incorrect! (expected: $n -- got ", $i->round(0), ")";
+    if ($i->round != $n) {
+        die "However that is incorrect! (expected: $n -- got ", $i->round, ")";
     }
 }

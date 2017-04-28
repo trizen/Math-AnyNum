@@ -16,7 +16,7 @@ use Math::AnyNum qw(:overload);
 sub lambert_w {
     my ($c) = @_;
 
-    my $p = 1 / 10**($Math::AnyNum::PREC / 4);
+    my $p = 1 / 10**($Math::AnyNum::PREC >> 2);
 
     my $x = sqrt($c) + 1;
     my $y = 0;

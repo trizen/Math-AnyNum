@@ -7,22 +7,19 @@ use strict;
 use warnings;
 
 use lib qw(../lib);
-use Math::AnyNum qw(:overload float);
+use Math::AnyNum qw(:overload);
 
 sub nth_root {
     my ($n, $x) = @_;
 
-    $n = float($n);
-    $x = float($x);
+    my $eps = 10**-($Math::AnyNum::PREC >> 2);
 
-    my $eps = 10**-($Math::AnyNum::PREC / 4);
-
-    my $m = $n;
-    my $r = 0;
+    my $r = 0.0;
+    my $m = 1.0;
 
     while (abs($m - $r) > $eps) {
         $r = $m;
-        $m = ((($n - 1) * ($r) + $x / ($r**($n - 1))) / ($n));
+        $m = (($n - 1) * $r + $x / $r**($n - 1)) / $n;
     }
 
     $r;
