@@ -2422,7 +2422,15 @@ sub digamma {
 #
 
 sub zeta {
-    my $r = _star2mpfr($_[0]);
+    my ($x) = @_;
+
+    if (!ref($x) and CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
+        my $r = Math::MPFR::Rmpfr_init2($PREC);
+        Math::MPFR::Rmpfr_zeta_ui($r, $x, $ROUND);
+        return bless \$r;
+    }
+
+    my $r = _star2mpfr($x);
     Math::MPFR::Rmpfr_zeta($r, $r, $ROUND);
     bless \$r;
 }
