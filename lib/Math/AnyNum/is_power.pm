@@ -7,10 +7,10 @@ use warnings;
 sub __is_power__ {
     my ($x, $y) = @_;
 
-    Math::GMPz::Rmpz_cmp_ui($x, 1) == 0 and return 1;
-
     # Everything is a first power
     $y == 1 and return 1;
+
+    Math::GMPz::Rmpz_cmp_ui($x, 1) == 0 and return 1;
 
     # Return a true value when $x=-1 and $y is odd
     $y % 2 and (Math::GMPz::Rmpz_cmp_si($x, -1) == 0) and return 1;
