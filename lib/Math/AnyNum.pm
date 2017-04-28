@@ -784,13 +784,6 @@ sub new {
         return bless(\Math::GMPz::Rmpz_init_set($num), $class);
     }
 
-    # BigNum
-    elsif ($ref eq 'Math::BigNum') {
-        my $r = Math::GMPq::Rmpq_init();
-        Math::GMPq::Rmpq_set($r, $$num);
-        return bless \$r, $class;
-    }
-
     # MPFR
     elsif ($ref eq 'Math::MPFR') {
         my $r = Math::MPFR::Rmpfr_init2($PREC);
@@ -2944,6 +2937,17 @@ Class::Multimethods::multimethod gcd => qw(Math::AnyNum Math::AnyNum) => sub {
     bless \__gcd__(_copy2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
+Class::Multimethods::multimethod gcd => qw(Math::AnyNum $) => sub {
+    require Math::AnyNum::gcd;
+    my ($x, $y) = @_;
+    if (CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
+        bless \__gcd__(_copy2mpz($$x) // (goto &nan), CORE::abs($y));
+    }
+    else {
+        bless \__gcd__(_copy2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan));
+    }
+};
+
 Class::Multimethods::multimethod gcd => qw(Math::AnyNum *) => sub {
     require Math::AnyNum::gcd;
     my ($x, $y) = @_;
@@ -2954,6 +2958,18 @@ Class::Multimethods::multimethod gcd => qw(* Math::AnyNum) => sub {
     require Math::AnyNum::gcd;
     my ($x, $y) = @_;
     bless \__gcd__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
+};
+
+Class::Multimethods::multimethod gcd => qw(* $) => sub {
+    require Math::AnyNum::gcd;
+    my ($x, $y) = @_;
+
+    if (CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
+        bless \__gcd__(_star2mpz($x) // (goto &nan), CORE::abs($y));
+    }
+    else {
+        bless \__gcd__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
+    }
 };
 
 Class::Multimethods::multimethod gcd => qw(* *) => sub {
@@ -2978,10 +2994,34 @@ Class::Multimethods::multimethod lcm => qw(Math::AnyNum *) => sub {
     bless \__lcm__(_copy2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan));
 };
 
+Class::Multimethods::multimethod lcm => qw(Math::AnyNum $) => sub {
+    require Math::AnyNum::lcm;
+    my ($x, $y) = @_;
+
+    if (CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
+        bless \__lcm__(_copy2mpz($$x) // (goto &nan), CORE::abs($y));
+    }
+    else {
+        bless \__lcm__(_copy2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan));
+    }
+};
+
 Class::Multimethods::multimethod lcm => qw(* Math::AnyNum) => sub {
     require Math::AnyNum::lcm;
     my ($x, $y) = @_;
     bless \__lcm__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
+};
+
+Class::Multimethods::multimethod lcm => qw(* $) => sub {
+    require Math::AnyNum::lcm;
+    my ($x, $y) = @_;
+
+    if (CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
+        bless \__lcm__(_star2mpz($x) // (goto &nan), CORE::abs($y));
+    }
+    else {
+        bless \__lcm__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
+    }
 };
 
 Class::Multimethods::multimethod lcm => qw(* *) => sub {

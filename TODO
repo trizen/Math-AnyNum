@@ -1,14 +1,5 @@
 ## TODO list for Math::AnyNum
 
-# More examples.
-
-# Better documentation.
-
-# Optimizations:
-
-    gcd(AnyNum, Scalar)
-    lcm(AnyNum, Scalar)
-
 # Add the following methods:
 
     exp2  [?]
@@ -23,7 +14,7 @@
 
     acmp
 
-# Add the following useful functions:
+# Add the following functions (maybe):
 
     max
     min

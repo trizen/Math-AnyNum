@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 218;
+plan tests => 220;
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -106,10 +106,12 @@ is(ipow($o->new(2.5), 10),            1024);
 is(lcm(13,          14),          182);
 is(lcm(14,          $o->new(13)), 182);
 is(lcm($o->new(14), 13),          182);
+is(lcm($o->new(13), $o->new(14)), 182);
 
 is(gcd(20,          12),          4);
 is(gcd($o->new(20), 12),          4);
 is(gcd(20,          $o->new(12)), 4);
+is(gcd($o->new(12), $o->new(20)), 4);
 
 is(bernfrac(-2),          'NaN');
 is(bernfrac(-1),          'NaN');

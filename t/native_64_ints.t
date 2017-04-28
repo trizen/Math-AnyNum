@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 36;
+plan tests => 37;
 
 use Math::AnyNum;
 
@@ -27,7 +27,9 @@ is($i - $x,                  '-9223372036854775818');
 is($i + $x,                  '27670116110564327454');
 #>>>
 
-is(($x + 1)->lcm($i),       '170141183460469232109845557226929914066');
+is(($x + 1)->lcm($i),     '170141183460469232109845557226929914066');
+is(($x + 1)->gcd(173017), '13309');
+
 is($x->kronecker($i),       '0');
 is(($x + 1)->kronecker($i), '-1');
 is(($x + 5)->kronecker($i), '1');

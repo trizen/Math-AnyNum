@@ -6,6 +6,7 @@ Revision history for Math-AnyNum
 
         - Minor optimization in `numify()` for integers and rationals.
         - Added checks for exact divisibility of two integers.
+        - Optimized the gcd() and lcm() functions when the second argument is a native integer.
         - Documentation improvements.
 
         [FIXES]

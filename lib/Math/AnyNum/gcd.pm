@@ -1,9 +1,13 @@
 use 5.014;
 use warnings;
 
-sub __gcd__ {    # takes two Math::GMPz objects
+sub __gcd__ {
     my ($x, $y) = @_;
-    Math::GMPz::Rmpz_gcd($x, $x, $y);
+
+    ref($y)
+      ? Math::GMPz::Rmpz_gcd($x, $x, $y)
+      : Math::GMPz::Rmpz_gcd_ui($x, $x, $y);
+
     $x;
 }
 
