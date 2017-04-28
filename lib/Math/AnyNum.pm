@@ -864,20 +864,17 @@ sub new {
 
 sub new_si {
     my ($class, $si) = @_;
-    my $r = Math::GMPz::Rmpz_init_set_si($si);
-    bless \$r, $class;
+    bless \Math::GMPz::Rmpz_init_set_si($si), $class;
 }
 
 sub new_ui {
     my ($class, $ui) = @_;
-    my $r = Math::GMPz::Rmpz_init_set_ui($ui);
-    bless \$r, $class;
+    bless \Math::GMPz::Rmpz_init_set_ui($ui), $class;
 }
 
 sub new_z {
     my ($class, $str, $base) = @_;
-    my $r = Math::GMPz::Rmpz_init_set_str($str, $base // 10);
-    bless \$r, $class;
+    bless \Math::GMPz::Rmpz_init_set_str($str, $base // 10), $class;
 }
 
 sub new_q {
