@@ -227,7 +227,7 @@ Returns a new AnyNum object with the value specified in the first argument,
 which can be a Perl numerical value, a string representing a number in a
 rational form, such as C<"1/2">, a string holding a floating-point number,
 such as C<"0.5">, a string holding an integer, such as C<"255"> or a string
-holding a complex number, such C<3+4i>.
+holding a complex number, such C<"3+4i">.
 
     my $z = Math::AnyNum->new('42');        # integer
     my $r = Math::AnyNum->new('3/4');       # rational
@@ -499,7 +499,7 @@ Square root of C<x>. Returns a complex number when C<x> is negative.
 
     cbrt(x)                                       #=> Any
 
-Cube root of C<x>. Returns a complex number C<x> is negative.
+Cube root of C<x>. Returns a complex number when C<x> is negative.
 
 =head2 root
 
@@ -1036,7 +1036,7 @@ it will implicitly be truncated to an integer. If C<k> is not positive after tru
 
 A true value is returned iff there exists some integer C<a> satisfying the equation: C<a**k = n>.
 
-When C<k> is not specified, it returns true if C<n> can be expressed as C<a**b> for some integers C<a> and C<b>.
+When C<k> is not specified, it returns true if C<n> can be expressed as C<a**b> for some integers C<a> and C<b>, with C<b> greater than 1.
 
 Example:
 
