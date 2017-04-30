@@ -12,8 +12,8 @@ Class::Multimethods::multimethod __floor__ => qw(Math::MPFR) => sub {
 Class::Multimethods::multimethod __floor__ => qw(Math::GMPq) => sub {
     my ($x) = @_;
     my $z = Math::GMPz::Rmpz_init();
-    Math::GMPq::Rmpq_integer_p($x) && return $x;
     Math::GMPz::Rmpz_set_q($z, $x);
+    Math::GMPq::Rmpq_integer_p($x) && return $z;
     Math::GMPz::Rmpz_sub_ui($z, $z, 1) if Math::GMPq::Rmpq_sgn($x) < 0;
     $z;
 };
