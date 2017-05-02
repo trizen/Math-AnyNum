@@ -2131,7 +2131,25 @@ sub ilog10 {
 Class::Multimethods::multimethod ilog => qw(* *) => sub {
     require Math::AnyNum::log;
     require Math::AnyNum::div;
-    bless \(_any2mpz(__div__(__log__(_star2mpfr_mpc($_[0])), __log__(_star2mpfr_mpc($_[1])))) // goto &nan);
+    require Math::AnyNum::mul;
+    require Math::AnyNum::cmp;
+
+    my ($x, $y) = @_;
+
+    my $logx = __log__(_star2mpfr_mpc($x));
+    my $logy = __log__(_star2mpfr_mpc($y));
+    my $log  = __div__(_star2mpfr_mpc($logx), $logy);
+
+    $log = _any2mpfr($log)
+      if ref($log) eq 'Math::MPC';
+
+    Math::MPFR::Rmpfr_number_p($log) || goto &nan;
+    Math::MPFR::Rmpfr_get_z((my $z = Math::GMPz::Rmpz_init()), $log, Math::MPFR::MPFR_RNDN);
+
+    __cmp__(__mul__($logy, $z), $logx) <= 0
+      and return bless \$z;
+
+    bless \(_any2mpz($log) // goto &nan);
 };
 
 Class::Multimethods::multimethod ilog => qw(*) => sub {

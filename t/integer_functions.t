@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 224;
+plan tests => 231;
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -222,6 +222,15 @@ is(ilog(10000,          10),          4);
 is(ilog($o->new(10000), 10),          4);
 is(ilog($o->new('123456')), 11);
 is(ilog(-1),                'NaN');
+
+is(ilog(63,   2), '5');
+is(ilog(64,   2), '6');
+is(ilog(1023, 2), '9');
+is(ilog(1024, 2), '10');
+
+is(ilog($o->new('3')**60, 3), 60);
+is(ilog($o->new('3')**61, 3), 61);
+is(ilog($o->new('3')**62, 3), 62);
 
 is(ilog2(64),             6);
 is(ilog10(1000),          3);
