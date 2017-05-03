@@ -104,8 +104,7 @@ Class::Multimethods::multimethod __add__ => qw(Math::MPFR Math::GMPz) => sub {
 Class::Multimethods::multimethod __add__ => qw(Math::MPFR Math::MPC) => sub {
     my ($x, $y) = @_;
     my $c = Math::MPC::Rmpc_init2($PREC);
-    Math::MPC::Rmpc_set($c, $y, $ROUND);
-    Math::MPC::Rmpc_add_fr($c, $c, $x, $ROUND);
+    Math::MPC::Rmpc_add_fr($c, $y, $x, $ROUND);
     $c;
 };
 
