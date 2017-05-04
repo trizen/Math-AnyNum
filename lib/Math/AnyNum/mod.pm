@@ -154,8 +154,7 @@ Class::Multimethods::multimethod __mod__ => qw(Math::MPC Math::MPC) => sub {
     my ($x, $y) = @_;
 
     my $quo = Math::MPC::Rmpc_init2($PREC);
-    Math::MPC::Rmpc_set($quo, $x, $ROUND);
-    Math::MPC::Rmpc_div($quo, $quo, $y, $ROUND);
+    Math::MPC::Rmpc_div($quo, $x, $y, $ROUND);
 
     my $real = Math::MPFR::Rmpfr_init2($PREC);
     my $imag = Math::MPFR::Rmpfr_init2($PREC);
@@ -178,8 +177,7 @@ Class::Multimethods::multimethod __mod__ => qw(Math::MPC $) => sub {
     my ($x, $y) = @_;
 
     my $quo = Math::MPC::Rmpc_init2($PREC);
-    Math::MPC::Rmpc_set($quo, $x, $ROUND);
-    Math::MPC::Rmpc_div_ui($quo, $quo, $y, $ROUND);
+    Math::MPC::Rmpc_div_ui($quo, $x, $y, $ROUND);
 
     my $real = Math::MPFR::Rmpfr_init2($PREC);
     my $imag = Math::MPFR::Rmpfr_init2($PREC);
