@@ -3229,27 +3229,24 @@ sub is_ninf {
 sub is_nan {
     my ($x) = @_;
 
-    if (ref($x) ne __PACKAGE__) {
-        $x = __PACKAGE__->new($x);
+    if (ref($x) eq __PACKAGE__) {
+        $x = $$x;
+    }
+    else {
+        $x = ${__PACKAGE__->new($x)};
     }
 
-    my $r   = $$x;
-    my $ref = ref($r);
+    ref($x) eq 'Math::GMPz' && return 0;
+    ref($x) eq 'Math::GMPq' && return 0;
+    ref($x) eq 'Math::MPFR' && return Math::MPFR::Rmpfr_nan_p($x);
 
-    $ref eq 'Math::GMPz' && return 0;
-    $ref eq 'Math::GMPq' && return 0;
-    $ref eq 'Math::MPFR' && return Math::MPFR::Rmpfr_nan_p($r);
+    my $t = Math::MPFR::Rmpfr_init2($PREC);
 
-    my $real = Math::MPFR::Rmpfr_init2($PREC);
-    my $imag = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPC::RMPC_RE($t, $x);
+    Math::MPFR::Rmpfr_nan_p($t) && return 1;
 
-    Math::MPC::RMPC_RE($real, $r);
-    Math::MPC::RMPC_IM($imag, $r);
-
-    if (   Math::MPFR::Rmpfr_nan_p($real)
-        or Math::MPFR::Rmpfr_nan_p($imag)) {
-        return 1;
-    }
+    Math::MPC::RMPC_IM($t, $x);
+    Math::MPFR::Rmpfr_nan_p($t) && return 1;
 
     return 0;
 }
