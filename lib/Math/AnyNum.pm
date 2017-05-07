@@ -1321,36 +1321,33 @@ sub neg {
     require Math::AnyNum::neg;
     my ($x) = @_;
 
-    if (ref($x) eq __PACKAGE__) {
-        bless \__neg__($$x);
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
     }
-    else {
-        bless \__neg__(${__PACKAGE__->new($x)});
-    }
+
+    bless \__neg__($$x);
 }
 
 sub abs {
     require Math::AnyNum::abs;
     my ($x) = @_;
 
-    if (ref($x) eq __PACKAGE__) {
-        bless \__abs__($$x);
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
     }
-    else {
-        bless \__abs__(${__PACKAGE__->new($x)});
-    }
+
+    bless \__abs__($$x);
 }
 
 sub inv {
     require Math::AnyNum::inv;
     my ($x) = @_;
 
-    if (ref($x) eq __PACKAGE__) {
-        bless \__inv__($$x);
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
     }
-    else {
-        bless \__inv__(${__PACKAGE__->new($x)});
-    }
+
+    bless \__inv__($$x);
 }
 
 sub inc {
@@ -2135,28 +2132,23 @@ sub cbrt {
 sub sqr {
     require Math::AnyNum::mul;
     my ($x) = @_;
-    if (ref($x) eq __PACKAGE__) {
-        bless \__mul__($$x, $$x);
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
     }
-    else {
-        my $r = __PACKAGE__->new($x);
-        $$r = __mul__($$r, $$r);
-        $r;
-    }
+
+    bless \__mul__($$x, $$x);
 }
 
 sub norm {
     require Math::AnyNum::norm;
     my ($x) = @_;
 
-    if (ref($x) eq __PACKAGE__) {
-        $x = $$x;
-    }
-    else {
-        $x = ${__PACKAGE__->new($x)};
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
     }
 
-    bless \__norm__($x);
+    bless \__norm__($$x);
 }
 
 sub exp {
@@ -2168,28 +2160,24 @@ sub floor {
     require Math::AnyNum::floor;
     my ($x) = @_;
 
-    if (ref($x) eq __PACKAGE__) {
-        my $r = $$x;
-        ref($r) eq 'Math::GMPz' and return $x;    # already an integer
-        bless \__floor__($r);
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
     }
-    else {
-        __PACKAGE__->new($x)->floor;
-    }
+
+    ref($$x) eq 'Math::GMPz' and return $x;    # already an integer
+    bless \__floor__($$x);
 }
 
 sub ceil {
     require Math::AnyNum::ceil;
     my ($x) = @_;
 
-    if (ref($x) eq __PACKAGE__) {
-        my $r = $$x;
-        ref($r) eq 'Math::GMPz' and return $x;    # already an integer
-        bless \__ceil__($r);
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
     }
-    else {
-        __PACKAGE__->new($x)->ceil;
-    }
+
+    ref($$x) eq 'Math::GMPz' and return $x;    # already an integer
+    bless \__ceil__($$x);
 }
 
 #
@@ -2896,25 +2884,20 @@ sub dfactorial {
 sub mfactorial {
     my ($x, $y) = @_;
 
-    if (ref($x) eq __PACKAGE__) {
-        $x = $$x;
-    }
-    else {
-        $x = ${__PACKAGE__->new($x)};
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
     }
 
-    if (ref($y) eq __PACKAGE__) {
-        $y = $$y;
-    }
-    else {
-        $y = ${__PACKAGE__->new($y)};
+    if (ref($y) ne __PACKAGE__) {
+        $y = __PACKAGE__->new($y);
     }
 
-    my $ui1 = _any2ui($x) // (goto &nan);
-    my $ui2 = _any2ui($y) // (goto &nan);
-    my $z   = Math::GMPz::Rmpz_init();
-    Math::GMPz::Rmpz_mfac_uiui($z, $ui1, $ui2);
-    bless \$z;
+    my $ui1 = _any2ui($$x) // (goto &nan);
+    my $ui2 = _any2ui($$y) // (goto &nan);
+
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_mfac_uiui($r, $ui1, $ui2);
+    bless \$r;
 }
 
 #

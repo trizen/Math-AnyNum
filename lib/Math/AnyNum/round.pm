@@ -4,7 +4,7 @@ use warnings;
 our ($ROUND, $PREC);
 
 Class::Multimethods::multimethod __round__ => qw(Math::MPFR $) => sub {
-    my ($n, $prec) = @_;
+    my ($x, $prec) = @_;
 
     my $nth = -CORE::int($prec);
 
@@ -14,10 +14,10 @@ Class::Multimethods::multimethod __round__ => qw(Math::MPFR $) => sub {
     my $r = Math::MPFR::Rmpfr_init2($PREC);
 
     if ($nth < 0) {
-        Math::MPFR::Rmpfr_div($r, $n, $p, $ROUND);
+        Math::MPFR::Rmpfr_div($r, $x, $p, $ROUND);
     }
     else {
-        Math::MPFR::Rmpfr_mul($r, $n, $p, $ROUND);
+        Math::MPFR::Rmpfr_mul($r, $x, $p, $ROUND);
     }
 
     Math::MPFR::Rmpfr_round($r, $r);
