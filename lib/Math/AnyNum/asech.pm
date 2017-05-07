@@ -1,7 +1,7 @@
 use 5.014;
 use warnings;
 
-our ($ROUND);
+our ($ROUND, $PREC);
 
 # asech(x) = acosh(1/x)
 Class::Multimethods::multimethod __asech__ => qw(Math::MPFR) => sub {
@@ -14,17 +14,18 @@ Class::Multimethods::multimethod __asech__ => qw(Math::MPFR) => sub {
         goto &__asech__;
     }
 
-    Math::MPFR::Rmpfr_ui_div($x, 1, $x, $ROUND);
-    Math::MPFR::Rmpfr_acosh($x, $x, $ROUND);
-    $x;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_ui_div($r, 1, $x, $ROUND);
+    Math::MPFR::Rmpfr_acosh($r, $r, $ROUND);
+    $r;
 };
 
 # asech(x) = acosh(1/x)
 Class::Multimethods::multimethod __asech__ => qw(Math::MPC) => sub {
-    my ($x) = @_;
-    Math::MPC::Rmpc_ui_div($x, 1, $x, $ROUND);
-    Math::MPC::Rmpc_acosh($x, $x, $ROUND);
-    $x;
+    my $r = Math::MPC::Rmpc_init2($PREC);
+    Math::MPC::Rmpc_ui_div($r, 1, $_[0], $ROUND);
+    Math::MPC::Rmpc_acosh($r, $r, $ROUND);
+    $r;
 };
 
 1;

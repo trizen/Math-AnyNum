@@ -4,9 +4,9 @@ use warnings;
 our ($ROUND, $PREC);
 
 Class::Multimethods::multimethod __inv__ => qw(Math::MPFR) => sub {
-    my ($x) = @_;
-    Math::MPFR::Rmpfr_ui_div($x, 1, $x, $ROUND);
-    $x;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_ui_div($r, 1, $_[0], $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __inv__ => qw(Math::GMPq) => sub {
@@ -18,8 +18,9 @@ Class::Multimethods::multimethod __inv__ => qw(Math::GMPq) => sub {
         goto &__inv__;
     }
 
-    Math::GMPq::Rmpq_inv($x, $x);
-    $x;
+    my $r = Math::GMPq::Rmpq_init();
+    Math::GMPq::Rmpq_inv($r, $x);
+    $r;
 };
 
 Class::Multimethods::multimethod __inv__ => qw(Math::GMPz) => sub {
@@ -28,9 +29,9 @@ Class::Multimethods::multimethod __inv__ => qw(Math::GMPz) => sub {
 };
 
 Class::Multimethods::multimethod __inv__ => qw(Math::MPC) => sub {
-    my ($x) = @_;
-    Math::MPC::Rmpc_ui_div($x, 1, $x, $ROUND);
-    $x;
+    my $r = Math::MPC::Rmpc_init2($PREC);
+    Math::MPC::Rmpc_ui_div($r, 1, $_[0], $ROUND);
+    $r;
 };
 
 1;

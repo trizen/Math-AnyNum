@@ -7,16 +7,18 @@ our ($ROUND, $PREC);
 
 Class::Multimethods::multimethod __hypot__ => qw(Math::MPFR Math::MPFR) => sub {
     my ($x, $y) = @_;
-    Math::MPFR::Rmpfr_hypot($x, $x, $y, $ROUND);
-    $x;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_hypot($r, $x, $y, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __hypot__ => qw(Math::MPFR Math::MPC) => sub {
     my ($x, $y) = @_;
+    my $t = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPC::Rmpc_abs($t, $y, $ROUND);
     my $r = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPC::Rmpc_abs($r, $y, $ROUND);
-    Math::MPFR::Rmpfr_hypot($x, $x, $r, $ROUND);
-    $x;
+    Math::MPFR::Rmpfr_hypot($r, $x, $t, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __hypot__ => qw(Math::MPC Math::MPFR) => sub {

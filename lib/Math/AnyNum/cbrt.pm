@@ -12,20 +12,23 @@ Class::Multimethods::multimethod __cbrt__ => qw(Math::MPFR) => sub {
         goto &__cbrt__;
     }
 
-    Math::MPFR::Rmpfr_cbrt($x, $x, $ROUND);
-    $x;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_cbrt($r, $x, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __cbrt__ => qw(Math::MPC) => sub {
-    my ($x) = @_;
+
     state $three_inv = do {
         my $r = Math::MPC::Rmpc_init2_nobless($PREC);
         Math::MPC::Rmpc_set_ui($r, 3, $ROUND);
         Math::MPC::Rmpc_ui_div($r, 1, $r, $ROUND);
         $r;
     };
-    Math::MPC::Rmpc_pow($x, $x, $three_inv, $ROUND);
-    $x;
+
+    my $r = Math::MPC::Rmpc_init2($PREC);
+    Math::MPC::Rmpc_pow($r, $_[0], $three_inv, $ROUND);
+    $r;
 };
 
 1;

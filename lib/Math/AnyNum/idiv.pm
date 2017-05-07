@@ -19,8 +19,9 @@ sub __idiv__ {    # takes two Math::GMPz objects
         }
     }
 
-    Math::GMPz::Rmpz_tdiv_q($x, $x, $y);
-    $x;
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_tdiv_q($r, $x, $y);
+    $r;
 }
 
 1;

@@ -8,25 +8,27 @@ our ($ROUND, $PREC);
 #    eta(x) = (1 - 2**(1-x)) * zeta(x)
 
 sub __eta__ {
-    my ($x) = @_;    # $n is always a Math::MPFR object
+    my ($x) = @_;    # $x is always a Math::MPFR object
+
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
 
     # Special case for eta(1) = log(2)
     if (!Math::MPFR::Rmpfr_cmp_ui($x, 1)) {
-        Math::MPFR::Rmpfr_add_ui($x, $x, 1, $ROUND);
-        Math::MPFR::Rmpfr_log($x, $x, $ROUND);
-        return $x;
+        Math::MPFR::Rmpfr_add_ui($r, $x, 1, $ROUND);
+        Math::MPFR::Rmpfr_log($r, $r, $ROUND);
+        return $r;
     }
 
-    my $p = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_set($p, $x, $ROUND);
-    Math::MPFR::Rmpfr_ui_sub($p, 1, $p, $ROUND);
-    Math::MPFR::Rmpfr_ui_pow($p, 2, $p, $ROUND);
-    Math::MPFR::Rmpfr_ui_sub($p, 1, $p, $ROUND);
+    my $t = Math::MPFR::Rmpfr_init2($PREC);
 
-    Math::MPFR::Rmpfr_zeta($x, $x, $ROUND);
-    Math::MPFR::Rmpfr_mul($x, $x, $p, $ROUND);
+    Math::MPFR::Rmpfr_ui_sub($r, 1, $x, $ROUND);
+    Math::MPFR::Rmpfr_ui_pow($r, 2, $r, $ROUND);
+    Math::MPFR::Rmpfr_ui_sub($r, 1, $r, $ROUND);
 
-    $x;
+    Math::MPFR::Rmpfr_zeta($t, $x, $ROUND);
+    Math::MPFR::Rmpfr_mul($r, $r, $t, $ROUND);
+
+    $r;
 }
 
 1;

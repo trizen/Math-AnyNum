@@ -1,22 +1,22 @@
 use 5.014;
 use warnings;
 
-our ($ROUND);
+our ($ROUND, $PREC);
 
 # acot(x) = atan(1/x)
 Class::Multimethods::multimethod __acot__ => qw(Math::MPFR) => sub {
-    my ($x) = @_;
-    Math::MPFR::Rmpfr_ui_div($x, 1, $x, $ROUND);
-    Math::MPFR::Rmpfr_atan($x, $x, $ROUND);
-    $x;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_ui_div($r, 1, $_[0], $ROUND);
+    Math::MPFR::Rmpfr_atan($r, $r, $ROUND);
+    $r;
 };
 
 # acot(x) = atan(1/x)
 Class::Multimethods::multimethod __acot__ => qw(Math::MPC) => sub {
-    my ($x) = @_;
-    Math::MPC::Rmpc_ui_div($x, 1, $x, $ROUND);
-    Math::MPC::Rmpc_atan($x, $x, $ROUND);
-    $x;
+    my $r = Math::MPC::Rmpc_init2($PREC);
+    Math::MPC::Rmpc_ui_div($r, 1, $_[0], $ROUND);
+    Math::MPC::Rmpc_atan($r, $r, $ROUND);
+    $r;
 };
 
 1;

@@ -11,23 +11,25 @@ Class::Multimethods::multimethod __round__ => qw(Math::MPFR $) => sub {
     my $p = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_set_str($p, '1e' . CORE::abs($nth), 10, $ROUND);
 
-    if ($nth < 0) {
-        Math::MPFR::Rmpfr_div($n, $n, $p, $ROUND);
-    }
-    else {
-        Math::MPFR::Rmpfr_mul($n, $n, $p, $ROUND);
-    }
-
-    Math::MPFR::Rmpfr_round($n, $n);
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
 
     if ($nth < 0) {
-        Math::MPFR::Rmpfr_mul($n, $n, $p, $ROUND);
+        Math::MPFR::Rmpfr_div($r, $n, $p, $ROUND);
     }
     else {
-        Math::MPFR::Rmpfr_div($n, $n, $p, $ROUND);
+        Math::MPFR::Rmpfr_mul($r, $n, $p, $ROUND);
     }
 
-    $n;
+    Math::MPFR::Rmpfr_round($r, $r);
+
+    if ($nth < 0) {
+        Math::MPFR::Rmpfr_mul($r, $r, $p, $ROUND);
+    }
+    else {
+        Math::MPFR::Rmpfr_div($r, $r, $p, $ROUND);
+    }
+
+    $r;
 };
 
 Class::Multimethods::multimethod __round__ => qw(Math::MPC $) => sub {
@@ -46,16 +48,20 @@ Class::Multimethods::multimethod __round__ => qw(Math::MPC $) => sub {
         return $real;
     }
 
-    Math::MPC::Rmpc_set_fr_fr($x, $real, $imag, $ROUND);
-    $x;
+    my $r = Math::MPC::Rmpc_init2($PREC);
+    Math::MPC::Rmpc_set_fr_fr($r, $real, $imag, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __round__ => qw(Math::GMPq $) => sub {
-    my ($n, $prec) = @_;
+    my ($x, $prec) = @_;
 
     my $nth = -CORE::int($prec);
-    my $sgn = Math::GMPq::Rmpq_sgn($n);
 
+    my $n = Math::GMPq::Rmpq_init();
+    Math::GMPq::Rmpq_set($n, $x);
+
+    my $sgn = Math::GMPq::Rmpq_sgn($n);
     Math::GMPq::Rmpq_neg($n, $n) if $sgn < 0;
 
     my $p = Math::GMPz::Rmpz_init_set_str('1' . ('0' x CORE::abs($nth)), 10);

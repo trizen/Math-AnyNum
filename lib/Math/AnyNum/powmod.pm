@@ -12,8 +12,9 @@ sub __powmod__ {    # takes three Math::GMPz objects
         Math::GMPz::Rmpz_cmp_ui($t, 1) == 0 or return;
     }
 
-    Math::GMPz::Rmpz_powm($x, $x, $y, $z);
-    $x;
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_powm($r, $x, $y, $z);
+    $r;
 }
 
 1;

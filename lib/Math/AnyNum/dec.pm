@@ -1,31 +1,31 @@
 use 5.014;
 use warnings;
 
-our ($ROUND);
+our ($ROUND, $PREC);
 
 Class::Multimethods::multimethod __dec__ => qw(Math::MPFR) => sub {
-    my ($x) = @_;
-    Math::MPFR::Rmpfr_sub_ui($x, $x, 1, $ROUND);
-    $x;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_sub_ui($r, $_[0], 1, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __dec__ => qw(Math::GMPq) => sub {
-    my ($x) = @_;
-    state $one = Math::GMPz::Rmpz_init_set_ui_nobless(1);
-    Math::GMPq::Rmpq_sub_z($x, $x, $one);
-    $x;
+    state $mone = Math::GMPz::Rmpz_init_set_si_nobless(-1);
+    my $r = Math::GMPq::Rmpq_init();
+    Math::GMPq::Rmpq_add_z($r, $_[0], $mone);
+    $r;
 };
 
 Class::Multimethods::multimethod __dec__ => qw(Math::GMPz) => sub {
-    my ($x) = @_;
-    Math::GMPz::Rmpz_sub_ui($x, $x, 1);
-    $x;
+    my $r = Math::GMPz::Rmpz_init_set($_[0]);
+    Math::GMPz::Rmpz_sub_ui($r, $r, 1);
+    $r;
 };
 
 Class::Multimethods::multimethod __dec__ => qw(Math::MPC) => sub {
-    my ($x) = @_;
-    Math::MPC::Rmpc_sub_ui($x, $x, 1, $ROUND);
-    $x;
+    my $r = Math::MPC::Rmpc_init2($PREC);
+    Math::MPC::Rmpc_sub_ui($r, $_[0], 1, $ROUND);
+    $r;
 };
 
 1;

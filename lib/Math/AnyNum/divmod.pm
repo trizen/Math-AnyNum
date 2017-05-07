@@ -7,8 +7,11 @@ sub __divmod__ {
     Math::GMPz::Rmpz_sgn($y)
       || return (&Math::AnyNum::_nan(), &Math::AnyNum::_nan());
 
-    Math::GMPz::Rmpz_divmod($x, $y, $x, $y);
-    ($x, $y);
+    my $r = Math::GMPz::Rmpz_init();
+    my $s = Math::GMPz::Rmpz_init();
+
+    Math::GMPz::Rmpz_divmod($r, $s, $x, $y);
+    ($r, $s);
 }
 
 1;

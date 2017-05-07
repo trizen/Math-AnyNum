@@ -12,26 +12,34 @@ Class::Multimethods::multimethod __agm__ => qw(Math::MPFR Math::MPFR) => sub {
         goto &__agm__;
     }
 
-    Math::MPFR::Rmpfr_agm($x, $x, $y, $ROUND);
-    $x;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_agm($r, $x, $y, $ROUND);
+    $r;
 };
 
-Class::Multimethods::multimethod __agm__ => qw(Math::MPC Math::MPC) => sub {    # both arguments are modified
-    my ($a0, $g0) = @_;
+Class::Multimethods::multimethod __agm__ => qw(Math::MPC Math::MPC) => sub {
+    my ($x, $y) = @_;
 
     # agm(0,  x) = 0
-    if (!Math::MPC::Rmpc_cmp_si_si($a0, 0, 0)) {
-        return $a0;
+    if (!Math::MPC::Rmpc_cmp_si_si($x, 0, 0)) {
+        return $x;
     }
 
     # agm(x, 0) = 0
-    if (!Math::MPC::Rmpc_cmp_si_si($g0, 0, 0)) {
-        return $g0;
+    if (!Math::MPC::Rmpc_cmp_si_si($y, 0, 0)) {
+        return $y;
     }
+
+    my $a0 = Math::MPC::Rmpc_init2($PREC);
+    my $g0 = Math::MPC::Rmpc_init2($PREC);
 
     my $a1 = Math::MPC::Rmpc_init2($PREC);
     my $g1 = Math::MPC::Rmpc_init2($PREC);
-    my $t  = Math::MPC::Rmpc_init2($PREC);
+
+    my $t = Math::MPC::Rmpc_init2($PREC);
+
+    Math::MPC::Rmpc_set($a0, $x, $ROUND);
+    Math::MPC::Rmpc_set($g0, $y, $ROUND);
 
     my $count = 0;
     {

@@ -3,8 +3,9 @@ use warnings;
 
 sub __imul__ {    # takes two Math::GMPz objects
     my ($x, $y) = @_;
-    Math::GMPz::Rmpz_mul($x, $x, $y);
-    $x;
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_mul($r, $x, $y);
+    $r;
 }
 
 1;

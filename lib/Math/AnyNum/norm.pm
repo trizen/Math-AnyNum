@@ -11,21 +11,21 @@ Class::Multimethods::multimethod __norm__ => qw(Math::MPC) => sub {
 };
 
 Class::Multimethods::multimethod __norm__ => qw(Math::MPFR) => sub {
-    my ($x) = @_;
-    Math::MPFR::Rmpfr_sqr($x, $x, $ROUND);
-    $x;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_sqr($r, $_[0], $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __norm__ => qw(Math::GMPz) => sub {
-    my ($x) = @_;
-    Math::GMPz::Rmpz_mul($x, $x, $x);
-    $x;
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_mul($r, $_[0], $_[0]);
+    $r;
 };
 
 Class::Multimethods::multimethod __norm__ => qw(Math::GMPq) => sub {
-    my ($x) = @_;
-    Math::GMPq::Rmpq_mul($x, $x, $x);
-    $x;
+    my $r = Math::GMPq::Rmpq_init();
+    Math::GMPq::Rmpq_mul($r, $_[0], $_[0]);
+    $r;
 };
 
 1;

@@ -4,28 +4,27 @@ use warnings;
 our ($ROUND, $PREC);
 
 Class::Multimethods::multimethod __abs__ => qw(Math::MPFR) => sub {
-    my ($x) = @_;
-    Math::MPFR::Rmpfr_abs($x, $x, $ROUND);
-    $x;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_abs($r, $_[0], $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __abs__ => qw(Math::GMPq) => sub {
-    my ($x) = @_;
-    Math::GMPq::Rmpq_abs($x, $x);
-    $x;
+    my $r = Math::GMPq::Rmpq_init();
+    Math::GMPq::Rmpq_abs($r, $_[0]);
+    $r;
 };
 
 Class::Multimethods::multimethod __abs__ => qw(Math::GMPz) => sub {
-    my ($x) = @_;
-    Math::GMPz::Rmpz_abs($x, $x);
-    $x;
+    my $r = Math::GMPz::Rmpz_init_set($_[0]);
+    Math::GMPz::Rmpz_abs($r, $r);
+    $r;
 };
 
 Class::Multimethods::multimethod __abs__ => qw(Math::MPC) => sub {
-    my ($x) = @_;
-    my $mpfr = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPC::Rmpc_abs($mpfr, $x, $ROUND);
-    $mpfr;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPC::Rmpc_abs($r, $_[0], $ROUND);
+    $r;
 };
 
 1;

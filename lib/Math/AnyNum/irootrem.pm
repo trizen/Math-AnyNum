@@ -23,8 +23,10 @@ sub __irootrem__ {
     }
 
     my $r = Math::GMPz::Rmpz_init();
-    Math::GMPz::Rmpz_rootrem($x, $r, $x, $y);
-    ($x, $r);
+    my $s = Math::GMPz::Rmpz_init();
+
+    Math::GMPz::Rmpz_rootrem($r, $s, $x, $y);
+    ($r, $s);
 }
 
 1;

@@ -15,8 +15,9 @@ Class::Multimethods::multimethod __div__ => qw(Math::GMPq Math::GMPq) => sub {
         goto &__div__;
     };
 
-    Math::GMPq::Rmpq_div($x, $x, $y);
-    $x;
+    my $r = Math::GMPq::Rmpq_init();
+    Math::GMPq::Rmpq_div($r, $x, $y);
+    $r;
 };
 
 Class::Multimethods::multimethod __div__ => qw(Math::GMPq Math::GMPz) => sub {
@@ -28,24 +29,25 @@ Class::Multimethods::multimethod __div__ => qw(Math::GMPq Math::GMPz) => sub {
         goto &__div__;
     };
 
-    Math::GMPq::Rmpq_div_z($x, $x, $y);
-    $x;
+    my $r = Math::GMPq::Rmpq_init();
+    Math::GMPq::Rmpq_div_z($r, $x, $y);
+    $r;
 };
 
 Class::Multimethods::multimethod __div__ => qw(Math::GMPq Math::MPFR) => sub {
     my ($x, $y) = @_;
-    my $f = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_set_q($f, $x, $ROUND);
-    Math::MPFR::Rmpfr_div($f, $f, $y, $ROUND);
-    $f;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_set_q($r, $x, $ROUND);
+    Math::MPFR::Rmpfr_div($r, $r, $y, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __div__ => qw(Math::GMPq Math::MPC) => sub {
     my ($x, $y) = @_;
-    my $c = Math::MPC::Rmpc_init2($PREC);
-    Math::MPC::Rmpc_set_q($c, $x, $ROUND);
-    Math::MPC::Rmpc_div($c, $c, $y, $ROUND);
-    $c;
+    my $r = Math::MPC::Rmpc_init2($PREC);
+    Math::MPC::Rmpc_set_q($r, $x, $ROUND);
+    Math::MPC::Rmpc_div($r, $r, $y, $ROUND);
+    $r;
 };
 
 #
@@ -62,8 +64,9 @@ Class::Multimethods::multimethod __div__ => qw(Math::GMPz Math::GMPz) => sub {
 
     # Check for exact divisibility
     if (Math::GMPz::Rmpz_divisible_p($x, $y)) {
-        Math::GMPz::Rmpz_divexact($x, $x, $y);
-        return $x;
+        my $r = Math::GMPz::Rmpz_init();
+        Math::GMPz::Rmpz_divexact($r, $x, $y);
+        return $r;
     }
 
     my $r = Math::GMPq::Rmpq_init();
@@ -78,9 +81,10 @@ Class::Multimethods::multimethod __div__ => qw(Math::GMPz $) => sub {
 
     # Check for exact divisibility
     if (Math::GMPz::Rmpz_divisible_ui_p($x, CORE::abs($y))) {
-        Math::GMPz::Rmpz_divexact_ui($x, $x, CORE::abs($y));
-        Math::GMPz::Rmpz_neg($x, $x) if $y < 0;
-        return $x;
+        my $r = Math::GMPz::Rmpz_init();
+        Math::GMPz::Rmpz_divexact_ui($r, $x, CORE::abs($y));
+        Math::GMPz::Rmpz_neg($r, $r) if $y < 0;
+        return $r;
     }
 
     my $r = Math::GMPq::Rmpq_init();
@@ -107,18 +111,18 @@ Class::Multimethods::multimethod __div__ => qw(Math::GMPz Math::GMPq) => sub {
 
 Class::Multimethods::multimethod __div__ => qw(Math::GMPz Math::MPFR) => sub {
     my ($x, $y) = @_;
-    my $f = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_set_z($f, $x, $ROUND);
-    Math::MPFR::Rmpfr_div($f, $f, $y, $ROUND);
-    $f;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_set_z($r, $x, $ROUND);
+    Math::MPFR::Rmpfr_div($r, $r, $y, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __div__ => qw(Math::GMPz Math::MPC) => sub {
     my ($x, $y) = @_;
-    my $c = Math::MPC::Rmpc_init2($PREC);
-    Math::MPC::Rmpc_set_z($c, $x, $ROUND);
-    Math::MPC::Rmpc_div($c, $c, $y, $ROUND);
-    $c;
+    my $r = Math::MPC::Rmpc_init2($PREC);
+    Math::MPC::Rmpc_set_z($r, $x, $ROUND);
+    Math::MPC::Rmpc_div($r, $r, $y, $ROUND);
+    $r;
 };
 
 #
@@ -126,36 +130,40 @@ Class::Multimethods::multimethod __div__ => qw(Math::GMPz Math::MPC) => sub {
 #
 Class::Multimethods::multimethod __div__ => qw(Math::MPFR Math::MPFR) => sub {
     my ($x, $y) = @_;
-    Math::MPFR::Rmpfr_div($x, $x, $y, $ROUND);
-    $x;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_div($r, $x, $y, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __div__ => qw(Math::MPFR $) => sub {
     my ($x, $y) = @_;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
     $y < 0
-      ? Math::MPFR::Rmpfr_div_si($x, $x, $y, $ROUND)
-      : Math::MPFR::Rmpfr_div_ui($x, $x, $y, $ROUND);
-    $x;
+      ? Math::MPFR::Rmpfr_div_si($r, $x, $y, $ROUND)
+      : Math::MPFR::Rmpfr_div_ui($r, $x, $y, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __div__ => qw(Math::MPFR Math::GMPq) => sub {
     my ($x, $y) = @_;
-    Math::MPFR::Rmpfr_div_q($x, $x, $y, $ROUND);
-    $x;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_div_q($r, $x, $y, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __div__ => qw(Math::MPFR Math::GMPz) => sub {
     my ($x, $y) = @_;
-    Math::MPFR::Rmpfr_div_z($x, $x, $y, $ROUND);
-    $x;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_div_z($r, $x, $y, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __div__ => qw(Math::MPFR Math::MPC) => sub {
     my ($x, $y) = @_;
-    my $c = Math::MPC::Rmpc_init2($PREC);
-    Math::MPC::Rmpc_set_fr($c, $x, $ROUND);
-    Math::MPC::Rmpc_div($c, $c, $y, $ROUND);
-    $c;
+    my $r = Math::MPC::Rmpc_init2($PREC);
+    Math::MPC::Rmpc_set_fr($r, $x, $ROUND);
+    Math::MPC::Rmpc_div($r, $r, $y, $ROUND);
+    $r;
 };
 
 #
@@ -163,42 +171,45 @@ Class::Multimethods::multimethod __div__ => qw(Math::MPFR Math::MPC) => sub {
 #
 Class::Multimethods::multimethod __div__ => qw(Math::MPC Math::MPC) => sub {
     my ($x, $y) = @_;
-    Math::MPC::Rmpc_div($x, $x, $y, $ROUND);
-    $x;
+    my $r = Math::MPC::Rmpc_init2($PREC);
+    Math::MPC::Rmpc_div($r, $x, $y, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __div__ => qw(Math::MPC $) => sub {
     my ($x, $y) = @_;
+    my $r = Math::MPC::Rmpc_init2($PREC);
     if ($y < 0) {
-        Math::MPC::Rmpc_div_ui($x, $x, -$y, $ROUND);
-        Math::MPC::Rmpc_neg($x, $x, $ROUND);
+        Math::MPC::Rmpc_div_ui($r, $x, -$y, $ROUND);
+        Math::MPC::Rmpc_neg($r, $r, $ROUND);
     }
     else {
-        Math::MPC::Rmpc_div_ui($x, $x, $y, $ROUND);
+        Math::MPC::Rmpc_div_ui($r, $x, $y, $ROUND);
     }
-    $x;
+    $r;
 };
 
 Class::Multimethods::multimethod __div__ => qw(Math::MPC Math::MPFR) => sub {
     my ($x, $y) = @_;
-    Math::MPC::Rmpc_div_fr($x, $x, $y, $ROUND);
-    $x;
+    my $r = Math::MPC::Rmpc_init2($PREC);
+    Math::MPC::Rmpc_div_fr($r, $x, $y, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __div__ => qw(Math::MPC Math::GMPz) => sub {
     my ($x, $y) = @_;
-    my $c = Math::MPC::Rmpc_init2($PREC);
-    Math::MPC::Rmpc_set_z($c, $y, $ROUND);
-    Math::MPC::Rmpc_div($x, $x, $c, $ROUND);
-    $x;
+    my $r = Math::MPC::Rmpc_init2($PREC);
+    Math::MPC::Rmpc_set_z($r, $y, $ROUND);
+    Math::MPC::Rmpc_div($r, $x, $r, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __div__ => qw(Math::MPC Math::GMPq) => sub {
     my ($x, $y) = @_;
-    my $c = Math::MPC::Rmpc_init2($PREC);
-    Math::MPC::Rmpc_set_q($c, $y, $ROUND);
-    Math::MPC::Rmpc_div($x, $x, $c, $ROUND);
-    $x;
+    my $r = Math::MPC::Rmpc_init2($PREC);
+    Math::MPC::Rmpc_set_q($r, $y, $ROUND);
+    Math::MPC::Rmpc_div($r, $x, $r, $ROUND);
+    $r;
 };
 
 1;

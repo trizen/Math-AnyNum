@@ -9,19 +9,15 @@ our ($ROUND, $PREC);
 Class::Multimethods::multimethod __pow__ => qw(Math::GMPq $) => sub {
     my ($x, $y) = @_;
 
-    Math::GMPq::Rmpq_pow_ui($x, $x, CORE::abs($y));
+    my $r = Math::GMPq::Rmpq_init();
+    Math::GMPq::Rmpq_pow_ui($r, $x, CORE::abs($y));
 
     if ($y < 0) {
-        if (!Math::GMPq::Rmpq_sgn($x)) {
-            my $inf = Math::MPFR::Rmpfr_init2($PREC);
-            Math::MPFR::Rmpfr_set_inf($inf, 1);
-            return $inf;
-        }
-
-        Math::GMPq::Rmpq_inv($x, $x);
+        Math::GMPq::Rmpq_sgn($r) || goto &Math::AnyNum::_inf;
+        Math::GMPq::Rmpq_inv($r, $r);
     }
 
-    $x;
+    $r;
 };
 
 Class::Multimethods::multimethod __pow__ => qw(Math::GMPq Math::GMPq) => sub {
@@ -65,22 +61,19 @@ Class::Multimethods::multimethod __pow__ => qw(Math::GMPq Math::MPC) => sub {
 Class::Multimethods::multimethod __pow__ => qw(Math::GMPz $) => sub {
     my ($x, $y) = @_;
 
-    Math::GMPz::Rmpz_pow_ui($x, $x, CORE::abs($y));
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_pow_ui($r, $x, CORE::abs($y));
 
     if ($y < 0) {
-        Math::GMPz::Rmpz_sgn($x) || do {
-            my $r = Math::MPFR::Rmpfr_init2($PREC);
-            Math::MPFR::Rmpfr_set_inf($r, 1);
-            return $r;
-        };
+        Math::GMPz::Rmpz_sgn($r) || goto &Math::AnyNum::_inf;
 
         my $q = Math::GMPq::Rmpq_init();
-        Math::GMPq::Rmpq_set_z($q, $x);
+        Math::GMPq::Rmpq_set_z($q, $r);
         Math::GMPq::Rmpq_inv($q, $q);
         return $q;
     }
 
-    $x;
+    $r;
 };
 
 Class::Multimethods::multimethod __pow__ => qw(Math::GMPz Math::GMPz) => sub {
@@ -121,16 +114,18 @@ Class::Multimethods::multimethod __pow__ => qw(Math::MPFR Math::MPFR) => sub {
         goto &__pow__;
     }
 
-    Math::MPFR::Rmpfr_pow($x, $x, $y, $ROUND);
-    $x;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_pow($r, $x, $y, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __pow__ => qw(Math::MPFR $) => sub {
     my ($x, $y) = @_;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
     $y < 0
-      ? Math::MPFR::Rmpfr_pow_si($x, $x, $y, $ROUND)
-      : Math::MPFR::Rmpfr_pow_ui($x, $x, $y, $ROUND);
-    $x;
+      ? Math::MPFR::Rmpfr_pow_si($r, $x, $y, $ROUND)
+      : Math::MPFR::Rmpfr_pow_ui($r, $x, $y, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __pow__ => qw(Math::MPFR Math::GMPq) => sub {
@@ -140,8 +135,9 @@ Class::Multimethods::multimethod __pow__ => qw(Math::MPFR Math::GMPq) => sub {
 
 Class::Multimethods::multimethod __pow__ => qw(Math::MPFR Math::GMPz) => sub {
     my ($x, $y) = @_;
-    Math::MPFR::Rmpfr_pow_z($x, $x, $y, $ROUND);
-    $x;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_pow_z($r, $x, $y, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __pow__ => qw(Math::MPFR Math::MPC) => sub {
@@ -154,28 +150,32 @@ Class::Multimethods::multimethod __pow__ => qw(Math::MPFR Math::MPC) => sub {
 #
 Class::Multimethods::multimethod __pow__ => qw(Math::MPC Math::MPC) => sub {
     my ($x, $y) = @_;
-    Math::MPC::Rmpc_pow($x, $x, $y, $ROUND);
-    $x;
+    my $r = Math::MPC::Rmpc_init2($PREC);
+    Math::MPC::Rmpc_pow($r, $x, $y, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __pow__ => qw(Math::MPC $) => sub {
     my ($x, $y) = @_;
+    my $r = Math::MPC::Rmpc_init2($PREC);
     $y < 0
-      ? Math::MPC::Rmpc_pow_si($x, $x, $y, $ROUND)
-      : Math::MPC::Rmpc_pow_ui($x, $x, $y, $ROUND);
-    $x;
+      ? Math::MPC::Rmpc_pow_si($r, $x, $y, $ROUND)
+      : Math::MPC::Rmpc_pow_ui($r, $x, $y, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __pow__ => qw(Math::MPC Math::MPFR) => sub {
     my ($x, $y) = @_;
-    Math::MPC::Rmpc_pow_fr($x, $x, $y, $ROUND);
-    $x;
+    my $r = Math::MPC::Rmpc_init2($PREC);
+    Math::MPC::Rmpc_pow_fr($r, $x, $y, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __pow__ => qw(Math::MPC Math::GMPz) => sub {
     my ($x, $y) = @_;
-    Math::MPC::Rmpc_pow_z($x, $x, $y, $ROUND);
-    $x;
+    my $r = Math::MPC::Rmpc_init2($PREC);
+    Math::MPC::Rmpc_pow_z($r, $x, $y, $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __pow__ => qw(Math::MPC Math::GMPq) => sub {

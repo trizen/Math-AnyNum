@@ -5,8 +5,9 @@ our ($ROUND, $PREC);
 
 Class::Multimethods::multimethod __ceil__ => qw(Math::MPFR) => sub {
     my ($x) = @_;
-    Math::MPFR::Rmpfr_ceil($x, $x);
-    $x;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_ceil($r, $x);
+    $r;
 };
 
 Class::Multimethods::multimethod __ceil__ => qw(Math::GMPq) => sub {
@@ -34,8 +35,9 @@ Class::Multimethods::multimethod __ceil__ => qw(Math::MPC) => sub {
         return $real;
     }
 
-    Math::MPC::Rmpc_set_fr_fr($x, $real, $imag, $ROUND);
-    $x;
+    my $r = Math::MPC::Rmpc_init2($PREC);
+    Math::MPC::Rmpc_set_fr_fr($r, $real, $imag, $ROUND);
+    $r;
 };
 
 1;

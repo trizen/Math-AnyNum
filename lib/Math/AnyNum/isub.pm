@@ -3,8 +3,9 @@ use warnings;
 
 sub __isub__ {    # takes two Math::GMPz objects
     my ($x, $y) = @_;
-    Math::GMPz::Rmpz_sub($x, $x, $y);
-    $x;
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_sub($r, $x, $y);
+    $r;
 }
 
 1;

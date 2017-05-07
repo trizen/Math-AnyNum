@@ -17,7 +17,7 @@ sub __is_power__ {
 
     # Don't accept a non-positive power
     # Also, when $x is negative and $y is even, return faster
-    if ($y <= 0 or ($y % 2 == 0 and Math::GMPq::Rmpq_sgn($x) < 0)) {
+    if ($y <= 0 or ($y % 2 == 0 and Math::GMPz::Rmpz_sgn($x) < 0)) {
         return 0;
     }
 

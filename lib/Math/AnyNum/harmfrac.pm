@@ -1,7 +1,7 @@
 use 5.014;
 use warnings;
 
-our ($ROUND);
+our ($ROUND, $PREC);
 
 sub __harmfrac__ {    # takes an unsigned integer
     my ($ui) = @_;

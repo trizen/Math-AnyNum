@@ -8,8 +8,10 @@ sub __isqrtrem__ {
       and return (&Math::AnyNum::_nan(), &Math::AnyNum::_nan());
 
     my $r = Math::GMPz::Rmpz_init();
-    Math::GMPz::Rmpz_sqrtrem($x, $r, $x);
-    ($x, $r);
+    my $s = Math::GMPz::Rmpz_init();
+
+    Math::GMPz::Rmpz_sqrtrem($r, $s, $x);
+    ($r, $s);
 }
 
 1;

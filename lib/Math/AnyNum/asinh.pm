@@ -1,18 +1,18 @@
 use 5.014;
 use warnings;
 
-our ($ROUND);
+our ($ROUND, $PREC);
 
 Class::Multimethods::multimethod __asinh__ => qw(Math::MPFR) => sub {
-    my ($x) = @_;
-    Math::MPFR::Rmpfr_asinh($x, $x, $ROUND);
-    $x;
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_asinh($r, $_[0], $ROUND);
+    $r;
 };
 
 Class::Multimethods::multimethod __asinh__ => qw(Math::MPC) => sub {
-    my ($x) = @_;
-    Math::MPC::Rmpc_asinh($x, $x, $ROUND);
-    $x;
+    my $r = Math::MPC::Rmpc_init2($PREC);
+    Math::MPC::Rmpc_asinh($r, $_[0], $ROUND);
+    $r;
 };
 
 1;

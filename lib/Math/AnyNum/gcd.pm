@@ -4,11 +4,13 @@ use warnings;
 sub __gcd__ {
     my ($x, $y) = @_;
 
-    ref($y)
-      ? Math::GMPz::Rmpz_gcd($x, $x, $y)
-      : Math::GMPz::Rmpz_gcd_ui($x, $x, $y);
+    my $r = Math::GMPz::Rmpz_init();
 
-    $x;
+    ref($y)
+      ? Math::GMPz::Rmpz_gcd($r, $x, $y)
+      : Math::GMPz::Rmpz_gcd_ui($r, $x, $y);
+
+    $r;
 }
 
 1;
