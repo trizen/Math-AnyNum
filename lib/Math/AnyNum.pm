@@ -1742,10 +1742,10 @@ Class::Multimethods::multimethod pow => qw(* $) => sub {
     my ($x, $y) = @_;
 
     if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        bless \__pow__(${__PACKAGE__->new($x)}, $y);
+        bless \__pow__((ref($x) ? ${__PACKAGE__->new($x)} : _str2obj($x)), $y);
     }
     else {
-        bless \__pow__(${__PACKAGE__->new($x)}, _str2obj($y));
+        bless \__pow__((ref($x) ? ${__PACKAGE__->new($x)} : _str2obj($x)), _str2obj($y));
     }
 };
 
@@ -2711,7 +2711,7 @@ sub fibonacci {
             Math::GMPz::Rmpz_fib_ui($z, CORE::int($x));
             return bless \$z;
         }
-        return __PACKAGE__->new($x)->fibonacci;
+        $x = __PACKAGE__->new($x);
     }
 
     my $ui = _any2ui($$x) // (goto &nan);
@@ -2732,7 +2732,7 @@ sub lucas {
             Math::GMPz::Rmpz_lucnum_ui($z, CORE::int($x));
             return bless \$z;
         }
-        return __PACKAGE__->new($x)->lucas;
+        $x = __PACKAGE__->new($x);
     }
 
     my $ui = _any2ui($$x) // (goto &nan);
@@ -2753,7 +2753,7 @@ sub primorial {
             Math::GMPz::Rmpz_primorial_ui($z, CORE::int($x));
             return bless \$z;
         }
-        return __PACKAGE__->new($x)->primorial;
+        $x = __PACKAGE__->new($x);
     }
 
     my $ui = _any2ui($$x) // (goto &nan);
@@ -2775,12 +2775,11 @@ sub bernfrac {
             my $q = __bernfrac__(CORE::int($x));
             return bless \$q;
         }
-        return __PACKAGE__->new($x)->bernfrac;
+        $x = __PACKAGE__->new($x);
     }
 
     my $n = _any2ui($$x) // goto &nan;
-    my $q = __bernfrac__($n);
-    bless \$q;
+    bless \__bernfrac__($n);
 }
 
 #
@@ -2796,12 +2795,11 @@ sub harmfrac {
             my $q = __harmfrac__(CORE::int($x));
             return bless \$q;
         }
-        return __PACKAGE__->new($x)->harmfrac;
+        $x = __PACKAGE__->new($x);
     }
 
     my $n = _any2ui($$x) // (goto &nan);
-    my $q = __harmfrac__($n);
-    bless \$q;
+    bless \__harmfrac__($n);
 }
 
 #
@@ -2817,12 +2815,11 @@ sub bernreal {
             my $f = __bernreal__(CORE::int($x));
             return bless \$f;
         }
-        return __PACKAGE__->new($x)->bernreal;
+        $x = __PACKAGE__->new($x);
     }
 
     my $n = _any2ui($$x) // (goto &nan);
-    my $f = __bernreal__($n);
-    bless \$f;
+    bless \__bernreal__($n);
 }
 
 #
@@ -2846,7 +2843,7 @@ sub factorial {
             Math::GMPz::Rmpz_fac_ui($z, CORE::int($x));
             return bless \$z;
         }
-        return __PACKAGE__->new($x)->factorial;
+        $x = __PACKAGE__->new($x);
     }
 
     my $ui = _any2ui($$x) // (goto &nan);
@@ -2868,7 +2865,7 @@ sub dfactorial {
             Math::GMPz::Rmpz_2fac_ui($z, CORE::int($x));
             return bless \$z;
         }
-        return __PACKAGE__->new($x)->dfactorial;
+        $x = __PACKAGE__->new($x);
     }
 
     my $ui = _any2ui($$x) // (goto &nan);
@@ -3057,12 +3054,8 @@ sub is_rat {
         $x = __PACKAGE__->new($x);
     }
 
-    my $r   = $$x;
-    my $ref = ref($r);
-
-    ($ref eq 'Math::GMPz' or $ref eq 'Math::GMPq')
-      ? 1
-      : 0;
+    my $ref = ref($$x);
+    $ref eq 'Math::GMPz' or $ref eq 'Math::GMPq';
 }
 
 sub numerator {
@@ -3591,14 +3584,14 @@ Class::Multimethods::multimethod powmod => qw(* * *) => sub {
 Class::Multimethods::multimethod binomial => qw(Math::AnyNum Math::AnyNum) => sub {
     my ($x, $y) = @_;
 
-    my $n = _any2si($$y)  // (goto &nan);
-    my $z = _any2mpz($$x) // (goto &nan);
+    $y = _any2si($$y)  // (goto &nan);
+    $x = _any2mpz($$x) // (goto &nan);
 
     my $r = Math::GMPz::Rmpz_init();
 
-    $n < 0
-      ? Math::GMPz::Rmpz_bin_si($r, $z, $n)
-      : Math::GMPz::Rmpz_bin_ui($r, $z, $n);
+    $y < 0
+      ? Math::GMPz::Rmpz_bin_si($r, $x, $y)
+      : Math::GMPz::Rmpz_bin_ui($r, $x, $y);
 
     bless \$r;
 };
@@ -3606,12 +3599,12 @@ Class::Multimethods::multimethod binomial => qw(Math::AnyNum Math::AnyNum) => su
 Class::Multimethods::multimethod binomial => qw(Math::AnyNum $) => sub {
     my ($x, $y) = @_;
     if (CORE::int($y) eq $y and $y >= LONG_MIN and $y <= ULONG_MAX) {
-        my $z = _any2mpz($$x) // (goto &nan);
+        $x = _any2mpz($$x) // (goto &nan);
         my $r = Math::GMPz::Rmpz_init();
 
         $y < 0
-          ? Math::GMPz::Rmpz_bin_si($r, $z, $y)
-          : Math::GMPz::Rmpz_bin_ui($r, $z, $y);
+          ? Math::GMPz::Rmpz_bin_si($r, $x, $y)
+          : Math::GMPz::Rmpz_bin_ui($r, $x, $y);
 
         bless \$r;
     }
@@ -3630,9 +3623,9 @@ Class::Multimethods::multimethod binomial => qw($ $) => sub {
         and $y >= 0
         and $x <= ULONG_MAX
         and $y <= ULONG_MAX) {
-        my $z = Math::GMPz::Rmpz_init();
-        Math::GMPz::Rmpz_bin_uiui($z, $x, $y);
-        return bless \$z;
+        my $r = Math::GMPz::Rmpz_init();
+        Math::GMPz::Rmpz_bin_uiui($r, $x, $y);
+        return bless \$r;
     }
 
     (@_) = (__PACKAGE__->new($x), $y);
@@ -3858,7 +3851,7 @@ sub as_int {
             $base = _any2ui($$y) // 0;
         }
         else {
-            $base = _any2ui(${__PACKAGE__->new($y)}) // 0;
+            $base = _any2ui(_star2mpz($y)) // 0;
         }
 
         if ($base < 2 or $base > 36) {
@@ -3883,7 +3876,7 @@ sub as_frac {
             $base = _any2ui($$y) // 0;
         }
         else {
-            $base = _any2ui(${__PACKAGE__->new($y)}) // 0;
+            $base = _any2ui(_star2mpz($y)) // 0;
         }
 
         if ($base < 2 or $base > 36) {
@@ -3926,7 +3919,7 @@ sub as_dec {
             $prec = _any2ui($$y) // 0;
         }
         else {
-            $prec = _any2ui(${__PACKAGE__->new($y)}) // 0;
+            $prec = _any2ui(_star2mpz($y)) // 0;
         }
 
         $prec <<= 2;
