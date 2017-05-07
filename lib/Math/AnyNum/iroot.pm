@@ -26,7 +26,7 @@ sub __iroot__ {
         }
 
         if (Math::GMPz::Rmpz_cmp_ui($x, 1) == 0) {    # 1 / 1^k = 1
-            return Math::GMPz::Rmpz_init_set_ui(1);
+            return $x;
         }
 
         return Math::GMPz::Rmpz_init_set_ui(0);

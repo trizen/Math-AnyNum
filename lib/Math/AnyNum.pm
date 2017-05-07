@@ -737,7 +737,7 @@ sub new {
 
     # Special objects
     elsif ($ref eq __PACKAGE__) {
-        return $num->copy;
+        return $num;
     }
 
     # GMPz

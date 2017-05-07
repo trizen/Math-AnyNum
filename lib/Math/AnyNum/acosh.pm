@@ -8,9 +8,9 @@ Class::Multimethods::multimethod __acosh__ => qw(Math::MPFR) => sub {
 
     # Return a complex number for x < 1
     if (Math::MPFR::Rmpfr_cmp_ui($x, 1) < 0) {
-        $x = _mpfr2mpc($x);
-        Math::MPC::Rmpc_acosh($x, $x, $ROUND);
-        return $x;
+        my $r = _mpfr2mpc($x);
+        Math::MPC::Rmpc_acosh($r, $r, $ROUND);
+        return $r;
     }
 
     my $r = Math::MPFR::Rmpfr_init2($PREC);

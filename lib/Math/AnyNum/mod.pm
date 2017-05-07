@@ -13,8 +13,7 @@ Class::Multimethods::multimethod __mod__ => qw(Math::GMPq Math::GMPq) => sub {
       || goto &Math::AnyNum::_nan;
 
     my $quo = Math::GMPq::Rmpq_init();
-    Math::GMPq::Rmpq_set($quo, $x);
-    Math::GMPq::Rmpq_div($quo, $quo, $y);
+    Math::GMPq::Rmpq_div($quo, $x, $y);
 
     # Floor
     Math::GMPq::Rmpq_integer_p($quo) || do {
@@ -96,8 +95,7 @@ Class::Multimethods::multimethod __mod__ => qw(Math::MPFR Math::MPFR) => sub {
     my ($x, $y) = @_;
 
     my $quo = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_set($quo, $x, $ROUND);
-    Math::MPFR::Rmpfr_div($quo, $quo, $y, $ROUND);
+    Math::MPFR::Rmpfr_div($quo, $x, $y, $ROUND);
     Math::MPFR::Rmpfr_floor($quo, $quo);
     Math::MPFR::Rmpfr_mul($quo, $quo, $y, $ROUND);
     Math::MPFR::Rmpfr_sub($quo, $x, $quo, $ROUND);
@@ -109,8 +107,7 @@ Class::Multimethods::multimethod __mod__ => qw(Math::MPFR $) => sub {
     my ($x, $y) = @_;
 
     my $quo = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_set($quo, $x, $ROUND);
-    Math::MPFR::Rmpfr_div_ui($quo, $quo, $y, $ROUND);
+    Math::MPFR::Rmpfr_div_ui($quo, $x, $y, $ROUND);
     Math::MPFR::Rmpfr_floor($quo, $quo);
     Math::MPFR::Rmpfr_mul_ui($quo, $quo, $y, $ROUND);
     Math::MPFR::Rmpfr_sub($quo, $x, $quo, $ROUND);
@@ -122,8 +119,7 @@ Class::Multimethods::multimethod __mod__ => qw(Math::MPFR Math::GMPq) => sub {
     my ($x, $y) = @_;
 
     my $quo = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_set($quo, $x, $ROUND);
-    Math::MPFR::Rmpfr_div_q($quo, $quo, $y, $ROUND);
+    Math::MPFR::Rmpfr_div_q($quo, $x, $y, $ROUND);
     Math::MPFR::Rmpfr_floor($quo, $quo);
     Math::MPFR::Rmpfr_mul_q($quo, $quo, $y, $ROUND);
     Math::MPFR::Rmpfr_sub($quo, $x, $quo, $ROUND);
@@ -135,8 +131,7 @@ Class::Multimethods::multimethod __mod__ => qw(Math::MPFR Math::GMPz) => sub {
     my ($x, $y) = @_;
 
     my $quo = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_set($quo, $x, $ROUND);
-    Math::MPFR::Rmpfr_div_z($quo, $quo, $y, $ROUND);
+    Math::MPFR::Rmpfr_div_z($quo, $x, $y, $ROUND);
     Math::MPFR::Rmpfr_floor($quo, $quo);
     Math::MPFR::Rmpfr_mul_z($quo, $quo, $y, $ROUND);
     Math::MPFR::Rmpfr_sub($quo, $x, $quo, $ROUND);

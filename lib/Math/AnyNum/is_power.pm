@@ -25,8 +25,8 @@ sub __is_power__ {
     $y == 2 and return Math::GMPz::Rmpz_perfect_square_p($x);
 
     Math::GMPz::Rmpz_perfect_power_p($x) || return 0;
-    my $z = Math::GMPz::Rmpz_init_set($x);
-    Math::GMPz::Rmpz_root($z, $z, $y);
+    state $t = Math::GMPz::Rmpz_init_nobless();
+    Math::GMPz::Rmpz_root($t, $x, $y);
 }
 
 1;

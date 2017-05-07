@@ -62,7 +62,10 @@ Class::Multimethods::multimethod __round__ => qw(Math::GMPq $) => sub {
     Math::GMPq::Rmpq_set($n, $x);
 
     my $sgn = Math::GMPq::Rmpq_sgn($n);
-    Math::GMPq::Rmpq_neg($n, $n) if $sgn < 0;
+
+    if ($sgn < 0) {
+        Math::GMPq::Rmpq_neg($n, $n);
+    }
 
     my $p = Math::GMPz::Rmpz_init_set_str('1' . ('0' x CORE::abs($nth)), 10);
 
