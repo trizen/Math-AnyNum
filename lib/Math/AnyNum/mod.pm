@@ -17,12 +17,12 @@ Class::Multimethods::multimethod __mod__ => qw(Math::GMPq Math::GMPq) => sub {
     Math::GMPq::Rmpq_div($quo, $quo, $y);
 
     # Floor
-    if (!Math::GMPq::Rmpq_integer_p($quo)) {
+    Math::GMPq::Rmpq_integer_p($quo) || do {
         my $z = Math::GMPz::Rmpz_init();
         Math::GMPz::Rmpz_set_q($z, $quo);
         Math::GMPz::Rmpz_sub_ui($z, $z, 1) if Math::GMPq::Rmpq_sgn($quo) < 0;
         Math::GMPq::Rmpq_set_z($quo, $z);
-    }
+    };
 
     Math::GMPq::Rmpq_mul($quo, $quo, $y);
     Math::GMPq::Rmpq_sub($quo, $x, $quo);

@@ -21,14 +21,10 @@ Class::Multimethods::multimethod __agm__ => qw(Math::MPC Math::MPC) => sub {
     my ($x, $y) = @_;
 
     # agm(0,  x) = 0
-    if (!Math::MPC::Rmpc_cmp_si_si($x, 0, 0)) {
-        return $x;
-    }
+    Math::MPC::Rmpc_cmp_si_si($x, 0, 0) || return $x;
 
     # agm(x, 0) = 0
-    if (!Math::MPC::Rmpc_cmp_si_si($y, 0, 0)) {
-        return $y;
-    }
+    Math::MPC::Rmpc_cmp_si_si($y, 0, 0) || return $y;
 
     my $a0 = Math::MPC::Rmpc_init2($PREC);
     my $g0 = Math::MPC::Rmpc_init2($PREC);

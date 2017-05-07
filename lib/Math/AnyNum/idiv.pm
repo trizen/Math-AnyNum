@@ -5,7 +5,7 @@ sub __idiv__ {    # takes two Math::GMPz objects
     my ($x, $y) = @_;
 
     # Detect division by zero
-    if (!Math::GMPz::Rmpz_sgn($y)) {
+    Math::GMPz::Rmpz_sgn($y) || do {
         my $sign = Math::GMPz::Rmpz_sgn($x);
 
         if ($sign == 0) {    # 0/0
@@ -17,7 +17,7 @@ sub __idiv__ {    # takes two Math::GMPz objects
         else {                 # x/0 where: x < 0
             goto &Math::AnyNum::_ninf;
         }
-    }
+    };
 
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_tdiv_q($r, $x, $y);
