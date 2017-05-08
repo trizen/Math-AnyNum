@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 189;
+plan tests => 191;
 
 use Math::AnyNum qw(:special rat float complex);
 
@@ -232,6 +232,9 @@ like(hypot(rat('1/2'), rat('3/4')), qr/^0\.9013878188659973232798053168676\d*\z/
 like(hypot('1/2',      rat('3/4')), qr/^0\.9013878188659973232798053168676\d*\z/);
 like(hypot(rat('1/2'), '3/4'),      qr/^0\.9013878188659973232798053168676\d*\z/);
 like(hypot('-3-7i',    '-2+5i'),    qr/^9\.327379053088815045554475542320556983\d*\z/);
+
+like(hypot(float('-3.5'),   complex('3+4i')), qr/^6\.103277807866851475948927628\d*\z/);
+like(hypot(complex('3+4i'), float('-3.5')),   qr/^6\.103277807866851475948927628\d*\z/);
 
 like(agm('1/2',      '3/4'),      qr/^0\.618670109059076115651664900897850\d*\z/);
 like(agm(rat('1/2'), '3/4'),      qr/^0\.618670109059076115651664900897850\d*\z/);
