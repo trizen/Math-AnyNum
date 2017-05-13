@@ -214,7 +214,7 @@ use overload
 
     my %misc = (
         rand => sub (;$;$) {
-            @_ ? (goto &rand) : do { (@_) = (1); goto &rand }
+            @_ ? (goto &rand) : do { (@_) = one(); goto &rand }
         },
         irand => sub ($;$) { goto &irand },
 
