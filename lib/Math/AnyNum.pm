@@ -361,25 +361,18 @@ use overload
 sub _str2obj {
     my ($s) = @_;
 
-    $s
-      || return Math::GMPz::Rmpz_init_set_ui(0);
+    $s || goto &_zero;
 
     $s = lc($s);
 
     if ($s eq 'inf' or $s eq '+inf') {
-        my $r = Math::MPFR::Rmpfr_init2($PREC);
-        Math::MPFR::Rmpfr_set_inf($r, 1);
-        return $r;
+        goto &_inf;
     }
     elsif ($s eq '-inf') {
-        my $r = Math::MPFR::Rmpfr_init2($PREC);
-        Math::MPFR::Rmpfr_set_inf($r, -1);
-        return $r;
+        goto &_ninf;
     }
     elsif ($s eq 'nan') {
-        my $r = Math::MPFR::Rmpfr_init2($PREC);
-        Math::MPFR::Rmpfr_set_nan($r);
-        return $r;
+        goto &_nan;
     }
 
     # Remove underscores
@@ -475,11 +468,7 @@ sub _str2obj {
 
     $s =~ s/^\+//;
 
-    eval { Math::GMPz::Rmpz_init_set_str($s, 10) } // do {
-        my $r = Math::MPFR::Rmpfr_init2($PREC);
-        Math::MPFR::Rmpfr_set_nan($r);
-        $r;
-    };
+    eval { Math::GMPz::Rmpz_init_set_str($s, 10) } // goto &_nan;
 }
 
 #
@@ -781,19 +770,12 @@ sub new {
 
         if (index($num, '/') != -1) {
             my $r = Math::GMPq::Rmpq_init();
-            eval {
-                Math::GMPq::Rmpq_set_str($r, $num, $int_base);
-                1;
-              } // do {
-                my $r = Math::MPFR::Rmpfr_init2($PREC);
-                Math::MPFR::Rmpfr_set_nan($r);
-                return bless \$r, $class;
-              };
+            eval { Math::GMPq::Rmpq_set_str($r, $num, $int_base); 1 } // goto &nan;
+
             if (Math::GMPq::Rmpq_get_str($r, 10) !~ m{^\s*[-+]?[0-9]+\s*/\s*[-+]?[1-9]+[0-9]*\s*\z}) {
-                my $r = Math::MPFR::Rmpfr_init2($PREC);
-                Math::MPFR::Rmpfr_set_nan($r);
-                return bless \$r, $class;
+                goto &nan;
             }
+
             Math::GMPq::Rmpq_canonicalize($r);
             return bless \$r, $class;
         }
@@ -805,12 +787,7 @@ sub new {
             return bless \$r, $class;
         }
         else {
-            my $r = eval { Math::GMPz::Rmpz_init_set_str($num, $int_base) } // do {
-                my $r = Math::MPFR::Rmpfr_init2($PREC);
-                Math::MPFR::Rmpfr_set_nan($r);
-                $r;
-            };
-            return bless \$r, $class;
+            return bless \(eval { Math::GMPz::Rmpz_init_set_str($num, $int_base) } // goto &nan), $class;
         }
     }
 
