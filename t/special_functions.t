@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 191;
+plan tests => 192;
 
 use Math::AnyNum qw(:special rat float complex);
 
@@ -86,6 +86,7 @@ is(0 / complex(42),  '0');
 is(0 / complex(-42), '0');
 
 is(eta(-3), '-0.125');
+like(eta(1),               qr/^0\.693147180559945309417232121458176568\d*\z/);
 like(eta('1/2'),           qr/^0\.604898643421630370247265914235955\d*\z/);
 like(eta(rat('-3/4')),     qr/^0\.315876145356554312866371877\d*\z/);
 like(eta(complex('-3/4')), qr/^0\.315876145356554312866371877\d*\z/);
