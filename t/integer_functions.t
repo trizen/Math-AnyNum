@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 231;
+plan tests => 241;
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -110,6 +110,18 @@ is(lcm($o->new(13), $o->new(14)), 182);
 
 is(lcm($o->new(42), "1210923789812382173912783"), '7265542738874293043476698');
 is(lcm(42,          "1210923789812382173912783"), '7265542738874293043476698');
+
+ok(is_coprime(27,          8));
+ok(is_coprime(8,           27));
+ok(is_coprime($o->new(27), 8));
+ok(is_coprime($o->new(27), $o->new(8)));
+ok(is_coprime(27,          $o->new(8)));
+
+ok(!is_coprime(42,         6));
+ok(!is_coprime(6,          42));
+ok(!is_coprime($o->new(6), 42));
+ok(!is_coprime($o->new(6), $o->new(42)));
+ok(!is_coprime(6,          $o->new(42)));
 
 is(gcd(20,          12),          4);
 is(gcd($o->new(20), 12),          4);

@@ -151,8 +151,8 @@ use overload
                    exp      => sub (_)   { goto &exp },        # built-in keyword
                    ln       => sub ($)   { goto &ln },
                    log      => sub (_;$) { goto &log },        # built-in keyword
-                   log10    => sub ($)   { goto &log10 },
                    log2     => sub ($)   { goto &log2 },
+                   log10    => sub ($)   { goto &log10 },
                    mod      => sub ($$)  { goto &mod },
                    abs      => sub (_)   { goto &abs },        # built-in keyword
                    erf      => sub ($)   { goto &erf },
@@ -208,6 +208,7 @@ use overload
         is_power   => sub ($;$) { goto &is_power },
         is_square  => sub ($)   { goto &is_square },
         is_prime   => sub ($;$) { goto &is_prime },
+        is_coprime => sub ($$)  { goto &is_coprime },
         next_prime => sub ($)   { goto &next_prime },
                   );
 
@@ -2772,8 +2773,7 @@ sub bernfrac {
 
     if (ref($x) ne __PACKAGE__) {    # called as a function
         if (CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
-            my $q = __bernfrac__(CORE::int($x));
-            return bless \$q;
+            return bless \__bernfrac__(CORE::int($x));
         }
         $x = __PACKAGE__->new($x);
     }
@@ -2792,8 +2792,7 @@ sub harmfrac {
 
     if (ref($x) ne __PACKAGE__) {    # called as a function
         if (CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
-            my $q = __harmfrac__(CORE::int($x));
-            return bless \$q;
+            return bless \__harmfrac__(CORE::int($x));
         }
         $x = __PACKAGE__->new($x);
     }
@@ -2812,8 +2811,7 @@ sub bernreal {
 
     if (ref($x) ne __PACKAGE__) {    # called as a function
         if (CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
-            my $f = __bernreal__(CORE::int($x));
-            return bless \$f;
+            return bless \__bernreal__(CORE::int($x));
         }
         $x = __PACKAGE__->new($x);
     }
@@ -3025,6 +3023,42 @@ sub is_prime {
     $y = defined($y) ? (CORE::abs(CORE::int($y)) || 20) : 20;
 
     Math::GMPz::Rmpz_probab_prime_p(_any2mpz($$x) // (return 0), $y);
+}
+
+sub is_coprime {
+    my ($x, $y) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    $x->is_int() || return 0;
+    $x = _any2mpz($$x) // return 0;
+
+    if (ref($y) ne __PACKAGE__) {
+        if (    ref($y) eq ''
+            and CORE::int($y) eq $y
+            and $y >= 0
+            and $y <= ULONG_MAX) {
+            ## is a native integer
+        }
+        else {
+            $y = __PACKAGE__->new($y);
+        }
+    }
+
+    if (ref($y)) {
+        $y->is_int() || return 0;
+        $y = _any2mpz($$y) // return 0;
+    }
+
+    state $t = Math::GMPz::Rmpz_init_nobless();
+
+    ref($y)
+      ? Math::GMPz::Rmpz_gcd($t, $x, $y)
+      : Math::GMPz::Rmpz_gcd_ui($t, $x, $y);
+
+    Math::GMPz::Rmpz_cmp_ui($t, 1) == 0;
 }
 
 sub is_int {

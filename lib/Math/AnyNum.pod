@@ -1024,6 +1024,12 @@ See also:
 
 =back
 
+=head2 is_coprime
+
+    is_coprime(n, k)                              #=> Bool
+
+Returns a true value when C<n> and C<k> are relatively prime to each other. That is, when C<gcd(n, k) == 1>.
+
 =head2 is_power
 
     is_power(n)
