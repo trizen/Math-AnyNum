@@ -54,21 +54,21 @@ sub __bernfrac__ {
     my @primes;
 
     {  # Sieve the primes <= n+1
-        my @composites;
+        my @composite;
         foreach my $i (2 .. CORE::sqrt($n) + 1) {
             for (my $j = $i**2 ; $j <= $n + 1 ; $j += $i) {
-                $composites[$j] ||= 1;
+                $composite[$j] ||= 1;
             }
         }
 
-        foreach my $i (2 .. $n + 1) {
-            if (!$composites[$i]) {
+        foreach my $p (2 .. $n + 1) {
+            if (!$composite[$p]) {
 
-                if ($n % ($i - 1) == 0) {
-                    Math::GMPz::Rmpz_mul_ui($d, $d, $i);    # d = d * i   iff (i-1)|n
+                if ($n % ($p - 1) == 0) {
+                    Math::GMPz::Rmpz_mul_ui($d, $d, $p);    # d = d*p   iff (p-1)|n
                 }
 
-                push @primes, $i;
+                push @primes, $p;
             }
         }
     }
