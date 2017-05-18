@@ -6,6 +6,10 @@ Revision history for Math-AnyNum
 
         - Added the `is_coprime(n, k)` function.
 
+        [PERFORMANCE IMPROVEMENTS]
+
+        - ~4x faster algorithm in `bernfrac(n)`.
+
 0.08    2017-05-08
 
         [PERFORMANCE IMPROVEMENTS]

@@ -570,10 +570,9 @@ Example:
 
     bernfrac(n)                                   #=> Rat | NaN
 
-Returns the nth-Bernoulli number C<B_n> as an exact fraction, computed with
-an optimized version of Seidel's algorithm, starting with C<bernfrac(0) = 1>.
+Returns the nth-Bernoulli number C<B_n> as an exact fraction, starting with C<bernfrac(0) = 1>.
 
-For n >= 50, a more efficient algorithm is used, based on zeta(n).
+Algorithm due to Kevin J. McGown (December 8, 2005). Described in his paper: "Computing Bernoulli Numbers Quickly".
 
 Returns NaN for negatives values of C<n>.
 
