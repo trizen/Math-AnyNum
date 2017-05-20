@@ -1315,14 +1315,14 @@ Returns a true value when C<x> holds the Not-a-Number special value.
 
     int(x)                                        #=> Int | NaN
 
-Returns the integer part of C<x>. Returns C<NaN> when it's not possible to truncate the number to an integer.
+Returns the integer part of C<x>. Returns C<NaN> when C<x> cannot be truncated to an integer.
 
 =head2 rat
 
     rat(x)                                        #=> Rat | NaN
     rat(str)                                      #=> Rat | NaN
 
-Convert C<x> to a rational number. Returns C<NaN> when this conversion is not possible.
+Converts C<x> to a rational number. Returns C<NaN> when this conversion is not possible.
 
 Example:
 
@@ -1450,7 +1450,7 @@ Example:
     numerator(x)                                  #=> Int | NaN
 
 Returns the numerator as a signed C<Math::AnyNum> object. When C<x> is not a rational number,
-it tries to convert it to a rational. Returns NaN when this is not possible.
+it tries to convert it to a rational. Returns C<NaN> when this conversion is not possible.
 
 Example:
 
@@ -1462,7 +1462,7 @@ Example:
     denominator(x)                                #=> Int | NaN
 
 Returns the numerator as an unsigned C<Math::AnyNum> object. When C<x> is not a rational number,
-it tries to convert it to a rational. Returns NaN when this is not possible.
+it tries to convert it to a rational. Returns C<NaN> when this conversion is not possible.
 
 Example:
 
