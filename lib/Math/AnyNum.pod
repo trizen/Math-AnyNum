@@ -1157,7 +1157,7 @@ When C<x> is a complex number, it computes the sign using the identity:
 
 =head2 length
 
-    length(x)                                     #=> Scalar
+    $x->length                                    #=> Scalar
 
 Returns the number of digits in the integer part of C<x>.
 Returns C<-1> when C<x> cannot be truncated to an integer.
