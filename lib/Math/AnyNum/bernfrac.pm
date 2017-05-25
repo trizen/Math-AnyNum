@@ -32,7 +32,7 @@ sub __bernfrac__ {
     my $round = Math::MPFR::MPFR_RNDN();
 
     my $tau   = 6.28318530717958647692528676655900576839433879875;
-    my $log2B = (CORE::log(4 * $tau * $n) / 2 + $n * CORE::log($n) - $n * CORE::log($tau) - $n) / CORE::log(2);
+    my $log2B = (CORE::log(4 * $tau * $n) / 2 + $n * (CORE::log($n) - CORE::log($tau) - 1)) / CORE::log(2);
 
     my $prec = (
                 $n <= 90
