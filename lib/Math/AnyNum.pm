@@ -1627,8 +1627,8 @@ Class::Multimethods::multimethod imul => qw(* $) => sub {
     my ($x, $y) = @_;
 
     if (CORE::int($y) eq $y and CORE::int($y) and CORE::abs($y) <= ULONG_MAX) {
-        my $r = Math::GMPz::Rmpz_init_set(_star2mpz($x) // goto &nan);
-        Math::GMPz::Rmpz_mul_ui($r, $r, CORE::abs($y));
+        my $r = Math::GMPz::Rmpz_init();
+        Math::GMPz::Rmpz_mul_ui($r, (_star2mpz($x) // goto &nan), CORE::abs($y));
         Math::GMPz::Rmpz_neg($r, $r) if $y < 0;
         bless \$r;
     }
@@ -1664,8 +1664,8 @@ Class::Multimethods::multimethod idiv => qw(* $) => sub {
     my ($x, $y) = @_;
 
     if (CORE::int($y) eq $y and CORE::int($y) and CORE::abs($y) <= ULONG_MAX) {
-        my $r = Math::GMPz::Rmpz_init_set(_star2mpz($x) // goto &nan);
-        Math::GMPz::Rmpz_tdiv_q_ui($r, $r, CORE::abs($y));
+        my $r = Math::GMPz::Rmpz_init();
+        Math::GMPz::Rmpz_tdiv_q_ui($r, (_star2mpz($x) // goto &nan), CORE::abs($y));
         Math::GMPz::Rmpz_neg($r, $r) if $y < 0;
         bless \$r;
     }
