@@ -4,7 +4,7 @@ use 5.014;
 use strict;
 use warnings;
 
-no warnings qw(numeric);
+no warnings qw(numeric uninitialized);
 
 use Math::MPFR qw();
 use Math::GMPq qw();
