@@ -1324,6 +1324,8 @@ Returns the integer part of C<x>. Returns C<NaN> when C<x> cannot be truncated t
 
 Converts C<x> to a rational number. Returns C<NaN> when this conversion is not possible.
 
+When the given argument is a decimal expansion string, it will be specially parsed as a fraction.
+
 Example:
 
     rat('0.5')       = 1/2
@@ -1356,8 +1358,7 @@ Example:
 
     "$x"                                          #=> Scalar
 
-Returns a string representing the value of C<x>, either as a base-10 integer,
-or a decimal expansion.
+Returns a string representing the value of C<x>, in base 10.
 
 =head2 boolify
 
@@ -1449,7 +1450,7 @@ Example:
 
     numerator(x)                                  #=> Int | NaN
 
-Returns the numerator as a signed C<Math::AnyNum> object. When C<x> is not a rational number,
+Returns the numerator of C<x> as a signed C<Math::AnyNum> object. When C<x> is not a rational number,
 it tries to convert it to a rational. Returns C<NaN> when this conversion is not possible.
 
 Example:
@@ -1461,7 +1462,7 @@ Example:
 
     denominator(x)                                #=> Int | NaN
 
-Returns the numerator as an unsigned C<Math::AnyNum> object. When C<x> is not a rational number,
+Returns the denominator of C<x> as an unsigned C<Math::AnyNum> object. When C<x> is not a rational number,
 it tries to convert it to a rational. Returns C<NaN> when this conversion is not possible.
 
 Example:

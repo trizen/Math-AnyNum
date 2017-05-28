@@ -6,6 +6,10 @@ Revision history for Math-AnyNum
 
         - Added the `is_coprime(n, k)` function.
 
+        [IMPROVEMENTS]
+
+        - Extended the `rat(str)` function to parse a given decimal expansion as an exact fraction.
+
         [PERFORMANCE IMPROVEMENTS]
 
         - ~4x faster algorithm in `bernfrac(n)`.

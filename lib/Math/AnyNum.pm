@@ -471,6 +471,76 @@ sub _str2obj {
     eval { Math::GMPz::Rmpz_init_set_str($s, 10) } // goto &_nan;
 }
 
+# Parse a base-10 string as a base-10 fraction
+sub _str2frac {
+    my ($str) = @_;
+
+    my $sign = substr($str, 0, 1);
+    if ($sign eq '-') {
+        substr($str, 0, 1, '');
+        $sign = '-';
+    }
+    else {
+        substr($str, 0, 1, '') if ($sign eq '+');
+        $sign = '';
+    }
+
+    my $i;
+    if (($i = index($str, 'e')) != -1) {
+
+        my $exp = substr($str, $i + 1);
+
+        # Handle specially numbers with very big exponents
+        # (it's not a very good solution, but I hope it's only temporary)
+        if (CORE::abs($exp) >= 1000000) {
+            Math::MPFR::Rmpfr_set_str((my $mpfr = Math::MPFR::Rmpfr_init2($PREC)), "$sign$str", 10, $ROUND);
+            Math::MPFR::Rmpfr_get_q((my $mpq = Math::GMPq::Rmpq_init()), $mpfr);
+            return Math::GMPq::Rmpq_get_str($mpq, 10);
+        }
+
+        my ($before, $after) = split(/\./, substr($str, 0, $i));
+
+        if (!defined($after)) {    # return faster for numbers like "13e2"
+            if ($exp >= 0) {
+                return ("$sign$before" . ('0' x $exp));
+            }
+            else {
+                $after = '';
+            }
+        }
+
+        my $numerator   = "$before$after";
+        my $denominator = "1";
+
+        if ($exp < 1) {
+            $denominator .= '0' x (CORE::abs($exp) + CORE::length($after));
+        }
+        else {
+            my $diff = ($exp - CORE::length($after));
+            if ($diff >= 0) {
+                $numerator .= '0' x $diff;
+            }
+            else {
+                my $s = "$before$after";
+                substr($s, $exp + CORE::length($before), 0, '.');
+                return _str2frac("$sign$s");
+            }
+        }
+
+        "$sign$numerator/$denominator";
+    }
+    elsif (($i = index($str, '.')) != -1) {
+        my ($before, $after) = (substr($str, 0, $i), substr($str, $i + 1));
+        if (($after =~ tr/0//) == CORE::length($after)) {
+            return "$sign$before";
+        }
+        $sign . ("$before$after/1" =~ s/^0+//r) . ('0' x CORE::length($after));
+    }
+    else {
+        "$sign$str";
+    }
+}
+
 #
 ## MPZ
 #
@@ -1263,6 +1333,16 @@ sub rat {
         bless \(_any2mpq($$x) // (goto &nan));
     }
     else {
+
+        # Parse a decimal number as an exact fraction
+        if ("$x" =~ /^([+-]?+(?=\.?[0-9])[0-9_]*+(?:\.[0-9_]++)?(?:[Ee](?:[+-]?+[0-9_]+))?)\z/) {
+            my $frac = _str2frac(lc($1));
+            my $q    = Math::GMPq::Rmpq_init();
+            Math::GMPq::Rmpq_set_str($q, $frac, 10);
+            Math::GMPq::Rmpq_canonicalize($q) if (index($frac, '/') != -1);
+            return bless \$q;
+        }
+
         my $r = __PACKAGE__->new($x);
         $$r = _any2mpq($$r) // goto(&nan);
         $r;
