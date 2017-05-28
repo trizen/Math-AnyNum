@@ -888,7 +888,7 @@ Returns C<(NaN,NaN)> when a real root does not exists.
 
 The integer part of the logarithm of C<n> to base C<m> or base I<e> when C<m> is not specified.
 
-Return NaN when C<n> is negative.
+C<n> must be greater than 0 and C<m> must greater than 1. Returns NaN otherwise.
 
 =head2 ilog2 / ilog10
 

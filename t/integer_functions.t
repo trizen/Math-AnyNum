@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 270;
+plan tests => 273;
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -239,6 +239,10 @@ is(ilog(63,   2), '5');
 is(ilog(64,   2), '6');
 is(ilog(1023, 2), '9');
 is(ilog(1024, 2), '10');
+
+is(ilog(0, 42), 'NaN');
+is(ilog(1, 42), '0');
+is(ilog(2, 42), '0');
 
 is(ilog(ipow(3, 60), 3), 60);
 is(ilog(ipow(3, 61), 3), 61);
