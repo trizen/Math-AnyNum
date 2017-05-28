@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 241;
+plan tests => 270;
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -240,9 +240,9 @@ is(ilog(64,   2), '6');
 is(ilog(1023, 2), '9');
 is(ilog(1024, 2), '10');
 
-is(ilog($o->new('3')**60, 3), 60);
-is(ilog($o->new('3')**61, 3), 61);
-is(ilog($o->new('3')**62, 3), 62);
+is(ilog(ipow(3, 60), 3), 60);
+is(ilog(ipow(3, 61), 3), 61);
+is(ilog(ipow(3, 62), 3), 62);
 
 is(ilog2(64),             6);
 is(ilog10(1000),          3);
@@ -250,6 +250,39 @@ is(ilog2($o->new(12345)), 13);
 is(ilog10($o->new(999)),  2);
 is(ilog2(-1),             'NaN');
 is(ilog10(-1),            'NaN');
+
+is((ipow(10, 64) - 1)->ilog(10), '63');
+is((ipow(10, 64) + 0)->ilog(10), '64');
+is((ipow(10, 64) + 1)->ilog(10), '64');
+
+is(ilog(1,   0),  'NaN');    # ilog() does not handle bases < 2
+is(ilog(0,   0),  'NaN');
+is(ilog(0,   1),  'NaN');
+is(ilog(1,   1),  'NaN');
+is(ilog(1,   2),  '0');
+is(ilog(2,   2),  '1');
+is(ilog(2,   3),  '0');
+is(ilog(3,   4),  '0');
+is(ilog(2,   4),  '0');
+is(ilog(4,   2),  '2');
+is(ilog(63,  2),  '5');
+is(ilog(64,  2),  '6');
+is(ilog(64,  3),  '3');
+is(ilog(81,  3),  '4');
+is(ilog(80,  3),  '3');
+is(ilog(64,  1),  'NaN');
+is(ilog(-64, 2),  'NaN');
+is(ilog(42,  -3), 'NaN');
+is(ilog(-42, 3),  'NaN');
+
+is(ilog(ipow(2,   100),     100), '15');
+is(ilog(ipow(100, 100),     100), '100');
+is(ilog(ipow(100, 100) - 1, 100), '99');
+is(ilog(ipow(100, 100) + 1, 100), '100');
+
+is(ilog(ipow(2, 100),     ipow(2, 100)), '1');
+is(ilog(ipow(2, 100) - 1, ipow(2, 100)), '0');
+is(ilog(ipow(2, 100),     ipow(2, 99)),  '1');
 
 is(join(' ', isqrtrem(1234)), '35 9');
 is(join(' ', isqrtrem(100)),  '10 0');

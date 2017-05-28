@@ -906,7 +906,7 @@ The integer part of the logarithm of C<n> to base C<2> or base C<10>, respective
     x << y                                        #=> Int
     x >> y                                        #=> Int
 
-The integer-logical operations.
+The bitwise integer operations.
 
 =head2 gcd
 

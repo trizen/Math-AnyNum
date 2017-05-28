@@ -9,6 +9,7 @@ Revision history for Math-AnyNum
         [IMPROVEMENTS]
 
         - Extended the `rat(str)` function to parse a given decimal expansion as an exact fraction.
+        - Re-implemented the `ilog(x, y)` function for better performance and to correctly handle arbitrary large integers.
 
         [PERFORMANCE IMPROVEMENTS]
 

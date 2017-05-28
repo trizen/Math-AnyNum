@@ -2135,37 +2135,21 @@ Class::Multimethods::multimethod log => qw(*) => \&ln;
 #
 
 sub ilog2 {
-    require Math::AnyNum::log;
-    bless \(_any2mpz(__log2__(_star2mpfr_mpc($_[0]))) // goto &nan);
+    require Math::AnyNum::ilog;
+    state $two = Math::GMPz::Rmpz_init_set_ui(2);
+    bless \__ilog__((_star2mpz($_[0]) // goto &nan), $two);
 }
 
 sub ilog10 {
-    require Math::AnyNum::log;
-    bless \(_any2mpz(__log10__(_star2mpfr_mpc($_[0]))) // goto &nan);
+    require Math::AnyNum::ilog;
+    state $ten = Math::GMPz::Rmpz_init_set_ui(10);
+    bless \__ilog__((_star2mpz($_[0]) // goto &nan), $ten);
 }
 
 Class::Multimethods::multimethod ilog => qw(* *) => sub {
-    require Math::AnyNum::log;
-    require Math::AnyNum::div;
-    require Math::AnyNum::mul;
-    require Math::AnyNum::cmp;
-
+    require Math::AnyNum::ilog;
     my ($x, $y) = @_;
-
-    my $logx = __log__(_star2mpfr_mpc($x));
-    my $logy = __log__(_star2mpfr_mpc($y));
-    my $log  = __div__($logx, $logy);
-
-    $log = _any2mpfr($log)
-      if ref($log) eq 'Math::MPC';
-
-    Math::MPFR::Rmpfr_number_p($log) || goto &nan;
-    Math::MPFR::Rmpfr_get_z((my $z = Math::GMPz::Rmpz_init()), $log, Math::MPFR::MPFR_RNDN);
-
-    __cmp__(__mul__($logy, $z), $logx) <= 0
-      and return bless \$z;
-
-    bless \(_any2mpz($log) // goto &nan);
+    bless \__ilog__((_star2mpz($x) // goto &nan), (_star2mpz($y) // goto &nan));
 };
 
 Class::Multimethods::multimethod ilog => qw(*) => sub {
