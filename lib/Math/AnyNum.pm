@@ -15,7 +15,7 @@ use POSIX qw(ULONG_MAX LONG_MIN);
 
 use Class::Multimethods qw();
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 our ($ROUND, $PREC);
 
 BEGIN {
@@ -491,7 +491,7 @@ sub _str2frac {
         my $exp = substr($str, $i + 1);
 
         # Handle specially numbers with very big exponents
-        # (it's not a very good solution, but I hope it's only temporary)
+        # (not a very good solution, but this will happen very rarely, if ever)
         if (CORE::abs($exp) >= 1000000) {
             Math::MPFR::Rmpfr_set_str((my $mpfr = Math::MPFR::Rmpfr_init2($PREC)), "$sign$str", 10, $ROUND);
             Math::MPFR::Rmpfr_get_q((my $mpq = Math::GMPq::Rmpq_init()), $mpfr);
@@ -1344,7 +1344,7 @@ sub rat {
         }
 
         my $r = __PACKAGE__->new($x);
-        $$r = _any2mpq($$r) // goto(&nan);
+        $$r = _any2mpq($$r) // goto &nan;
         $r;
     }
 }
