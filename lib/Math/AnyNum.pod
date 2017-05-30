@@ -97,7 +97,7 @@ The following functions are exportable:
         iadd isub imul idiv imod ipow iroot isqrt
         icbrt ilog ilog2 ilog10 isqrtrem irootrem
         powmod invmod is_power is_square is_prime
-        next_prime
+        is_coprime next_prime
 
     :misc
         rand irand seed iseed floor ceil round sgn neg inv
