@@ -91,12 +91,12 @@ use overload
                 );
 
     my %trig = (
-        sin   => sub (_) { goto &sin },
+        sin   => sub (_) { goto &sin },     # built-in function
         sinh  => sub ($) { goto &sinh },
         asin  => sub ($) { goto &asin },
         asinh => sub ($) { goto &asinh },
 
-        cos   => sub (_) { goto &cos },     # built-in keyword
+        cos   => sub (_) { goto &cos },     # built-in function
         cosh  => sub ($) { goto &cosh },
         acos  => sub ($) { goto &acos },
         acosh => sub ($) { goto &acosh },
@@ -145,16 +145,16 @@ use overload
                    pow      => sub ($$)  { goto &pow },
                    sqr      => sub ($)   { goto &sqr },
                    norm     => sub ($)   { goto &norm },
-                   sqrt     => sub (_)   { goto &sqrt },       # built-in keyword
+                   sqrt     => sub (_)   { goto &sqrt },       # built-in function
                    cbrt     => sub ($)   { goto &cbrt },
                    root     => sub ($$)  { goto &root },
-                   exp      => sub (_)   { goto &exp },        # built-in keyword
+                   exp      => sub (_)   { goto &exp },        # built-in function
                    ln       => sub ($)   { goto &ln },
-                   log      => sub (_;$) { goto &log },        # built-in keyword
+                   log      => sub (_;$) { goto &log },        # built-in function
                    log2     => sub ($)   { goto &log2 },
                    log10    => sub ($)   { goto &log10 },
                    mod      => sub ($$)  { goto &mod },
-                   abs      => sub (_)   { goto &abs },        # built-in keyword
+                   abs      => sub (_)   { goto &abs },        # built-in function
                    erf      => sub ($)   { goto &erf },
                    erfc     => sub ($)   { goto &erfc },
                    hypot    => sub ($$)  { goto &hypot },
@@ -213,7 +213,7 @@ use overload
                   );
 
     my %misc = (
-        rand => sub (;$;$) {
+        rand => sub (;$;$) {    # built-in function
             @_ ? (goto &rand) : do { (@_) = one(); goto &rand }
         },
         irand => sub ($;$) { goto &irand },
@@ -235,7 +235,7 @@ use overload
         imag  => sub ($) { goto &imag },
         reals => sub ($) { goto &reals },
 
-        int     => sub (_) { goto &int },       # built-in keyword
+        int     => sub (_) { goto &int },       # built-in function
         rat     => sub ($) { goto &rat },
         float   => sub ($) { goto &float },
         complex => sub ($) { goto &complex },
