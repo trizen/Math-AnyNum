@@ -343,7 +343,7 @@ use overload
                       . Math::MPFR::RMPFR_PREC_MIN() . " and "
                       . Math::MPFR::RMPFR_PREC_MAX();
                 }
-                $Math::AnyNum::PREC = $prec;
+                $PREC = $prec;
             }
             else {
                 die "unknown import: <<$name>>";
