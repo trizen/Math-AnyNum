@@ -3974,7 +3974,7 @@ sub as_frac {
     $x = _any2mpq($x) // return undef;
 
     my $frac = Math::GMPq::Rmpq_get_str($x, $base);
-    if (index($frac, '/') == -1) { $frac .= '/1' }
+    $frac .= '/1' if (index($frac, '/') == -1);
     $frac;
 }
 
