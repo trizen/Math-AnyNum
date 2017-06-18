@@ -724,7 +724,7 @@ sub _any2si {
 }
 
 #
-## Anything to MPFR (including scalars)
+## Anything to MPFR (including strings)
 #
 sub _star2mpfr {
     my ($x) = @_;
@@ -743,7 +743,7 @@ sub _star2mpfr {
 }
 
 #
-## Anything to GMPz (including scalars)
+## Anything to GMPz (including strings)
 #
 sub _star2mpz {
     my ($x) = @_;
@@ -761,7 +761,7 @@ sub _star2mpz {
 }
 
 #
-## Anything to MPFR or MPC, in this order (including scalars)
+## Anything to MPFR or MPC, in this order (including strings)
 #
 sub _star2mpfr_mpc {
     my ($x) = @_;
