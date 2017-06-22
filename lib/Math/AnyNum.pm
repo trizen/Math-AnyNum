@@ -53,13 +53,10 @@ use overload
   '**' => sub { $_[2] ? __PACKAGE__->new($_[1])->pow($_[0]) : $_[0]->pow($_[1]) },
   '%'  => sub { $_[2] ? __PACKAGE__->new($_[1])->mod($_[0]) : $_[0]->mod($_[1]) },
 
-  #~ '/' => sub { $_[2] ? $_[0]->inv->mul($_[1]) : $_[0]->div($_[1]) },
-  #~ '-' => sub { $_[2] ? $_[0]->neg->add($_[1]) : $_[0]->sub($_[1]) },
-
   '/' => sub { $_[2] ? __PACKAGE__->new($_[1])->div($_[0]) : $_[0]->div($_[1]) },
   '-' => sub { $_[2] ? __PACKAGE__->new($_[1])->sub($_[0]) : $_[0]->sub($_[1]) },
 
-  atan2 => sub { &Math::AnyNum::atan2($_[2] ? ($_[1], $_[0]) : ($_[0], $_[1])) },
+  atan2 => sub { &atan2($_[2] ? ($_[1], $_[0]) : ($_[0], $_[1])) },
 
   eq => sub { "$_[0]" eq "$_[1]" },
   ne => sub { "$_[0]" ne "$_[1]" },
@@ -91,12 +88,12 @@ use overload
                 );
 
     my %trig = (
-        sin   => sub (_) { goto &sin },
+        sin   => sub (_) { goto &sin },     # built-in function
         sinh  => sub ($) { goto &sinh },
         asin  => sub ($) { goto &asin },
         asinh => sub ($) { goto &asinh },
 
-        cos   => sub (_) { goto &cos },     # built-in keyword
+        cos   => sub (_) { goto &cos },     # built-in function
         cosh  => sub ($) { goto &cosh },
         acos  => sub ($) { goto &acos },
         acosh => sub ($) { goto &acosh },
@@ -145,16 +142,16 @@ use overload
                    pow      => sub ($$)  { goto &pow },
                    sqr      => sub ($)   { goto &sqr },
                    norm     => sub ($)   { goto &norm },
-                   sqrt     => sub (_)   { goto &sqrt },       # built-in keyword
+                   sqrt     => sub (_)   { goto &sqrt },       # built-in function
                    cbrt     => sub ($)   { goto &cbrt },
                    root     => sub ($$)  { goto &root },
-                   exp      => sub (_)   { goto &exp },        # built-in keyword
+                   exp      => sub (_)   { goto &exp },        # built-in function
                    ln       => sub ($)   { goto &ln },
-                   log      => sub (_;$) { goto &log },        # built-in keyword
+                   log      => sub (_;$) { goto &log },        # built-in function
                    log2     => sub ($)   { goto &log2 },
                    log10    => sub ($)   { goto &log10 },
                    mod      => sub ($$)  { goto &mod },
-                   abs      => sub (_)   { goto &abs },        # built-in keyword
+                   abs      => sub (_)   { goto &abs },        # built-in function
                    erf      => sub ($)   { goto &erf },
                    erfc     => sub ($)   { goto &erfc },
                    hypot    => sub ($$)  { goto &hypot },
@@ -213,7 +210,7 @@ use overload
                   );
 
     my %misc = (
-        rand => sub (;$;$) {
+        rand => sub (;$;$) {    # built-in function
             @_ ? (goto &rand) : do { (@_) = one(); goto &rand }
         },
         irand => sub ($;$) { goto &irand },
@@ -235,7 +232,7 @@ use overload
         imag  => sub ($) { goto &imag },
         reals => sub ($) { goto &reals },
 
-        int     => sub (_) { goto &int },       # built-in keyword
+        int     => sub (_) { goto &int },       # built-in function
         rat     => sub ($) { goto &rat },
         float   => sub ($) { goto &float },
         complex => sub ($) { goto &complex },
@@ -343,7 +340,7 @@ use overload
                       . Math::MPFR::RMPFR_PREC_MIN() . " and "
                       . Math::MPFR::RMPFR_PREC_MAX();
                 }
-                $Math::AnyNum::PREC = $prec;
+                $PREC = $prec;
             }
             else {
                 die "unknown import: <<$name>>";
@@ -727,7 +724,7 @@ sub _any2si {
 }
 
 #
-## Anything to MPFR (including scalars)
+## Anything to MPFR (including strings)
 #
 sub _star2mpfr {
     my ($x) = @_;
@@ -746,7 +743,7 @@ sub _star2mpfr {
 }
 
 #
-## Anything to GMPz (including scalars)
+## Anything to GMPz (including strings)
 #
 sub _star2mpz {
     my ($x) = @_;
@@ -764,7 +761,7 @@ sub _star2mpz {
 }
 
 #
-## Anything to MPFR or MPC, in this order (including scalars)
+## Anything to MPFR or MPC, in this order (including strings)
 #
 sub _star2mpfr_mpc {
     my ($x) = @_;
@@ -1088,14 +1085,14 @@ sub boolify {
 ## EQ
 #
 
-Class::Multimethods::multimethod eq => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod eq => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::eq;
     my ($x, $y) = @_;
     (@_) = ($$x, $$y);
     goto &__eq__;
 };
 
-Class::Multimethods::multimethod eq => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod eq => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::eq;
     my ($x, $y) = @_;
 
@@ -1108,7 +1105,7 @@ Class::Multimethods::multimethod eq => qw(Math::AnyNum $) => sub {
     goto &__eq__;
 };
 
-Class::Multimethods::multimethod eq => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod eq => (__PACKAGE__, '*') => sub {
     require Math::AnyNum::eq;
     my ($x, $y) = @_;
     (@_) = ($$x, ${__PACKAGE__->new($y)});
@@ -1119,14 +1116,14 @@ Class::Multimethods::multimethod eq => qw(Math::AnyNum *) => sub {
 ## NE
 #
 
-Class::Multimethods::multimethod ne => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod ne => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::ne;
     my ($x, $y) = @_;
     (@_) = ($$x, $$y);
     goto &__ne__;
 };
 
-Class::Multimethods::multimethod ne => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod ne => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::ne;
     my ($x, $y) = @_;
 
@@ -1139,7 +1136,7 @@ Class::Multimethods::multimethod ne => qw(Math::AnyNum $) => sub {
     goto &__ne__;
 };
 
-Class::Multimethods::multimethod ne => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod ne => (__PACKAGE__, '*') => sub {
     require Math::AnyNum::ne;
     my ($x, $y) = @_;
     (@_) = ($$x, ${__PACKAGE__->new($y)});
@@ -1150,14 +1147,14 @@ Class::Multimethods::multimethod ne => qw(Math::AnyNum *) => sub {
 ## CMP
 #
 
-Class::Multimethods::multimethod cmp => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod cmp => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
     (@_) = ($$x, $$y);
     goto &__cmp__;
 };
 
-Class::Multimethods::multimethod cmp => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod cmp => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
     if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
@@ -1169,7 +1166,7 @@ Class::Multimethods::multimethod cmp => qw(Math::AnyNum $) => sub {
     goto &__cmp__;
 };
 
-Class::Multimethods::multimethod cmp => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod cmp => (__PACKAGE__, '*') => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
     (@_) = ($$x, ${__PACKAGE__->new($y)});
@@ -1180,13 +1177,13 @@ Class::Multimethods::multimethod cmp => qw(Math::AnyNum *) => sub {
 ## GT
 #
 
-Class::Multimethods::multimethod gt => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod gt => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
     (__cmp__($$x, $$y) // return undef) > 0;
 };
 
-Class::Multimethods::multimethod gt => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod gt => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
 
@@ -1198,7 +1195,7 @@ Class::Multimethods::multimethod gt => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod gt => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod gt => (__PACKAGE__, '*') => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
     (__cmp__($$x, ${__PACKAGE__->new($y)}) // return undef) > 0;
@@ -1208,13 +1205,13 @@ Class::Multimethods::multimethod gt => qw(Math::AnyNum *) => sub {
 ## GE
 #
 
-Class::Multimethods::multimethod ge => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod ge => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
     (__cmp__($$x, $$y) // return undef) >= 0;
 };
 
-Class::Multimethods::multimethod ge => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod ge => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
     if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
@@ -1225,7 +1222,7 @@ Class::Multimethods::multimethod ge => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod ge => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod ge => (__PACKAGE__, '*') => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
     (__cmp__($$x, ${__PACKAGE__->new($y)}) // return undef) >= 0;
@@ -1234,13 +1231,13 @@ Class::Multimethods::multimethod ge => qw(Math::AnyNum *) => sub {
 #
 ## LT
 #
-Class::Multimethods::multimethod lt => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod lt => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
     (__cmp__($$x, $$y) // return undef) < 0;
 };
 
-Class::Multimethods::multimethod lt => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod lt => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
     if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
@@ -1251,7 +1248,7 @@ Class::Multimethods::multimethod lt => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod lt => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod lt => (__PACKAGE__, '*') => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
     (__cmp__($$x, ${__PACKAGE__->new($y)}) // return undef) < 0;
@@ -1260,13 +1257,13 @@ Class::Multimethods::multimethod lt => qw(Math::AnyNum *) => sub {
 #
 ## LE
 #
-Class::Multimethods::multimethod le => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod le => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
     (__cmp__($$x, $$y) // return undef) <= 0;
 };
 
-Class::Multimethods::multimethod le => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod le => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
     if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
@@ -1277,7 +1274,7 @@ Class::Multimethods::multimethod le => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod le => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod le => (__PACKAGE__, '*') => sub {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
     (__cmp__($$x, ${__PACKAGE__->new($y)}) // return undef) <= 0;
@@ -1485,13 +1482,13 @@ sub reals {
 ## ADD
 #
 
-Class::Multimethods::multimethod add => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod add => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::add;
     my ($x, $y) = @_;
     bless \__add__($$x, $$y);
 };
 
-Class::Multimethods::multimethod add => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod add => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::add;
     my ($x, $y) = @_;
 
@@ -1513,19 +1510,19 @@ Class::Multimethods::multimethod add => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod add => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod add => (__PACKAGE__, '*') => sub {
     require Math::AnyNum::add;
     my ($x, $y) = @_;
     bless \__add__(${__PACKAGE__->new($y)}, $$x);
 };
 
-Class::Multimethods::multimethod sub => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod sub => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::sub;
     my ($x, $y) = @_;
     bless \__sub__($$x, $$y);
 };
 
-Class::Multimethods::multimethod sub => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod sub => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::sub;
     my ($x, $y) = @_;
 
@@ -1547,7 +1544,7 @@ Class::Multimethods::multimethod sub => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod sub => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod sub => (__PACKAGE__, '*') => sub {
     require Math::AnyNum::sub;
     my ($x, $y) = @_;
     bless \__sub__($$x, ${__PACKAGE__->new($y)});
@@ -1557,13 +1554,13 @@ Class::Multimethods::multimethod sub => qw(Math::AnyNum *) => sub {
 ## MULTIPLY
 #
 
-Class::Multimethods::multimethod mul => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod mul => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::mul;
     my ($x, $y) = @_;
     bless \__mul__($$x, $$y);
 };
 
-Class::Multimethods::multimethod mul => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod mul => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::mul;
     my ($x, $y) = @_;
 
@@ -1585,7 +1582,7 @@ Class::Multimethods::multimethod mul => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod mul => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod mul => (__PACKAGE__, '*') => sub {
     require Math::AnyNum::mul;
     my ($x, $y) = @_;
     bless \__mul__(${__PACKAGE__->new($y)}, $$x);
@@ -1595,13 +1592,13 @@ Class::Multimethods::multimethod mul => qw(Math::AnyNum *) => sub {
 ## DIVISION
 #
 
-Class::Multimethods::multimethod div => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod div => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::div;
     my ($x, $y) = @_;
     bless \__div__($$x, $$y);
 };
 
-Class::Multimethods::multimethod div => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod div => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::div;
     my ($x, $y) = @_;
 
@@ -1623,7 +1620,7 @@ Class::Multimethods::multimethod div => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod div => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod div => (__PACKAGE__, '*') => sub {
     require Math::AnyNum::div;
     my ($x, $y) = @_;
     bless \__div__($$x, ${__PACKAGE__->new($y)});
@@ -1633,13 +1630,13 @@ Class::Multimethods::multimethod div => qw(Math::AnyNum *) => sub {
 ## IADD
 #
 
-Class::Multimethods::multimethod iadd => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod iadd => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::iadd;
     my ($x, $y) = @_;
     bless \__iadd__(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod iadd => qw(* $) => sub {
+Class::Multimethods::multimethod iadd => ('*', '$') => sub {
     my ($x, $y) = @_;
 
     if (CORE::int($y) eq $y and CORE::int($y) and CORE::abs($y) <= ULONG_MAX) {
@@ -1655,7 +1652,7 @@ Class::Multimethods::multimethod iadd => qw(* $) => sub {
     }
 };
 
-Class::Multimethods::multimethod iadd => qw(* *) => sub {
+Class::Multimethods::multimethod iadd => ('*', '*') => sub {
     require Math::AnyNum::iadd;
     my ($x, $y) = @_;
     bless \__iadd__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
@@ -1665,13 +1662,13 @@ Class::Multimethods::multimethod iadd => qw(* *) => sub {
 ## ISUB
 #
 
-Class::Multimethods::multimethod isub => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod isub => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::isub;
     my ($x, $y) = @_;
     bless \__isub__(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod isub => qw(* $) => sub {
+Class::Multimethods::multimethod isub => ('*', '$') => sub {
     my ($x, $y) = @_;
 
     if (CORE::int($y) eq $y and CORE::int($y) and CORE::abs($y) <= ULONG_MAX) {
@@ -1687,7 +1684,7 @@ Class::Multimethods::multimethod isub => qw(* $) => sub {
     }
 };
 
-Class::Multimethods::multimethod isub => qw(* *) => sub {
+Class::Multimethods::multimethod isub => ('*', '*') => sub {
     require Math::AnyNum::isub;
     my ($x, $y) = @_;
     bless \__isub__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
@@ -1697,13 +1694,13 @@ Class::Multimethods::multimethod isub => qw(* *) => sub {
 ## IMUL
 #
 
-Class::Multimethods::multimethod imul => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod imul => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::imul;
     my ($x, $y) = @_;
     bless \__imul__(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod imul => qw(* $) => sub {
+Class::Multimethods::multimethod imul => ('*', '$') => sub {
     my ($x, $y) = @_;
 
     if (CORE::int($y) eq $y and CORE::int($y) and CORE::abs($y) <= ULONG_MAX) {
@@ -1718,7 +1715,7 @@ Class::Multimethods::multimethod imul => qw(* $) => sub {
     }
 };
 
-Class::Multimethods::multimethod imul => qw(* *) => sub {
+Class::Multimethods::multimethod imul => ('*', '*') => sub {
     require Math::AnyNum::imul;
     my ($x, $y) = @_;
     bless \__imul__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
@@ -1728,19 +1725,19 @@ Class::Multimethods::multimethod imul => qw(* *) => sub {
 ## IDIV
 #
 
-Class::Multimethods::multimethod idiv => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod idiv => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::idiv;
     my ($x, $y) = @_;
     bless \__idiv__(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod idiv => qw(* Math::AnyNum) => sub {
+Class::Multimethods::multimethod idiv => ('*', __PACKAGE__) => sub {
     require Math::AnyNum::idiv;
     my ($x, $y) = @_;
     bless \__idiv__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod idiv => qw(* $) => sub {
+Class::Multimethods::multimethod idiv => ('*', '$') => sub {
     my ($x, $y) = @_;
 
     if (CORE::int($y) eq $y and CORE::int($y) and CORE::abs($y) <= ULONG_MAX) {
@@ -1755,7 +1752,7 @@ Class::Multimethods::multimethod idiv => qw(* $) => sub {
     }
 };
 
-Class::Multimethods::multimethod idiv => qw(* *) => sub {
+Class::Multimethods::multimethod idiv => ('*', '*') => sub {
     require Math::AnyNum::idiv;
     my ($x, $y) = @_;
     bless \__idiv__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
@@ -1765,13 +1762,13 @@ Class::Multimethods::multimethod idiv => qw(* *) => sub {
 ## POWER
 #
 
-Class::Multimethods::multimethod pow => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod pow => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::pow;
     my ($x, $y) = @_;
     bless \__pow__($$x, $$y);
 };
 
-Class::Multimethods::multimethod pow => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod pow => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::pow;
     my ($x, $y) = @_;
 
@@ -1783,19 +1780,19 @@ Class::Multimethods::multimethod pow => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod pow => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod pow => (__PACKAGE__, '*') => sub {
     require Math::AnyNum::pow;
     my ($x, $y) = @_;
     bless \__pow__($$x, ${__PACKAGE__->new($y)});
 };
 
-Class::Multimethods::multimethod pow => qw(* Math::AnyNum) => sub {
+Class::Multimethods::multimethod pow => ('*', __PACKAGE__) => sub {
     require Math::AnyNum::pow;
     my ($x, $y) = @_;
     bless \__pow__(${__PACKAGE__->new($x)}, $$y);
 };
 
-Class::Multimethods::multimethod pow => qw(* $) => sub {
+Class::Multimethods::multimethod pow => ('*', '$') => sub {
     require Math::AnyNum::pow;
     my ($x, $y) = @_;
 
@@ -1807,7 +1804,7 @@ Class::Multimethods::multimethod pow => qw(* $) => sub {
     }
 };
 
-Class::Multimethods::multimethod pow => qw(* *) => sub {
+Class::Multimethods::multimethod pow => ('*', '*') => sub {
     require Math::AnyNum::pow;
     my ($x, $y) = @_;
     bless \__pow__(${__PACKAGE__->new($x)}, ${__PACKAGE__->new($y)});
@@ -1817,13 +1814,13 @@ Class::Multimethods::multimethod pow => qw(* *) => sub {
 ## INTEGER POWER
 #
 
-Class::Multimethods::multimethod ipow => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod ipow => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::ipow;
     my ($x, $y) = @_;
     bless \__ipow__(_any2mpz($$x) // (goto &nan), _any2si($$y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod ipow => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod ipow => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::ipow;
     my ($x, $y) = @_;
 
@@ -1835,7 +1832,7 @@ Class::Multimethods::multimethod ipow => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod ipow => qw($ $) => sub {
+Class::Multimethods::multimethod ipow => ('$', '$') => sub {
     require Math::AnyNum::ipow;
     my ($x, $y) = @_;
 
@@ -1854,13 +1851,13 @@ Class::Multimethods::multimethod ipow => qw($ $) => sub {
     }
 };
 
-Class::Multimethods::multimethod ipow => qw(* Math::AnyNum) => sub {
+Class::Multimethods::multimethod ipow => ('*', __PACKAGE__) => sub {
     require Math::AnyNum::ipow;
     my ($x, $y) = @_;
     bless \__ipow__(_star2mpz($x) // (goto &nan), _any2si($$y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod ipow => qw(* *) => sub {
+Class::Multimethods::multimethod ipow => ('*', '*') => sub {
     require Math::AnyNum::ipow;
     my ($x, $y) = @_;
     bless \__ipow__(_star2mpz($x) // (goto &nan), _any2si(${__PACKAGE__->new($y)}) // (goto &nan));
@@ -1870,33 +1867,33 @@ Class::Multimethods::multimethod ipow => qw(* *) => sub {
 ## ROOT
 #
 
-Class::Multimethods::multimethod root => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod root => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::pow;
     require Math::AnyNum::inv;
     my ($x, $y) = @_;
     bless \__pow__($$x, __inv__($$y));
 };
 
-Class::Multimethods::multimethod root => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod root => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::pow;
     require Math::AnyNum::inv;
     my ($x, $y) = @_;
     bless \__pow__($$x, __inv__(_str2obj($y)));
 };
 
-Class::Multimethods::multimethod root => qw($ $) => sub {
+Class::Multimethods::multimethod root => ('$', '$') => sub {
     require Math::AnyNum::pow;
     require Math::AnyNum::inv;
     bless \__pow__(_str2obj($_[0]), __inv__(_str2obj($_[1])));
 };
 
-Class::Multimethods::multimethod root => qw(* $) => sub {
+Class::Multimethods::multimethod root => ('*', '$') => sub {
     require Math::AnyNum::pow;
     require Math::AnyNum::inv;
     bless \__pow__(${__PACKAGE__->new($_[0])}, __inv__(_str2obj($_[1])));
 };
 
-Class::Multimethods::multimethod root => qw(* *) => sub {
+Class::Multimethods::multimethod root => ('*', '*') => sub {
     require Math::AnyNum::pow;
     require Math::AnyNum::inv;
     bless \__pow__(${__PACKAGE__->new($_[0])}, __inv__(${__PACKAGE__->new($_[1])}));
@@ -1926,13 +1923,13 @@ sub icbrt {
 #
 ## IROOT
 #
-Class::Multimethods::multimethod iroot => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod iroot => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::iroot;
     my ($x, $y) = @_;
     bless \__iroot__(_any2mpz($$x) // (goto &nan), _any2si($$y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod iroot => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod iroot => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::iroot;
     my ($x, $y) = @_;
 
@@ -1944,13 +1941,13 @@ Class::Multimethods::multimethod iroot => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod iroot => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod iroot => (__PACKAGE__, '*') => sub {
     require Math::AnyNum::iroot;
     my ($x, $y) = @_;
     bless \__iroot__(_any2mpz($$x) // (goto &nan), _any2si(${__PACKAGE__->new($y)}) // (goto &nan));
 };
 
-Class::Multimethods::multimethod iroot => qw(* $) => sub {
+Class::Multimethods::multimethod iroot => ('*', '$') => sub {
     require Math::AnyNum::iroot;
     my ($x, $y) = @_;
 
@@ -1962,13 +1959,13 @@ Class::Multimethods::multimethod iroot => qw(* $) => sub {
     }
 };
 
-Class::Multimethods::multimethod iroot => qw(* Math::AnyNum) => sub {
+Class::Multimethods::multimethod iroot => ('*', __PACKAGE__) => sub {
     require Math::AnyNum::iroot;
     my ($x, $y) = @_;
     bless \__iroot__(_star2mpz($x) // (goto &nan), _any2si($$y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod iroot => qw(* *) => sub {
+Class::Multimethods::multimethod iroot => ('*', '*') => sub {
     require Math::AnyNum::iroot;
     my ($x, $y) = @_;
     bless \__iroot__(_star2mpz($x) // (goto &nan), _any2si(${__PACKAGE__->new($y)}) // (goto &nan));
@@ -1987,7 +1984,7 @@ sub isqrtrem {
 #
 ## IROOTREM
 #
-Class::Multimethods::multimethod irootrem => qw(* $) => sub {
+Class::Multimethods::multimethod irootrem => ('*', '$') => sub {
     require Math::AnyNum::irootrem;
     my ($x, $y) = @_;
     if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
@@ -2001,7 +1998,7 @@ Class::Multimethods::multimethod irootrem => qw(* $) => sub {
     }
 };
 
-Class::Multimethods::multimethod irootrem => qw(* *) => sub {
+Class::Multimethods::multimethod irootrem => ('*', '*') => sub {
     require Math::AnyNum::irootrem;
     my ($x, $y) = @_;
     my ($root, $rem) =
@@ -2013,13 +2010,13 @@ Class::Multimethods::multimethod irootrem => qw(* *) => sub {
 ## MOD
 #
 
-Class::Multimethods::multimethod mod => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod mod => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::mod;
     my ($x, $y) = @_;
     bless \__mod__($$x, $$y);
 };
 
-Class::Multimethods::multimethod mod => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod mod => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::mod;
     my ($x, $y) = @_;
 
@@ -2034,13 +2031,13 @@ Class::Multimethods::multimethod mod => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod mod => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod mod => (__PACKAGE__, '*') => sub {
     require Math::AnyNum::mod;
     my ($x, $y) = @_;
     bless \__mod__($$x, ${__PACKAGE__->new($y)});
 };
 
-Class::Multimethods::multimethod mod => qw(* *) => sub {
+Class::Multimethods::multimethod mod => ('*', '*') => sub {
     require Math::AnyNum::mod;
     my ($x, $y) = @_;
     bless \__mod__(${__PACKAGE__->new($x)}, ${__PACKAGE__->new($y)});
@@ -2049,13 +2046,13 @@ Class::Multimethods::multimethod mod => qw(* *) => sub {
 #
 ## IMOD
 #
-Class::Multimethods::multimethod imod => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod imod => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::imod;
     my ($x, $y) = @_;
     bless \__imod__(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod imod => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod imod => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::imod;
     my ($x, $y) = @_;
 
@@ -2067,7 +2064,7 @@ Class::Multimethods::multimethod imod => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod imod => qw(* *) => sub {
+Class::Multimethods::multimethod imod => ('*', '*') => sub {
     require Math::AnyNum::imod;
     my ($x, $y) = @_;
     bless \__imod__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
@@ -2122,13 +2119,13 @@ sub length {
     CORE::length(Math::GMPz::Rmpz_get_str($z, 10));
 }
 
-Class::Multimethods::multimethod log => qw(* *) => sub {
+Class::Multimethods::multimethod log => ('*', '*') => sub {
     require Math::AnyNum::log;
     require Math::AnyNum::div;
     bless \__div__(__log__(_star2mpfr_mpc($_[0])), __log__(_star2mpfr_mpc($_[1])));
 };
 
-Class::Multimethods::multimethod log => qw(*) => \&ln;
+Class::Multimethods::multimethod log => ('*') => \&ln;
 
 #
 ## ILOG
@@ -2146,13 +2143,13 @@ sub ilog10 {
     bless \__ilog__((_star2mpz($_[0]) // goto &nan), $ten);
 }
 
-Class::Multimethods::multimethod ilog => qw(* *) => sub {
+Class::Multimethods::multimethod ilog => ('*', '*') => sub {
     require Math::AnyNum::ilog;
     my ($x, $y) = @_;
     bless \__ilog__((_star2mpz($x) // goto &nan), (_star2mpz($y) // goto &nan));
 };
 
-Class::Multimethods::multimethod ilog => qw(*) => sub {
+Class::Multimethods::multimethod ilog => ('*') => sub {
     require Math::AnyNum::log;
     bless \(_any2mpz(__log__(_star2mpfr_mpc($_[0]))) // goto &nan);
 };
@@ -2560,7 +2557,7 @@ sub hypot {
 ## BesselJ
 #
 
-Class::Multimethods::multimethod BesselJ => qw(* $) => sub {
+Class::Multimethods::multimethod BesselJ => ('*', '$') => sub {
     require Math::AnyNum::BesselJ;
     my ($x, $y) = @_;
 
@@ -2572,7 +2569,7 @@ Class::Multimethods::multimethod BesselJ => qw(* $) => sub {
     }
 };
 
-Class::Multimethods::multimethod BesselJ => qw(* *) => sub {
+Class::Multimethods::multimethod BesselJ => ('*', '*') => sub {
     require Math::AnyNum::BesselJ;
     my ($x, $y) = @_;
     bless \__BesselJ__(_star2mpfr($x), _star2mpz($y) // (goto &nan));
@@ -2582,7 +2579,7 @@ Class::Multimethods::multimethod BesselJ => qw(* *) => sub {
 ## BesselY
 #
 
-Class::Multimethods::multimethod BesselY => qw(* $) => sub {
+Class::Multimethods::multimethod BesselY => ('*', '$') => sub {
     require Math::AnyNum::BesselY;
     my ($x, $y) = @_;
 
@@ -2594,7 +2591,7 @@ Class::Multimethods::multimethod BesselY => qw(* $) => sub {
     }
 };
 
-Class::Multimethods::multimethod BesselY => qw(* *) => sub {
+Class::Multimethods::multimethod BesselY => ('*', '*') => sub {
     require Math::AnyNum::BesselY;
     my ($x, $y) = @_;
     bless \__BesselY__(_star2mpfr($x), _star2mpz($y) // (goto &nan));
@@ -2604,19 +2601,19 @@ Class::Multimethods::multimethod BesselY => qw(* *) => sub {
 ## ROUND
 #
 
-Class::Multimethods::multimethod round => qw(Math::AnyNum) => sub {
+Class::Multimethods::multimethod round => (__PACKAGE__) => sub {
     require Math::AnyNum::round;
     my ($x) = @_;
     bless \__round__($$x, 0);
 };
 
-Class::Multimethods::multimethod round => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod round => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::round;
     my ($x, $y) = @_;
     bless \__round__($$x, _any2si($$y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod round => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod round => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::round;
     my ($x, $y) = @_;
 
@@ -2628,12 +2625,12 @@ Class::Multimethods::multimethod round => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod round => qw(*) => sub {
+Class::Multimethods::multimethod round => ('*') => sub {
     require Math::AnyNum::round;
     bless \__round__(${__PACKAGE__->new($_[0])}, 0);
 };
 
-Class::Multimethods::multimethod round => qw(* *) => sub {
+Class::Multimethods::multimethod round => ('*', '*') => sub {
     require Math::AnyNum::round;
     bless \__round__(${__PACKAGE__->new($_[0])}, _any2si(${__PACKAGE__->new($_[1])}) // (goto &nan));
 };
@@ -2649,7 +2646,7 @@ Class::Multimethods::multimethod round => qw(* *) => sub {
         state $state = Math::MPFR::Rmpfr_randinit_mt_nobless();
         Math::MPFR::Rmpfr_randseed_ui($state, $srand);
 
-        Class::Multimethods::multimethod rand => qw(Math::AnyNum) => sub {
+        Class::Multimethods::multimethod rand => (__PACKAGE__) => sub {
             require Math::AnyNum::mul;
             my ($x) = @_;
             my $rand = Math::MPFR::Rmpfr_init2($PREC);
@@ -2657,7 +2654,7 @@ Class::Multimethods::multimethod round => qw(* *) => sub {
             bless \__mul__($rand, $$x);
         };
 
-        Class::Multimethods::multimethod rand => qw(Math::AnyNum Math::AnyNum) => sub {
+        Class::Multimethods::multimethod rand => (__PACKAGE__, __PACKAGE__) => sub {
             require Math::AnyNum::mul;
             require Math::AnyNum::sub;
             require Math::AnyNum::add;
@@ -2668,22 +2665,22 @@ Class::Multimethods::multimethod round => qw(* *) => sub {
             bless \__add__($rand, $$x);
         };
 
-        Class::Multimethods::multimethod rand => qw(Math::AnyNum *) => sub {
+        Class::Multimethods::multimethod rand => (__PACKAGE__, '*') => sub {
             (@_) = ($_[0], __PACKAGE__->new($_[1]));
             goto &rand;
         };
 
-        Class::Multimethods::multimethod rand => qw(* Math::AnyNum) => sub {
+        Class::Multimethods::multimethod rand => ('*', __PACKAGE__) => sub {
             (@_) = (__PACKAGE__->new($_[0]), $_[1]);
             goto &rand;
         };
 
-        Class::Multimethods::multimethod rand => qw(* *) => sub {
+        Class::Multimethods::multimethod rand => ('*', '*') => sub {
             (@_) = (__PACKAGE__->new($_[0]), __PACKAGE__->new($_[1]));
             goto &rand;
         };
 
-        Class::Multimethods::multimethod rand => qw(*) => sub {
+        Class::Multimethods::multimethod rand => ('*') => sub {
             (@_) = (__PACKAGE__->new($_[0]));
             goto &rand;
         };
@@ -2702,30 +2699,30 @@ Class::Multimethods::multimethod round => qw(* *) => sub {
         state $state = Math::GMPz::zgmp_randinit_mt_nobless();
         Math::GMPz::zgmp_randseed_ui($state, $srand);
 
-        Class::Multimethods::multimethod irand => qw(Math::AnyNum Math::AnyNum) => sub {
+        Class::Multimethods::multimethod irand => (__PACKAGE__, __PACKAGE__) => sub {
             require Math::AnyNum::irand;
             my ($x, $y) = @_;
             bless \__irand__(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan), $state);
         };
 
-        Class::Multimethods::multimethod irand => qw(Math::AnyNum *) => sub {
+        Class::Multimethods::multimethod irand => (__PACKAGE__, '*') => sub {
             require Math::AnyNum::irand;
             my ($x, $y) = @_;
             bless \__irand__(_any2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan), $state);
         };
 
-        Class::Multimethods::multimethod irand => qw(* Math::AnyNum) => sub {
+        Class::Multimethods::multimethod irand => ('*', __PACKAGE__) => sub {
             require Math::AnyNum::irand;
             my ($x, $y) = @_;
             bless \__irand__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan), $state);
         };
 
-        Class::Multimethods::multimethod irand => qw(*) => sub {
+        Class::Multimethods::multimethod irand => ('*') => sub {
             require Math::AnyNum::irand;
             bless \__irand__(_star2mpz($_[0]) // (goto &nan), $state);
         };
 
-        Class::Multimethods::multimethod irand => qw(* *) => sub {
+        Class::Multimethods::multimethod irand => ('*', '*') => sub {
             require Math::AnyNum::irand;
             bless \__irand__(_star2mpz($_[0]) // (goto &nan), _star2mpz($_[1]) // (goto &nan), $state);
         };
@@ -2940,13 +2937,13 @@ sub mfactorial {
 ## GCD
 #
 
-Class::Multimethods::multimethod gcd => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod gcd => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::gcd;
     my ($x, $y) = @_;
     bless \__gcd__(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod gcd => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod gcd => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::gcd;
     my ($x, $y) = @_;
     if (CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
@@ -2957,19 +2954,19 @@ Class::Multimethods::multimethod gcd => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod gcd => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod gcd => (__PACKAGE__, '*') => sub {
     require Math::AnyNum::gcd;
     my ($x, $y) = @_;
     bless \__gcd__(_any2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod gcd => qw(* Math::AnyNum) => sub {
+Class::Multimethods::multimethod gcd => ('*', __PACKAGE__) => sub {
     require Math::AnyNum::gcd;
     my ($x, $y) = @_;
     bless \__gcd__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod gcd => qw(* $) => sub {
+Class::Multimethods::multimethod gcd => ('*', '$') => sub {
     require Math::AnyNum::gcd;
     my ($x, $y) = @_;
 
@@ -2981,7 +2978,7 @@ Class::Multimethods::multimethod gcd => qw(* $) => sub {
     }
 };
 
-Class::Multimethods::multimethod gcd => qw(* *) => sub {
+Class::Multimethods::multimethod gcd => ('*', '*') => sub {
     require Math::AnyNum::gcd;
     my ($x, $y) = @_;
     bless \__gcd__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan));
@@ -2991,19 +2988,19 @@ Class::Multimethods::multimethod gcd => qw(* *) => sub {
 ## LCM
 #
 
-Class::Multimethods::multimethod lcm => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod lcm => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::lcm;
     my ($x, $y) = @_;
     bless \__lcm__(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod lcm => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod lcm => (__PACKAGE__, '*') => sub {
     require Math::AnyNum::lcm;
     my ($x, $y) = @_;
     bless \__lcm__(_any2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod lcm => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod lcm => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::lcm;
     my ($x, $y) = @_;
 
@@ -3015,13 +3012,13 @@ Class::Multimethods::multimethod lcm => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod lcm => qw(* Math::AnyNum) => sub {
+Class::Multimethods::multimethod lcm => ('*', __PACKAGE__) => sub {
     require Math::AnyNum::lcm;
     my ($x, $y) = @_;
     bless \__lcm__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod lcm => qw(* $) => sub {
+Class::Multimethods::multimethod lcm => ('*', '$') => sub {
     require Math::AnyNum::lcm;
     my ($x, $y) = @_;
 
@@ -3033,7 +3030,7 @@ Class::Multimethods::multimethod lcm => qw(* $) => sub {
     }
 };
 
-Class::Multimethods::multimethod lcm => qw(* *) => sub {
+Class::Multimethods::multimethod lcm => ('*', '*') => sub {
     require Math::AnyNum::lcm;
     bless \__lcm__(_star2mpz($_[0]) // (goto &nan), _star2mpz($_[1]) // (goto &nan));
 };
@@ -3417,14 +3414,14 @@ sub is_square {
 ## is_power
 #
 
-Class::Multimethods::multimethod is_power => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod is_power => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::is_power;
     my ($x, $y) = @_;
     $x->is_int()
       and __is_power__(_any2mpz($$x) // (return 0), _any2si($$y) // (return 0));
 };
 
-Class::Multimethods::multimethod is_power => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod is_power => (__PACKAGE__, '$') => sub {
     require Math::AnyNum::is_power;
     my ($x, $y) = @_;
 
@@ -3437,7 +3434,7 @@ Class::Multimethods::multimethod is_power => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod is_power => qw(* $) => sub {
+Class::Multimethods::multimethod is_power => ('*', '$') => sub {
     require Math::AnyNum::is_power;
     my ($x, $y) = @_;
 
@@ -3452,7 +3449,7 @@ Class::Multimethods::multimethod is_power => qw(* $) => sub {
     }
 };
 
-Class::Multimethods::multimethod is_power => qw(* Math::AnyNum) => sub {
+Class::Multimethods::multimethod is_power => ('*', __PACKAGE__) => sub {
     require Math::AnyNum::is_power;
     my ($x, $y) = @_;
     $x = __PACKAGE__->new($x);
@@ -3460,7 +3457,7 @@ Class::Multimethods::multimethod is_power => qw(* Math::AnyNum) => sub {
       and __is_power__(_any2mpz($$x) // (return 0), _any2si($$y) // (return 0));
 };
 
-Class::Multimethods::multimethod is_power => qw(* *) => sub {
+Class::Multimethods::multimethod is_power => ('*', '*') => sub {
     require Math::AnyNum::is_power;
     my ($x, $y) = @_;
     $x = __PACKAGE__->new($x);
@@ -3468,13 +3465,13 @@ Class::Multimethods::multimethod is_power => qw(* *) => sub {
       and __is_power__(_any2mpz($$x) // (return 0), _any2si(${__PACKAGE__->new($y)}) // (return 0));
 };
 
-Class::Multimethods::multimethod is_power => qw(Math::AnyNum) => sub {
+Class::Multimethods::multimethod is_power => (__PACKAGE__) => sub {
     my ($x) = @_;
     $x->is_int()
       and Math::GMPz::Rmpz_perfect_power_p(_any2mpz($$x) // (return 0));
 };
 
-Class::Multimethods::multimethod is_power => qw(*) => sub {
+Class::Multimethods::multimethod is_power => ('*') => sub {
     my ($x) = @_;
     $x = __PACKAGE__->new($x);
     $x->is_int()
@@ -3485,22 +3482,22 @@ Class::Multimethods::multimethod is_power => qw(*) => sub {
 ## kronecker
 #
 
-Class::Multimethods::multimethod kronecker => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod kronecker => (__PACKAGE__, __PACKAGE__) => sub {
     my ($x, $y) = @_;
     Math::GMPz::Rmpz_kronecker(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod kronecker => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod kronecker => (__PACKAGE__, '*') => sub {
     my ($x, $y) = @_;
     Math::GMPz::Rmpz_kronecker(_any2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod kronecker => qw(* Math::AnyNum) => sub {
+Class::Multimethods::multimethod kronecker => ('*', __PACKAGE__) => sub {
     my ($x, $y) = @_;
     Math::GMPz::Rmpz_kronecker(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
 };
 
-Class::Multimethods::multimethod kronecker => qw(* *) => sub {
+Class::Multimethods::multimethod kronecker => ('*', '*') => sub {
     Math::GMPz::Rmpz_kronecker(_star2mpz($_[0]) // (goto &nan), _star2mpz($_[1]) // (goto &nan));
 };
 
@@ -3508,25 +3505,25 @@ Class::Multimethods::multimethod kronecker => qw(* *) => sub {
 ## valuation
 #
 
-Class::Multimethods::multimethod valuation => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod valuation => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::valuation;
     my ($x, $y) = @_;
     (__valuation__(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan)))[0];
 };
 
-Class::Multimethods::multimethod valuation => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod valuation => (__PACKAGE__, '*') => sub {
     require Math::AnyNum::valuation;
     my ($x, $y) = @_;
     (__valuation__(_any2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan)))[0];
 };
 
-Class::Multimethods::multimethod valuation => qw(* Math::AnyNum) => sub {
+Class::Multimethods::multimethod valuation => ('*', __PACKAGE__) => sub {
     require Math::AnyNum::valuation;
     my ($x, $y) = @_;
     (__valuation__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan)))[0];
 };
 
-Class::Multimethods::multimethod valuation => qw(* *) => sub {
+Class::Multimethods::multimethod valuation => ('*', '*') => sub {
     require Math::AnyNum::valuation;
     (__valuation__(_star2mpz($_[0]) // (goto &nan), _star2mpz($_[1]) // (goto &nan)))[0];
 };
@@ -3535,28 +3532,28 @@ Class::Multimethods::multimethod valuation => qw(* *) => sub {
 ## remdiv
 #
 
-Class::Multimethods::multimethod remdiv => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod remdiv => (__PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::valuation;
     my ($x, $y) = @_;
     my (undef, $r) = __valuation__(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
     bless \$r;
 };
 
-Class::Multimethods::multimethod remdiv => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod remdiv => (__PACKAGE__, '*') => sub {
     require Math::AnyNum::valuation;
     my ($x, $y) = @_;
     my (undef, $r) = __valuation__(_any2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan));
     bless \$r;
 };
 
-Class::Multimethods::multimethod remdiv => qw(* Math::AnyNum) => sub {
+Class::Multimethods::multimethod remdiv => ('*', __PACKAGE__) => sub {
     require Math::AnyNum::valuation;
     my ($x, $y) = @_;
     my (undef, $r) = __valuation__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
     bless \$r;
 };
 
-Class::Multimethods::multimethod remdiv => qw(* *) => sub {
+Class::Multimethods::multimethod remdiv => ('*', '*') => sub {
     require Math::AnyNum::valuation;
     my (undef, $r) = __valuation__(_star2mpz($_[0]) // (goto &nan), _star2mpz($_[1]) // (goto &nan));
     bless \$r;
@@ -3566,7 +3563,7 @@ Class::Multimethods::multimethod remdiv => qw(* *) => sub {
 ## Invmod
 #
 
-Class::Multimethods::multimethod invmod => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod invmod => (__PACKAGE__, __PACKAGE__) => sub {
     my ($x, $y) = @_;
 
     my $n = _any2mpz($$x) // (goto &nan);
@@ -3577,17 +3574,17 @@ Class::Multimethods::multimethod invmod => qw(Math::AnyNum Math::AnyNum) => sub 
     bless \$r;
 };
 
-Class::Multimethods::multimethod invmod => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod invmod => (__PACKAGE__, '*') => sub {
     (@_) = ($_[0], __PACKAGE__->new($_[1]));
     goto &invmod;
 };
 
-Class::Multimethods::multimethod invmod => qw(* Math::AnyNum) => sub {
+Class::Multimethods::multimethod invmod => ('*', __PACKAGE__) => sub {
     (@_) = (__PACKAGE__->new($_[0]), $_[1]);
     goto &invmod;
 };
 
-Class::Multimethods::multimethod invmod => qw(* *) => sub {
+Class::Multimethods::multimethod invmod => ('*', '*') => sub {
     (@_) = (__PACKAGE__->new($_[0]), __PACKAGE__->new($_[1]));
     goto &invmod;
 };
@@ -3596,56 +3593,56 @@ Class::Multimethods::multimethod invmod => qw(* *) => sub {
 ## Powmod
 #
 
-Class::Multimethods::multimethod powmod => qw(Math::AnyNum Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod powmod => (__PACKAGE__, __PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::powmod;
     my ($x, $y, $z) = @_;
     bless \(__powmod__(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan), _any2mpz($$z) // (goto &nan))
             // goto(&nan));
 };
 
-Class::Multimethods::multimethod powmod => qw(Math::AnyNum * Math::AnyNum) => sub {
+Class::Multimethods::multimethod powmod => (__PACKAGE__, '*', __PACKAGE__) => sub {
     require Math::AnyNum::powmod;
     my ($x, $y, $z) = @_;
     bless \(__powmod__(_any2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan), _any2mpz($$z) // (goto &nan))
             // goto(&nan));
 };
 
-Class::Multimethods::multimethod powmod => qw(Math::AnyNum Math::AnyNum *) => sub {
+Class::Multimethods::multimethod powmod => (__PACKAGE__, __PACKAGE__, '*') => sub {
     require Math::AnyNum::powmod;
     my ($x, $y, $z) = @_;
     bless \(__powmod__(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan), _star2mpz($z) // (goto &nan))
             // goto(&nan));
 };
 
-Class::Multimethods::multimethod powmod => qw(Math::AnyNum * *) => sub {
+Class::Multimethods::multimethod powmod => (__PACKAGE__, '*', '*') => sub {
     require Math::AnyNum::powmod;
     my ($x, $y, $z) = @_;
     bless \(__powmod__(_any2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan), _star2mpz($z) // (goto &nan))
             // goto(&nan));
 };
 
-Class::Multimethods::multimethod powmod => qw(* Math::AnyNum *) => sub {
+Class::Multimethods::multimethod powmod => ('*', __PACKAGE__, '*') => sub {
     require Math::AnyNum::powmod;
     my ($x, $y, $z) = @_;
     bless \(__powmod__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan), _star2mpz($z) // (goto &nan))
             // goto(&nan));
 };
 
-Class::Multimethods::multimethod powmod => qw(* Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod powmod => ('*', __PACKAGE__, __PACKAGE__) => sub {
     require Math::AnyNum::powmod;
     my ($x, $y, $z) = @_;
     bless \(__powmod__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan), _any2mpz($$z) // (goto &nan))
             // goto(&nan));
 };
 
-Class::Multimethods::multimethod powmod => qw(* * Math::AnyNum) => sub {
+Class::Multimethods::multimethod powmod => ('*', '*', __PACKAGE__) => sub {
     require Math::AnyNum::powmod;
     my ($x, $y, $z) = @_;
     bless \(__powmod__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan), _any2mpz($$z) // (goto &nan))
             // goto(&nan));
 };
 
-Class::Multimethods::multimethod powmod => qw(* * *) => sub {
+Class::Multimethods::multimethod powmod => ('*', '*', '*') => sub {
     require Math::AnyNum::powmod;
     my ($x, $y, $z) = @_;
     bless \(__powmod__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan), _star2mpz($z) // (goto &nan))
@@ -3656,7 +3653,7 @@ Class::Multimethods::multimethod powmod => qw(* * *) => sub {
 ## Binomial
 #
 
-Class::Multimethods::multimethod binomial => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod binomial => (__PACKAGE__, __PACKAGE__) => sub {
     my ($x, $y) = @_;
 
     $y = _any2si($$y)  // (goto &nan);
@@ -3671,7 +3668,7 @@ Class::Multimethods::multimethod binomial => qw(Math::AnyNum Math::AnyNum) => su
     bless \$r;
 };
 
-Class::Multimethods::multimethod binomial => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod binomial => (__PACKAGE__, '$') => sub {
     my ($x, $y) = @_;
     if (CORE::int($y) eq $y and $y >= LONG_MIN and $y <= ULONG_MAX) {
         $x = _any2mpz($$x) // (goto &nan);
@@ -3689,7 +3686,7 @@ Class::Multimethods::multimethod binomial => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod binomial => qw($ $) => sub {
+Class::Multimethods::multimethod binomial => ('$', '$') => sub {
     my ($x, $y) = @_;
 
     if (    CORE::int($x) eq $x
@@ -3707,12 +3704,12 @@ Class::Multimethods::multimethod binomial => qw($ $) => sub {
     goto &binomial;
 };
 
-Class::Multimethods::multimethod binomial => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod binomial => (__PACKAGE__, '*') => sub {
     (@_) = ($_[0], __PACKAGE__->new($_[1]));
     goto &binomial;
 };
 
-Class::Multimethods::multimethod binomial => qw(* *) => sub {
+Class::Multimethods::multimethod binomial => ('*', '*') => sub {
     (@_) = (__PACKAGE__->new($_[0]), __PACKAGE__->new($_[1]));
     goto &binomial;
 };
@@ -3721,7 +3718,7 @@ Class::Multimethods::multimethod binomial => qw(* *) => sub {
 ## AND
 #
 
-Class::Multimethods::multimethod and => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod and => (__PACKAGE__, __PACKAGE__) => sub {
     my ($x, $y) = @_;
 
     $x = _any2mpz($$x) // (goto &nan);
@@ -3732,7 +3729,7 @@ Class::Multimethods::multimethod and => qw(Math::AnyNum Math::AnyNum) => sub {
     bless \$r;
 };
 
-Class::Multimethods::multimethod and => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod and => (__PACKAGE__, '*') => sub {
     (@_) = ($_[0], __PACKAGE__->new($_[1]));
     goto &and;
 };
@@ -3741,7 +3738,7 @@ Class::Multimethods::multimethod and => qw(Math::AnyNum *) => sub {
 ## OR
 #
 
-Class::Multimethods::multimethod or => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod or => (__PACKAGE__, __PACKAGE__) => sub {
     my ($x, $y) = @_;
 
     $x = _any2mpz($$x) // (goto &nan);
@@ -3752,7 +3749,7 @@ Class::Multimethods::multimethod or => qw(Math::AnyNum Math::AnyNum) => sub {
     bless \$r;
 };
 
-Class::Multimethods::multimethod or => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod or => (__PACKAGE__, '*') => sub {
     (@_) = ($_[0], __PACKAGE__->new($_[1]));
     goto &or;
 };
@@ -3761,7 +3758,7 @@ Class::Multimethods::multimethod or => qw(Math::AnyNum *) => sub {
 ## XOR
 #
 
-Class::Multimethods::multimethod xor => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod xor => (__PACKAGE__, __PACKAGE__) => sub {
     my ($x, $y) = @_;
 
     $x = _any2mpz($$x) // (goto &nan);
@@ -3772,7 +3769,7 @@ Class::Multimethods::multimethod xor => qw(Math::AnyNum Math::AnyNum) => sub {
     bless \$r;
 };
 
-Class::Multimethods::multimethod xor => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod xor => (__PACKAGE__, '*') => sub {
     (@_) = ($_[0], __PACKAGE__->new($_[1]));
     goto &xor;
 };
@@ -3793,7 +3790,7 @@ sub not {
 ## LEFT SHIFT
 #
 
-Class::Multimethods::multimethod lsft => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod lsft => (__PACKAGE__, __PACKAGE__) => sub {
     my ($x, $y) = @_;
 
     $y = _any2si($$y)  // (goto &nan);
@@ -3808,7 +3805,7 @@ Class::Multimethods::multimethod lsft => qw(Math::AnyNum Math::AnyNum) => sub {
     bless \$r;
 };
 
-Class::Multimethods::multimethod lsft => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod lsft => (__PACKAGE__, '$') => sub {
     my ($x, $y) = @_;
 
     if (CORE::int($y) eq $y and $y >= LONG_MIN and $y <= ULONG_MAX) {
@@ -3828,7 +3825,7 @@ Class::Multimethods::multimethod lsft => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod lsft => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod lsft => (__PACKAGE__, '*') => sub {
     (@_) = ($_[0], __PACKAGE__->new($_[1]));
     goto &lsft;
 };
@@ -3837,7 +3834,7 @@ Class::Multimethods::multimethod lsft => qw(Math::AnyNum *) => sub {
 ## RIGHT SHIFT
 #
 
-Class::Multimethods::multimethod rsft => qw(Math::AnyNum Math::AnyNum) => sub {
+Class::Multimethods::multimethod rsft => (__PACKAGE__, __PACKAGE__) => sub {
     my ($x, $y) = @_;
 
     $y = _any2si($$y)  // (goto &nan);
@@ -3852,7 +3849,7 @@ Class::Multimethods::multimethod rsft => qw(Math::AnyNum Math::AnyNum) => sub {
     bless \$r;
 };
 
-Class::Multimethods::multimethod rsft => qw(Math::AnyNum $) => sub {
+Class::Multimethods::multimethod rsft => (__PACKAGE__, '$') => sub {
     my ($x, $y) = @_;
 
     if (CORE::int($y) eq $y and $y >= LONG_MIN and $y <= ULONG_MAX) {
@@ -3872,7 +3869,7 @@ Class::Multimethods::multimethod rsft => qw(Math::AnyNum $) => sub {
     }
 };
 
-Class::Multimethods::multimethod rsft => qw(Math::AnyNum *) => sub {
+Class::Multimethods::multimethod rsft => (__PACKAGE__, '*') => sub {
     (@_) = ($_[0], __PACKAGE__->new($_[1]));
     goto &rsft;
 };
@@ -3977,7 +3974,7 @@ sub as_frac {
     $x = _any2mpq($x) // return undef;
 
     my $frac = Math::GMPq::Rmpq_get_str($x, $base);
-    if (index($frac, '/') == -1) { $frac .= '/1' }
+    $frac .= '/1' if (index($frac, '/') == -1);
     $frac;
 }
 
