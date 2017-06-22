@@ -1,5 +1,12 @@
 Revision history for Math-AnyNum
 
+0.10    2017-?-?
+
+        [FIXES]
+
+        - Fixed `eta(NaN)` to return `NaN` instead of `log(2)`.
+        - Fixed `atanh(NaN)` to return `NaN` instead of `NaN+NaNi`.
+
 0.09    2017-05-30
 
         [ADDITIONS]
