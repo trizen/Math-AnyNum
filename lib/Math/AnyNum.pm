@@ -1833,7 +1833,6 @@ Class::Multimethods::multimethod ipow => (__PACKAGE__, '$') => sub {
 };
 
 Class::Multimethods::multimethod ipow => ('$', '$') => sub {
-    require Math::AnyNum::ipow;
     my ($x, $y) = @_;
 
     if (    CORE::int($x) eq $x
@@ -1847,6 +1846,7 @@ Class::Multimethods::multimethod ipow => ('$', '$') => sub {
         bless \$r;
     }
     else {
+        require Math::AnyNum::ipow;
         bless \__ipow__(_star2mpz($x) // (goto &nan), _any2si(_str2obj($y)) // goto &nan);
     }
 };
