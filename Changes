@@ -2,6 +2,10 @@ Revision history for Math-AnyNum
 
 0.10    2017-?-?
 
+        [ADDITIONS]
+
+        - Added the `exp2(x)` and `exp10(x)` functions.
+
         [FIXES]
 
         - Fixed `eta(NaN)` to return `NaN` instead of `log(2)`.
