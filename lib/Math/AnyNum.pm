@@ -338,7 +338,8 @@ use overload
                     or $prec > Math::MPFR::RMPFR_PREC_MAX()) {
                     die "invalid value for <<PREC>>: must be between "
                       . Math::MPFR::RMPFR_PREC_MIN() . " and "
-                      . Math::MPFR::RMPFR_PREC_MAX();
+                      . Math::MPFR::RMPFR_PREC_MAX()
+                      . ", got <<$prec>>";
                 }
                 $PREC = $prec;
             }
