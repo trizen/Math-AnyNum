@@ -146,6 +146,8 @@ use overload
                    cbrt     => sub ($)   { goto &cbrt },
                    root     => sub ($$)  { goto &root },
                    exp      => sub (_)   { goto &exp },        # built-in function
+                   exp2     => sub ($)   { goto &exp2 },
+                   exp10    => sub ($)   { goto &exp10 },
                    ln       => sub ($)   { goto &ln },
                    log      => sub (_;$) { goto &log },        # built-in function
                    log2     => sub ($)   { goto &log2 },
@@ -338,7 +340,8 @@ use overload
                     or $prec > Math::MPFR::RMPFR_PREC_MAX()) {
                     die "invalid value for <<PREC>>: must be between "
                       . Math::MPFR::RMPFR_PREC_MIN() . " and "
-                      . Math::MPFR::RMPFR_PREC_MAX();
+                      . Math::MPFR::RMPFR_PREC_MAX()
+                      . ", but got <<$prec>>";
                 }
                 $PREC = $prec;
             }
@@ -1833,7 +1836,6 @@ Class::Multimethods::multimethod ipow => (__PACKAGE__, '$') => sub {
 };
 
 Class::Multimethods::multimethod ipow => ('$', '$') => sub {
-    require Math::AnyNum::ipow;
     my ($x, $y) = @_;
 
     if (    CORE::int($x) eq $x
@@ -1847,6 +1849,7 @@ Class::Multimethods::multimethod ipow => ('$', '$') => sub {
         bless \$r;
     }
     else {
+        require Math::AnyNum::ipow;
         bless \__ipow__(_star2mpz($x) // (goto &nan), _any2si(_str2obj($y)) // goto &nan);
     }
 };
@@ -2193,6 +2196,40 @@ sub norm {
 sub exp {
     require Math::AnyNum::exp;
     bless \__exp__(_star2mpfr_mpc($_[0]));
+}
+
+sub exp2 {
+    require Math::AnyNum::pow;
+    my ($x) = @_;
+
+    state $base = Math::GMPz::Rmpz_init_set_ui(2);
+
+    if (ref($x) eq __PACKAGE__) {
+        bless \__pow__($base, $$x);
+    }
+    elsif (!ref($x) and CORE::int($x) eq $x and $x >= LONG_MIN and $x <= ULONG_MAX) {
+        bless \__pow__($base, $x);
+    }
+    else {
+        bless \__pow__($base, ${__PACKAGE__->new($x)});
+    }
+}
+
+sub exp10 {
+    require Math::AnyNum::pow;
+    my ($x) = @_;
+
+    state $base = Math::GMPz::Rmpz_init_set_ui(10);
+
+    if (ref($x) eq __PACKAGE__) {
+        bless \__pow__($base, $$x);
+    }
+    elsif (!ref($x) and CORE::int($x) eq $x and $x >= LONG_MIN and $x <= ULONG_MAX) {
+        bless \__pow__($base, $x);
+    }
+    else {
+        bless \__pow__($base, ${__PACKAGE__->new($x)});
+    }
 }
 
 sub floor {

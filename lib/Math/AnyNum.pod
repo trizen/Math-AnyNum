@@ -87,8 +87,9 @@ The following functions are exportable:
     :special
         beta eta gamma lgamma lngamma digamma zeta
         Ai Ei Li Li2 LambertW BesselJ BesselY lgrt
-        pow sqrt cbrt root exp ln log log2 log10 mod
-        abs erf erfc sqr norm hypot agm bernreal harmreal
+        pow sqrt cbrt root exp exp2 exp10 ln log
+        log2 log10 mod abs erf erfc sqr norm hypot
+        agm bernreal harmreal
 
     :ntheory
         factorial dfactorial mfactorial primorial
@@ -527,6 +528,18 @@ Otherwise, it does floating-point exponentiation, which is equivalent with C<exp
 
 Natural exponentiation of C<x> (i.e.: C<e**x>).
 
+=head2 exp2
+
+    exp2(x)                                       #=> Any
+
+Raises 2 to the power of C<x>. (i.e.: C<2**x>)
+
+=head2 exp10
+
+    exp10(x)                                      #=> Any
+
+Raises 10 to the power of C<x>. (i.e.: C<10**x>)
+
 =head2 ln / log
 
     ln(x)                                         #=> Any
@@ -542,7 +555,7 @@ B<NOTE:> C<log(x, y)> is equivalent with C<log(x) / log(y)>.
     log2(x)                                       #=> Any
     log10(x)                                      #=> Any
 
-Logarithm of C<x> to base 2 or base 10, respectively.
+Logarithm of C<x> to base 2 and base 10, respectively.
 
 =head2 lgrt
 
