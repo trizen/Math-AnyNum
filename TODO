@@ -1,10 +1,5 @@
 ## TODO list for Math::AnyNum
 
-# Add the following methods:
-
-    exp2  [?]
-    exp10 [?]
-
 # Add the following conversion methods:
 
     as_rat   [?]
