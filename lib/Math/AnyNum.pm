@@ -3960,7 +3960,7 @@ sub as_int {
             $base = _any2ui($$y) // 0;
         }
         else {
-            $base = _any2ui(_star2mpz($y)) // 0;
+            $base = _any2ui(_star2mpz($y) // return undef) // 0;
         }
 
         if ($base < 2 or $base > 36) {
@@ -3985,7 +3985,7 @@ sub as_frac {
             $base = _any2ui($$y) // 0;
         }
         else {
-            $base = _any2ui(_star2mpz($y)) // 0;
+            $base = _any2ui(_star2mpz($y) // return undef) // 0;
         }
 
         if ($base < 2 or $base > 36) {
@@ -4028,7 +4028,7 @@ sub as_dec {
             $prec = _any2ui($$y) // 0;
         }
         else {
-            $prec = _any2ui(_star2mpz($y)) // 0;
+            $prec = _any2ui(_star2mpz($y) // return undef) // 0;
         }
 
         $prec <<= 2;
