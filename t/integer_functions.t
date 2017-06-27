@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 273;
+plan tests => 291;
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -102,6 +102,26 @@ is(ipow($o->new(2.5), 10.5),          1024);
 is(ipow($o->new(2),   10.5),          1024);
 is(ipow($o->new(2.5), $o->new(10)),   1024);
 is(ipow($o->new(2.5), 10),            1024);
+
+is(ipow2(0),               1);
+is(ipow2(3),               8);
+is(ipow2(-3),              0);
+is(ipow2(3.5),             8);
+is(ipow2(3.7),             8);
+is(ipow2($o->new('3.7')),  8);
+is(ipow2($o->new('13/2')), 64);
+is(ipow2($o->new(-1)),     0);
+is(ipow2($o->new(5)),      32);
+
+is(ipow10(0),               1);
+is(ipow10(3),               1000);
+is(ipow10(-3),              0);
+is(ipow10(3.7),             1000);
+is(ipow10(3.5),             1000);
+is(ipow10($o->new(-3)),     0);
+is(ipow10($o->new(3)),      1000);
+is(ipow10($o->new('13/2')), 1000000);
+is(ipow10($o->new('3.7')),  1000);
 
 is(lcm(13,          14),          182);
 is(lcm(14,          $o->new(13)), 182);
