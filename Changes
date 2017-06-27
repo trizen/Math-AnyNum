@@ -5,6 +5,7 @@ Revision history for Math-AnyNum
         [ADDITIONS]
 
         - Added the `exp2(x)` and `exp10(x)` functions.
+        - Added the `ipow2(x)` and `ipow10(x)` functions.
 
         [FIXES]
 
