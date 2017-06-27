@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 50;
+plan tests => 52;
 
 use Math::AnyNum qw(:trig float complex);
 
@@ -62,7 +62,9 @@ like(atanh('1/2'),  qr/^0\.549306144334054845697622618\d*\z/);
 like(atanh(-4),     qr/^-0\.25541281188299534160275704\d*\+1\.5707963267948966192313\d*i\z/);
 like(atanh('3+4i'), qr/^0\.117500907311433888412734257\d*\+1\.4099210495965755225306\d*i\z/);
 
+is(atanh(-1),    '-Inf');
 is(atanh(0),     '0');
+is(atanh('+1'),  'Inf');
 is(atanh('NaN'), 'NaN');
 
 like(rad2deg(2),          qr/^114\.591559026164641753596309628210340\d*/);
