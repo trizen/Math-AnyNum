@@ -189,7 +189,10 @@ use overload
         idiv => sub ($$) { goto &idiv },
         imod => sub ($$) { goto &imod },
 
-        ipow  => sub ($$) { goto &ipow },
+        ipow   => sub ($$) { goto &ipow },
+        ipow2  => sub ($)  { goto &ipow2 },
+        ipow10 => sub ($)  { goto &ipow10 },
+
         iroot => sub ($$) { goto &iroot },
         isqrt => sub ($)  { goto &isqrt },
         icbrt => sub ($)  { goto &icbrt },
@@ -1865,6 +1868,61 @@ Class::Multimethods::multimethod ipow => ('*', '*') => sub {
     my ($x, $y) = @_;
     bless \__ipow__(_star2mpz($x) // (goto &nan), _any2si(${__PACKAGE__->new($y)}) // (goto &nan));
 };
+
+#
+## IPOW2
+#
+
+sub ipow2 {
+    my ($n) = @_;
+
+    if (ref($n) eq __PACKAGE__) {
+        $n = _any2si($$n) // goto &nan;
+    }
+    elsif (    !ref($n)
+           and CORE::int($n) eq $n
+           and $n >= LONG_MIN
+           and $n <= ULONG_MAX) {
+        ## $n is a native integer
+    }
+    else {
+        $n = _any2si(${__PACKAGE__->new($n)}) // goto &nan;
+    }
+
+    goto &zero if $n < 0;
+    state $one = Math::GMPz::Rmpz_init_set_ui(1);
+
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_mul_2exp($r, $one, $n);
+    bless \$r;
+}
+
+#
+## IPOW10
+#
+
+sub ipow10 {
+    my ($n) = @_;
+
+    if (ref($n) eq __PACKAGE__) {
+        $n = _any2si($$n) // goto &nan;
+    }
+    elsif (    !ref($n)
+           and CORE::int($n) eq $n
+           and $n >= LONG_MIN
+           and $n <= ULONG_MAX) {
+        ## $n is a native integer
+    }
+    else {
+        $n = _any2si(${__PACKAGE__->new($n)}) // goto &nan;
+    }
+
+    goto &zero if $n < 0;
+
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_ui_pow_ui($r, 10, $n);
+    bless \$r;
+}
 
 #
 ## ROOT
