@@ -95,10 +95,10 @@ The following functions are exportable:
         factorial dfactorial mfactorial primorial
         binomial lucas fibonacci bernfrac harmfrac
         lcm gcd valuation kronecker remdiv divmod
-        iadd isub imul idiv imod ipow iroot isqrt
-        icbrt ilog ilog2 ilog10 isqrtrem irootrem
-        powmod invmod is_power is_square is_prime
-        is_coprime next_prime
+        iadd isub imul idiv imod ipow ipow2 ipow10
+        iroot isqrt icbrt ilog ilog2 ilog10 isqrtrem
+        irootrem powmod invmod is_power is_square
+        is_prime is_coprime next_prime
 
     :misc
         rand irand seed iseed floor ceil round sgn neg inv
@@ -838,6 +838,20 @@ All operations in this section are done with integers.
     ipow(x, y)                                    #=> Int | NaN
 
 Integer addition, subtraction, multiplication, division and exponentiation.
+
+=head2 ipow2
+
+    ipow2(n)                                      #=> Int
+
+Raises C<2> to the power C<n>, by first truncating C<n> to an integer.
+Returns C<0> when C<n> is negative.
+
+=head2 ipow10
+
+    ipow10(n)                                     #=> Int
+
+Raises C<10> to the power C<n>, by first truncating C<n> to an integer.
+Returns C<0> when C<n> is negative.
 
 =head2 imod
 
