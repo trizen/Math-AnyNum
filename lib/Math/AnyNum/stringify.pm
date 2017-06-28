@@ -64,8 +64,10 @@ Class::Multimethods::multimethod __stringify__ => qw(Math::MPFR) => sub {
     }
 
     if (index($str, 'e') == -1) {
-        $str =~ s/0+\z//;
-        $str =~ s/\.\z//;
+        $str = reverse($str);
+        $str =~ s/^0+//;
+        $str =~ s/^\.//;
+        $str = reverse($str);
     }
 
     (!$str or $str eq '-') ? '0' : $str;
