@@ -1154,8 +1154,8 @@ otherwise returns an integer between C<0> (inclusive) and C<x> (inclusive).
 
 If C<x> is greater that C<y>, the returned result will be in the range C<[y, x]>.
 
-The PRNG behind this method is called the "Mersenne Twister".
-Although it generates high-quality pseudorandom integers, it is B<NOT> cryptographically secure!
+The PRNG behind this function is called the "Mersenne Twister". Although it generates high-quality pseudorandom
+integers, it is B<NOT> cryptographically secure!
 
 Example:
 
