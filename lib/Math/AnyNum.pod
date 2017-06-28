@@ -403,8 +403,8 @@ Returns the Euler-Mascheroni constant, which is C<0.57721...>.
 
     Math::AnyNum->catalan                         #=> Float
 
-Returns the value of Catalan's constant, also known
-as Beta(2) or G, and starts as: C<0.91596...>.
+Returns the Catalan constant, also known as C<Beta(2)> or C<G>,
+and starts as: C<0.91596...>.
 
 
 =head1 ARITHMETIC OPERATIONS
@@ -643,14 +643,12 @@ The Gamma function on C<x>. Returns Inf when C<x> is zero, and NaN when C<x> is 
     lgamma(x)                                     #=> Float | Inf | NaN
 
 The logarithm of the absolute value of the Gamma function.
-Returns Inf when C<x> is negative or equal to zero.
 
 =head2 lngamma
 
-    lngamma(x)                                    #=> Float | Inf
+    lngamma(x)                                    #=> Float | Inf | NaN
 
 The natural logarithm of the Gamma function on C<x>.
-Returns Inf when C<x> is negative or equal to zero.
 
 =head2 digamma
 
@@ -868,7 +866,7 @@ where both are integers. When C<y> is zero, it returns two NaN values.
 
 =head2 invmod
 
-    invmod(x, y)
+    invmod(x, y)                                  #=> Int | NaN
 
 Computes the inverse of C<x> modulo C<y> and returns the result.
 When no inverse exists, the NaN value is returned.
@@ -961,7 +959,7 @@ Removes all occurrences of the factor C<k> from integer C<n>.
 
 In general, the following statement holds true:
 
-    remdiv(n, k) == n / k**valuation(n, k)
+    remdiv(n, k) == n / k**(valuation(n, k))
 
 =head2 kronecker
 
