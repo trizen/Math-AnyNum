@@ -604,22 +604,19 @@ sub _mpfr2mpc {
 sub _any2mpc {
     my ($x) = @_;
 
-    my $ref = ref($x);
-
-    $ref eq 'Math::MPC'  && return $x;
-    $ref eq 'Math::GMPq' && goto &_mpq2mpc;
-    $ref eq 'Math::GMPz' && goto &_mpz2mpc;
+    ref($x) eq 'Math::MPC'  && return $x;
+    ref($x) eq 'Math::GMPq' && goto &_mpq2mpc;
+    ref($x) eq 'Math::GMPz' && goto &_mpz2mpc;
 
     goto &_mpfr2mpc;
 }
 
 sub _any2mpfr {
     my ($x) = @_;
-    my $ref = ref($x);
 
-    $ref eq 'Math::MPFR' && return $x;
-    $ref eq 'Math::GMPq' && goto &_mpq2mpfr;
-    $ref eq 'Math::GMPz' && goto &_mpz2mpfr;
+    ref($x) eq 'Math::MPFR' && return $x;
+    ref($x) eq 'Math::GMPq' && goto &_mpq2mpfr;
+    ref($x) eq 'Math::GMPz' && goto &_mpz2mpfr;
 
     my $fr = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPC::RMPC_IM($fr, $x);
@@ -633,12 +630,11 @@ sub _any2mpfr {
 
 sub _any2mpz {
     my ($x) = @_;
-    my $ref = ref($x);
 
-    $ref eq 'Math::GMPz' && return $x;
-    $ref eq 'Math::GMPq' && goto &_mpq2mpz;
+    ref($x) eq 'Math::GMPz' && return $x;
+    ref($x) eq 'Math::GMPq' && goto &_mpq2mpz;
 
-    if ($ref eq 'Math::MPFR') {
+    if (ref($x) eq 'Math::MPFR') {
         if (Math::MPFR::Rmpfr_number_p($x)) {
             my $z = Math::GMPz::Rmpz_init();
             Math::MPFR::Rmpfr_get_z($z, $x, Math::MPFR::MPFR_RNDZ);
@@ -653,12 +649,11 @@ sub _any2mpz {
 
 sub _any2mpq {
     my ($x) = @_;
-    my $ref = ref($x);
 
-    $ref eq 'Math::GMPq' && return $x;
-    $ref eq 'Math::GMPz' && goto &_mpz2mpq;
+    ref($x) eq 'Math::GMPq' && return $x;
+    ref($x) eq 'Math::GMPz' && goto &_mpz2mpq;
 
-    if ($ref eq 'Math::MPFR') {
+    if (ref($x) eq 'Math::MPFR') {
         if (Math::MPFR::Rmpfr_number_p($x)) {
             my $q = Math::GMPq::Rmpq_init();
             Math::MPFR::Rmpfr_get_q($q, $x);
@@ -673,21 +668,20 @@ sub _any2mpq {
 
 sub _any2ui {
     my ($x) = @_;
-    my $ref = ref($x);
 
-    if ($ref eq 'Math::GMPz') {
+    if (ref($x) eq 'Math::GMPz') {
         my $d = CORE::int(Math::GMPz::Rmpz_get_d($x));
         ($d < 0 or $d > ULONG_MAX) && return;
         return $d;
     }
 
-    if ($ref eq 'Math::GMPq') {
+    if (ref($x) eq 'Math::GMPq') {
         my $d = CORE::int(Math::GMPq::Rmpq_get_d($x));
         ($d < 0 or $d > ULONG_MAX) && return;
         return $d;
     }
 
-    if ($ref eq 'Math::MPFR') {
+    if (ref($x) eq 'Math::MPFR') {
         if (Math::MPFR::Rmpfr_number_p($x)) {
             my $d = CORE::int(Math::MPFR::Rmpfr_get_d($x, $ROUND));
             ($d < 0 or $d > ULONG_MAX) && return;
@@ -702,21 +696,20 @@ sub _any2ui {
 
 sub _any2si {
     my ($x) = @_;
-    my $ref = ref($x);
 
-    if ($ref eq 'Math::GMPz') {
+    if (ref($x) eq 'Math::GMPz') {
         my $d = CORE::int(Math::GMPz::Rmpz_get_d($x));
         ($d < LONG_MIN or $d > ULONG_MAX) && return;
         return $d;
     }
 
-    if ($ref eq 'Math::GMPq') {
+    if (ref($x) eq 'Math::GMPq') {
         my $d = CORE::int(Math::GMPq::Rmpq_get_d($x));
         ($d < LONG_MIN or $d > ULONG_MAX) && return;
         return $d;
     }
 
-    if ($ref eq 'Math::MPFR') {
+    if (ref($x) eq 'Math::MPFR') {
         if (Math::MPFR::Rmpfr_number_p($x)) {
             my $d = CORE::int(Math::MPFR::Rmpfr_get_d($x, $ROUND));
             ($d < LONG_MIN or $d > ULONG_MAX) && return;
@@ -794,7 +787,7 @@ sub new {
     my $ref = ref($num);
 
     # Special string values
-    if ($ref eq '' and (!defined($base) or CORE::int($base) == 10)) {
+    if (!$ref and (!defined($base) or CORE::int($base) == 10)) {
         return bless \_str2obj($num), $class;
     }
 
@@ -3169,7 +3162,7 @@ sub is_coprime {
     $x = _any2mpz($$x) // return 0;
 
     if (ref($y) ne __PACKAGE__) {
-        if (    ref($y) eq ''
+        if (    !ref($y)
             and CORE::int($y) eq $y
             and $y >= 0
             and $y <= ULONG_MAX) {
@@ -4011,7 +4004,7 @@ sub as_int {
     my $base = 10;
     if (defined($y)) {
 
-        if (ref($y) eq '' and CORE::int($y) eq $y) {
+        if (!ref($y) and CORE::int($y) eq $y) {
             $base = $y;
         }
         elsif (ref($y) eq __PACKAGE__) {
@@ -4036,7 +4029,7 @@ sub as_frac {
     my $base = 10;
     if (defined($y)) {
 
-        if (ref($y) eq '' and CORE::int($y) eq $y) {
+        if (!ref($y) and CORE::int($y) eq $y) {
             $base = $y;
         }
         elsif (ref($y) eq __PACKAGE__) {
@@ -4079,7 +4072,7 @@ sub as_dec {
 
     my $prec = $PREC;
     if (defined($y)) {
-        if (ref($y) eq '' and CORE::int($y) eq $y) {
+        if (!ref($y) and CORE::int($y) eq $y) {
             $prec = $y;
         }
         elsif (ref($y) eq __PACKAGE__) {
