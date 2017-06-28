@@ -64,7 +64,7 @@ The promotion rules can be summarized as follows:
 
     (Complex, Complex)   -> Complex
 
-For explicit conversions, Math::AnyNum provides the following methods:
+For explicit conversions, Math::AnyNum provides the following functions:
 
     int(x)          # converts x to an integer (NaN if not possible)
     rat(x)          # converts x to a rational (NaN if not possible)
@@ -359,7 +359,7 @@ Returns an object containing the value C<0>.
 
 =head2 i
 
-    Math::AnyNum->i                               #=> Float
+    Math::AnyNum->i                               #=> Complex
 
 Returns the imaginary unit, which is C<sqrt(-1)>.
 
