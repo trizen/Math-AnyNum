@@ -32,7 +32,7 @@ Class::Multimethods::multimethod __stringify__ => qw(Math::MPFR) => sub {
 
     $mantissa =~ /[^0]/ or return '0';
 
-    if (CORE::abs($exponent) <= CORE::length($mantissa)) {
+    if (CORE::abs($exponent) < CORE::length($mantissa)) {
 
         if ($exponent > 0) {
             substr($mantissa, $exponent, 0, '.');
