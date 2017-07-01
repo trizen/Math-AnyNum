@@ -517,7 +517,7 @@ Raises C<x> to power C<y> and returns the result.
 
 When both C<x> and C<y> are integers, it does integer exponentiation and returns the exact result.
 
-When only C<y> is an integer, it does rational exponentiation based on the identity: C<(a/b)**n = a**n / b**n>,
+When C<x> is rational and C<y> is an integer, it does rational exponentiation based on the identity: C<(a/b)**n = a**n / b**n>,
 which also computes the exact result.
 
 Otherwise, it does floating-point exponentiation, which is equivalent with C<exp(log(x) * y)>.
