@@ -7,6 +7,10 @@ Revision history for Math-AnyNum
         - Added the `exp2(x)` and `exp10(x)` functions.
         - Added the `ipow2(x)` and `ipow10(x)` functions.
 
+        [IMPROVEMENTS]
+
+        - Faster stringification of floating-point numbers (including complex numbers).
+
         [FIXES]
 
         - Fixed `eta(NaN)` to return `NaN` instead of `log(2)`.
