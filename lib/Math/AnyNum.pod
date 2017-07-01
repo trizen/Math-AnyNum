@@ -561,7 +561,7 @@ Logarithm of C<x> to base 2 and base 10, respectively.
 
     lgrt(x)                                       #=> Any
 
-Logarithmic-root of C<x>, which is the largest solution to C<a**a = b>, where C<b> is known.
+Logarithmic-root of C<x>, which is the solution to C<a**a = b>, where C<b> is known.
 When the value of C<x> is less than C<e**(-1/e)>, it returns a complex number. It also accepts complex numbers as input.
 
 Example:
