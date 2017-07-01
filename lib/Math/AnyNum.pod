@@ -517,7 +517,7 @@ Raises C<x> to power C<y> and returns the result.
 
 When both C<x> and C<y> are integers, it does integer exponentiation and returns the exact result.
 
-When only C<y> is an integer, it does rational exponentiation based on the identity: C<(a/b)**n = a**n / b**n>,
+When C<x> is rational and C<y> is an integer, it does rational exponentiation based on the identity: C<(a/b)**n = a**n / b**n>,
 which also computes the exact result.
 
 Otherwise, it does floating-point exponentiation, which is equivalent with C<exp(log(x) * y)>.
@@ -561,7 +561,7 @@ Logarithm of C<x> to base 2 and base 10, respectively.
 
     lgrt(x)                                       #=> Any
 
-Logarithmic-root of C<x>, which is the largest solution to C<a**a = b>, where C<b> is known.
+Logarithmic-root of C<x>, which is the solution to C<a**a = x>, where C<x> is known.
 When the value of C<x> is less than C<e**(-1/e)>, it returns a complex number. It also accepts complex numbers as input.
 
 Example:
