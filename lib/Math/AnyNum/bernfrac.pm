@@ -34,11 +34,7 @@ sub __bernfrac__ {
     my $tau   = 6.28318530717958647692528676655900576839433879875;
     my $log2B = (CORE::log(4 * $tau * $n) / 2 + $n * (CORE::log($n) - CORE::log($tau) - 1)) / CORE::log(2);
 
-    my $prec = (
-                $n <= 90
-                    ? CORE::int($n * CORE::log($n) + 1)
-                    : CORE::int($n + $log2B)
-               );
+    my $prec = CORE::int($n + $log2B) + ($n <= 90 ? 18 : 0);
 
     my $d = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_fac_ui($d, $n);                      # d = n!
