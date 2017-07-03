@@ -14,9 +14,7 @@ sub __harmfrac__ {    # takes an unsigned integer
     if ($ui > 7000) {
 
         my $num = Math::GMPz::Rmpz_init_set_ui(1);
-
-        my $den = Math::GMPz::Rmpz_init_set_ui($ui);
-        Math::GMPz::Rmpz_add_ui($den, $den, 1);
+        my $den = Math::GMPz::Rmpz_init_set_ui($ui + 1);
 
         my $temp = Math::GMPz::Rmpz_init();
 
