@@ -15,7 +15,9 @@ Class::Multimethods::multimethod __lgrt__ => qw(Math::MPFR) => sub {
     my $r = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_log($r, $d, $ROUND);
 
-    Math::MPFR::Rmpfr_set_str((my $p = Math::MPFR::Rmpfr_init2($PREC)), '1e-' . CORE::int($PREC >> 2), 10, $ROUND);
+    my $p = Math::MPFR::Rmpfr_init2($PREC);
+    Math::MPFR::Rmpfr_set_str($p, '1e-' . CORE::int($PREC >> 2), 10, $ROUND);
+
     Math::MPFR::Rmpfr_set_ui((my $x = Math::MPFR::Rmpfr_init2($PREC)), 1, $ROUND);
     Math::MPFR::Rmpfr_set_ui((my $y = Math::MPFR::Rmpfr_init2($PREC)), 0, $ROUND);
 
