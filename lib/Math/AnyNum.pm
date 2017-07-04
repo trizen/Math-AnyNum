@@ -2166,11 +2166,7 @@ sub log10 {
 
 sub length {
     my ($z) = _star2mpz($_[0]) // return -1;
-
-    Math::GMPz::Rmpz_neg($z, $z)
-      if Math::GMPz::Rmpz_sgn($z) < 0;
-
-    CORE::length(Math::GMPz::Rmpz_get_str($z, 10));
+    CORE::length(Math::GMPz::Rmpz_get_str($z, 10)) - (Math::GMPz::Rmpz_sgn($z) < 0 ? 1 : 0);
 }
 
 Class::Multimethods::multimethod log => ('*', '*') => sub {
