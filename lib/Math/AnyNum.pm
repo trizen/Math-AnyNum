@@ -1012,7 +1012,7 @@ sub pi {
 sub tau {
     my $tau = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_const_pi($tau, $ROUND);
-    Math::MPFR::Rmpfr_mul_ui($tau, $tau, 2, $ROUND);
+    Math::MPFR::Rmpfr_mul_2ui($tau, $tau, 1, $ROUND);
     bless \$tau;
 }
 
