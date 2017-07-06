@@ -32,8 +32,8 @@ sub __ilog__ {
 
     state $round_z = Math::MPFR::MPFR_RNDZ();
 
-    my $logx = Math::MPFR::Rmpfr_init2(92);
-    my $logy = Math::MPFR::Rmpfr_init2(92);
+    state $logx = Math::MPFR::Rmpfr_init2_nobless(64);
+    state $logy = Math::MPFR::Rmpfr_init2_nobless(64);
 
     Math::MPFR::Rmpfr_set_z($logx, $x, $round_z);
     Math::MPFR::Rmpfr_set_z($logy, $y, $round_z);
