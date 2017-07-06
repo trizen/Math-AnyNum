@@ -1048,7 +1048,7 @@ sub e {
 }
 
 sub phi {
-    state $five4_f = (Math::MPFR::Rmpfr_init_set_d_nobless('1.25', $ROUND))[0];
+    state $five4_f = (Math::MPFR::Rmpfr_init_set_d_nobless(1.25, $ROUND))[0];
 
     my $phi = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_sqrt($phi, $five4_f, $ROUND);
