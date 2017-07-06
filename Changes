@@ -15,6 +15,7 @@ Revision history for Math-AnyNum
 
         - Fixed `eta(NaN)` to return `NaN` instead of `log(2)`.
         - Fixed `atanh(NaN)` to return `NaN` instead of `NaN+NaNi`.
+        - Fixed the return value of `lgrt(+i)` and `lgrt(-i)`.
 
 0.09    2017-05-30
 
