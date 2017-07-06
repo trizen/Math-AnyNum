@@ -6,8 +6,8 @@ our ($ROUND, $PREC);
 sub __harmfrac__ {    # takes an unsigned integer
     my ($ui) = @_;
 
-    $ui || goto &Math::AnyNum::_zero;
-    $ui < 0 && goto &Math::AnyNum::_nan;
+    $ui || goto &_zero;
+    $ui < 0 && goto &_nan;
 
     # Use binary splitting for large values of n. (by Fredrik Johansson)
     # http://fredrik-j.blogspot.ro/2009/02/how-not-to-compute-harmonic-numbers.html
