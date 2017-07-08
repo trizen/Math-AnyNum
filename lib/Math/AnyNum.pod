@@ -96,9 +96,10 @@ The following functions are exportable:
         binomial lucas fibonacci bernfrac harmfrac
         lcm gcd valuation kronecker remdiv divmod
         iadd isub imul idiv imod ipow ipow2 ipow10
-        iroot isqrt icbrt ilog ilog2 ilog10 isqrtrem
-        irootrem powmod invmod is_power is_square
-        is_prime is_coprime next_prime
+        iroot isqrt icbrt ilog ilog2 ilog10 invmod
+        powmod isqrtrem irootrem is_power is_square
+        is_prime is_coprime next_prime rising_factorial
+        falling_factorial
 
     :misc
         rand irand seed iseed floor ceil round sgn neg inv
@@ -1000,7 +1001,27 @@ Example:
 
     mfactorial(n, m)                              #=> Int | NaN
 
-Generalized m-factorial of C<n>. Returns NaN when C<n> is negative. (requires GMP>=5.1.0)
+Generalized m-factorial of C<n>. Returns NaN when C<n> or C<m> is negative. (requires GMP>=5.1.0)
+
+=head2 rising_factorial
+
+    rising_factorial(n, k)                        #=> Int | NaN
+
+Rising factorial, C<n * (n + 1) * ... * (n + k - 1)>, defined as:
+
+    binomial(n + k - 1, k) * k!
+
+Returns NaN for negative values of C<k>.
+
+=head2 falling_factorial
+
+    falling_factorial(n, k)                       #=> Int | NaN
+
+Falling factorial, C<n * (n - 1) * ... * (n - k + 1)>, defined as:
+
+    binomial(n, k) * k!
+
+Returns NaN for negative values of C<k>.
 
 =head2 binomial
 
