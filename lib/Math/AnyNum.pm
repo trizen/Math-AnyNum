@@ -3065,6 +3065,9 @@ sub falling_factorial {
     bless \$r;
 }
 
+#
+## rising_factorial(x, y) = binomial(x + y - 1, y) * y!
+#
 sub rising_factorial {
     my ($x, $y) = @_;
 
