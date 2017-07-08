@@ -169,6 +169,9 @@ use overload
         primorial  => sub ($)  { goto &primorial },
         binomial   => sub ($$) { goto &binomial },
 
+        rising_factorial  => sub ($$) { goto &rising_factorial },
+        falling_factorial => sub ($$) { goto &falling_factorial },
+
         lucas     => sub ($) { goto &lucas },
         fibonacci => sub ($) { goto &fibonacci },
 
@@ -3001,18 +3004,102 @@ sub mfactorial {
     my ($x, $y) = @_;
 
     if (ref($x) ne __PACKAGE__) {
+        if (!ref($x) and CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
+            ## $y is an unsigned native integer
+        }
+        else {
+            $x = __PACKAGE__->new($x);
+        }
+    }
+
+    if (ref($y) ne __PACKAGE__) {
+        if (!ref($y) and CORE::int($y) eq $y and $y >= 0 and $y <= ULONG_MAX) {
+            ## $y is an unsigned native integer
+        }
+        else {
+            $y = __PACKAGE__->new($y);
+        }
+    }
+
+    ($x = _any2ui($$x) // (goto &nan)) if ref($x);
+    ($y = _any2ui($$y) // (goto &nan)) if ref($y);
+
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_mfac_uiui($r, $x, $y);
+    bless \$r;
+}
+
+#
+## falling_factorial(x, y) = binomial(x, y) * y!
+#
+sub falling_factorial {
+    my ($x, $y) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
         $x = __PACKAGE__->new($x);
     }
 
     if (ref($y) ne __PACKAGE__) {
-        $y = __PACKAGE__->new($y);
+        if (!ref($y) and CORE::int($y) eq $y and $y >= 0 and $y <= ULONG_MAX) {
+            ## $y is an unsigned native integer
+        }
+        else {
+            $y = __PACKAGE__->new($y);
+        }
     }
 
-    my $ui1 = _any2ui($$x) // (goto &nan);
-    my $ui2 = _any2ui($$y) // (goto &nan);
+    $x = _any2mpz($$x) // (goto &nan);
+    ($y = _any2ui($$y) // (goto &nan)) if ref($y);
 
     my $r = Math::GMPz::Rmpz_init();
-    Math::GMPz::Rmpz_mfac_uiui($r, $ui1, $ui2);
+
+    Math::GMPz::Rmpz_fits_ulong_p($x)
+      ? Math::GMPz::Rmpz_bin_uiui($r, Math::GMPz::Rmpz_get_ui($x), $y)
+      : Math::GMPz::Rmpz_bin_ui($r, $x, $y);
+
+    Math::GMPz::Rmpz_sgn($r) || goto &zero;
+
+    state $t = Math::GMPz::Rmpz_init_nobless();
+    Math::GMPz::Rmpz_fac_ui($t, $y);
+    Math::GMPz::Rmpz_mul($r, $r, $t);
+    bless \$r;
+}
+
+#
+## rising_factorial(x, y) = binomial(x + y - 1, y) * y!
+#
+sub rising_factorial {
+    my ($x, $y) = @_;
+
+    if (ref($x) ne __PACKAGE__) {
+        $x = __PACKAGE__->new($x);
+    }
+
+    if (ref($y) ne __PACKAGE__) {
+        if (!ref($y) and CORE::int($y) eq $y and $y >= 0 and $y <= ULONG_MAX) {
+            ## $y is an unsigned native integer
+        }
+        else {
+            $y = __PACKAGE__->new($y);
+        }
+    }
+
+    $x = _any2mpz($$x) // (goto &nan);
+    ($y = _any2ui($$y) // (goto &nan)) if ref($y);
+
+    my $r = Math::GMPz::Rmpz_init_set($x);
+    Math::GMPz::Rmpz_add_ui($r, $r, $y);
+    Math::GMPz::Rmpz_sub_ui($r, $r, 1);
+
+    Math::GMPz::Rmpz_fits_ulong_p($r)
+      ? Math::GMPz::Rmpz_bin_uiui($r, Math::GMPz::Rmpz_get_ui($r), $y)
+      : Math::GMPz::Rmpz_bin_ui($r, $r, $y);
+
+    Math::GMPz::Rmpz_sgn($r) || goto &zero;
+
+    state $t = Math::GMPz::Rmpz_init_nobless();
+    Math::GMPz::Rmpz_fac_ui($t, $y);
+    Math::GMPz::Rmpz_mul($r, $r, $t);
     bless \$r;
 }
 
@@ -3739,14 +3826,19 @@ Class::Multimethods::multimethod powmod => ('*', '*', '*') => sub {
 Class::Multimethods::multimethod binomial => (__PACKAGE__, __PACKAGE__) => sub {
     my ($x, $y) = @_;
 
-    $y = _any2si($$y)  // (goto &nan);
     $x = _any2mpz($$x) // (goto &nan);
+    $y = _any2si($$y)  // (goto &nan);
 
     my $r = Math::GMPz::Rmpz_init();
 
-    $y < 0
-      ? Math::GMPz::Rmpz_bin_si($r, $x, $y)
-      : Math::GMPz::Rmpz_bin_ui($r, $x, $y);
+    if ($y >= 0 and Math::GMPz::Rmpz_fits_ulong_p($x)) {
+        Math::GMPz::Rmpz_bin_uiui($r, Math::GMPz::Rmpz_get_ui($x), $y);
+    }
+    else {
+        $y < 0
+          ? Math::GMPz::Rmpz_bin_si($r, $x, $y)
+          : Math::GMPz::Rmpz_bin_ui($r, $x, $y);
+    }
 
     bless \$r;
 };
@@ -3757,9 +3849,14 @@ Class::Multimethods::multimethod binomial => (__PACKAGE__, '$') => sub {
         $x = _any2mpz($$x) // (goto &nan);
         my $r = Math::GMPz::Rmpz_init();
 
-        $y < 0
-          ? Math::GMPz::Rmpz_bin_si($r, $x, $y)
-          : Math::GMPz::Rmpz_bin_ui($r, $x, $y);
+        if ($y >= 0 and Math::GMPz::Rmpz_fits_ulong_p($x)) {
+            Math::GMPz::Rmpz_bin_uiui($r, Math::GMPz::Rmpz_get_ui($x), $y);
+        }
+        else {
+            $y < 0
+              ? Math::GMPz::Rmpz_bin_si($r, $x, $y)
+              : Math::GMPz::Rmpz_bin_ui($r, $x, $y);
+        }
 
         bless \$r;
     }
