@@ -1,5 +1,11 @@
 Revision history for Math-AnyNum
 
+0.11    2018-?-?
+
+        [OTHER]
+
+        - Extended the `rising_factorial(n, k)` and `falling_factorial(n, k)` for negative values of `k`.
+
 0.10    2017-07-09
 
         [ADDITIONS]
