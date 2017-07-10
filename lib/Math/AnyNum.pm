@@ -3070,9 +3070,8 @@ sub falling_factorial {
 
     if ($y < 0) {
         my $q = Math::GMPq::Rmpq_init();
-        Math::GMPq::Rmpq_set_ui($q, 1, 1);
-        Math::GMPq::Rmpq_set_den($q, $r);
-        Math::GMPq::Rmpq_canonicalize($q);
+        Math::GMPq::Rmpq_set_z($q, $r);
+        Math::GMPq::Rmpq_inv($q, $q);
         return bless \$q;
     }
 
@@ -3122,9 +3121,8 @@ sub rising_factorial {
 
     if ($y < 0) {
         my $q = Math::GMPq::Rmpq_init();
-        Math::GMPq::Rmpq_set_ui($q, 1, 1);
-        Math::GMPq::Rmpq_set_den($q, $r);
-        Math::GMPq::Rmpq_canonicalize($q);
+        Math::GMPq::Rmpq_set_z($q, $r);
+        Math::GMPq::Rmpq_inv($q, $q);
         return bless \$q;
     }
 
