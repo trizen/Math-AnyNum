@@ -2532,14 +2532,12 @@ sub zeta {
         }
     }
 
-    if (!ref($x)) {
-        my $r = Math::MPFR::Rmpfr_init2($PREC);
-        Math::MPFR::Rmpfr_zeta_ui($r, $x, $ROUND);
-        return bless \$r;
-    }
-
     my $r = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_zeta($r, $x, $ROUND);
+
+    ref($x)
+      ? Math::MPFR::Rmpfr_zeta($r, $x, $ROUND)
+      : Math::MPFR::Rmpfr_zeta_ui($r, $x, $ROUND);
+
     bless \$r;
 }
 
