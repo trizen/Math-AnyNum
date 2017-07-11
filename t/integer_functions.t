@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 327;
+plan tests => 327;    # be careful
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -99,7 +99,9 @@ is(rising_factorial($o->new(123), $o->new(-42)),
 
 SKIP: {
     my $OLD_GMP = ($GMP_V_MAJOR < 5 or ($GMP_V_MAJOR == 5 and $GMP_V_MINOR < 1));
-    skip("old version of GMP detected", 11) if $OLD_GMP;
+
+    # Update this counter when more tests are added or deleted in this section
+    skip("old version of GMP detected", 18) if $OLD_GMP;
 
     is(mfactorial(10, 2), '3840');
     is(mfactorial(11, 3), '880');
