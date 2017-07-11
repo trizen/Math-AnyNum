@@ -2,6 +2,10 @@ Revision history for Math-AnyNum
 
 0.11    2018-?-?
 
+        [PERFORMANCE IMPROVEMENTS]
+
+        - Optimized `eta(n)` and `zeta(n)` for values of `n` that fit inside a native unsigned integer.
+
         [OTHER]
 
         - Extended the `rising_factorial(n, k)` and `falling_factorial(n, k)` for negative values of `k`.
@@ -18,7 +22,7 @@ Revision history for Math-AnyNum
 
         - Faster stringification of floating-point numbers (including complex numbers).
         - Optimization in `mfactorial(n, m)` for native integers.
-        - Optimization in `binomial(n, k)` for values of `n` that fit inside an unsigned integer.
+        - Optimization in `binomial(n, k)` for values of `n` that fit inside a native unsigned integer.
 
         [FIXES]
 
