@@ -1,6 +1,10 @@
 Revision history for Math-AnyNum
 
-0.11    2018-?-?
+0.11    2017-07-11
+
+        [IMPROVEMENTS]
+
+        - Extended the `rising_factorial(n, k)` and `falling_factorial(n, k)` for negative values of `k`.
 
         [PERFORMANCE IMPROVEMENTS]
 
@@ -8,7 +12,7 @@ Revision history for Math-AnyNum
 
         [OTHER]
 
-        - Extended the `rising_factorial(n, k)` and `falling_factorial(n, k)` for negative values of `k`.
+        - Fixed the number of skipped tests under old versions of GMP in t/integer_functions.t.
 
 0.10    2017-07-09
 
