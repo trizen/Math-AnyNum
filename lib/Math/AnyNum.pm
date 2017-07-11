@@ -3071,7 +3071,7 @@ sub falling_factorial {
 
     if (!Math::GMPz::Rmpz_sgn($r)) {
         $y < 0
-          ? (goto &inf)
+          ? (goto &nan)
           : (goto &zero);
     }
 
@@ -3122,7 +3122,7 @@ sub rising_factorial {
 
     if (!Math::GMPz::Rmpz_sgn($r)) {
         $y < 0
-          ? (goto &inf)
+          ? (goto &nan)
           : (goto &zero);
     }
 

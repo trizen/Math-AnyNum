@@ -79,8 +79,8 @@ is(rising_factorial($o->new(-123), $o->new(13)), '-764762377697592310465228800')
 is(falling_factorial(-123, -13), '-1/683933833713293936188416000');
 is(rising_factorial(-123, -13), '-1/3012474223753262018150400000');
 
-is(rising_factorial(12, -13), 'Inf');
-is(falling_factorial(-13, -14), 'Inf');
+is(rising_factorial(12, -13), 'NaN');
+is(falling_factorial(-13, -14), 'NaN');
 
 is(falling_factorial(123, $o->new(-42)),
     '1/4465482258831228787047309106389002878492944333613461706826678255930625748893696000000000000');
