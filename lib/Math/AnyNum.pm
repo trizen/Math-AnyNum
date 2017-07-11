@@ -15,7 +15,7 @@ use POSIX qw(ULONG_MAX LONG_MIN);
 
 use Class::Multimethods qw();
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 our ($ROUND, $PREC);
 
 BEGIN {
@@ -3071,7 +3071,7 @@ sub falling_factorial {
 
     if (!Math::GMPz::Rmpz_sgn($r)) {
         $y < 0
-          ? (goto &inf)
+          ? (goto &nan)
           : (goto &zero);
     }
 
@@ -3122,7 +3122,7 @@ sub rising_factorial {
 
     if (!Math::GMPz::Rmpz_sgn($r)) {
         $y < 0
-          ? (goto &inf)
+          ? (goto &nan)
           : (goto &zero);
     }
 
