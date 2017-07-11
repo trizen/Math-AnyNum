@@ -2520,13 +2520,24 @@ sub zeta {
     my ($x) = @_;
 
     if (!ref($x) and CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
-        my $r = Math::MPFR::Rmpfr_init2($PREC);
-        Math::MPFR::Rmpfr_zeta_ui($r, $x, $ROUND);
-        return bless \$r;
+        ## $x is an unsigned integer
+    }
+    else {
+        $x = _star2mpfr($x);
+
+        # If $x fits inside an unsigned integer, then unpack it.
+        if (    Math::MPFR::Rmpfr_integer_p($x)
+            and Math::MPFR::Rmpfr_fits_ulong_p($x, $ROUND)) {
+            $x = Math::MPFR::Rmpfr_get_ui($x, $ROUND);
+        }
     }
 
     my $r = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_zeta($r, _star2mpfr($x), $ROUND);
+
+    ref($x)
+      ? Math::MPFR::Rmpfr_zeta($r, $x, $ROUND)
+      : Math::MPFR::Rmpfr_zeta_ui($r, $x, $ROUND);
+
     bless \$r;
 }
 
