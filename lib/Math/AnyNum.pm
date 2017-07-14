@@ -258,6 +258,8 @@ use overload
         as_frac => sub ($;$) { goto &as_frac },
         as_dec  => sub ($;$) { goto &as_dec },
 
+        frac_approx => sub ($) { goto &frac_approx },
+
         is_inf     => sub ($) { goto &is_inf },
         is_ninf    => sub ($) { goto &is_ninf },
         is_neg     => sub ($) { goto &is_neg },
@@ -4224,6 +4226,70 @@ sub as_dec {
 
     local $PREC = $prec;
     __stringify__(_star2mpfr_mpc($x));
+}
+
+sub frac_approx {
+    require Math::AnyNum::stringify;
+    my ($x) = @_;
+
+    $x = _star2mpfr($x);
+
+    Math::MPFR::Rmpfr_number_p($x) || goto &nan;
+
+    my $t = Math::MPFR::Rmpfr_init2($PREC);    # temporary variable
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+
+    Math::MPFR::Rmpfr_set($r, $x, $ROUND);
+
+    my $num2cfrac = sub {
+        my ($callback, $n) = @_;
+
+        while (1) {
+            Math::MPFR::Rmpfr_floor($t, $r);
+
+            my $z = Math::GMPz::Rmpz_init();
+            Math::MPFR::Rmpfr_get_z($z, $t, Math::MPFR::MPFR_RNDZ);
+
+            $callback->($z) && return 1;
+
+            Math::MPFR::Rmpfr_sub($r, $r, $t, $ROUND);
+            Math::MPFR::Rmpfr_zero_p($r) && last;
+            Math::MPFR::Rmpfr_ui_div($r, 1, $r, $ROUND);
+        }
+    };
+
+    my $q = Math::GMPq::Rmpq_init();
+
+    my $cfrac2num = sub {
+        my (@f) = @_;
+
+        Math::GMPq::Rmpq_set_ui($q, 0, 1);
+
+        for (1 .. $#f) {
+            Math::GMPq::Rmpq_add_z($q, $q, CORE::pop(@f));
+            Math::GMPq::Rmpq_inv($q, $q);
+        }
+
+        Math::GMPq::Rmpq_add_z($q, $q, $f[0]);
+    };
+
+    my @cfrac;
+    my $s = __stringify__($x);
+    my $u = Math::MPFR::Rmpfr_init2($PREC);    # temporary variable
+
+#<<<
+    $num2cfrac->(
+        sub {
+            my ($n) = @_;
+            CORE::push(@cfrac, $n);
+            $cfrac2num->(@cfrac);
+            Math::MPFR::Rmpfr_set_q($u, $q, $ROUND);
+            CORE::index(__stringify__($u), $s) == 0;
+        }, $x
+    );
+#>>>
+
+    bless \$q;
 }
 
 sub digits {

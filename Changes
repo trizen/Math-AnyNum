@@ -1,5 +1,11 @@
 Revision history for Math-AnyNum
 
+0.12    2018-?-?
+
+        [ADDITIONS]
+
+        - Added the `frac_approx(n)` function, which returns the smallest fraction approximation for a given real number `n`.
+
 0.11    2017-07-11
 
         [IMPROVEMENTS]
