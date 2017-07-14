@@ -258,7 +258,7 @@ use overload
         as_frac => sub ($;$) { goto &as_frac },
         as_dec  => sub ($;$) { goto &as_dec },
 
-        frac_approx => sub ($) { goto &frac_approx },
+        rat_approx => sub ($) { goto &rat_approx },
 
         is_inf     => sub ($) { goto &is_inf },
         is_ninf    => sub ($) { goto &is_ninf },
@@ -4228,7 +4228,7 @@ sub as_dec {
     __stringify__(_star2mpfr_mpc($x));
 }
 
-sub frac_approx {
+sub rat_approx {
     require Math::AnyNum::stringify;
     my ($x) = @_;
 
