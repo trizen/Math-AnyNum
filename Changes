@@ -4,7 +4,7 @@ Revision history for Math-AnyNum
 
         [ADDITIONS]
 
-        - Added the `frac_approx(n)` function, which returns the smallest fraction approximation for a given real number `n`.
+        - Added the `rat_approx(n)` function, which returns the smallest rational approximation for a given real number `n`.
 
 0.11    2017-07-11
 
