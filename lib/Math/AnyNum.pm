@@ -3071,11 +3071,11 @@ sub falling_factorial {
       ? Math::GMPz::Rmpz_bin_uiui($r, Math::GMPz::Rmpz_get_ui($r), CORE::abs($y))
       : Math::GMPz::Rmpz_bin_ui($r, $r, CORE::abs($y));
 
-    if (!Math::GMPz::Rmpz_sgn($r)) {
+    Math::GMPz::Rmpz_sgn($r) || do {
         $y < 0
           ? (goto &nan)
           : (goto &zero);
-    }
+    };
 
     state $t = Math::GMPz::Rmpz_init_nobless();
     Math::GMPz::Rmpz_fac_ui($t, CORE::abs($y));
@@ -3122,11 +3122,11 @@ sub rising_factorial {
       ? Math::GMPz::Rmpz_bin_uiui($r, Math::GMPz::Rmpz_get_ui($r), CORE::abs($y))
       : Math::GMPz::Rmpz_bin_ui($r, $r, CORE::abs($y));
 
-    if (!Math::GMPz::Rmpz_sgn($r)) {
+    Math::GMPz::Rmpz_sgn($r) || do {
         $y < 0
           ? (goto &nan)
           : (goto &zero);
-    }
+    };
 
     state $t = Math::GMPz::Rmpz_init_nobless();
     Math::GMPz::Rmpz_fac_ui($t, CORE::abs($y));
