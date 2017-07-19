@@ -30,8 +30,26 @@ Class::Multimethods::multimethod __mod__ => qw(Math::GMPq Math::GMPq) => sub {
 };
 
 Class::Multimethods::multimethod __mod__ => qw(Math::GMPq Math::GMPz) => sub {
-    (@_) = ($_[0], _mpz2mpq($_[1]));
-    goto &__mod__;
+    my ($x, $y) = @_;
+
+    Math::GMPz::Rmpz_sgn($y)
+      || goto &_nan;
+
+    my $quo = Math::GMPq::Rmpq_init();
+    Math::GMPq::Rmpq_div_z($quo, $x, $y);
+
+    # Floor
+    Math::GMPq::Rmpq_integer_p($quo) || do {
+        my $z = Math::GMPz::Rmpz_init();
+        Math::GMPz::Rmpz_set_q($z, $quo);
+        Math::GMPz::Rmpz_sub_ui($z, $z, 1) if Math::GMPq::Rmpq_sgn($quo) < 0;
+        Math::GMPq::Rmpq_set_z($quo, $z);
+    };
+
+    Math::GMPq::Rmpq_mul_z($quo, $quo, $y);
+    Math::GMPq::Rmpq_sub($quo, $x, $quo);
+
+    $quo;
 };
 
 Class::Multimethods::multimethod __mod__ => qw(Math::GMPq Math::MPFR) => sub {
