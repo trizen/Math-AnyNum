@@ -79,9 +79,9 @@ sub __bernfrac__ {
 
     for (my $i = 0 ; $primes[$i] <= $bound ; ++$i) {        # primes <= bound
         Math::GMPz::Rmpz_ui_pow_ui($u, $primes[$i], $n);    # u = p^n
-        Math::MPFR::Rmpfr_mul_z($z, $z, $u, $round);        # z = z/u
+        Math::MPFR::Rmpfr_mul_z($z, $z, $u, $round);        # z = z*u
         Math::GMPz::Rmpz_sub_ui($u, $u, 1);                 # u = u-1
-        Math::MPFR::Rmpfr_div_z($z, $z, $u, $round);        # z = z*u
+        Math::MPFR::Rmpfr_div_z($z, $z, $u, $round);        # z = z/u
     }
 
     Math::MPFR::Rmpfr_mul($z, $z, $K, $round);              # z = z * K
