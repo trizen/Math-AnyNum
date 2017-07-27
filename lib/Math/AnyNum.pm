@@ -39,13 +39,12 @@ use overload
   '^' => sub { $_[0]->xor($_[1]) },
   '~' => \&not,
 
-#<<<
-  '>'   => sub { $_[2] ?   $_[0]->lt ($_[1])  : $_[0]->gt ($_[1]) },
-  '>='  => sub { $_[2] ?   $_[0]->le ($_[1])  : $_[0]->ge ($_[1]) },
-  '<'   => sub { $_[2] ?   $_[0]->gt ($_[1])  : $_[0]->lt ($_[1]) },
-  '<='  => sub { $_[2] ?   $_[0]->ge ($_[1])  : $_[0]->le ($_[1]) },
+  '>'  => sub { $_[2] ? $_[0]->lt($_[1]) : $_[0]->gt($_[1]) },
+  '>=' => sub { $_[2] ? $_[0]->le($_[1]) : $_[0]->ge($_[1]) },
+  '<'  => sub { $_[2] ? $_[0]->gt($_[1]) : $_[0]->lt($_[1]) },
+  '<=' => sub { $_[2] ? $_[0]->ge($_[1]) : $_[0]->le($_[1]) },
+
   '<=>' => sub { $_[2] ? -($_[0]->cmp($_[1]) // return undef) : $_[0]->cmp($_[1]) },
-#>>>
 
   '>>' => sub { $_[2] ? __PACKAGE__->new($_[1])->rsft($_[0]) : $_[0]->rsft($_[1]) },
   '<<' => sub { $_[2] ? __PACKAGE__->new($_[1])->lsft($_[0]) : $_[0]->lsft($_[1]) },
@@ -3071,11 +3070,11 @@ sub falling_factorial {
       ? Math::GMPz::Rmpz_bin_uiui($r, Math::GMPz::Rmpz_get_ui($r), CORE::abs($y))
       : Math::GMPz::Rmpz_bin_ui($r, $r, CORE::abs($y));
 
-    if (!Math::GMPz::Rmpz_sgn($r)) {
+    Math::GMPz::Rmpz_sgn($r) || do {
         $y < 0
           ? (goto &nan)
           : (goto &zero);
-    }
+    };
 
     state $t = Math::GMPz::Rmpz_init_nobless();
     Math::GMPz::Rmpz_fac_ui($t, CORE::abs($y));
@@ -3122,11 +3121,11 @@ sub rising_factorial {
       ? Math::GMPz::Rmpz_bin_uiui($r, Math::GMPz::Rmpz_get_ui($r), CORE::abs($y))
       : Math::GMPz::Rmpz_bin_ui($r, $r, CORE::abs($y));
 
-    if (!Math::GMPz::Rmpz_sgn($r)) {
+    Math::GMPz::Rmpz_sgn($r) || do {
         $y < 0
           ? (goto &nan)
           : (goto &zero);
-    }
+    };
 
     state $t = Math::GMPz::Rmpz_init_nobless();
     Math::GMPz::Rmpz_fac_ui($t, CORE::abs($y));
