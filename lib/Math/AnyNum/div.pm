@@ -37,8 +37,7 @@ Class::Multimethods::multimethod __div__ => qw(Math::GMPq Math::GMPz) => sub {
 Class::Multimethods::multimethod __div__ => qw(Math::GMPq Math::MPFR) => sub {
     my ($x, $y) = @_;
     my $r = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_set_q($r, $x, $ROUND);
-    Math::MPFR::Rmpfr_div($r, $r, $y, $ROUND);
+    Math::MPFR::Rmpfr_q_div($r, $x, $y, $ROUND);
     $r;
 };
 
@@ -112,8 +111,7 @@ Class::Multimethods::multimethod __div__ => qw(Math::GMPz Math::GMPq) => sub {
 Class::Multimethods::multimethod __div__ => qw(Math::GMPz Math::MPFR) => sub {
     my ($x, $y) = @_;
     my $r = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_set_z($r, $x, $ROUND);
-    Math::MPFR::Rmpfr_div($r, $r, $y, $ROUND);
+    Math::MPFR::Rmpfr_z_div($r, $x, $y, $ROUND);
     $r;
 };
 
