@@ -34,7 +34,7 @@ my $builder = Module::Build->new(
                   'Math::GMPq'          => 0.45,
                   'Math::GMPz'          => 0.39,
                   'Math::MPC'           => 1.07,
-                  'Math::MPFR'          => 3.29,
+                  'Math::MPFR'          => 3.36,
                   'Class::Multimethods' => 1.70,
                  },
      add_to_cleanup     => ['Math-AnyNum-*'],
