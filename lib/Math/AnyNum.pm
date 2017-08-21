@@ -1343,8 +1343,8 @@ sub rat {
         }
 
         my $r = __PACKAGE__->new($x);
-        $$r = _any2mpq($$r) // goto &nan;
-        $r;
+        ref($$r) eq 'Math::GMPq' && return $r;
+        bless(\_any2mpq($$r) // goto &nan);
     }
 }
 
@@ -1356,8 +1356,8 @@ sub float {
     }
     else {
         my $r = __PACKAGE__->new($x);
-        $$r = _any2mpfr($$r);
-        $r;
+        ref($$r) eq 'Math::MPFR' && return $r;
+        bless \_any2mpfr($$r);
     }
 }
 
@@ -1369,8 +1369,8 @@ sub complex {
     }
     else {
         my $r = __PACKAGE__->new($x);
-        $$r = _any2mpc($$r);
-        $r;
+        ref($$r) eq 'Math::MPC' && return $r;
+        bless \_any2mpc($$r);
     }
 }
 

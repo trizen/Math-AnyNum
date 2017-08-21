@@ -48,10 +48,10 @@ Class::Multimethods::multimethod __sub__ => qw(Math::GMPz Math::GMPz) => sub {
 
 Class::Multimethods::multimethod __sub__ => qw(Math::GMPz $) => sub {
     my ($x, $y) = @_;
-    my $r = Math::GMPz::Rmpz_init_set($x);
+    my $r = Math::GMPz::Rmpz_init();
     $y < 0
-      ? Math::GMPz::Rmpz_add_ui($r, $r, -$y)
-      : Math::GMPz::Rmpz_sub_ui($r, $r, $y);
+      ? Math::GMPz::Rmpz_add_ui($r, $x, -$y)
+      : Math::GMPz::Rmpz_sub_ui($r, $x, $y);
     $r;
 };
 
