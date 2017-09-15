@@ -50,10 +50,9 @@ use overload
   '<<' => sub { $_[2] ? __PACKAGE__->new($_[1])->lsft($_[0]) : $_[0]->lsft($_[1]) },
 
   '**' => sub { $_[2] && (@_ = (__PACKAGE__->new($_[1]), $_[0])); goto &pow },
-  '%' => sub { $_[2] ? __PACKAGE__->new($_[1])->mod($_[0]) : $_[0]->mod($_[1]) },
-
-  '/' => sub { $_[2] ? __PACKAGE__->new($_[1])->div($_[0]) : $_[0]->div($_[1]) },
-  '-' => sub { $_[2] ? __PACKAGE__->new($_[1])->sub($_[0]) : $_[0]->sub($_[1]) },
+  '%'  => sub { $_[2] && (@_ = (__PACKAGE__->new($_[1]), $_[0])); goto &mod },
+  '/'  => sub { $_[2] && (@_ = (__PACKAGE__->new($_[1]), $_[0])); goto &div },
+  '-'  => sub { $_[2] && (@_ = (__PACKAGE__->new($_[1]), $_[0])); goto &sub },
 
   atan2 => sub { &atan2($_[2] ? ($_[1], $_[0]) : ($_[0], $_[1])) },
 
@@ -2005,38 +2004,33 @@ Class::Multimethods::multimethod irootrem => ('*', '*') => sub {
 ## MOD
 #
 
-Class::Multimethods::multimethod mod => (__PACKAGE__, __PACKAGE__) => sub {
-    require Math::AnyNum::mod;
-    my ($x, $y) = @_;
-    bless \__mod__($$x, $$y);
-};
-
-Class::Multimethods::multimethod mod => (__PACKAGE__, '$') => sub {
+sub mod {
     require Math::AnyNum::mod;
     my ($x, $y) = @_;
 
-    if (    ref($$x) ne 'Math::GMPq'
-        and CORE::int($y) eq $y
-        and $y > 0
-        and $y <= ULONG_MAX) {
-        bless \__mod__($$x, $y);
+    if (ref($x) eq __PACKAGE__ and ref($y) eq __PACKAGE__) {
+        return bless \__mod__($$x, $$y);
     }
-    else {
-        bless \__mod__($$x, _str2obj($y) // (goto &nan));
+
+    if (!ref($y)) {
+
+        $x =
+            ref($x) eq __PACKAGE__ ? $$x
+          : ref($x)                ? _star2obj($x)
+          :                          _str2obj($x);
+
+        if (    ref($x) ne 'Math::GMPq'
+            and CORE::int($y) eq $y
+            and $y > 0
+            and $y <= ULONG_MAX) {
+            return bless \__mod__($x, $y);
+        }
+
+        return bless \__mod__($x, _str2obj($y) // (goto &nan));
     }
-};
 
-Class::Multimethods::multimethod mod => (__PACKAGE__, '*') => sub {
-    require Math::AnyNum::mod;
-    my ($x, $y) = @_;
-    bless \__mod__($$x, _star2obj($y));
-};
-
-Class::Multimethods::multimethod mod => ('*', '*') => sub {
-    require Math::AnyNum::mod;
-    my ($x, $y) = @_;
     bless \__mod__(_star2obj($x), _star2obj($y));
-};
+}
 
 #
 ## IMOD
