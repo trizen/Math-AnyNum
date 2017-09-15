@@ -789,8 +789,10 @@ sub _star2mpfr_mpc {
 sub _star2obj {
     my ($x) = @_;
 
+    ref($x) || goto &_str2obj;
+
     if (ref($x) eq __PACKAGE__) {
-        return $$x;
+        $$x;
     }
     elsif (
            ref($x)
@@ -799,11 +801,12 @@ sub _star2obj {
                 or ref($x) eq 'Math::MPFR'
                 or ref($x) eq 'Math::MPC')
       ) {
-        return $x;
+        $x;
     }
-
-    (@_) = "$x";
-    goto &_str2obj;
+    else {
+        (@_) = "$x";
+        goto &_str2obj;
+    }
 }
 
 sub new {
@@ -814,6 +817,11 @@ sub new {
     # Special string values
     if (!$ref and (!defined($base) or CORE::int($base) == 10)) {
         return bless \_str2obj($num), $class;
+    }
+
+    # Special case
+    if (!defined($base) and $ref eq __PACKAGE__) {
+        return $num;
     }
 
     # Number with base
@@ -1606,7 +1614,7 @@ sub div {
 }
 
 #
-## IADD
+## INTEGER ADDITION
 #
 
 sub iadd {
@@ -1634,7 +1642,7 @@ sub iadd {
 }
 
 #
-## ISUB
+## INTEGER SUBTRACTION
 #
 
 sub isub {
@@ -1658,7 +1666,7 @@ sub isub {
 }
 
 #
-## IMUL
+## INTEGER MULTIPLICATION
 #
 
 sub imul {
@@ -1685,7 +1693,7 @@ sub imul {
 }
 
 #
-## IDIV
+## INTEGER DIVISION
 #
 
 sub idiv {
@@ -1733,14 +1741,6 @@ sub pow {
         return bless \__pow__($x, _str2obj($y));
     }
 
-    if (ref($x) eq __PACKAGE__) {
-        return bless \__pow__($$x, _star2obj($y));
-    }
-
-    if (ref($y) eq __PACKAGE__) {
-        return bless \__pow__(_star2obj($x), $$y);
-    }
-
     bless \__pow__(_star2obj($x), _star2obj($y));
 }
 
@@ -1748,54 +1748,50 @@ sub pow {
 ## INTEGER POWER
 #
 
-Class::Multimethods::multimethod ipow => (__PACKAGE__, __PACKAGE__) => sub {
-    require Math::AnyNum::ipow;
-    my ($x, $y) = @_;
-    bless \__ipow__(_any2mpz($$x) // (goto &nan), _any2si($$y) // (goto &nan));
-};
-
-Class::Multimethods::multimethod ipow => (__PACKAGE__, '$') => sub {
+sub ipow {
     require Math::AnyNum::ipow;
     my ($x, $y) = @_;
 
-    if (CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
-        bless \__ipow__(_any2mpz($$x) // (goto &nan), $y);
+    if (ref($x) eq __PACKAGE__ and ref($y) eq __PACKAGE__) {
+        return bless \__ipow__(_any2mpz($$x) // (goto &nan), _any2si($$y) // (goto &nan));
     }
-    else {
-        bless \__ipow__(_any2mpz($$x) // (goto &nan), _any2si(_str2obj($y)) // (goto &nan));
+
+    if (!ref($y)) {
+
+        # Both `x` and `y` are strings
+        if (!ref($x)) {
+
+            if (    CORE::int($x) eq $x
+                and $x >= 0
+                and $x <= ULONG_MAX
+                and CORE::int($y) eq $y
+                and $y >= 0
+                and $y <= ULONG_MAX) {
+
+                my $r = Math::GMPz::Rmpz_init();
+                Math::GMPz::Rmpz_ui_pow_ui($r, $x, $y);
+                return bless \$r;
+            }
+
+            return bless \__ipow__(_star2mpz($x) // (goto &nan), _any2si(_str2obj($y)) // goto &nan);
+        }
+
+        $x = (
+              ref($x) eq __PACKAGE__
+              ? _any2mpz($$x)
+              : _star2mpz($x)
+             ) // (goto &nan);
+
+        # Only `y` is scalar
+        if (CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
+            return bless \__ipow__($x, $y);
+        }
+
+        return bless \__ipow__($x, _any2si(_str2obj($y)) // (goto &nan));
     }
-};
 
-Class::Multimethods::multimethod ipow => ('$', '$') => sub {
-    my ($x, $y) = @_;
-
-    if (    CORE::int($x) eq $x
-        and $x >= 0
-        and $x <= ULONG_MAX
-        and CORE::int($y) eq $y
-        and $y >= 0
-        and $y <= ULONG_MAX) {
-        my $r = Math::GMPz::Rmpz_init();
-        Math::GMPz::Rmpz_ui_pow_ui($r, $x, $y);
-        bless \$r;
-    }
-    else {
-        require Math::AnyNum::ipow;
-        bless \__ipow__(_star2mpz($x) // (goto &nan), _any2si(_str2obj($y)) // goto &nan);
-    }
-};
-
-Class::Multimethods::multimethod ipow => ('*', __PACKAGE__) => sub {
-    require Math::AnyNum::ipow;
-    my ($x, $y) = @_;
-    bless \__ipow__(_star2mpz($x) // (goto &nan), _any2si($$y) // (goto &nan));
-};
-
-Class::Multimethods::multimethod ipow => ('*', '*') => sub {
-    require Math::AnyNum::ipow;
-    my ($x, $y) = @_;
     bless \__ipow__(_star2mpz($x) // (goto &nan), _any2si(_star2obj($y)) // (goto &nan));
-};
+}
 
 #
 ## IPOW2
