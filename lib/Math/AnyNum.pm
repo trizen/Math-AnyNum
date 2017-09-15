@@ -28,29 +28,29 @@ use overload
   '0+' => \&numify,
   bool => \&boolify,
 
-  '+' => sub { $_[0]->add($_[1]) },
-  '*' => sub { $_[0]->mul($_[1]) },
+  '+' => \&add,
+  '*' => \&mul,
 
-  '==' => sub { $_[0]->eq($_[1]) },
-  '!=' => sub { $_[0]->ne($_[1]) },
+  '==' => \&eq,
+  '!=' => \&ne,
 
   '&' => sub { $_[0]->and($_[1]) },
   '|' => sub { $_[0]->or($_[1]) },
   '^' => sub { $_[0]->xor($_[1]) },
   '~' => \&not,
 
-  '>'  => sub { $_[2] ? $_[0]->lt($_[1]) : $_[0]->gt($_[1]) },
-  '>=' => sub { $_[2] ? $_[0]->le($_[1]) : $_[0]->ge($_[1]) },
-  '<'  => sub { $_[2] ? $_[0]->gt($_[1]) : $_[0]->lt($_[1]) },
-  '<=' => sub { $_[2] ? $_[0]->ge($_[1]) : $_[0]->le($_[1]) },
+  '>'  => sub { $_[2] ? (goto &lt) : (goto &gt) },
+  '>=' => sub { $_[2] ? (goto &le) : (goto &ge) },
+  '<'  => sub { $_[2] ? (goto &gt) : (goto &lt) },
+  '<=' => sub { $_[2] ? (goto &ge) : (goto &le) },
 
   '<=>' => sub { $_[2] ? -($_[0]->cmp($_[1]) // return undef) : $_[0]->cmp($_[1]) },
 
   '>>' => sub { $_[2] ? __PACKAGE__->new($_[1])->rsft($_[0]) : $_[0]->rsft($_[1]) },
   '<<' => sub { $_[2] ? __PACKAGE__->new($_[1])->lsft($_[0]) : $_[0]->lsft($_[1]) },
 
-  '**' => sub { $_[2] ? __PACKAGE__->new($_[1])->pow($_[0]) : $_[0]->pow($_[1]) },
-  '%'  => sub { $_[2] ? __PACKAGE__->new($_[1])->mod($_[0]) : $_[0]->mod($_[1]) },
+  '**' => sub { $_[2] && (@_ = (__PACKAGE__->new($_[1]), $_[0])); goto &pow },
+  '%' => sub { $_[2] ? __PACKAGE__->new($_[1])->mod($_[0]) : $_[0]->mod($_[1]) },
 
   '/' => sub { $_[2] ? __PACKAGE__->new($_[1])->div($_[0]) : $_[0]->div($_[1]) },
   '-' => sub { $_[2] ? __PACKAGE__->new($_[1])->sub($_[0]) : $_[0]->sub($_[1]) },
@@ -1082,203 +1082,177 @@ sub boolify {
 }
 
 #
-## EQ
+## EQUALITY
 #
 
-Class::Multimethods::multimethod eq => (__PACKAGE__, __PACKAGE__) => sub {
-    require Math::AnyNum::eq;
-    my ($x, $y) = @_;
-    (@_) = ($$x, $$y);
-    goto &__eq__;
-};
-
-Class::Multimethods::multimethod eq => (__PACKAGE__, '$') => sub {
+sub eq {
     require Math::AnyNum::eq;
     my ($x, $y) = @_;
 
-    if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        (@_) = ($$x, $y);
+    if (ref($y) eq __PACKAGE__) {
+        (@_) = ($$x, $$y);
+        goto &__eq__;
     }
-    else {
-        (@_) = ($$x, _str2obj($y));
-    }
-    goto &__eq__;
-};
 
-Class::Multimethods::multimethod eq => (__PACKAGE__, '*') => sub {
-    require Math::AnyNum::eq;
-    my ($x, $y) = @_;
+    if (!ref($y)) {
+        if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
+            (@_) = ($$x, $y);
+        }
+        else {
+            (@_) = ($$x, _str2obj($y));
+        }
+        goto &__eq__;
+    }
+
     (@_) = ($$x, _star2obj($y));
     goto &__eq__;
-};
+}
 
 #
-## NE
+## INEQUALITY
 #
 
-Class::Multimethods::multimethod ne => (__PACKAGE__, __PACKAGE__) => sub {
-    require Math::AnyNum::ne;
-    my ($x, $y) = @_;
-    (@_) = ($$x, $$y);
-    goto &__ne__;
-};
-
-Class::Multimethods::multimethod ne => (__PACKAGE__, '$') => sub {
+sub ne {
     require Math::AnyNum::ne;
     my ($x, $y) = @_;
 
-    if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        (@_) = ($$x, $y);
+    if (ref($y) eq __PACKAGE__) {
+        (@_) = ($$x, $$y);
+        goto &__ne__;
     }
-    else {
-        (@_) = ($$x, _str2obj($y));
-    }
-    goto &__ne__;
-};
 
-Class::Multimethods::multimethod ne => (__PACKAGE__, '*') => sub {
-    require Math::AnyNum::ne;
-    my ($x, $y) = @_;
+    if (!ref($y)) {
+        if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
+            (@_) = ($$x, $y);
+        }
+        else {
+            (@_) = ($$x, _str2obj($y));
+        }
+        goto &__ne__;
+    }
+
     (@_) = ($$x, _star2obj($y));
     goto &__ne__;
-};
+}
 
 #
-## CMP
+## COMPARISON
 #
 
-Class::Multimethods::multimethod cmp => (__PACKAGE__, __PACKAGE__) => sub {
+sub cmp {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
-    (@_) = ($$x, $$y);
-    goto &__cmp__;
-};
 
-Class::Multimethods::multimethod cmp => (__PACKAGE__, '$') => sub {
-    require Math::AnyNum::cmp;
-    my ($x, $y) = @_;
-    if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        (@_) = ($$x, $y);
+    if (ref($y) eq __PACKAGE__) {
+        (@_) = ($$x, $$y);
+        goto &__cmp__;
     }
-    else {
-        (@_) = ($$x, _str2obj($y));
-    }
-    goto &__cmp__;
-};
 
-Class::Multimethods::multimethod cmp => (__PACKAGE__, '*') => sub {
-    require Math::AnyNum::cmp;
-    my ($x, $y) = @_;
+    if (!ref($y)) {
+        if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
+            (@_) = ($$x, $y);
+        }
+        else {
+            (@_) = ($$x, _str2obj($y));
+        }
+        goto &__cmp__;
+    }
+
     (@_) = ($$x, _star2obj($y));
     goto &__cmp__;
-};
+}
 
 #
-## GT
+## GREATER THAN
 #
 
-Class::Multimethods::multimethod gt => (__PACKAGE__, __PACKAGE__) => sub {
-    require Math::AnyNum::cmp;
-    my ($x, $y) = @_;
-    (__cmp__($$x, $$y) // return undef) > 0;
-};
-
-Class::Multimethods::multimethod gt => (__PACKAGE__, '$') => sub {
+sub gt {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
 
-    if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        (__cmp__($$x, $y) // return undef) > 0;
+    if (ref($y) eq __PACKAGE__) {
+        return ((__cmp__($$x, $$y) // return undef) > 0);
     }
-    else {
-        (__cmp__($$x, _str2obj($y)) // return undef) > 0;
-    }
-};
 
-Class::Multimethods::multimethod gt => (__PACKAGE__, '*') => sub {
-    require Math::AnyNum::cmp;
-    my ($x, $y) = @_;
+    if (!ref($y)) {
+        if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
+            return ((__cmp__($$x, $y) // return undef) > 0);
+        }
+        return ((__cmp__($$x, _str2obj($y)) // return undef) > 0);
+    }
+
     (__cmp__($$x, _star2obj($y)) // return undef) > 0;
-};
+}
 
 #
-## GE
+## EQUAL OR GREATER THAN
 #
 
-Class::Multimethods::multimethod ge => (__PACKAGE__, __PACKAGE__) => sub {
+sub ge {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
-    (__cmp__($$x, $$y) // return undef) >= 0;
-};
 
-Class::Multimethods::multimethod ge => (__PACKAGE__, '$') => sub {
-    require Math::AnyNum::cmp;
-    my ($x, $y) = @_;
-    if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        (__cmp__($$x, $y) // return undef) >= 0;
+    if (ref($y) eq __PACKAGE__) {
+        return ((__cmp__($$x, $$y) // return undef) >= 0);
     }
-    else {
-        (__cmp__($$x, _str2obj($y)) // return undef) >= 0;
-    }
-};
 
-Class::Multimethods::multimethod ge => (__PACKAGE__, '*') => sub {
-    require Math::AnyNum::cmp;
-    my ($x, $y) = @_;
+    if (!ref($y)) {
+        if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
+            return ((__cmp__($$x, $y) // return undef) >= 0);
+        }
+        return ((__cmp__($$x, _str2obj($y)) // return undef) >= 0);
+    }
+
     (__cmp__($$x, _star2obj($y)) // return undef) >= 0;
-};
+}
 
 #
-## LT
+## LESS THAN
 #
-Class::Multimethods::multimethod lt => (__PACKAGE__, __PACKAGE__) => sub {
-    require Math::AnyNum::cmp;
-    my ($x, $y) = @_;
-    (__cmp__($$x, $$y) // return undef) < 0;
-};
 
-Class::Multimethods::multimethod lt => (__PACKAGE__, '$') => sub {
+sub lt {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
-    if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        (__cmp__($$x, $y) // return undef) < 0;
-    }
-    else {
-        (__cmp__($$x, _str2obj($y)) // return undef) < 0;
-    }
-};
 
-Class::Multimethods::multimethod lt => (__PACKAGE__, '*') => sub {
-    require Math::AnyNum::cmp;
-    my ($x, $y) = @_;
+    if (ref($y) eq __PACKAGE__) {
+        return ((__cmp__($$x, $$y) // return undef) < 0);
+    }
+
+    if (!ref($y)) {
+        if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
+            return ((__cmp__($$x, $y) // return undef) < 0);
+        }
+        return ((__cmp__($$x, _str2obj($y)) // return undef) < 0);
+    }
+
     (__cmp__($$x, _star2obj($y)) // return undef) < 0;
-};
+}
 
 #
-## LE
+## EQUAL OR LESS THAN
 #
-Class::Multimethods::multimethod le => (__PACKAGE__, __PACKAGE__) => sub {
-    require Math::AnyNum::cmp;
-    my ($x, $y) = @_;
-    (__cmp__($$x, $$y) // return undef) <= 0;
-};
 
-Class::Multimethods::multimethod le => (__PACKAGE__, '$') => sub {
+sub le {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
-    if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        (__cmp__($$x, $y) // return undef) <= 0;
-    }
-    else {
-        (__cmp__($$x, _str2obj($y)) // return undef) <= 0;
-    }
-};
 
-Class::Multimethods::multimethod le => (__PACKAGE__, '*') => sub {
-    require Math::AnyNum::cmp;
-    my ($x, $y) = @_;
+    if (ref($y) eq __PACKAGE__) {
+        return ((__cmp__($$x, $$y) // return undef) <= 0);
+    }
+
+    if (!ref($y)) {
+        if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
+            return ((__cmp__($$x, $y) // return undef) <= 0);
+        }
+        return ((__cmp__($$x, _str2obj($y)) // return undef) <= 0);
+    }
+
     (__cmp__($$x, _star2obj($y)) // return undef) <= 0;
-};
+}
+
+#
+## COPY
+#
 
 sub _copy {
     my ($x) = @_;
@@ -1312,6 +1286,10 @@ sub copy {
     bless \_copy($$x);
 }
 
+#
+## CONVERSION TO INTEGER
+#
+
 sub int {
     my ($x) = @_;
     if (ref($x) eq __PACKAGE__) {
@@ -1322,6 +1300,10 @@ sub int {
         bless \(_star2mpz($x) // (goto &nan));
     }
 }
+
+#
+## CONVERSION TO RATIONAL
+#
 
 sub rat {
     my ($x) = @_;
@@ -1346,6 +1328,10 @@ sub rat {
     }
 }
 
+#
+## CONVERSION TO FLOATING-POINT
+#
+
 sub float {
     my ($x) = @_;
     if (ref($x) eq __PACKAGE__) {
@@ -1358,6 +1344,10 @@ sub float {
         bless \_any2mpfr($$r);
     }
 }
+
+#
+## CONVERSION TO COMPLEX
+#
 
 sub complex {
     my ($x) = @_;
@@ -1372,6 +1362,10 @@ sub complex {
     }
 }
 
+#
+## NEGATION
+#
+
 sub neg {
     require Math::AnyNum::neg;
     my ($x) = @_;
@@ -1382,6 +1376,10 @@ sub neg {
 
     bless \__neg__($$x);
 }
+
+#
+## ABSOLUTE VALUE
+#
 
 sub abs {
     require Math::AnyNum::abs;
@@ -1394,6 +1392,10 @@ sub abs {
     bless \__abs__($$x);
 }
 
+#
+## MULTIPLICATIVE INVERSE
+#
+
 sub inv {
     require Math::AnyNum::inv;
     my ($x) = @_;
@@ -1405,11 +1407,19 @@ sub inv {
     bless \__inv__($$x);
 }
 
+#
+## INCREMENTATION BY ONE
+#
+
 sub inc {
     require Math::AnyNum::inc;
     my ($x) = @_;
     bless \__inc__($$x);
 }
+
+#
+## DECREMENTATION BY ONE
+#
 
 sub dec {
     require Math::AnyNum::dec;
