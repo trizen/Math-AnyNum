@@ -3363,81 +3363,29 @@ sub is_square {
 ## is_power
 #
 
-#~ sub is_power {
-#~ require Math::AnyNum::is_power;
-#~ my ($x, $y) = @_;
-
-#~ $x = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
-
-#~ #$x->is_int()
-#~ #  and __is_power__(_any2mpz($$x) // (return 0), _any2si($$y) // (return 0));
-
-#~ }
-
-Class::Multimethods::multimethod is_power => (__PACKAGE__, __PACKAGE__) => sub {
+sub is_power {
     require Math::AnyNum::is_power;
+    require Math::AnyNum::is_int;
     my ($x, $y) = @_;
 
-    $x->is_int()
-      and __is_power__(_any2mpz($$x) // (return 0), _any2si($$y) // (return 0));
-};
+    $x = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
 
-Class::Multimethods::multimethod is_power => (__PACKAGE__, '$') => sub {
-    require Math::AnyNum::is_power;
-    my ($x, $y) = @_;
+    __is_int__($x) || return 0;
+    $x = _any2mpz($x) // goto &nan;
 
-    $x->is_int() || return 0;
-    if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        __is_power__(_star2mpz($x) // (return 0), $y);
+    if (!defined($y)) {
+        return Math::GMPz::Rmpz_perfect_power_p($x);
+    }
+
+    if (!ref($y) and CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
+        ## `y` is a native integer
     }
     else {
-        __is_power__(_any2mpz($$x) // (return 0), _any2si(_str2obj($y)) // (return 0));
+        $y = _any2si(ref($y) eq __PACKAGE__ ? $$y : _star2obj($y)) // return 0;
     }
-};
 
-Class::Multimethods::multimethod is_power => ('*', '$') => sub {
-    require Math::AnyNum::is_power;
-    my ($x, $y) = @_;
-
-    $x = __PACKAGE__->new($x);
-    $x->is_int() || return 0;
-
-    if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        __is_power__(_any2mpz($$x) // (return 0), $y);
-    }
-    else {
-        __is_power__(_any2mpz($$x) // (return 0), _any2si(_str2obj($y)) // (return 0));
-    }
-};
-
-Class::Multimethods::multimethod is_power => ('*', __PACKAGE__) => sub {
-    require Math::AnyNum::is_power;
-    my ($x, $y) = @_;
-    $x = __PACKAGE__->new($x);
-    $x->is_int()
-      and __is_power__(_any2mpz($$x) // (return 0), _any2si($$y) // (return 0));
-};
-
-Class::Multimethods::multimethod is_power => ('*', '*') => sub {
-    require Math::AnyNum::is_power;
-    my ($x, $y) = @_;
-    $x = __PACKAGE__->new($x);
-    $x->is_int()
-      and __is_power__(_any2mpz($$x) // (return 0), _any2si(_star2obj($y)) // (return 0));
-};
-
-Class::Multimethods::multimethod is_power => (__PACKAGE__) => sub {
-    my ($x) = @_;
-    $x->is_int()
-      and Math::GMPz::Rmpz_perfect_power_p(_any2mpz($$x) // (return 0));
-};
-
-Class::Multimethods::multimethod is_power => ('*') => sub {
-    my ($x) = @_;
-    $x = __PACKAGE__->new($x);
-    $x->is_int()
-      and Math::GMPz::Rmpz_perfect_power_p(_any2mpz($$x) // (return 0));
-};
+    __is_power__($x, $y);
+}
 
 #
 ## kronecker
