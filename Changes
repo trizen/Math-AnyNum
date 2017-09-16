@@ -6,6 +6,14 @@ Revision history for Math-AnyNum
 
         - Added the `rat_approx(n)` function, which returns the smallest rational approximation for a given real number `n`.
 
+        [IMPROVEMENTS]
+
+        - Use the newly added functions in Math::MPFR-3.36: Rmpfr_q_div() and Rmpfr_z_div().
+
+        [PERFORMANCE OPTIMIZATIONS]
+
+        - Re-implemented all core methods without Class::Multimethods, which makes Math::AnyNum ~25% faster.
+
 0.11    2017-07-11
 
         [IMPROVEMENTS]

@@ -1861,37 +1861,27 @@ sub ipow10 {
 ## ROOT
 #
 
-Class::Multimethods::multimethod root => (__PACKAGE__, __PACKAGE__) => sub {
+sub root {
     require Math::AnyNum::pow;
     require Math::AnyNum::inv;
     my ($x, $y) = @_;
-    bless \__pow__($$x, __inv__($$y));
-};
 
-Class::Multimethods::multimethod root => (__PACKAGE__, '$') => sub {
-    require Math::AnyNum::pow;
-    require Math::AnyNum::inv;
-    my ($x, $y) = @_;
-    bless \__pow__($$x, __inv__(_str2obj($y)));
-};
+    if (ref($x) eq __PACKAGE__ and ref($y) eq __PACKAGE__) {
+        return bless \__pow__($$x, __inv__($$y));
+    }
 
-Class::Multimethods::multimethod root => ('$', '$') => sub {
-    require Math::AnyNum::pow;
-    require Math::AnyNum::inv;
-    bless \__pow__(_str2obj($_[0]), __inv__(_str2obj($_[1])));
-};
+    if (!ref($y)) {
 
-Class::Multimethods::multimethod root => ('*', '$') => sub {
-    require Math::AnyNum::pow;
-    require Math::AnyNum::inv;
-    bless \__pow__(_star2obj($_[0]), __inv__(_str2obj($_[1])));
-};
+        $x =
+            ref($x) eq __PACKAGE__ ? $$x
+          : ref($x)                ? _star2obj($x)
+          :                          _str2obj($x);
 
-Class::Multimethods::multimethod root => ('*', '*') => sub {
-    require Math::AnyNum::pow;
-    require Math::AnyNum::inv;
-    bless \__pow__(_star2obj($_[0]), __inv__(_star2obj($_[1])));
-};
+        return bless \__pow__($x, __inv__(_str2obj($y)));
+    }
+
+    bless \__pow__(_star2obj($x), __inv__(_star2obj($y)));
+}
 
 #
 ## isqrt
@@ -1917,53 +1907,32 @@ sub icbrt {
 #
 ## IROOT
 #
-Class::Multimethods::multimethod iroot => (__PACKAGE__, __PACKAGE__) => sub {
-    require Math::AnyNum::iroot;
-    my ($x, $y) = @_;
-    bless \__iroot__(_any2mpz($$x) // (goto &nan), _any2si($$y) // (goto &nan));
-};
 
-Class::Multimethods::multimethod iroot => (__PACKAGE__, '$') => sub {
+sub iroot {
     require Math::AnyNum::iroot;
     my ($x, $y) = @_;
 
-    if (CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
-        bless \__iroot__(_any2mpz($$x) // (goto &nan), $y);
+    if (ref($x) eq __PACKAGE__ and ref($y) eq __PACKAGE__) {
+        return bless \__iroot__(_any2mpz($$x) // (goto &nan), _any2si($$y) // (goto &nan));
     }
-    else {
-        bless \__iroot__(_any2mpz($$x) // (goto &nan), _any2si(_str2obj($y)) // (goto &nan));
+
+    if (!ref($y)) {
+
+        $x = (
+              ref($x) eq __PACKAGE__
+              ? _any2mpz($$x)
+              : _star2mpz($x)
+             ) // goto &nan;
+
+        if (CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
+            return bless \__iroot__($x, $y);
+        }
+
+        return bless \__iroot__($x, _any2si(_str2obj($y)) // (goto &nan));
     }
-};
 
-Class::Multimethods::multimethod iroot => (__PACKAGE__, '*') => sub {
-    require Math::AnyNum::iroot;
-    my ($x, $y) = @_;
-    bless \__iroot__(_any2mpz($$x) // (goto &nan), _any2si(_star2obj($y)) // (goto &nan));
-};
-
-Class::Multimethods::multimethod iroot => ('*', '$') => sub {
-    require Math::AnyNum::iroot;
-    my ($x, $y) = @_;
-
-    if (CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
-        bless \__iroot__(_star2mpz($x) // (goto &nan), $y);
-    }
-    else {
-        bless \__iroot__(_star2mpz($x) // (goto &nan), _any2si(_str2obj($y)) // (goto &nan));
-    }
-};
-
-Class::Multimethods::multimethod iroot => ('*', __PACKAGE__) => sub {
-    require Math::AnyNum::iroot;
-    my ($x, $y) = @_;
-    bless \__iroot__(_star2mpz($x) // (goto &nan), _any2si($$y) // (goto &nan));
-};
-
-Class::Multimethods::multimethod iroot => ('*', '*') => sub {
-    require Math::AnyNum::iroot;
-    my ($x, $y) = @_;
     bless \__iroot__(_star2mpz($x) // (goto &nan), _any2si(_star2obj($y)) // (goto &nan));
-};
+}
 
 #
 ## ISQRTREM
