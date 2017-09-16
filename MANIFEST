@@ -67,7 +67,6 @@ lib/Math/AnyNum/eq.pm
 lib/Math/AnyNum/eta.pm
 lib/Math/AnyNum/exp.pm
 lib/Math/AnyNum/floor.pm
-lib/Math/AnyNum/gcd.pm
 lib/Math/AnyNum/harmfrac.pm
 lib/Math/AnyNum/harmreal.pm
 lib/Math/AnyNum/hypot.pm
@@ -82,7 +81,6 @@ lib/Math/AnyNum/is_power.pm
 lib/Math/AnyNum/isqrtrem.pm
 lib/Math/AnyNum/isub.pm
 lib/Math/AnyNum/LambertW.pm
-lib/Math/AnyNum/lcm.pm
 lib/Math/AnyNum/lgrt.pm
 lib/Math/AnyNum/log.pm
 lib/Math/AnyNum/mod.pm

@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 266;
+plan tests => 268;
 
 use Math::AnyNum qw(:misc);
 
@@ -17,6 +17,9 @@ ok(rand(0.2) < 0.2, 'rand(0.2) < 0.2');
 
 ok(rand(0, 2) < 2,       'rand(2) < 2');
 ok(rand(0, 1000) < 1000, 'rand(0, 1000) < 1000');
+
+ok(rand(123, 130) >= 123);
+ok(rand(123, 130) < 130);
 
 is(irand(0), 0);
 ok(irand(1) <= 1, 'irand(1) <= 1');
