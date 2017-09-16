@@ -50,7 +50,7 @@
       },
       "homepage" : "https://github.com/trizen/Math-AnyNum",
       "license" : [
-         "http://www.perlfoundation.org/artistic_license_2_0"
+         "http://opensource.org/licenses/artistic-license-2.0.php"
       ],
       "repository" : {
          "url" : "https://github.com/trizen/Math-AnyNum"
