@@ -1498,26 +1498,26 @@ sub add {
         return bless \__add__($$x, $$y);
     }
 
+    $x = $$x;
+
     if (!ref($y)) {
-
         if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-
-            if (ref($$x) eq 'Math::GMPq') {
+            if (ref($x) eq 'Math::GMPq') {
                 my $r = Math::GMPq::Rmpq_init();
                 $y < 0
                   ? Math::GMPq::Rmpq_set_si($r, $y, 1)
                   : Math::GMPq::Rmpq_set_ui($r, $y, 1);
-                Math::GMPq::Rmpq_add($r, $r, $$x);
+                Math::GMPq::Rmpq_add($r, $r, $x);
                 return bless \$r;
             }
 
-            return bless \__add__($$x, $y);
+            return bless \__add__($x, $y);
         }
 
-        return bless \__add__($$x, _str2obj($y));
+        return bless \__add__($x, _str2obj($y));
     }
 
-    bless \__add__($$x, _star2obj($y));
+    bless \__add__($x, _star2obj($y));
 }
 
 #
@@ -1532,26 +1532,26 @@ sub sub {
         return bless \__sub__($$x, $$y);
     }
 
+    $x = $$x;
+
     if (!ref($y)) {
-
         if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-
-            if (ref($$x) eq 'Math::GMPq') {
+            if (ref($x) eq 'Math::GMPq') {
                 my $r = Math::GMPq::Rmpq_init();
                 $y < 0
                   ? Math::GMPq::Rmpq_set_si($r, $y, 1)
                   : Math::GMPq::Rmpq_set_ui($r, $y, 1);
-                Math::GMPq::Rmpq_sub($r, $$x, $r);
+                Math::GMPq::Rmpq_sub($r, $x, $r);
                 return bless \$r;
             }
 
-            return bless \__sub__($$x, $y);
+            return bless \__sub__($x, $y);
         }
 
-        return bless \__sub__($$x, _str2obj($y));
+        return bless \__sub__($x, _str2obj($y));
     }
 
-    return bless \__sub__($$x, _star2obj($y));
+    bless \__sub__($x, _star2obj($y));
 }
 
 #
@@ -1566,26 +1566,26 @@ sub mul {
         return bless \__mul__($$x, $$y);
     }
 
+    $x = $$x;
+
     if (!ref($y)) {
-
         if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-
-            if (ref($$x) eq 'Math::GMPq') {
+            if (ref($x) eq 'Math::GMPq') {
                 my $r = Math::GMPq::Rmpq_init();
                 $y < 0
                   ? Math::GMPq::Rmpq_set_si($r, $y, 1)
                   : Math::GMPq::Rmpq_set_ui($r, $y, 1);
-                Math::GMPq::Rmpq_mul($r, $r, $$x);
+                Math::GMPq::Rmpq_mul($r, $r, $x);
                 return bless \$r;
             }
 
-            return bless \__mul__($$x, $y);
+            return bless \__mul__($x, $y);
         }
 
-        return bless \__mul__($$x, _str2obj($y));
+        return bless \__mul__($x, _str2obj($y));
     }
 
-    bless \__mul__($$x, _star2obj($y));
+    bless \__mul__($x, _star2obj($y));
 }
 
 #
@@ -1600,25 +1600,26 @@ sub div {
         return bless \__div__($$x, $$y);
     }
 
+    $x = $$x;
+
     if (!ref($y)) {
-
         if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN and CORE::int($y)) {
-
-            if (ref($$x) eq 'Math::GMPq') {
+            if (ref($x) eq 'Math::GMPq') {
                 my $r = Math::GMPq::Rmpq_init();
                 $y < 0
                   ? Math::GMPq::Rmpq_set_si($r, -1, -$y)
                   : Math::GMPq::Rmpq_set_ui($r, 1, $y);
-                Math::GMPq::Rmpq_mul($r, $r, $$x);
+                Math::GMPq::Rmpq_mul($r, $r, $x);
                 return bless \$r;
             }
 
-            return bless \__div__($$x, $y);
+            return bless \__div__($x, $y);
         }
-        return bless \__div__($$x, _str2obj($y));
+
+        return bless \__div__($x, _str2obj($y));
     }
 
-    bless \__div__($$x, _star2obj($y));
+    bless \__div__($x, _star2obj($y));
 }
 
 #
