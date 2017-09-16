@@ -3095,43 +3095,33 @@ sub next_prime {
 #
 
 sub is_prime {
+    require Math::AnyNum::is_int;
     my ($x, $y) = @_;
 
-    if (ref($x) ne __PACKAGE__) {
-        $x = __PACKAGE__->new($x);
-    }
+    $x = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
 
-    $x->is_int() || return 0;
+    __is_int__($x) || return 0;
+
     $y = defined($y) ? (CORE::abs(CORE::int($y)) || 20) : 20;
-
-    Math::GMPz::Rmpz_probab_prime_p(_any2mpz($$x) // (return 0), $y);
+    Math::GMPz::Rmpz_probab_prime_p(_any2mpz($x) // (return 0), $y);
 }
 
 sub is_coprime {
+    require Math::AnyNum::is_int;
     my ($x, $y) = @_;
 
-    if (ref($x) ne __PACKAGE__) {
-        $x = __PACKAGE__->new($x);
+    $x = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
+
+    __is_int__($x) || return 0;
+    $x = _any2mpz($x) // return 0;
+
+    if (!ref($y) and CORE::int($y) eq $y and $y >= 0 and $y <= ULONG_MAX) {
+        ## `y` is a native integer
     }
-
-    $x->is_int() || return 0;
-    $x = _any2mpz($$x) // return 0;
-
-    if (ref($y) ne __PACKAGE__) {
-        if (    !ref($y)
-            and CORE::int($y) eq $y
-            and $y >= 0
-            and $y <= ULONG_MAX) {
-            ## is a native integer
-        }
-        else {
-            $y = __PACKAGE__->new($y);
-        }
-    }
-
-    if (ref($y)) {
-        $y->is_int() || return 0;
-        $y = _any2mpz($$y) // return 0;
+    else {
+        $y = ref($y) eq __PACKAGE__ ? $$y : _star2obj($y);
+        __is_int__($y) || return 0;
+        $y = _any2mpz($y) // return 0;
     }
 
     state $t = Math::GMPz::Rmpz_init_nobless();
@@ -3143,29 +3133,14 @@ sub is_coprime {
     Math::GMPz::Rmpz_cmp_ui($t, 1) == 0;
 }
 
-#
-## TODO: Create the super-method __is_int__() and call it from this method.
-#
-
 sub is_int {
+    require Math::AnyNum::is_int;
     my ($x) = @_;
-
-    my $r = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
-    {
-        my $ref = ref($r);
-
-        $ref eq 'Math::GMPz' && return 1;
-        $ref eq 'Math::GMPq' && return Math::GMPq::Rmpq_integer_p($r);
-        $ref eq 'Math::MPFR' && return Math::MPFR::Rmpfr_integer_p($r);
-
-        $r = _any2mpfr($r);
-        redo;
-    }
+    __is_int__(ref($x) eq __PACKAGE__ ? $$x : _star2obj($x));
 }
 
 sub is_rat {
     my ($x) = @_;
-
     my $ref = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
     $ref eq 'Math::GMPz' or $ref eq 'Math::GMPq';
 }
@@ -3319,25 +3294,23 @@ sub is_nan {
 }
 
 sub is_even {
+    require Math::AnyNum::is_int;
     my ($x) = @_;
 
-    if (ref($x) ne __PACKAGE__) {
-        $x = __PACKAGE__->new($x);
-    }
+    $x = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
 
-    $x->is_int()
-      && Math::GMPz::Rmpz_even_p(_any2mpz($$x) // (return 0));
+    __is_int__($x)
+      && Math::GMPz::Rmpz_even_p(_any2mpz($x) // (return 0));
 }
 
 sub is_odd {
+    require Math::AnyNum::is_int;
     my ($x) = @_;
 
-    if (ref($x) ne __PACKAGE__) {
-        $x = __PACKAGE__->new($x);
-    }
+    $x = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
 
-    $x->is_int()
-      && Math::GMPz::Rmpz_odd_p(_any2mpz($$x) // (return 0));
+    __is_int__($x)
+      && Math::GMPz::Rmpz_odd_p(_any2mpz($x) // (return 0));
 }
 
 sub is_zero {
@@ -3377,14 +3350,13 @@ sub is_neg {
 ## is_square
 #
 sub is_square {
+    require Math::AnyNum::is_int;
     my ($x, $y) = @_;
 
-    if (ref($x) ne __PACKAGE__) {
-        $x = __PACKAGE__->new($x);
-    }
+    $x = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
 
-    $x->is_int()
-      and Math::GMPz::Rmpz_perfect_square_p(_any2mpz($$x) // (return 0));
+    __is_int__($x)
+      && Math::GMPz::Rmpz_perfect_square_p(_any2mpz($x) // (return 0));
 }
 
 #
