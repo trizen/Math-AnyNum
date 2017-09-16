@@ -46,9 +46,8 @@ use overload
 
   '<=>' => sub { $_[2] ? -($_[0]->cmp($_[1]) // return undef) : $_[0]->cmp($_[1]) },
 
-  '>>' => sub { $_[2] ? __PACKAGE__->new($_[1])->rsft($_[0]) : $_[0]->rsft($_[1]) },
-  '<<' => sub { $_[2] ? __PACKAGE__->new($_[1])->lsft($_[0]) : $_[0]->lsft($_[1]) },
-
+  '>>' => sub { $_[2] && (@_ = (__PACKAGE__->new($_[1]), $_[0])); goto &rsft },
+  '<<' => sub { $_[2] && (@_ = (__PACKAGE__->new($_[1]), $_[0])); goto &lsft },
   '**' => sub { $_[2] && (@_ = (__PACKAGE__->new($_[1]), $_[0])); goto &pow },
   '%'  => sub { $_[2] && (@_ = (__PACKAGE__->new($_[1]), $_[0])); goto &mod },
   '/'  => sub { $_[2] && (@_ = (__PACKAGE__->new($_[1]), $_[0])); goto &div },
@@ -3837,61 +3836,61 @@ Class::Multimethods::multimethod binomial => ('*', '*') => sub {
 ## AND
 #
 
-Class::Multimethods::multimethod and => (__PACKAGE__, __PACKAGE__) => sub {
+sub and {
     my ($x, $y) = @_;
 
     $x = _any2mpz($$x) // (goto &nan);
-    $y = _any2mpz($$y) // (goto &nan);
+
+    $y = (
+          ref($y) eq __PACKAGE__
+          ? _any2mpz($$y)
+          : _star2mpz($y)
+         ) // (goto &nan);
 
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_and($r, $x, $y);
     bless \$r;
-};
-
-Class::Multimethods::multimethod and => (__PACKAGE__, '*') => sub {
-    (@_) = ($_[0], __PACKAGE__->new($_[1]));
-    goto &and;
-};
+}
 
 #
 ## OR
 #
 
-Class::Multimethods::multimethod or => (__PACKAGE__, __PACKAGE__) => sub {
+sub or {
     my ($x, $y) = @_;
 
     $x = _any2mpz($$x) // (goto &nan);
-    $y = _any2mpz($$y) // (goto &nan);
+
+    $y = (
+          ref($y) eq __PACKAGE__
+          ? _any2mpz($$y)
+          : _star2mpz($y)
+         ) // (goto &nan);
 
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_ior($r, $x, $y);
     bless \$r;
-};
-
-Class::Multimethods::multimethod or => (__PACKAGE__, '*') => sub {
-    (@_) = ($_[0], __PACKAGE__->new($_[1]));
-    goto &or;
-};
+}
 
 #
 ## XOR
 #
 
-Class::Multimethods::multimethod xor => (__PACKAGE__, __PACKAGE__) => sub {
+sub xor {
     my ($x, $y) = @_;
 
     $x = _any2mpz($$x) // (goto &nan);
-    $y = _any2mpz($$y) // (goto &nan);
+
+    $y = (
+          ref($y) eq __PACKAGE__
+          ? _any2mpz($$y)
+          : _star2mpz($y)
+         ) // (goto &nan);
 
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_xor($r, $x, $y);
     bless \$r;
-};
-
-Class::Multimethods::multimethod xor => (__PACKAGE__, '*') => sub {
-    (@_) = ($_[0], __PACKAGE__->new($_[1]));
-    goto &xor;
-};
+}
 
 #
 ## NOT
@@ -3909,11 +3908,21 @@ sub not {
 ## LEFT SHIFT
 #
 
-Class::Multimethods::multimethod lsft => (__PACKAGE__, __PACKAGE__) => sub {
+sub lsft {
     my ($x, $y) = @_;
 
-    $y = _any2si($$y)  // (goto &nan);
     $x = _any2mpz($$x) // (goto &nan);
+
+    if (!ref($y) and CORE::int($y) eq $y and $y >= LONG_MIN and $y <= ULONG_MAX) {
+        ## `y` is a native integer
+    }
+    else {
+        $y = (
+              ref($y) eq __PACKAGE__
+              ? _any2si($$y)
+              : _any2si(_star2obj($y))
+             ) // (goto &nan);
+    }
 
     my $r = Math::GMPz::Rmpz_init();
 
@@ -3922,42 +3931,27 @@ Class::Multimethods::multimethod lsft => (__PACKAGE__, __PACKAGE__) => sub {
       : Math::GMPz::Rmpz_mul_2exp($r, $x, $y);
 
     bless \$r;
-};
-
-Class::Multimethods::multimethod lsft => (__PACKAGE__, '$') => sub {
-    my ($x, $y) = @_;
-
-    if (CORE::int($y) eq $y and $y >= LONG_MIN and $y <= ULONG_MAX) {
-        $x = _any2mpz($$x) // (goto &nan);
-
-        my $r = Math::GMPz::Rmpz_init();
-
-        $y < 0
-          ? Math::GMPz::Rmpz_div_2exp($r, $x, -$y)
-          : Math::GMPz::Rmpz_mul_2exp($r, $x, $y);
-
-        bless \$r;
-    }
-    else {
-        (@_) = ($x, __PACKAGE__->new($y));
-        goto &lsft;
-    }
-};
-
-Class::Multimethods::multimethod lsft => (__PACKAGE__, '*') => sub {
-    (@_) = ($_[0], __PACKAGE__->new($_[1]));
-    goto &lsft;
-};
+}
 
 #
 ## RIGHT SHIFT
 #
 
-Class::Multimethods::multimethod rsft => (__PACKAGE__, __PACKAGE__) => sub {
+sub rsft {
     my ($x, $y) = @_;
 
-    $y = _any2si($$y)  // (goto &nan);
     $x = _any2mpz($$x) // (goto &nan);
+
+    if (!ref($y) and CORE::int($y) eq $y and $y >= LONG_MIN and $y <= ULONG_MAX) {
+        ## `y` is a native integer
+    }
+    else {
+        $y = (
+              ref($y) eq __PACKAGE__
+              ? _any2si($$y)
+              : _any2si(_star2obj($y))
+             ) // (goto &nan);
+    }
 
     my $r = Math::GMPz::Rmpz_init();
 
@@ -3966,32 +3960,7 @@ Class::Multimethods::multimethod rsft => (__PACKAGE__, __PACKAGE__) => sub {
       : Math::GMPz::Rmpz_div_2exp($r, $x, $y);
 
     bless \$r;
-};
-
-Class::Multimethods::multimethod rsft => (__PACKAGE__, '$') => sub {
-    my ($x, $y) = @_;
-
-    if (CORE::int($y) eq $y and $y >= LONG_MIN and $y <= ULONG_MAX) {
-        $x = _any2mpz($$x) // (goto &nan);
-
-        my $r = Math::GMPz::Rmpz_init();
-
-        $y < 0
-          ? Math::GMPz::Rmpz_mul_2exp($r, $x, -$y)
-          : Math::GMPz::Rmpz_div_2exp($r, $x, $y);
-
-        bless \$r;
-    }
-    else {
-        (@_) = ($x, __PACKAGE__->new($y));
-        goto &rsft;
-    }
-};
-
-Class::Multimethods::multimethod rsft => (__PACKAGE__, '*') => sub {
-    (@_) = ($_[0], __PACKAGE__->new($_[1]));
-    goto &rsft;
-};
+}
 
 #
 ## POPCOUNT
