@@ -62,7 +62,6 @@ lib/Math/AnyNum/csc.pm
 lib/Math/AnyNum/csch.pm
 lib/Math/AnyNum/dec.pm
 lib/Math/AnyNum/div.pm
-lib/Math/AnyNum/divmod.pm
 lib/Math/AnyNum/eq.pm
 lib/Math/AnyNum/eta.pm
 lib/Math/AnyNum/exp.pm

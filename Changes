@@ -8,7 +8,7 @@ Revision history for Math-AnyNum
 
         [IMPROVEMENTS]
 
-        - Use the newly added functions in Math::MPFR-3.36: Rmpfr_q_div() and Rmpfr_z_div().
+        - Using the newly added functions in Math::MPFR-3.36: Rmpfr_q_div() and Rmpfr_z_div().
 
         [PERFORMANCE OPTIMIZATIONS]
 

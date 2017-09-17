@@ -13,8 +13,6 @@ use Math::MPC qw();
 
 use POSIX qw(ULONG_MAX LONG_MIN);
 
-use Class::Multimethods qw();
-
 our $VERSION = '0.11';
 our ($ROUND, $PREC);
 
@@ -2066,10 +2064,20 @@ sub imod {
 #
 
 sub divmod {
-    require Math::AnyNum::divmod;
     my ($x, $y) = @_;
-    my ($r1, $r2) = __divmod__(_star2mpz($x) // (return (nan(), nan())), _star2mpz($y) // (return (nan(), nan())));
-    ((bless \$r1), (bless \$r2));
+
+    $x = ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x);
+    $y = ref($y) eq __PACKAGE__ ? _any2mpz($$y) : _star2mpz($y);
+
+    Math::GMPz::Rmpz_sgn($y)
+      || return (nan(), nan());
+
+    my $r = Math::GMPz::Rmpz_init();
+    my $s = Math::GMPz::Rmpz_init();
+
+    Math::GMPz::Rmpz_divmod($r, $s, $x, $y);
+
+    ((bless \$r), (bless \$s));
 }
 
 #
@@ -2598,11 +2606,13 @@ sub BesselJ {
     require Math::AnyNum::BesselJ;
     my ($x, $y) = @_;
 
+    $x = ref($x) eq __PACKAGE__ ? _any2mpfr($$x) : _star2mpfr($x);
+
     if (!ref($y) and CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        return bless \__BesselJ__(_star2mpfr($x), $y);
+        return bless \__BesselJ__($x, $y);
     }
 
-    bless \__BesselJ__(_star2mpfr($x), _star2mpz($y) // (goto &nan));
+    bless \__BesselJ__($x, _star2mpz($y) // (goto &nan));
 }
 
 #
@@ -2613,11 +2623,13 @@ sub BesselY {
     require Math::AnyNum::BesselY;
     my ($x, $y) = @_;
 
+    $x = ref($x) eq __PACKAGE__ ? _any2mpfr($$x) : _star2mpfr($x);
+
     if (!ref($y) and CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
-        return bless \__BesselY__(_star2mpfr($x), $y);
+        return bless \__BesselY__($x, $y);
     }
 
-    bless \__BesselY__(_star2mpfr($x), _star2mpz($y) // (goto &nan));
+    bless \__BesselY__($x, _star2mpz($y) // (goto &nan));
 }
 
 #
