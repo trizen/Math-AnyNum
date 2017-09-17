@@ -46,12 +46,12 @@ use overload
 
   '<=>' => sub { $_[2] ? -($_[0]->cmp($_[1]) // return undef) : $_[0]->cmp($_[1]) },
 
-  '>>' => sub { $_[2] && (@_ = (__PACKAGE__->new($_[1]), $_[0])); goto &rsft },
-  '<<' => sub { $_[2] && (@_ = (__PACKAGE__->new($_[1]), $_[0])); goto &lsft },
-  '**' => sub { $_[2] && (@_ = (__PACKAGE__->new($_[1]), $_[0])); goto &pow },
-  '%'  => sub { $_[2] && (@_ = (__PACKAGE__->new($_[1]), $_[0])); goto &mod },
-  '/'  => sub { $_[2] && (@_ = (__PACKAGE__->new($_[1]), $_[0])); goto &div },
-  '-'  => sub { $_[2] && (@_ = (__PACKAGE__->new($_[1]), $_[0])); goto &sub },
+  '>>' => sub { @_ = ($_[1], $_[0]) if $_[2]; goto &rsft },
+  '<<' => sub { @_ = ($_[1], $_[0]) if $_[2]; goto &lsft },
+  '**' => sub { @_ = ($_[1], $_[0]) if $_[2]; goto &pow },
+  '%'  => sub { @_ = ($_[1], $_[0]) if $_[2]; goto &mod },
+  '/'  => sub { @_ = ($_[1], $_[0]) if $_[2]; goto &div },
+  '-'  => sub { @_ = ($_[1], $_[0]) if $_[2]; goto &sub },
 
   atan2 => sub { &atan2($_[2] ? ($_[1], $_[0]) : ($_[0], $_[1])) },
 
@@ -1529,11 +1529,14 @@ sub sub {
     require Math::AnyNum::sub;
     my ($x, $y) = @_;
 
-    if (ref($y) eq __PACKAGE__) {
-        return bless \__sub__($$x, $$y);
-    }
+    $x =
+        ref($x) eq __PACKAGE__ ? $$x
+      : ref($x)                ? _star2obj($x)
+      :                          _str2obj($x);
 
-    $x = $$x;
+    if (ref($y) eq __PACKAGE__) {
+        return bless \__sub__($x, $$y);
+    }
 
     if (!ref($y)) {
         if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
@@ -1597,11 +1600,14 @@ sub div {
     require Math::AnyNum::div;
     my ($x, $y) = @_;
 
-    if (ref($y) eq __PACKAGE__) {
-        return bless \__div__($$x, $$y);
-    }
+    $x =
+        ref($x) eq __PACKAGE__ ? $$x
+      : ref($x)                ? _star2obj($x)
+      :                          _str2obj($x);
 
-    $x = $$x;
+    if (ref($y) eq __PACKAGE__) {
+        return bless \__div__($x, $$y);
+    }
 
     if (!ref($y)) {
         if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN and CORE::int($y)) {
@@ -1748,17 +1754,16 @@ sub pow {
     require Math::AnyNum::pow;
     my ($x, $y) = @_;
 
-    if (ref($x) eq __PACKAGE__ and ref($y) eq __PACKAGE__) {
-        return bless \__pow__($$x, $$y);
+    $x =
+        ref($x) eq __PACKAGE__ ? $$x
+      : ref($x)                ? _star2obj($x)
+      :                          _str2obj($x);
+
+    if (ref($y) eq __PACKAGE__) {
+        return bless \__pow__($x, $$y);
     }
 
     if (!ref($y)) {
-
-        $x =
-            ref($x) eq __PACKAGE__ ? $$x
-          : ref($x)                ? _star2obj($x)
-          :                          _str2obj($x);
-
         if (CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
             return bless \__pow__($x, $y);
         }
@@ -1766,7 +1771,7 @@ sub pow {
         return bless \__pow__($x, _str2obj($y));
     }
 
-    bless \__pow__(_star2obj($x), _star2obj($y));
+    bless \__pow__($x, _star2obj($y));
 }
 
 #
@@ -3714,7 +3719,11 @@ sub not {
 sub lsft {
     my ($x, $y) = @_;
 
-    $x = _any2mpz($$x) // (goto &nan);
+    $x = (
+          ref($x) eq __PACKAGE__
+          ? _any2mpz($$x)
+          : _star2mpz($x)
+         ) // (goto &nan);
 
     if (!ref($y) and CORE::int($y) eq $y and $y >= LONG_MIN and $y <= ULONG_MAX) {
         ## `y` is a native integer
@@ -3743,7 +3752,11 @@ sub lsft {
 sub rsft {
     my ($x, $y) = @_;
 
-    $x = _any2mpz($$x) // (goto &nan);
+    $x = (
+          ref($x) eq __PACKAGE__
+          ? _any2mpz($$x)
+          : _star2mpz($x)
+         ) // (goto &nan);
 
     if (!ref($y) and CORE::int($y) eq $y and $y >= LONG_MIN and $y <= ULONG_MAX) {
         ## `y` is a native integer
