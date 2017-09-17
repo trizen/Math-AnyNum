@@ -3398,182 +3398,111 @@ sub is_power {
 ## kronecker
 #
 
-Class::Multimethods::multimethod kronecker => (__PACKAGE__, __PACKAGE__) => sub {
+sub kronecker {
     my ($x, $y) = @_;
-    Math::GMPz::Rmpz_kronecker(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
-};
 
-Class::Multimethods::multimethod kronecker => (__PACKAGE__, '*') => sub {
-    my ($x, $y) = @_;
-    Math::GMPz::Rmpz_kronecker(_any2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan));
-};
+    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
+    $y = (ref($y) eq __PACKAGE__ ? _any2mpz($$y) : _star2mpz($y)) // goto &nan;
 
-Class::Multimethods::multimethod kronecker => ('*', __PACKAGE__) => sub {
-    my ($x, $y) = @_;
-    Math::GMPz::Rmpz_kronecker(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
-};
-
-Class::Multimethods::multimethod kronecker => ('*', '*') => sub {
-    Math::GMPz::Rmpz_kronecker(_star2mpz($_[0]) // (goto &nan), _star2mpz($_[1]) // (goto &nan));
-};
+    Math::GMPz::Rmpz_kronecker($x, $y);
+}
 
 #
 ## valuation
 #
 
-Class::Multimethods::multimethod valuation => (__PACKAGE__, __PACKAGE__) => sub {
+sub valuation {
     require Math::AnyNum::valuation;
     my ($x, $y) = @_;
-    (__valuation__(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan)))[0];
-};
 
-Class::Multimethods::multimethod valuation => (__PACKAGE__, '*') => sub {
-    require Math::AnyNum::valuation;
-    my ($x, $y) = @_;
-    (__valuation__(_any2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan)))[0];
-};
+    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
+    $y = (ref($y) eq __PACKAGE__ ? _any2mpz($$y) : _star2mpz($y)) // goto &nan;
 
-Class::Multimethods::multimethod valuation => ('*', __PACKAGE__) => sub {
-    require Math::AnyNum::valuation;
-    my ($x, $y) = @_;
-    (__valuation__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan)))[0];
-};
-
-Class::Multimethods::multimethod valuation => ('*', '*') => sub {
-    require Math::AnyNum::valuation;
-    (__valuation__(_star2mpz($_[0]) // (goto &nan), _star2mpz($_[1]) // (goto &nan)))[0];
-};
+    (__valuation__($x, $y))[0];
+}
 
 #
 ## remdiv
 #
 
-Class::Multimethods::multimethod remdiv => (__PACKAGE__, __PACKAGE__) => sub {
+sub remdiv {
     require Math::AnyNum::valuation;
     my ($x, $y) = @_;
-    my (undef, $r) = __valuation__(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan));
-    bless \$r;
-};
 
-Class::Multimethods::multimethod remdiv => (__PACKAGE__, '*') => sub {
-    require Math::AnyNum::valuation;
-    my ($x, $y) = @_;
-    my (undef, $r) = __valuation__(_any2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan));
-    bless \$r;
-};
+    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
+    $y = (ref($y) eq __PACKAGE__ ? _any2mpz($$y) : _star2mpz($y)) // goto &nan;
 
-Class::Multimethods::multimethod remdiv => ('*', __PACKAGE__) => sub {
-    require Math::AnyNum::valuation;
-    my ($x, $y) = @_;
-    my (undef, $r) = __valuation__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan));
-    bless \$r;
-};
-
-Class::Multimethods::multimethod remdiv => ('*', '*') => sub {
-    require Math::AnyNum::valuation;
-    my (undef, $r) = __valuation__(_star2mpz($_[0]) // (goto &nan), _star2mpz($_[1]) // (goto &nan));
-    bless \$r;
-};
+    bless \((__valuation__($x, $y))[1]);
+}
 
 #
 ## Invmod
 #
 
-Class::Multimethods::multimethod invmod => (__PACKAGE__, __PACKAGE__) => sub {
+sub invmod {
     my ($x, $y) = @_;
 
-    my $n = _any2mpz($$x) // (goto &nan);
-    my $z = _any2mpz($$y) // (goto &nan);
+    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
+    $y = (ref($y) eq __PACKAGE__ ? _any2mpz($$y) : _star2mpz($y)) // goto &nan;
 
     my $r = Math::GMPz::Rmpz_init();
-    Math::GMPz::Rmpz_invert($r, $n, $z) || (goto &nan);
+    Math::GMPz::Rmpz_invert($r, $x, $y) || (goto &nan);
     bless \$r;
-};
-
-Class::Multimethods::multimethod invmod => (__PACKAGE__, '*') => sub {
-    (@_) = ($_[0], __PACKAGE__->new($_[1]));
-    goto &invmod;
-};
-
-Class::Multimethods::multimethod invmod => ('*', __PACKAGE__) => sub {
-    (@_) = (__PACKAGE__->new($_[0]), $_[1]);
-    goto &invmod;
-};
-
-Class::Multimethods::multimethod invmod => ('*', '*') => sub {
-    (@_) = (__PACKAGE__->new($_[0]), __PACKAGE__->new($_[1]));
-    goto &invmod;
-};
+}
 
 #
 ## Powmod
 #
 
-Class::Multimethods::multimethod powmod => (__PACKAGE__, __PACKAGE__, __PACKAGE__) => sub {
-    require Math::AnyNum::powmod;
+sub powmod {
     my ($x, $y, $z) = @_;
-    bless \(__powmod__(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan), _any2mpz($$z) // (goto &nan))
-            // goto(&nan));
-};
 
-Class::Multimethods::multimethod powmod => (__PACKAGE__, '*', __PACKAGE__) => sub {
-    require Math::AnyNum::powmod;
-    my ($x, $y, $z) = @_;
-    bless \(__powmod__(_any2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan), _any2mpz($$z) // (goto &nan))
-            // goto(&nan));
-};
+    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
+    $y = (ref($y) eq __PACKAGE__ ? _any2mpz($$y) : _star2mpz($y)) // goto &nan;
+    $z = (ref($z) eq __PACKAGE__ ? _any2mpz($$z) : _star2mpz($z)) // goto &nan;
 
-Class::Multimethods::multimethod powmod => (__PACKAGE__, __PACKAGE__, '*') => sub {
-    require Math::AnyNum::powmod;
-    my ($x, $y, $z) = @_;
-    bless \(__powmod__(_any2mpz($$x) // (goto &nan), _any2mpz($$y) // (goto &nan), _star2mpz($z) // (goto &nan))
-            // goto(&nan));
-};
+    Math::GMPz::Rmpz_sgn($z) || goto &nan;
 
-Class::Multimethods::multimethod powmod => (__PACKAGE__, '*', '*') => sub {
-    require Math::AnyNum::powmod;
-    my ($x, $y, $z) = @_;
-    bless \(__powmod__(_any2mpz($$x) // (goto &nan), _star2mpz($y) // (goto &nan), _star2mpz($z) // (goto &nan))
-            // goto(&nan));
-};
+    if (Math::GMPz::Rmpz_sgn($y) < 0) {
+        my $t = Math::GMPz::Rmpz_init();
+        Math::GMPz::Rmpz_gcd($t, $x, $z);
+        Math::GMPz::Rmpz_cmp_ui($t, 1) == 0 or goto &nan;
+    }
 
-Class::Multimethods::multimethod powmod => ('*', __PACKAGE__, '*') => sub {
-    require Math::AnyNum::powmod;
-    my ($x, $y, $z) = @_;
-    bless \(__powmod__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan), _star2mpz($z) // (goto &nan))
-            // goto(&nan));
-};
-
-Class::Multimethods::multimethod powmod => ('*', __PACKAGE__, __PACKAGE__) => sub {
-    require Math::AnyNum::powmod;
-    my ($x, $y, $z) = @_;
-    bless \(__powmod__(_star2mpz($x) // (goto &nan), _any2mpz($$y) // (goto &nan), _any2mpz($$z) // (goto &nan))
-            // goto(&nan));
-};
-
-Class::Multimethods::multimethod powmod => ('*', '*', __PACKAGE__) => sub {
-    require Math::AnyNum::powmod;
-    my ($x, $y, $z) = @_;
-    bless \(__powmod__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan), _any2mpz($$z) // (goto &nan))
-            // goto(&nan));
-};
-
-Class::Multimethods::multimethod powmod => ('*', '*', '*') => sub {
-    require Math::AnyNum::powmod;
-    my ($x, $y, $z) = @_;
-    bless \(__powmod__(_star2mpz($x) // (goto &nan), _star2mpz($y) // (goto &nan), _star2mpz($z) // (goto &nan))
-            // goto(&nan));
-};
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_powm($r, $x, $y, $z);
+    bless \$r;
+}
 
 #
 ## Binomial
 #
 
-Class::Multimethods::multimethod binomial => (__PACKAGE__, __PACKAGE__) => sub {
+sub binomial {
     my ($x, $y) = @_;
 
-    $x = _any2mpz($$x) // (goto &nan);
-    $y = _any2si($$y)  // (goto &nan);
+    # `x` and `y` are native unsigned integers
+    if (    !ref($x)
+        and !ref($y)
+        and CORE::int($x) eq $x
+        and CORE::int($y) eq $y
+        and $x >= 0
+        and $y >= 0
+        and $x <= ULONG_MAX
+        and $y <= ULONG_MAX) {
+        my $r = Math::GMPz::Rmpz_init();
+        Math::GMPz::Rmpz_bin_uiui($r, $x, $y);
+        return bless \$r;
+    }
+
+    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
+
+    if (!ref($y) and CORE::int($y) eq $y and $y >= LONG_MIN and $y <= ULONG_MAX) {
+        ## `y` is a native integer
+    }
+    else {
+        $y = _any2si(ref($y) eq __PACKAGE__ ? $$y : _star2obj($y)) // goto &nan;
+    }
 
     my $r = Math::GMPz::Rmpz_init();
 
@@ -3587,58 +3516,7 @@ Class::Multimethods::multimethod binomial => (__PACKAGE__, __PACKAGE__) => sub {
     }
 
     bless \$r;
-};
-
-Class::Multimethods::multimethod binomial => (__PACKAGE__, '$') => sub {
-    my ($x, $y) = @_;
-    if (CORE::int($y) eq $y and $y >= LONG_MIN and $y <= ULONG_MAX) {
-        $x = _any2mpz($$x) // (goto &nan);
-        my $r = Math::GMPz::Rmpz_init();
-
-        if ($y >= 0 and Math::GMPz::Rmpz_fits_ulong_p($x)) {
-            Math::GMPz::Rmpz_bin_uiui($r, Math::GMPz::Rmpz_get_ui($x), $y);
-        }
-        else {
-            $y < 0
-              ? Math::GMPz::Rmpz_bin_si($r, $x, $y)
-              : Math::GMPz::Rmpz_bin_ui($r, $x, $y);
-        }
-
-        bless \$r;
-    }
-    else {
-        (@_) = ($x, __PACKAGE__->new($y));
-        goto &binomial;
-    }
-};
-
-Class::Multimethods::multimethod binomial => ('$', '$') => sub {
-    my ($x, $y) = @_;
-
-    if (    CORE::int($x) eq $x
-        and CORE::int($y) eq $y
-        and $x >= 0
-        and $y >= 0
-        and $x <= ULONG_MAX
-        and $y <= ULONG_MAX) {
-        my $r = Math::GMPz::Rmpz_init();
-        Math::GMPz::Rmpz_bin_uiui($r, $x, $y);
-        return bless \$r;
-    }
-
-    (@_) = (__PACKAGE__->new($x), $y);
-    goto &binomial;
-};
-
-Class::Multimethods::multimethod binomial => (__PACKAGE__, '*') => sub {
-    (@_) = ($_[0], __PACKAGE__->new($_[1]));
-    goto &binomial;
-};
-
-Class::Multimethods::multimethod binomial => ('*', '*') => sub {
-    (@_) = (__PACKAGE__->new($_[0]), __PACKAGE__->new($_[1]));
-    goto &binomial;
-};
+}
 
 #
 ## AND
