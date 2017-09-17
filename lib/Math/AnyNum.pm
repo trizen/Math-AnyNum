@@ -1398,11 +1398,12 @@ sub inv {
     require Math::AnyNum::inv;
     my ($x) = @_;
 
-    if (ref($x) ne __PACKAGE__) {
-        $x = __PACKAGE__->new($x);
-    }
+    $x =
+        ref($x) eq __PACKAGE__ ? $$x
+      : ref($x)                ? _star2obj($x)
+      :                          _str2obj($x);
 
-    bless \__inv__($$x);
+    bless \__inv__($x);
 }
 
 #
