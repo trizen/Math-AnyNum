@@ -33,7 +33,7 @@ sub __log__ {
 }
 
 #
-## LOG2
+## LOG_2
 #
 
 sub __log2__ {
@@ -62,6 +62,10 @@ sub __log2__ {
         return $r;
     }
 }
+
+#
+## LOG_10
+#
 
 sub __log10__ {
     my ($x) = @_;
