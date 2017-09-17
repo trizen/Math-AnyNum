@@ -1981,16 +1981,16 @@ sub mod {
     require Math::AnyNum::mod;
     my ($x, $y) = @_;
 
-    if (ref($x) eq __PACKAGE__ and ref($y) eq __PACKAGE__) {
-        return bless \__mod__($$x, $$y);
+    $x =
+        ref($x) eq __PACKAGE__ ? $$x
+      : ref($x)                ? _star2obj($x)
+      :                          _str2obj($x);
+
+    if (ref($y) eq __PACKAGE__) {
+        return bless \__mod__($x, $$y);
     }
 
     if (!ref($y)) {
-
-        $x =
-            ref($x) eq __PACKAGE__ ? $$x
-          : ref($x)                ? _star2obj($x)
-          :                          _str2obj($x);
 
         if (    ref($x) ne 'Math::GMPq'
             and CORE::int($y) eq $y
@@ -1999,10 +1999,10 @@ sub mod {
             return bless \__mod__($x, $y);
         }
 
-        return bless \__mod__($x, _str2obj($y) // (goto &nan));
+        return bless \__mod__($x, _str2obj($y));
     }
 
-    bless \__mod__(_star2obj($x), _star2obj($y));
+    bless \__mod__($x, _star2obj($y));
 }
 
 #
