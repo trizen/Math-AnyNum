@@ -74,10 +74,8 @@ lib/Math/AnyNum/inc.pm
 lib/Math/AnyNum/inv.pm
 lib/Math/AnyNum/irand.pm
 lib/Math/AnyNum/iroot.pm
-lib/Math/AnyNum/irootrem.pm
 lib/Math/AnyNum/is_int.pm
 lib/Math/AnyNum/is_power.pm
-lib/Math/AnyNum/isqrtrem.pm
 lib/Math/AnyNum/LambertW.pm
 lib/Math/AnyNum/lgrt.pm
 lib/Math/AnyNum/log.pm
