@@ -2681,7 +2681,7 @@ sub round {
                  ) // (goto &nan);
 
             if (!defined($y)) {
-                return bless \__irand__($x, $state);
+                return bless \__irand__($x, undef, $state);
             }
 
             $y = (
