@@ -12,7 +12,7 @@ use warnings;
 #use Math::AnyNum qw(:overload);       # can be uncommented
 use Math::AnyNum qw(factorial next_prime ceil float is_div);
 
-sub bern_from_primes {
+sub bernoulli_from_primes {
     my ($n) = @_;
 
     $n == 0 and return Math::AnyNum->one;
@@ -46,5 +46,5 @@ sub bern_from_primes {
 }
 
 foreach my $n (0 .. 100) {
-    printf "B%-3d = %s\n", 2 * $n, bern_from_primes(2 * $n);
+    printf "B%-3d = %s\n", 2 * $n, bernoulli_from_primes(2 * $n);
 }
