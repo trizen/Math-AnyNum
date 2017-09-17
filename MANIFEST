@@ -71,7 +71,6 @@ lib/Math/AnyNum/harmfrac.pm
 lib/Math/AnyNum/harmreal.pm
 lib/Math/AnyNum/hypot.pm
 lib/Math/AnyNum/ilog.pm
-lib/Math/AnyNum/imod.pm
 lib/Math/AnyNum/inc.pm
 lib/Math/AnyNum/inv.pm
 lib/Math/AnyNum/irand.pm

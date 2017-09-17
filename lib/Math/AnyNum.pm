@@ -2016,7 +2016,6 @@ sub mod {
 #
 
 sub imod {
-    require Math::AnyNum::imod;
     my ($x, $y) = @_;
 
     $x = (
@@ -2025,15 +2024,41 @@ sub imod {
           : _star2mpz($x)
          ) // (goto &nan);
 
-    if (ref($y) eq __PACKAGE__) {
-        return bless \__imod__($x, _any2mpz($$y) // (goto &nan));
-    }
-
     if (!ref($y) and CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
-        return bless \__imod__($x, $y);
+
+        CORE::int($y) || goto &nan;
+
+        my $neg_y = $y < 0;
+        $y = -$y if $neg_y;
+
+        my $r = Math::GMPz::Rmpz_init();
+        Math::GMPz::Rmpz_mod_ui($r, $x, $y);
+
+        if (!Math::GMPz::Rmpz_sgn($r)) {
+            ## OK
+        }
+        elsif ($neg_y) {
+            Math::GMPz::Rmpz_sub_ui($r, $r, $y);
+        }
+
+        return bless \$r;
     }
 
-    bless \__imod__($x, _star2mpz($y) // (goto &nan));
+    $y = (ref($y) eq __PACKAGE__ ? _any2mpz($$y) : _star2mpz($y)) // goto &nan;
+
+    my $sign_y = Math::GMPz::Rmpz_sgn($y) || goto &nan;
+
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_mod($r, $x, $y);
+
+    if (!Math::GMPz::Rmpz_sgn($r)) {
+        ## OK
+    }
+    elsif ($sign_y < 0) {
+        Math::GMPz::Rmpz_add($r, $r, $y);
+    }
+
+    bless \$r;
 }
 
 #
