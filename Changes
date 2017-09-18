@@ -1,6 +1,6 @@
 Revision history for Math-AnyNum
 
-0.12    2018-?-?
+0.12    2017-?-?
 
         [ADDITIONS]
 
@@ -8,11 +8,12 @@ Revision history for Math-AnyNum
 
         [IMPROVEMENTS]
 
-        - Using the newly added functions in Math::MPFR-3.36: Rmpfr_q_div() and Rmpfr_z_div().
+        - The newly added functions in Math::MPFR-3.36, Rmpfr_q_div() and Rmpfr_z_div(), are now used by Math::AnyNum.
 
         [PERFORMANCE OPTIMIZATIONS]
 
-        - Re-implemented all core methods without Class::Multimethods, which makes Math::AnyNum ~25% faster.
+        - Re-implemented all the methods without Class::Multimethods, which makes Math::AnyNum ~35% faster.
+        - Many internal simplifications and optimizations.
 
 0.11    2017-07-11
 
