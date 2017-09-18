@@ -1896,8 +1896,11 @@ sub isqrt {
 #
 
 sub icbrt {
-    require Math::AnyNum::iroot;
-    bless \__iroot__(_star2mpz($_[0]) // (goto &nan), 3);
+    my ($x) = @_;
+    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_root($r, $x, 3);
+    bless \$r;
 }
 
 #
@@ -1907,7 +1910,7 @@ sub icbrt {
 sub iroot {
     my ($x, $y) = @_;
 
-    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // (goto &nan);
+    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
 
     if (!ref($y) and CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
         ## `y`is native integer

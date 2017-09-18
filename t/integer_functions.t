@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 330;    # be careful
+plan tests => 333;    # be careful
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -289,6 +289,10 @@ is(iroot(1,              1),          1);
 is(iroot(1,              2),          1);
 is(iroot(-1,             1),          -1);
 is(iroot(-2,             1),          -2);
+
+is(icbrt(125),          5);
+is(icbrt($o->new(125)), 5);
+is(icbrt(-125),         -5);
 
 is(isqrt(100),               10);
 is(isqrt(987654),            993);
