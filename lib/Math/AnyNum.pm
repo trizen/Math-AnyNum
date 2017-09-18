@@ -1905,24 +1905,55 @@ sub icbrt {
 #
 
 sub iroot {
-    require Math::AnyNum::iroot;
     my ($x, $y) = @_;
 
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // (goto &nan);
 
-    if (ref($y) eq __PACKAGE__) {
-        return bless \__iroot__($x, _any2si($$y) // (goto &nan));
+    if (!ref($y) and CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
+        ## `y`is native integer
+    }
+    elsif (ref($y) eq __PACKAGE__) {
+        $y = _any2si($$y) // goto &nan;
+    }
+    else {
+        $y = _any2si(_star2obj($y)) // goto &nan;
     }
 
-    if (!ref($y)) {
-        if (CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
-            return bless \__iroot__($x, $y);
+    if ($y == 0) {
+        Math::GMPz::Rmpz_sgn($x) || goto &zero;    # 0^Inf = 0
+
+        # 1^Inf = 1 ; (-1)^Inf = 1
+        if (Math::GMPz::Rmpz_cmpabs_ui($x, 1) == 0) {
+            goto &one;
         }
 
-        return bless \__iroot__($x, _any2si(_str2obj($y)) // (goto &nan));
+        goto &inf;
     }
 
-    bless \__iroot__($x, _any2si(_star2obj($y)) // (goto &nan));
+    if ($y < 0) {
+        my $sign = Math::GMPz::Rmpz_sgn($x)
+          || goto &inf;                            # 1 / 0^k = Inf
+
+        if ($sign < 0) {
+            goto &nan;
+        }
+
+        if (Math::GMPz::Rmpz_cmp_ui($x, 1) == 0) {    # 1 / 1^k = 1
+            goto &one;
+        }
+
+        goto &zero;
+    }
+
+    if ($y % 2 == 0 and Math::GMPz::Rmpz_sgn($x) < 0) {
+        goto &nan;
+    }
+
+    my $r = Math::GMPz::Rmpz_init();
+    $y == 2
+      ? Math::GMPz::Rmpz_sqrt($r, $x)
+      : Math::GMPz::Rmpz_root($r, $x, $y);
+    bless \$r;
 }
 
 #
