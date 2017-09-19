@@ -3666,17 +3666,13 @@ sub not {
 sub lsft {
     my ($x, $y) = @_;
 
-    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // (goto &nan);
+    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
 
     if (!ref($y) and CORE::int($y) eq $y and $y >= LONG_MIN and $y <= ULONG_MAX) {
         ## `y` is a native integer
     }
     else {
-        $y = (
-              ref($y) eq __PACKAGE__
-              ? _any2si($$y)
-              : _any2si(_star2obj($y))
-             ) // (goto &nan);
+        $y = (ref($y) eq __PACKAGE__ ? _any2si($$y) : _any2si(_star2obj($y))) // goto &nan;
     }
 
     my $r = Math::GMPz::Rmpz_init();
@@ -3695,13 +3691,13 @@ sub lsft {
 sub rsft {
     my ($x, $y) = @_;
 
-    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // (goto &nan);
+    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
 
     if (!ref($y) and CORE::int($y) eq $y and $y >= LONG_MIN and $y <= ULONG_MAX) {
         ## `y` is a native integer
     }
     else {
-        $y = (ref($y) eq __PACKAGE__ ? _any2si($$y) : _any2si(_star2obj($y))) // (goto &nan);
+        $y = (ref($y) eq __PACKAGE__ ? _any2si($$y) : _any2si(_star2obj($y))) // goto &nan;
     }
 
     my $r = Math::GMPz::Rmpz_init();
@@ -3720,11 +3716,7 @@ sub rsft {
 sub popcount {
     my ($x) = @_;
 
-    $x = (
-          ref($x) eq __PACKAGE__
-          ? _any2mpz($$x)
-          : _any2mpz(_star2obj($x))
-         ) // return -1;
+    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _any2mpz(_star2obj($x))) // return -1;
 
     if (Math::GMPz::Rmpz_sgn($x) < 0) {
         my $t = Math::GMPz::Rmpz_init();
