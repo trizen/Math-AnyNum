@@ -534,13 +534,13 @@ Natural exponentiation of C<x> (i.e.: C<e**x>).
 
     exp2(x)                                       #=> Any
 
-Raises 2 to the power of C<x>. (i.e.: C<2**x>)
+Raises 2 to the power C<x>. (i.e.: C<2**x>)
 
 =head2 exp10
 
     exp10(x)                                      #=> Any
 
-Raises 10 to the power of C<x>. (i.e.: C<10**x>)
+Raises 10 to the power C<x>. (i.e.: C<10**x>)
 
 =head2 ln / log
 
