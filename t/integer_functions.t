@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 346;    # be careful
+plan tests => 347;    # be careful
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -433,6 +433,17 @@ is(join(' ', map {
     ipolygonal_root(polygonal($n, $k), $k);
 
 } 0..10), join(' ', 0..10));
+#>>>
+
+#<<<
+is(join('', map {
+
+    my $n = int(rand(100));
+    my $k = $_;
+
+    !!(polygonal(ipolygonal_root($n, $k), $k) == $n) eq !!is_polygonal($n, $k)
+
+} 0..20), '1' x 21);
 #>>>
 
 ok(is_power('279841'), '23^4');

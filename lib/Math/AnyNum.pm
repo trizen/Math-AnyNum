@@ -3612,7 +3612,7 @@ sub ipolygonal_root {
     Math::GMPz::Rmpz_add_ui($u, $u, 2);           # u = u+2
     Math::GMPz::Rmpz_mul_2exp($u, $u, 1);         # u = u*2
 
-    Math::GMPz::Rmpz_sgn($u) || goto &nan;        # `u` is zero
+    Math::GMPz::Rmpz_sgn($u) || return bless \$n; # `u` is zero
 
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_div($r, $t, $u);
