@@ -202,6 +202,11 @@ use overload
         isqrtrem => sub ($)  { goto &isqrtrem },
         irootrem => sub ($$) { goto &irootrem },
 
+        polygonal => sub ($$) { goto &polygonal },
+
+        #polygonal_root => sub ($$) { goto &polygonal_root},            # TODO: implement it
+        ipolygonal_root => sub ($$) { goto &ipolygonal_root },
+
         powmod => sub ($$$) { goto &powmod },
         invmod => sub ($$)  { goto &invmod },
 
@@ -3572,6 +3577,71 @@ sub is_polygonal {
     Math::GMPz::Rmpz_mul_2exp($u, $u, 1);  # u = u*2
 
     Math::GMPz::Rmpz_divisible_p($t, $u);  # true iff u|t
+}
+
+#
+## Integer polygonal root
+#
+
+sub ipolygonal_root {
+    my ($n, $k) = @_;
+
+    $n = (ref($n) eq __PACKAGE__ ? _any2mpz($$n) : _star2mpz($n)) // goto &nan;
+    $k = (ref($k) eq __PACKAGE__ ? _any2mpz($$k) : _star2mpz($k)) // goto &nan;
+
+    # polygonal_root(n, k)
+    #   = (sqrt(8 * (k - 2) * n + (k - 4)^2) + k - 4) / (2 * (k - 2))
+
+    state $t = Math::GMPz::Rmpz_init();
+    state $u = Math::GMPz::Rmpz_init();
+
+    Math::GMPz::Rmpz_sub_ui($u, $k, 2);    # u = k-2
+    Math::GMPz::Rmpz_mul($t, $n, $u);      # t = n*u
+    Math::GMPz::Rmpz_mul_2exp($t, $t, 3);  # t = t*8
+
+    Math::GMPz::Rmpz_sub_ui($u, $u, 2);    # u = u-2
+    Math::GMPz::Rmpz_mul($u, $u, $u);      # u = u^2
+    Math::GMPz::Rmpz_add($t, $t, $u);      # t = t+u
+
+    Math::GMPz::Rmpz_sgn($t) < 0 && goto &nan;    # `t` is negative
+
+    Math::GMPz::Rmpz_sqrt($t, $t);                # t = sqrt(t)
+    Math::GMPz::Rmpz_sub_ui($u, $k, 4);           # u = k-4
+    Math::GMPz::Rmpz_add($t, $t, $u);             # t = t+u
+
+    Math::GMPz::Rmpz_add_ui($u, $u, 2);           # u = u+2
+    Math::GMPz::Rmpz_mul_2exp($u, $u, 1);         # u = u*2
+
+    Math::GMPz::Rmpz_sgn($u) || goto &nan;        # `u` is zero
+
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_div($r, $t, $u);
+    bless \$r;
+}
+
+#
+## n-th k-gonal number
+#
+
+sub polygonal {
+    my ($n, $k) = @_;
+
+    $n = (ref($n) eq __PACKAGE__ ? _any2mpz($$n) : _star2mpz($n)) // return 0;
+    $k = (ref($k) eq __PACKAGE__ ? _any2mpz($$k) : _star2mpz($k)) // return 0;
+
+    # polygonal(n, k) = n * (k*n - k - 2*n + 4) / 2
+
+    my $r = Math::GMPz::Rmpz_init();
+
+    Math::GMPz::Rmpz_mul($r, $n, $k);    # r = n*k
+    Math::GMPz::Rmpz_sub($r, $r, $k);    # r = r-k
+    Math::GMPz::Rmpz_sub($r, $r, $n);    # r = r-n
+    Math::GMPz::Rmpz_sub($r, $r, $n);    # r = r-n
+    Math::GMPz::Rmpz_add_ui($r, $r, 4);  # r = r+4
+    Math::GMPz::Rmpz_mul($r, $r, $n);    # r = r*n
+    Math::GMPz::Rmpz_div_2exp($r, $r, 1);    # r = r/2
+
+    bless \$r;
 }
 
 #

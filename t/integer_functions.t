@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 343;    # be careful
+plan tests => 346;    # be careful
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -419,6 +419,20 @@ ok(!is_polygonal('68260505237496759433061476685485086062274987298529934559531667
 
 #<<<
 ok(is_polygonal('3599999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999937', ipow(10, 128)));
+#>>>
+
+is(polygonal(10, 3), '55');
+is(polygonal(12, 4), '144');
+
+#<<<
+is(join(' ', map {
+
+    my $n = $_;
+    my $k = int(rand(1000000000)) + 3;
+
+    ipolygonal_root(polygonal($n, $k), $k);
+
+} 0..10), join(' ', 0..10));
 #>>>
 
 ok(is_power('279841'), '23^4');

@@ -99,7 +99,8 @@ The following functions are exportable:
         iroot isqrt icbrt ilog ilog2 ilog10 invmod
         powmod isqrtrem irootrem is_power is_square
         is_polygonal is_prime is_coprime next_prime
-        rising_factorial falling_factorial
+        polygonal ipolygonal_root rising_factorial
+        falling_factorial
 
     :misc
         rand irand seed iseed floor ceil round sgn neg inv
@@ -1111,6 +1112,28 @@ Example:
 
 Returns a true value when C<n> is a perfect square.
 When C<n> is not an integer, a false value is returned.
+
+=head2 polygonal
+
+    polygonal(n, k)                               #=> Int
+
+Returns the nth k-gonal number.
+
+Example:
+
+    say join(' ', map { polygonal($_, 3) } 1..10);  # triangular numbers
+    say join(' ', map { polygonal($_, 5) } 1..10);  # pentagonal numbers
+
+=head2 ipolygonal_root
+
+    ipolygonal_root(n, k)                         #=> Int | NaN
+
+Integer k-gonal root of C<n>. Returns C<NaN> when a real root does not exists.
+
+Example:
+
+    say ipolygonal_root($n, 3);                  # triangular root
+    say ipolygonal_root(polygonal(10, 5), 5);    # prints: "10"
 
 =head2 is_polygonal
 
