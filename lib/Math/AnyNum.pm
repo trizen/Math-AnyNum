@@ -42,16 +42,17 @@ use overload
   '<'  => sub { $_[2] ? (goto &gt) : (goto &lt) },
   '<=' => sub { $_[2] ? (goto &ge) : (goto &le) },
 
-  '<=>' => sub { $_[2] ? -($_[0]->cmp($_[1]) // return undef) : $_[0]->cmp($_[1]) },
+  '<=>' => sub { $_[2] ? -(&cmp($_[0], $_[1]) // return undef) : &cmp($_[0], $_[1]) },
 
   '>>' => sub { @_ = ($_[1], $_[0]) if $_[2]; goto &rsft },
   '<<' => sub { @_ = ($_[1], $_[0]) if $_[2]; goto &lsft },
-  '**' => sub { @_ = ($_[1], $_[0]) if $_[2]; goto &pow },
-  '%'  => sub { @_ = ($_[1], $_[0]) if $_[2]; goto &mod },
   '/'  => sub { @_ = ($_[1], $_[0]) if $_[2]; goto &div },
   '-'  => sub { @_ = ($_[1], $_[0]) if $_[2]; goto &sub },
 
-  atan2 => sub { @_ = ($_[1], $_[0]) if $_[2]; goto &atan2 },
+  '**' => sub { @_ = $_[2] ? @_[1, 0] : @_[0, 1]; goto &pow },
+  '%'  => sub { @_ = $_[2] ? @_[1, 0] : @_[0, 1]; goto &mod },
+
+  atan2 => sub { @_ = $_[2] ? @_[1, 0] : @_[0, 1]; goto &atan2 },
 
   eq => sub { "$_[0]" eq "$_[1]" },
   ne => sub { "$_[0]" ne "$_[1]" },
@@ -83,213 +84,211 @@ use overload
                 );
 
     my %trig = (
-        sin   => sub (_) { goto &sin },     # built-in function
-        sinh  => sub ($) { goto &sinh },
-        asin  => sub ($) { goto &asin },
-        asinh => sub ($) { goto &asinh },
+        sin => sub (_) { goto &sin },    # built-in function
+        sinh  => \&sinh,
+        asin  => \&asin,
+        asinh => \&asinh,
 
-        cos   => sub (_) { goto &cos },     # built-in function
-        cosh  => sub ($) { goto &cosh },
-        acos  => sub ($) { goto &acos },
-        acosh => sub ($) { goto &acosh },
+        cos => sub (_) { goto &cos },    # built-in function
+        cosh  => \&cosh,
+        acos  => \&acos,
+        acosh => \&acosh,
 
-        tan   => sub ($) { goto &tan },
-        tanh  => sub ($) { goto &tanh },
-        atan  => sub ($) { goto &atan },
-        atanh => sub ($) { goto &atanh },
+        tan   => \&tan,
+        tanh  => \&tanh,
+        atan  => \&atan,
+        atanh => \&atanh,
 
-        cot   => sub ($) { goto &cot },
-        coth  => sub ($) { goto &coth },
-        acot  => sub ($) { goto &acot },
-        acoth => sub ($) { goto &acoth },
+        cot   => \&cot,
+        coth  => \&coth,
+        acot  => \&acot,
+        acoth => \&acoth,
 
-        sec   => sub ($) { goto &sec },
-        sech  => sub ($) { goto &sech },
-        asec  => sub ($) { goto &asec },
-        asech => sub ($) { goto &asech },
+        sec   => \&sec,
+        sech  => \&sech,
+        asec  => \&asec,
+        asech => \&asech,
 
-        csc   => sub ($) { goto &csc },
-        csch  => sub ($) { goto &csch },
-        acsc  => sub ($) { goto &acsc },
-        acsch => sub ($) { goto &acsch },
+        csc   => \&csc,
+        csch  => \&csch,
+        acsc  => \&acsc,
+        acsch => \&acsch,
 
-        atan2   => sub ($$) { goto &atan2 },
-        deg2rad => sub ($)  { goto &deg2rad },
-        rad2deg => sub ($)  { goto &rad2deg },
+        atan2   => \&atan2,
+        deg2rad => \&deg2rad,
+        rad2deg => \&rad2deg,
                );
 
     my %special = (
-        beta => sub ($$) { goto &beta },
-        zeta => sub ($)  { goto &zeta },
-        eta  => sub ($)  { goto &eta },
+        beta => \&beta,
+        zeta => \&zeta,
+        eta  => \&eta,
 
-        gamma   => sub ($) { goto &gamma },
-        lgamma  => sub ($) { goto &lgamma },
-        lngamma => sub ($) { goto &lngamma },
-        digamma => sub ($) { goto &digamma },
+        gamma   => \&gamma,
+        lgamma  => \&lgamma,
+        lngamma => \&lngamma,
+        digamma => \&digamma,
 
-        Ai  => sub ($) { goto &Ai },
-        Ei  => sub ($) { goto &Ei },
-        Li  => sub ($) { goto &Li },
-        Li2 => sub ($) { goto &Li2 },
+        Ai  => \&Ai,
+        Ei  => \&Ei,
+        Li  => \&Li,
+        Li2 => \&Li2,
 
-        lgrt     => sub ($) { goto &lgrt },
-        LambertW => sub ($) { goto &LambertW },
+        lgrt     => \&lgrt,
+        LambertW => \&LambertW,
 
-        BesselJ => sub ($$) { goto &BesselJ },
-        BesselY => sub ($$) { goto &BesselY },
+        BesselJ => \&BesselJ,
+        BesselY => \&BesselY,
 
-        pow  => sub ($$) { goto &pow },
-        sqr  => sub ($)  { goto &sqr },
-        norm => sub ($)  { goto &norm },
-        sqrt => sub (_)  { goto &sqrt },    # built-in function
-        cbrt => sub ($)  { goto &cbrt },
-        root => sub ($$) { goto &root },
+        pow  => \&pow,
+        sqr  => \&sqr,
+        norm => \&norm,
+        sqrt => sub (_) { goto &sqrt },    # built-in function
+        cbrt => \&cbrt,
+        root => \&root,
 
-        exp   => sub (_) { goto &exp },     # built-in function
-        exp2  => sub ($) { goto &exp2 },
-        exp10 => sub ($) { goto &exp10 },
+        exp => sub (_) { goto &exp },      # built-in function
+        exp2  => \&exp2,
+        exp10 => \&exp10,
 
-        ln    => sub ($)   { goto &ln },
-        log   => sub (_;$) { goto &log },     # built-in function
-        log2  => sub ($)   { goto &log2 },
-        log10 => sub ($)   { goto &log10 },
+        ln => sub ($) { goto &ln },        # used in overloading
+        log   => \&log,                    # built-in function
+        log2  => \&log2,
+        log10 => \&log10,
 
-        mod => sub ($$) { goto &mod },
-        abs => sub (_)  { goto &abs },        # built-in function
+        mod => \&mod,
+        abs => sub (_) { goto &abs },      # built-in function
 
-        erf  => sub ($) { goto &erf },
-        erfc => sub ($) { goto &erfc },
+        erf  => \&erf,
+        erfc => \&erfc,
 
-        hypot => sub ($$) { goto &hypot },
-        agm   => sub ($$) { goto &agm },
+        hypot => \&hypot,
+        agm   => \&agm,
 
-        bernreal => sub ($) { goto &bernreal },
-        harmreal => sub ($) { goto &harmreal },
+        bernreal => \&bernreal,
+        harmreal => \&harmreal,
 
-        polygonal_root => sub ($$) { goto &polygonal_root },
+        polygonal_root => \&polygonal_root,
                   );
 
     my %ntheory = (
-        factorial  => sub ($)  { goto &factorial },
-        dfactorial => sub ($)  { goto &dfactorial },
-        mfactorial => sub ($$) { goto &mfactorial },
-        primorial  => sub ($)  { goto &primorial },
-        binomial   => sub ($$) { goto &binomial },
+        factorial  => \&factorial,
+        dfactorial => \&dfactorial,
+        mfactorial => \&mfactorial,
+        primorial  => \&primorial,
+        binomial   => \&binomial,
 
-        rising_factorial  => sub ($$) { goto &rising_factorial },
-        falling_factorial => sub ($$) { goto &falling_factorial },
+        rising_factorial  => \&rising_factorial,
+        falling_factorial => \&falling_factorial,
 
-        lucas     => sub ($) { goto &lucas },
-        fibonacci => sub ($) { goto &fibonacci },
+        lucas     => \&lucas,
+        fibonacci => \&fibonacci,
 
-        bernfrac => sub ($) { goto &bernfrac },
-        harmfrac => sub ($) { goto &harmfrac },
+        bernfrac => \&bernfrac,
+        harmfrac => \&harmfrac,
 
-        lcm       => sub ($$) { goto &lcm },
-        gcd       => sub ($$) { goto &gcd },
-        valuation => sub ($$) { goto &valuation },
-        kronecker => sub ($$) { goto &kronecker },
+        lcm       => \&lcm,
+        gcd       => \&gcd,
+        valuation => \&valuation,
+        kronecker => \&kronecker,
 
-        remdiv => sub ($$) { goto &remdiv },
-        divmod => sub ($$) { goto &divmod },
+        remdiv => \&remdiv,
+        divmod => \&divmod,
 
-        iadd => sub ($$) { goto &iadd },
-        isub => sub ($$) { goto &isub },
-        imul => sub ($$) { goto &imul },
-        idiv => sub ($$) { goto &idiv },
-        imod => sub ($$) { goto &imod },
+        iadd => \&iadd,
+        isub => \&isub,
+        imul => \&imul,
+        idiv => \&idiv,
+        imod => \&imod,
 
-        ipow   => sub ($$) { goto &ipow },
-        ipow2  => sub ($)  { goto &ipow2 },
-        ipow10 => sub ($)  { goto &ipow10 },
+        ipow   => \&ipow,
+        ipow2  => \&ipow2,
+        ipow10 => \&ipow10,
 
-        iroot => sub ($$) { goto &iroot },
-        isqrt => sub ($)  { goto &isqrt },
-        icbrt => sub ($)  { goto &icbrt },
+        iroot => \&iroot,
+        isqrt => \&isqrt,
+        icbrt => \&icbrt,
 
-        ilog   => sub ($;$) { goto &ilog },
-        ilog2  => sub ($)   { goto &ilog2 },
-        ilog10 => sub ($)   { goto &ilog10 },
+        ilog   => \&ilog,
+        ilog2  => \&ilog2,
+        ilog10 => \&ilog10,
 
-        isqrtrem => sub ($)  { goto &isqrtrem },
-        irootrem => sub ($$) { goto &irootrem },
+        isqrtrem => \&isqrtrem,
+        irootrem => \&irootrem,
 
-        polygonal       => sub ($$) { goto &polygonal },
-        ipolygonal_root => sub ($$) { goto &ipolygonal_root },
+        polygonal       => \&polygonal,
+        ipolygonal_root => \&ipolygonal_root,
 
-        powmod => sub ($$$) { goto &powmod },
-        invmod => sub ($$)  { goto &invmod },
+        powmod => \&powmod,
+        invmod => \&invmod,
 
-        is_power     => sub ($;$) { goto &is_power },
-        is_square    => sub ($)   { goto &is_square },
-        is_polygonal => sub ($$)  { goto &is_polygonal },
+        is_power     => \&is_power,
+        is_square    => \&is_square,
+        is_polygonal => \&is_polygonal,
 
-        is_prime   => sub ($;$) { goto &is_prime },
-        is_coprime => sub ($$)  { goto &is_coprime },
-        next_prime => sub ($)   { goto &next_prime },
+        is_prime   => \&is_prime,
+        is_coprime => \&is_coprime,
+        next_prime => \&next_prime,
                   );
 
     my %misc = (
-        rand => sub (;$;$) {    # built-in function
-            @_ ? (goto &rand) : do { (@_) = one(); goto &rand }
-        },
-        irand => sub ($;$) { goto &irand },
+        rand  => \&rand,
+        irand => \&irand,
 
-        seed  => sub ($) { goto &seed },
-        iseed => sub ($) { goto &iseed },
+        seed  => \&seed,
+        iseed => \&iseed,
 
-        floor => sub ($)   { goto &floor },
-        ceil  => sub ($)   { goto &ceil },
-        round => sub ($;$) { goto &round },
-        sgn   => sub ($)   { goto &sgn },
+        floor => \&floor,
+        ceil  => \&ceil,
+        round => \&round,
+        sgn   => \&sgn,
 
-        popcount => sub ($) { goto &popcount },
+        popcount => \&popcount,
 
-        neg   => sub ($) { goto &neg },
-        inv   => sub ($) { goto &inv },
-        conj  => sub ($) { goto &conj },
-        real  => sub ($) { goto &real },
-        imag  => sub ($) { goto &imag },
-        reals => sub ($) { goto &reals },
+        neg => sub ($) { goto &neg },    # used in overloading
+        inv => \&inv,
+        conj  => \&conj,
+        real  => \&real,
+        imag  => \&imag,
+        reals => \&reals,
 
-        int     => sub (_) { goto &int },       # built-in function
-        rat     => sub ($) { goto &rat },
-        float   => sub ($) { goto &float },
-        complex => sub ($) { goto &complex },
+        int => sub (_) { goto &int },    # built-in function
+        rat => \&rat,
+        float   => \&float,
+        complex => \&complex,
 
-        numerator   => sub ($) { goto &numerator },
-        denominator => sub ($) { goto &denominator },
-        nude        => sub ($) { goto &nude },
+        numerator   => \&numerator,
+        denominator => \&denominator,
+        nude        => \&nude,
 
-        digits => sub ($;$) { goto &digits },
+        digits => \&digits,
 
-        as_bin  => sub ($)   { goto &as_bin },
-        as_hex  => sub ($)   { goto &as_hex },
-        as_oct  => sub ($)   { goto &as_oct },
-        as_int  => sub ($;$) { goto &as_int },
-        as_frac => sub ($;$) { goto &as_frac },
-        as_dec  => sub ($;$) { goto &as_dec },
+        as_bin  => \&as_bin,
+        as_hex  => \&as_hex,
+        as_oct  => \&as_oct,
+        as_int  => \&as_int,
+        as_frac => \&as_frac,
+        as_dec  => \&as_dec,
 
-        rat_approx => sub ($) { goto &rat_approx },
+        rat_approx => \&rat_approx,
 
-        is_inf     => sub ($) { goto &is_inf },
-        is_ninf    => sub ($) { goto &is_ninf },
-        is_neg     => sub ($) { goto &is_neg },
-        is_pos     => sub ($) { goto &is_pos },
-        is_nan     => sub ($) { goto &is_nan },
-        is_rat     => sub ($) { goto &is_rat },
-        is_real    => sub ($) { goto &is_real },
-        is_imag    => sub ($) { goto &is_imag },
-        is_int     => sub ($) { goto &is_int },
-        is_complex => sub ($) { goto &is_complex },
-        is_zero    => sub ($) { goto &is_zero },
-        is_one     => sub ($) { goto &is_one },
-        is_mone    => sub ($) { goto &is_mone },
+        is_inf     => \&is_inf,
+        is_ninf    => \&is_ninf,
+        is_neg     => \&is_neg,
+        is_pos     => \&is_pos,
+        is_nan     => \&is_nan,
+        is_rat     => \&is_rat,
+        is_real    => \&is_real,
+        is_imag    => \&is_imag,
+        is_int     => \&is_int,
+        is_complex => \&is_complex,
+        is_zero    => \&is_zero,
+        is_one     => \&is_one,
+        is_mone    => \&is_mone,
 
-        is_odd  => sub ($)  { goto &is_odd },
-        is_even => sub ($)  { goto &is_even },
-        is_div  => sub ($$) { goto &is_div },
+        is_odd  => \&is_odd,
+        is_even => \&is_even,
+        is_div  => \&is_div,
                );
 
     sub import {
@@ -1077,19 +1076,19 @@ sub phi {
 ## OTHER
 #
 
-sub stringify {
+sub stringify {    # used in overloading
     require Math::AnyNum::stringify;
     (@_) = (${$_[0]});
     goto &__stringify__;
 }
 
-sub numify {
+sub numify {       # used in overloading
     require Math::AnyNum::numify;
     (@_) = (${$_[0]});
     goto &__numify__;
 }
 
-sub boolify {
+sub boolify {      # used in overloading
     require Math::AnyNum::boolify;
     (@_) = (${$_[0]});
     goto &__boolify__;
@@ -1099,7 +1098,7 @@ sub boolify {
 ## EQUALITY
 #
 
-sub eq {
+sub eq {    # used in overloading
     require Math::AnyNum::eq;
     my ($x, $y) = @_;
 
@@ -1126,7 +1125,7 @@ sub eq {
 ## INEQUALITY
 #
 
-sub ne {
+sub ne {    # used in overloading
     require Math::AnyNum::ne;
     my ($x, $y) = @_;
 
@@ -1153,7 +1152,7 @@ sub ne {
 ## COMPARISON
 #
 
-sub cmp {
+sub cmp ($$) {
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
 
@@ -1180,7 +1179,7 @@ sub cmp {
 ## GREATER THAN
 #
 
-sub gt {
+sub gt {    # used in overloading
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
 
@@ -1202,7 +1201,7 @@ sub gt {
 ## EQUAL OR GREATER THAN
 #
 
-sub ge {
+sub ge {    # used in overloading
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
 
@@ -1224,7 +1223,7 @@ sub ge {
 ## LESS THAN
 #
 
-sub lt {
+sub lt {    # used in overloading
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
 
@@ -1246,7 +1245,7 @@ sub lt {
 ## EQUAL OR LESS THAN
 #
 
-sub le {
+sub le {    # used in overloading
     require Math::AnyNum::cmp;
     my ($x, $y) = @_;
 
@@ -1295,7 +1294,7 @@ sub _copy {
     }
 }
 
-sub copy {
+sub copy ($) {
     my ($x) = @_;
     bless \_copy($$x);
 }
@@ -1304,7 +1303,7 @@ sub copy {
 ## CONVERSION TO INTEGER
 #
 
-sub int {
+sub int {    # used in overloading
     my ($x) = @_;
 
     bless \(
@@ -1322,7 +1321,7 @@ sub int {
 ## CONVERSION TO RATIONAL
 #
 
-sub rat {
+sub rat ($) {
     my ($x) = @_;
     if (ref($x) eq __PACKAGE__) {
         ref($$x) eq 'Math::GMPq' && return $x;
@@ -1349,7 +1348,7 @@ sub rat {
 ## CONVERSION TO FLOATING-POINT
 #
 
-sub float {
+sub float ($) {
     my ($x) = @_;
 
     bless \(
@@ -1365,7 +1364,7 @@ sub float {
 ## CONVERSION TO COMPLEX
 #
 
-sub complex {
+sub complex ($) {
     my ($x) = @_;
     bless \(
               ref($x) eq __PACKAGE__
@@ -1380,7 +1379,7 @@ sub complex {
 ## NEGATION
 #
 
-sub neg {
+sub neg {    # used in overloading
     require Math::AnyNum::neg;
     my ($x) = @_;
     bless \__neg__(ref($x) eq __PACKAGE__ ? $$x : _star2obj($x));
@@ -1390,7 +1389,7 @@ sub neg {
 ## ABSOLUTE VALUE
 #
 
-sub abs {
+sub abs {    # used in overloading
     require Math::AnyNum::abs;
     my ($x) = @_;
     bless \__abs__(ref($x) eq __PACKAGE__ ? $$x : _star2obj($x));
@@ -1400,7 +1399,7 @@ sub abs {
 ## MULTIPLICATIVE INVERSE
 #
 
-sub inv {
+sub inv ($) {
     require Math::AnyNum::inv;
     my ($x) = @_;
     bless \__inv__(ref($x) eq __PACKAGE__ ? $$x : _star2obj($x));
@@ -1410,7 +1409,7 @@ sub inv {
 ## INCREMENTATION BY ONE
 #
 
-sub inc {
+sub inc ($) {
     require Math::AnyNum::inc;
     my ($x) = @_;
     bless \__inc__($$x);
@@ -1420,13 +1419,13 @@ sub inc {
 ## DECREMENTATION BY ONE
 #
 
-sub dec {
+sub dec ($) {
     require Math::AnyNum::dec;
     my ($x) = @_;
     bless \__dec__($$x);
 }
 
-sub conj {
+sub conj ($) {
     my ($x) = @_;
 
     if (ref($x) ne __PACKAGE__) {
@@ -1443,7 +1442,7 @@ sub conj {
     }
 }
 
-sub real {
+sub real ($) {
     my ($x) = @_;
 
     if (ref($x) ne __PACKAGE__) {
@@ -1460,7 +1459,7 @@ sub real {
     }
 }
 
-sub imag {
+sub imag ($) {
     my ($x) = @_;
 
     if (ref($x) ne __PACKAGE__) {
@@ -1477,7 +1476,7 @@ sub imag {
     }
 }
 
-sub reals {
+sub reals ($) {
     my ($x) = @_;
 
     if (ref($x) ne __PACKAGE__) {
@@ -1491,7 +1490,7 @@ sub reals {
 ## ADDITION
 #
 
-sub add {
+sub add {    # used in overloading
     require Math::AnyNum::add;
     my ($x, $y) = @_;
 
@@ -1525,7 +1524,7 @@ sub add {
 ## SUBTRACTION
 #
 
-sub sub {
+sub sub {    # used in overloading
     require Math::AnyNum::sub;
     my ($x, $y) = @_;
 
@@ -1562,7 +1561,7 @@ sub sub {
 ## MULTIPLICATION
 #
 
-sub mul {
+sub mul {    # used in overloading
     require Math::AnyNum::mul;
     my ($x, $y) = @_;
 
@@ -1596,7 +1595,7 @@ sub mul {
 ## DIVISION
 #
 
-sub div {
+sub div {    # used in overloading
     require Math::AnyNum::div;
     my ($x, $y) = @_;
 
@@ -1633,7 +1632,7 @@ sub div {
 ## INTEGER ADDITION
 #
 
-sub iadd {
+sub iadd ($$) {
     my ($x, $y) = @_;
 
     if (!ref($x) and ref($y)) {
@@ -1661,7 +1660,7 @@ sub iadd {
 ## INTEGER SUBTRACTION
 #
 
-sub isub {
+sub isub ($$) {
     my ($x, $y) = @_;
 
     $x = _star2mpz($x) // goto &nan;
@@ -1685,7 +1684,7 @@ sub isub {
 ## INTEGER MULTIPLICATION
 #
 
-sub imul {
+sub imul ($$) {
     my ($x, $y) = @_;
 
     if (!ref($x) and ref($y)) {
@@ -1712,7 +1711,7 @@ sub imul {
 ## INTEGER DIVISION
 #
 
-sub idiv {
+sub idiv ($$) {
     my ($x, $y) = @_;
 
     $x = _star2mpz($x) // goto &nan;
@@ -1750,7 +1749,7 @@ sub idiv {
 ## POWER
 #
 
-sub pow {
+sub pow ($$) {
     require Math::AnyNum::pow;
     my ($x, $y) = @_;
 
@@ -1778,7 +1777,7 @@ sub pow {
 ## INTEGER POWER
 #
 
-sub ipow {
+sub ipow ($$) {
     my ($x, $y) = @_;
 
     # Both `x` and `y` are strings
@@ -1821,7 +1820,7 @@ sub ipow {
 ## IPOW2
 #
 
-sub ipow2 {
+sub ipow2 ($) {
     my ($n) = @_;
 
     if (ref($n) eq __PACKAGE__) {
@@ -1849,7 +1848,7 @@ sub ipow2 {
 ## IPOW10
 #
 
-sub ipow10 {
+sub ipow10 ($) {
     my ($n) = @_;
 
     if (ref($n) eq __PACKAGE__) {
@@ -1876,7 +1875,7 @@ sub ipow10 {
 ## ROOT
 #
 
-sub root {
+sub root ($$) {
     require Math::AnyNum::pow;
     require Math::AnyNum::inv;
     my ($x, $y) = @_;
@@ -1898,7 +1897,7 @@ sub root {
 ## Polygonal root
 #
 
-sub polygonal_root {
+sub polygonal_root ($$) {
     require Math::AnyNum::polygonal_root;
     bless \__polygonal_root__(_star2mpfr_mpc($_[0]), _star2mpfr_mpc($_[1]));
 }
@@ -1907,7 +1906,7 @@ sub polygonal_root {
 ## isqrt
 #
 
-sub isqrt {
+sub isqrt ($) {
     my ($x) = @_;
 
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
@@ -1922,7 +1921,7 @@ sub isqrt {
 ## icbrt
 #
 
-sub icbrt {
+sub icbrt ($) {
     my ($x) = @_;
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
     my $r = Math::GMPz::Rmpz_init();
@@ -1934,7 +1933,7 @@ sub icbrt {
 ## IROOT
 #
 
-sub iroot {
+sub iroot ($$) {
     my ($x, $y) = @_;
 
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
@@ -1990,7 +1989,7 @@ sub iroot {
 ## ISQRTREM
 #
 
-sub isqrtrem {
+sub isqrtrem ($) {
     my ($x) = @_;
 
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // return (nan(), nan());
@@ -2010,7 +2009,7 @@ sub isqrtrem {
 ## IROOTREM
 #
 
-sub irootrem {
+sub irootrem ($$) {
     my ($x, $y) = @_;
 
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // return (nan(), nan());
@@ -2079,7 +2078,7 @@ sub irootrem {
 ## MOD
 #
 
-sub mod {
+sub mod ($$) {
     require Math::AnyNum::mod;
     my ($x, $y) = @_;
 
@@ -2111,7 +2110,7 @@ sub mod {
 ## IMOD
 #
 
-sub imod {
+sub imod ($$) {
     my ($x, $y) = @_;
 
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // (goto &nan);
@@ -2157,7 +2156,7 @@ sub imod {
 ## DIVMOD
 #
 
-sub divmod {
+sub divmod ($$) {
     my ($x, $y) = @_;
 
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // return (nan(), nan());
@@ -2178,7 +2177,7 @@ sub divmod {
 ## is_div
 #
 
-sub is_div {
+sub is_div ($$) {
     require Math::AnyNum::eq;
     (@_) = (${mod($_[0], $_[1])}, 0);
     goto &__eq__;
@@ -2188,27 +2187,27 @@ sub is_div {
 ## SPECIAL
 #
 
-sub ln {
+sub ln {    # used in overloading
     require Math::AnyNum::log;
     bless \__log__(_star2mpfr_mpc($_[0]));
 }
 
-sub log2 {
+sub log2 ($) {
     require Math::AnyNum::log;
     bless \__log2__(_star2mpfr_mpc($_[0]));
 }
 
-sub log10 {
+sub log10 ($) {
     require Math::AnyNum::log;
     bless \__log10__(_star2mpfr_mpc($_[0]));
 }
 
-sub length {
+sub length ($) {
     my ($z) = _star2mpz($_[0]) // return -1;
     CORE::length(Math::GMPz::Rmpz_get_str($z, 10)) - (Math::GMPz::Rmpz_sgn($z) < 0 ? 1 : 0);
 }
 
-sub log {
+sub log (_;$) {
     require Math::AnyNum::log;
     my ($x, $y) = @_;
 
@@ -2224,19 +2223,19 @@ sub log {
 ## ILOG
 #
 
-sub ilog2 {
+sub ilog2 ($) {
     require Math::AnyNum::ilog;
     state $two = Math::GMPz::Rmpz_init_set_ui(2);
     bless \__ilog__((_star2mpz($_[0]) // goto &nan), $two);
 }
 
-sub ilog10 {
+sub ilog10 ($) {
     require Math::AnyNum::ilog;
     state $ten = Math::GMPz::Rmpz_init_set_ui(10);
     bless \__ilog__((_star2mpz($_[0]) // goto &nan), $ten);
 }
 
-sub ilog {
+sub ilog ($;$) {
     my ($x, $y) = @_;
 
     if (!defined($y)) {
@@ -2252,17 +2251,17 @@ sub ilog {
 ## SQRT
 #
 
-sub sqrt {
+sub sqrt {    # used in overloading
     require Math::AnyNum::sqrt;
     bless \__sqrt__(_star2mpfr_mpc($_[0]));
 }
 
-sub cbrt {
+sub cbrt ($) {
     require Math::AnyNum::cbrt;
     bless \__cbrt__(_star2mpfr_mpc($_[0]));
 }
 
-sub sqr {
+sub sqr ($) {
     require Math::AnyNum::mul;
     my ($x) = @_;
 
@@ -2274,7 +2273,7 @@ sub sqr {
     bless \__mul__($x, $x);
 }
 
-sub norm {
+sub norm ($) {
     require Math::AnyNum::norm;
     my ($x) = @_;
 
@@ -2286,12 +2285,12 @@ sub norm {
     bless \__norm__($x);
 }
 
-sub exp {
+sub exp {    # used in overloading
     require Math::AnyNum::exp;
     bless \__exp__(_star2mpfr_mpc($_[0]));
 }
 
-sub exp2 {
+sub exp2 ($) {
     require Math::AnyNum::pow;
     my ($x) = @_;
 
@@ -2308,7 +2307,7 @@ sub exp2 {
     }
 }
 
-sub exp10 {
+sub exp10 ($) {
     require Math::AnyNum::pow;
     my ($x) = @_;
 
@@ -2325,7 +2324,7 @@ sub exp10 {
     }
 }
 
-sub floor {
+sub floor ($) {
     require Math::AnyNum::floor;
     my ($x) = @_;
 
@@ -2337,7 +2336,7 @@ sub floor {
     bless \__floor__($$x);
 }
 
-sub ceil {
+sub ceil ($) {
     require Math::AnyNum::ceil;
     my ($x) = @_;
 
@@ -2353,22 +2352,22 @@ sub ceil {
 ## sin / sinh / asin / asinh
 #
 
-sub sin {
+sub sin {    # used in overloading
     require Math::AnyNum::sin;
     bless \__sin__(_star2mpfr_mpc($_[0]));
 }
 
-sub sinh {
+sub sinh ($) {
     require Math::AnyNum::sinh;
     bless \__sinh__(_star2mpfr_mpc($_[0]));
 }
 
-sub asin {
+sub asin ($) {
     require Math::AnyNum::asin;
     bless \__asin__(_star2mpfr_mpc($_[0]));
 }
 
-sub asinh {
+sub asinh ($) {
     require Math::AnyNum::asinh;
     bless \__asinh__(_star2mpfr_mpc($_[0]));
 }
@@ -2377,22 +2376,22 @@ sub asinh {
 ## cos / cosh / acos / acosh
 #
 
-sub cos {
+sub cos {    # used in overloading
     require Math::AnyNum::cos;
     bless \__cos__(_star2mpfr_mpc($_[0]));
 }
 
-sub cosh {
+sub cosh ($) {
     require Math::AnyNum::cosh;
     bless \__cosh__(_star2mpfr_mpc($_[0]));
 }
 
-sub acos {
+sub acos ($) {
     require Math::AnyNum::acos;
     bless \__acos__(_star2mpfr_mpc($_[0]));
 }
 
-sub acosh {
+sub acosh ($) {
     require Math::AnyNum::acosh;
     bless \__acosh__(_star2mpfr_mpc($_[0]));
 }
@@ -2401,27 +2400,27 @@ sub acosh {
 ## tan / tanh / atan / atanh
 #
 
-sub tan {
+sub tan ($) {
     require Math::AnyNum::tan;
     bless \__tan__(_star2mpfr_mpc($_[0]));
 }
 
-sub tanh {
+sub tanh ($) {
     require Math::AnyNum::tanh;
     bless \__tanh__(_star2mpfr_mpc($_[0]));
 }
 
-sub atan {
+sub atan ($) {
     require Math::AnyNum::atan;
     bless \__atan__(_star2mpfr_mpc($_[0]));
 }
 
-sub atanh {
+sub atanh ($) {
     require Math::AnyNum::atanh;
     bless \__atanh__(_star2mpfr_mpc($_[0]));
 }
 
-sub atan2 {
+sub atan2 ($$) {
     require Math::AnyNum::atan2;
     bless \__atan2__(_star2mpfr_mpc($_[0]), _star2mpfr_mpc($_[1]));
 }
@@ -2430,22 +2429,22 @@ sub atan2 {
 ## sec / sech / asec / asech
 #
 
-sub sec {
+sub sec ($) {
     require Math::AnyNum::sec;
     bless \__sec__(_star2mpfr_mpc($_[0]));
 }
 
-sub sech {
+sub sech ($) {
     require Math::AnyNum::sech;
     bless \__sech__(_star2mpfr_mpc($_[0]));
 }
 
-sub asec {
+sub asec ($) {
     require Math::AnyNum::asec;
     bless \__asec__(_star2mpfr_mpc($_[0]));
 }
 
-sub asech {
+sub asech ($) {
     require Math::AnyNum::asech;
     bless \__asech__(_star2mpfr_mpc($_[0]));
 }
@@ -2454,22 +2453,22 @@ sub asech {
 ## csc / csch / acsc / acsch
 #
 
-sub csc {
+sub csc ($) {
     require Math::AnyNum::csc;
     bless \__csc__(_star2mpfr_mpc($_[0]));
 }
 
-sub csch {
+sub csch ($) {
     require Math::AnyNum::csch;
     bless \__csch__(_star2mpfr_mpc($_[0]));
 }
 
-sub acsc {
+sub acsc ($) {
     require Math::AnyNum::acsc;
     bless \__acsc__(_star2mpfr_mpc($_[0]));
 }
 
-sub acsch {
+sub acsch ($) {
     require Math::AnyNum::acsch;
     bless \__acsch__(_star2mpfr_mpc($_[0]));
 }
@@ -2478,27 +2477,27 @@ sub acsch {
 ## cot / coth / acot / acoth
 #
 
-sub cot {
+sub cot ($) {
     require Math::AnyNum::cot;
     bless \__cot__(_star2mpfr_mpc($_[0]));
 }
 
-sub coth {
+sub coth ($) {
     require Math::AnyNum::coth;
     bless \__coth__(_star2mpfr_mpc($_[0]));
 }
 
-sub acot {
+sub acot ($) {
     require Math::AnyNum::acot;
     bless \__acot__(_star2mpfr_mpc($_[0]));
 }
 
-sub acoth {
+sub acoth ($) {
     require Math::AnyNum::acoth;
     bless \__acoth__(_star2mpfr_mpc($_[0]));
 }
 
-sub deg2rad {
+sub deg2rad ($) {
     require Math::AnyNum::mul;
     my ($x) = @_;
     my $f = Math::MPFR::Rmpfr_init2($PREC);
@@ -2507,7 +2506,7 @@ sub deg2rad {
     bless \__mul__(_star2mpfr_mpc($x), $f);
 }
 
-sub rad2deg {
+sub rad2deg ($) {
     require Math::AnyNum::mul;
     my ($x) = @_;
     my $f = Math::MPFR::Rmpfr_init2($PREC);
@@ -2520,7 +2519,7 @@ sub rad2deg {
 ## gamma
 #
 
-sub gamma {
+sub gamma ($) {
     my $r = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_gamma($r, _star2mpfr($_[0]), $ROUND);
     bless \$r;
@@ -2530,7 +2529,7 @@ sub gamma {
 ## lgamma
 #
 
-sub lgamma {
+sub lgamma ($) {
     my $r = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_lgamma($r, _star2mpfr($_[0]), $ROUND);
     bless \$r;
@@ -2540,7 +2539,7 @@ sub lgamma {
 ## lngamma
 #
 
-sub lngamma {
+sub lngamma ($) {
     my $r = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_lngamma($r, _star2mpfr($_[0]), $ROUND);
     bless \$r;
@@ -2550,7 +2549,7 @@ sub lngamma {
 ## digamma
 #
 
-sub digamma {
+sub digamma ($) {
     my $r = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_digamma($r, _star2mpfr($_[0]), $ROUND);
     bless \$r;
@@ -2560,7 +2559,7 @@ sub digamma {
 ## zeta
 #
 
-sub zeta {
+sub zeta ($) {
     my ($x) = @_;
 
     if (!ref($x) and CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
@@ -2589,7 +2588,7 @@ sub zeta {
 ## eta
 #
 
-sub eta {
+sub eta ($) {
     require Math::AnyNum::eta;
     bless \__eta__(_star2mpfr($_[0]));
 }
@@ -2597,7 +2596,7 @@ sub eta {
 #
 ## beta
 #
-sub beta {
+sub beta ($$) {
     require Math::AnyNum::beta;
     bless \__beta__(_star2mpfr($_[0]), _star2mpfr($_[1]));
 }
@@ -2606,7 +2605,7 @@ sub beta {
 ## Airy function (Ai)
 #
 
-sub Ai {
+sub Ai ($) {
     my $r = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_ai($r, _star2mpfr($_[0]), $ROUND);
     bless \$r;
@@ -2616,7 +2615,7 @@ sub Ai {
 ## Exponential integral (Ei)
 #
 
-sub Ei {
+sub Ei ($) {
     my $r = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_eint($r, _star2mpfr($_[0]), $ROUND);
     bless \$r;
@@ -2625,7 +2624,7 @@ sub Ei {
 #
 ## Logarithmic integral (Li)
 #
-sub Li {
+sub Li ($) {
     my $r = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_log($r, _star2mpfr($_[0]), $ROUND);
     Math::MPFR::Rmpfr_eint($r, $r, $ROUND);
@@ -2635,7 +2634,7 @@ sub Li {
 #
 ## Dilogarithm function (Li_2)
 #
-sub Li2 {
+sub Li2 ($) {
     my $r = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_li2($r, _star2mpfr($_[0]), $ROUND);
     bless \$r;
@@ -2644,7 +2643,7 @@ sub Li2 {
 #
 ## Error function
 #
-sub erf {
+sub erf ($) {
     my $r = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_erf($r, _star2mpfr($_[0]), $ROUND);
     bless \$r;
@@ -2653,7 +2652,7 @@ sub erf {
 #
 ## Complementary error function
 #
-sub erfc {
+sub erfc ($) {
     my $r = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_erfc($r, _star2mpfr($_[0]), $ROUND);
     bless \$r;
@@ -2663,7 +2662,7 @@ sub erfc {
 ## Lambert W
 #
 
-sub LambertW {
+sub LambertW ($) {
     require Math::AnyNum::LambertW;
     bless \__LambertW__(_star2mpfr_mpc($_[0]));
 }
@@ -2672,7 +2671,7 @@ sub LambertW {
 ## lgrt -- logarithmic root
 #
 
-sub lgrt {
+sub lgrt ($) {
     require Math::AnyNum::lgrt;
     bless \__lgrt__(_star2mpfr_mpc($_[0]));
 }
@@ -2680,7 +2679,7 @@ sub lgrt {
 #
 ## agm
 #
-sub agm {
+sub agm ($$) {
     require Math::AnyNum::agm;
     bless \__agm__(_star2mpfr_mpc($_[0]), _star2mpfr_mpc($_[1]));
 }
@@ -2689,7 +2688,7 @@ sub agm {
 ## hypot
 #
 
-sub hypot {
+sub hypot ($$) {
     require Math::AnyNum::hypot;
     bless \__hypot__(_star2mpfr_mpc($_[0]), _star2mpfr_mpc($_[1]));
 }
@@ -2698,7 +2697,7 @@ sub hypot {
 ## BesselJ
 #
 
-sub BesselJ {
+sub BesselJ ($$) {
     require Math::AnyNum::BesselJ;
     my ($x, $y) = @_;
 
@@ -2715,7 +2714,7 @@ sub BesselJ {
 ## BesselY
 #
 
-sub BesselY {
+sub BesselY ($$) {
     require Math::AnyNum::BesselY;
     my ($x, $y) = @_;
 
@@ -2732,7 +2731,7 @@ sub BesselY {
 ## ROUND
 #
 
-sub round {
+sub round ($;$) {
     require Math::AnyNum::round;
     my ($x, $y) = @_;
 
@@ -2771,9 +2770,13 @@ sub round {
         state $state = Math::MPFR::Rmpfr_randinit_mt_nobless();
         Math::MPFR::Rmpfr_randseed_ui($state, $srand);
 
-        sub rand {
+        sub rand (;$;$) {
             require Math::AnyNum::mul;
             my ($x, $y) = @_;
+
+            if (@_ == 0) {
+                $x = one();
+            }
 
             $x = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
 
@@ -2794,7 +2797,7 @@ sub round {
             bless \__add__($rand, $x);
         }
 
-        sub seed {
+        sub seed ($) {
             my $z = _star2mpz($_[0]) // do {
                 require Carp;
                 Carp::croak("seed(): invalid seed value <<$_[0]>> (expected an integer)");
@@ -2808,7 +2811,7 @@ sub round {
         state $state = Math::GMPz::zgmp_randinit_mt_nobless();
         Math::GMPz::zgmp_randseed_ui($state, $srand);
 
-        sub irand {
+        sub irand ($;$) {
             require Math::AnyNum::irand;
             my ($x, $y) = @_;
 
@@ -2822,7 +2825,7 @@ sub round {
             bless \__irand__($x, $y, $state);
         }
 
-        sub iseed {
+        sub iseed ($) {
             my $z = _star2mpz($_[0]) // do {
                 require Carp;
                 Carp::croak("iseed(): invalid seed value <<$_[0]>> (expected an integer)");
@@ -2836,7 +2839,7 @@ sub round {
 #
 ## Fibonacci
 #
-sub fibonacci {
+sub fibonacci ($) {
     my ($x) = @_;
 
     if (!ref($x) and CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
@@ -2857,7 +2860,7 @@ sub fibonacci {
 #
 ## Lucas
 #
-sub lucas {
+sub lucas ($) {
     my ($x) = @_;
 
     if (!ref($x) and CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
@@ -2878,7 +2881,7 @@ sub lucas {
 #
 ## Primorial
 #
-sub primorial {
+sub primorial ($) {
     my ($x) = @_;
 
     if (!ref($x) and CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
@@ -2900,7 +2903,7 @@ sub primorial {
 ## bernfrac
 #
 
-sub bernfrac {
+sub bernfrac ($) {
     require Math::AnyNum::bernfrac;
     my ($x) = @_;
 
@@ -2921,7 +2924,7 @@ sub bernfrac {
 ## harmfrac
 #
 
-sub harmfrac {
+sub harmfrac ($) {
     require Math::AnyNum::harmfrac;
     my ($x) = @_;
 
@@ -2942,7 +2945,7 @@ sub harmfrac {
 ## bernreal
 #
 
-sub bernreal {
+sub bernreal ($) {
     require Math::AnyNum::bernreal;
     my ($x) = @_;
 
@@ -2963,7 +2966,7 @@ sub bernreal {
 ## harmreal
 #
 
-sub harmreal {
+sub harmreal ($) {
     require Math::AnyNum::harmreal;
     bless \__harmreal__(_star2mpfr($_[0]) // (goto &nan));
 }
@@ -2971,7 +2974,7 @@ sub harmreal {
 #
 ## Factorial
 #
-sub factorial {
+sub factorial ($) {
     my ($x) = @_;
 
     if (!ref($x) and CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
@@ -2993,7 +2996,7 @@ sub factorial {
 ## Double-factorial
 #
 
-sub dfactorial {
+sub dfactorial ($) {
     my ($x) = @_;
 
     if (!ref($x) and CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
@@ -3015,7 +3018,7 @@ sub dfactorial {
 ## M-factorial
 #
 
-sub mfactorial {
+sub mfactorial ($$) {
     my ($x, $y) = @_;
 
     if (!ref($x) and CORE::int($x) eq $x and $x >= 0 and $x <= ULONG_MAX) {
@@ -3047,7 +3050,7 @@ sub mfactorial {
 ## falling_factorial(x, +y) = binomial(x, y) * y!
 ## falling_factorial(x, -y) = 1/falling_factorial(x + y, y)
 #
-sub falling_factorial {
+sub falling_factorial ($$) {
     my ($x, $y) = @_;
 
     $x = _star2mpz($x) // goto &nan;
@@ -3096,7 +3099,7 @@ sub falling_factorial {
 ## rising_factorial(x, +y) = binomial(x + y - 1, y) * y!
 ## rising_factorial(x, -y) = 1/rising_factorial(x - y, y)
 #
-sub rising_factorial {
+sub rising_factorial ($$) {
     my ($x, $y) = @_;
 
     $x = _star2mpz($x) // goto &nan;
@@ -3147,7 +3150,7 @@ sub rising_factorial {
 ## Greatest common multiple
 #
 
-sub gcd {
+sub gcd ($$) {
     my ($x, $y) = @_;
 
     if (ref($y) and !ref($x)) {
@@ -3173,7 +3176,7 @@ sub gcd {
 ## Least common multiple
 #
 
-sub lcm {
+sub lcm ($$) {
     my ($x, $y) = @_;
 
     if (ref($y) and !ref($x)) {
@@ -3199,7 +3202,7 @@ sub lcm {
 ## Next prime after `x`.
 #
 
-sub next_prime {
+sub next_prime ($) {
     my ($x) = @_;
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
     my $r = Math::GMPz::Rmpz_init();
@@ -3211,7 +3214,7 @@ sub next_prime {
 ## Is prime?
 #
 
-sub is_prime {
+sub is_prime ($;$) {
     require Math::AnyNum::is_int;
     my ($x, $y) = @_;
 
@@ -3227,7 +3230,7 @@ sub is_prime {
 ## Is `x` coprime to `y`?
 #
 
-sub is_coprime {
+sub is_coprime ($$) {
     require Math::AnyNum::is_int;
     my ($x, $y) = @_;
 
@@ -3259,7 +3262,7 @@ sub is_coprime {
 ## Is integer?
 #
 
-sub is_int {
+sub is_int ($) {
     require Math::AnyNum::is_int;
     my ($x) = @_;
     __is_int__(ref($x) eq __PACKAGE__ ? $$x : _star2obj($x));
@@ -3269,7 +3272,7 @@ sub is_int {
 ## Is rational?
 #
 
-sub is_rat {
+sub is_rat ($) {
     my ($x) = @_;
     my $ref = ref(ref($x) eq __PACKAGE__ ? $$x : _star2obj($x));
     $ref eq 'Math::GMPz' or $ref eq 'Math::GMPq';
@@ -3279,7 +3282,7 @@ sub is_rat {
 ## Numerator of a number
 #
 
-sub numerator {
+sub numerator ($) {
     my ($x) = @_;
 
     my $r = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
@@ -3302,7 +3305,7 @@ sub numerator {
 ## Denominator of a number
 #
 
-sub denominator {
+sub denominator ($) {
     my ($x) = @_;
 
     my $r = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
@@ -3324,7 +3327,7 @@ sub denominator {
 ## (numerator, denominator)
 #
 
-sub nude {
+sub nude ($) {
     my ($x) = @_;
 
     if (ref($x) ne __PACKAGE__) {
@@ -3338,7 +3341,7 @@ sub nude {
 ## Sign of a number
 #
 
-sub sgn {
+sub sgn ($) {
     require Math::AnyNum::sgn;
     my ($x) = @_;
     my $r = __sgn__(ref($x) eq __PACKAGE__ ? $$x : _star2obj($x));
@@ -3349,7 +3352,7 @@ sub sgn {
 ## Is a real number?
 #
 
-sub is_real {
+sub is_real ($) {
     my ($x) = @_;
 
     my $r = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
@@ -3369,7 +3372,7 @@ sub is_real {
 ## Is an imaginary number?
 #
 
-sub is_imag {
+sub is_imag ($) {
     my ($x) = @_;
 
     my $r = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
@@ -3386,7 +3389,7 @@ sub is_imag {
 ## Is a complex number?
 #
 
-sub is_complex {
+sub is_complex ($) {
     my ($x) = @_;
 
     my $r = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
@@ -3403,7 +3406,7 @@ sub is_complex {
 ## Is positive infinity?
 #
 
-sub is_inf {
+sub is_inf ($) {
     my ($x) = @_;
 
     my $r = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
@@ -3423,7 +3426,7 @@ sub is_inf {
 ## Is negative infinity?
 #
 
-sub is_ninf {
+sub is_ninf ($) {
     my ($x) = @_;
 
     my $r = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
@@ -3443,7 +3446,7 @@ sub is_ninf {
 ## Is Not-A-Number?
 #
 
-sub is_nan {
+sub is_nan ($) {
     my ($x) = @_;
 
     $x = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
@@ -3467,7 +3470,7 @@ sub is_nan {
 ## Is an even integer?
 #
 
-sub is_even {
+sub is_even ($) {
     require Math::AnyNum::is_int;
     my ($x) = @_;
 
@@ -3481,7 +3484,7 @@ sub is_even {
 ## Is an odd integer?
 #
 
-sub is_odd {
+sub is_odd ($) {
     require Math::AnyNum::is_int;
     my ($x) = @_;
 
@@ -3495,7 +3498,7 @@ sub is_odd {
 ## Is zero?
 #
 
-sub is_zero {
+sub is_zero ($) {
     require Math::AnyNum::eq;
     my ($x) = @_;
     (@_) = ((ref($x) eq __PACKAGE__ ? $$x : _star2obj($x)), 0);
@@ -3506,7 +3509,7 @@ sub is_zero {
 ## Is one?
 #
 
-sub is_one {
+sub is_one ($) {
     require Math::AnyNum::eq;
     my ($x) = @_;
     (@_) = ((ref($x) eq __PACKAGE__ ? $$x : _star2obj($x)), 1);
@@ -3517,7 +3520,7 @@ sub is_one {
 ## Is minus one?
 #
 
-sub is_mone {
+sub is_mone ($) {
     require Math::AnyNum::eq;
     my ($x) = @_;
     (@_) = ((ref($x) eq __PACKAGE__ ? $$x : _star2obj($x)), -1);
@@ -3528,7 +3531,7 @@ sub is_mone {
 ## Is positive?
 #
 
-sub is_pos {
+sub is_pos ($) {
     require Math::AnyNum::cmp;
     my ($x) = @_;
     (__cmp__((ref($x) eq __PACKAGE__ ? $$x : _star2obj($x)), 0) // return undef) > 0;
@@ -3538,7 +3541,7 @@ sub is_pos {
 ## Is negative?
 #
 
-sub is_neg {
+sub is_neg ($) {
     require Math::AnyNum::cmp;
     my ($x) = @_;
     (__cmp__((ref($x) eq __PACKAGE__ ? $$x : _star2obj($x)), 0) // return undef) < 0;
@@ -3548,7 +3551,7 @@ sub is_neg {
 ## Is square?
 #
 
-sub is_square {
+sub is_square ($) {
     require Math::AnyNum::is_int;
     my ($x, $y) = @_;
 
@@ -3562,7 +3565,7 @@ sub is_square {
 ## Is a polygonal number?
 #
 
-sub is_polygonal {
+sub is_polygonal ($$) {
     require Math::AnyNum::is_int;
     my ($n, $k) = @_;
 
@@ -3603,7 +3606,7 @@ sub is_polygonal {
 ## Integer polygonal root
 #
 
-sub ipolygonal_root {
+sub ipolygonal_root ($$) {
     my ($n, $k) = @_;
 
     $n = (ref($n) eq __PACKAGE__ ? _any2mpz($$n) : _star2mpz($n)) // goto &nan;
@@ -3643,7 +3646,7 @@ sub ipolygonal_root {
 ## n-th k-gonal number
 #
 
-sub polygonal {
+sub polygonal ($$) {
     my ($n, $k) = @_;
 
     $n = (ref($n) eq __PACKAGE__ ? _any2mpz($$n) : _star2mpz($n)) // goto &nan;
@@ -3668,7 +3671,7 @@ sub polygonal {
 ## is_power
 #
 
-sub is_power {
+sub is_power ($;$) {
     require Math::AnyNum::is_power;
     require Math::AnyNum::is_int;
     my ($x, $y) = @_;
@@ -3696,7 +3699,7 @@ sub is_power {
 ## kronecker
 #
 
-sub kronecker {
+sub kronecker ($$) {
     my ($x, $y) = @_;
 
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
@@ -3709,7 +3712,7 @@ sub kronecker {
 ## valuation
 #
 
-sub valuation {
+sub valuation ($$) {
     require Math::AnyNum::valuation;
     my ($x, $y) = @_;
 
@@ -3723,7 +3726,7 @@ sub valuation {
 ## remdiv
 #
 
-sub remdiv {
+sub remdiv ($$) {
     require Math::AnyNum::valuation;
     my ($x, $y) = @_;
 
@@ -3737,7 +3740,7 @@ sub remdiv {
 ## Invmod
 #
 
-sub invmod {
+sub invmod ($$) {
     my ($x, $y) = @_;
 
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
@@ -3752,7 +3755,7 @@ sub invmod {
 ## Powmod
 #
 
-sub powmod {
+sub powmod ($$$) {
     my ($x, $y, $z) = @_;
 
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
@@ -3776,7 +3779,7 @@ sub powmod {
 ## Binomial
 #
 
-sub binomial {
+sub binomial ($$) {
     my ($x, $y) = @_;
 
     # `x` and `y` are native unsigned integers
@@ -3820,7 +3823,7 @@ sub binomial {
 ## AND
 #
 
-sub and {
+sub and {    # used in overloading
     my ($x, $y) = @_;
 
     $x = _any2mpz($$x) // (goto &nan);
@@ -3835,7 +3838,7 @@ sub and {
 ## OR
 #
 
-sub or {
+sub or {    # used in overloading
     my ($x, $y) = @_;
 
     $x = _any2mpz($$x) // (goto &nan);
@@ -3850,7 +3853,7 @@ sub or {
 ## XOR
 #
 
-sub xor {
+sub xor {    # used in overloading
     my ($x, $y) = @_;
 
     $x = _any2mpz($$x) // (goto &nan);
@@ -3865,7 +3868,7 @@ sub xor {
 ## NOT
 #
 
-sub not {
+sub not {    # used in overloading
     my ($x) = @_;
     $x = _any2mpz($$x) // (goto &nan);
     my $r = Math::GMPz::Rmpz_init();
@@ -3877,7 +3880,7 @@ sub not {
 ## LEFT SHIFT
 #
 
-sub lsft {
+sub lsft {    # used in overloading
     my ($x, $y) = @_;
 
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
@@ -3902,7 +3905,7 @@ sub lsft {
 ## RIGHT SHIFT
 #
 
-sub rsft {
+sub rsft {    # used in overloading
     my ($x, $y) = @_;
 
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
@@ -3927,7 +3930,7 @@ sub rsft {
 ## POPCOUNT
 #
 
-sub popcount {
+sub popcount ($) {
     my ($x) = @_;
 
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _any2mpz(_star2obj($x))) // return -1;
@@ -3945,19 +3948,19 @@ sub popcount {
 ## Conversions
 #
 
-sub as_bin {
+sub as_bin ($) {
     Math::GMPz::Rmpz_get_str((_star2mpz($_[0]) // return undef), 2);
 }
 
-sub as_oct {
+sub as_oct ($) {
     Math::GMPz::Rmpz_get_str((_star2mpz($_[0]) // return undef), 8);
 }
 
-sub as_hex {
+sub as_hex ($) {
     Math::GMPz::Rmpz_get_str((_star2mpz($_[0]) // return undef), 16);
 }
 
-sub as_int {
+sub as_int ($;$) {
     my ($x, $y) = @_;
 
     my $base = 10;
@@ -3982,7 +3985,7 @@ sub as_int {
     Math::GMPz::Rmpz_get_str((_star2mpz($x) // return undef), $base);
 }
 
-sub as_frac {
+sub as_frac ($;$) {
     my ($x, $y) = @_;
 
     my $base = 10;
@@ -4025,7 +4028,7 @@ sub as_frac {
     $frac;
 }
 
-sub as_dec {
+sub as_dec ($;$) {
     my ($x, $y) = @_;
     require Math::AnyNum::stringify;
 
@@ -4056,7 +4059,7 @@ sub as_dec {
     __stringify__(_star2mpfr_mpc($x));
 }
 
-sub rat_approx {
+sub rat_approx ($) {
     require Math::AnyNum::stringify;
     my ($x) = @_;
 
@@ -4120,7 +4123,7 @@ sub rat_approx {
     bless \$q;
 }
 
-sub digits {
+sub digits ($;$) {
     my ($x, $y) = @_;
     my $str = as_int($x, $y) // return ();
     my @digits = split(//, $str);
