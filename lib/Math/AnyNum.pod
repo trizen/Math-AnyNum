@@ -89,7 +89,7 @@ The following functions are exportable:
         Ai Ei Li Li2 LambertW BesselJ BesselY lgrt
         pow sqrt cbrt root exp exp2 exp10 ln log
         log2 log10 mod abs erf erfc sqr norm hypot
-        agm bernreal harmreal
+        agm bernreal harmreal polygonal_root
 
     :ntheory
         factorial dfactorial mfactorial primorial
@@ -510,6 +510,17 @@ Cube root of C<x>. Returns a complex number when C<x> is negative.
     root(x, y)                                    #=> Any
 
 The C<y> root of C<x>. Equivalent with C<x**(1/y)>.
+
+=head2 polygonal_root
+
+    polygonal_root(n, k)                          #=> Any
+
+Returns the k-gonal root of C<n>. Also defined for complex numbers.
+
+Example:
+
+    say polygonal_root($n, 3);      # triangular root
+    say polygonal_root($n, 5);      # pentagonal root
 
 =head2 pow
 

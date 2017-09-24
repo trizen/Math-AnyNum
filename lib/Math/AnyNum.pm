@@ -119,42 +119,55 @@ use overload
                );
 
     my %special = (
-                   beta     => sub ($$)  { goto &beta },
-                   zeta     => sub ($)   { goto &zeta },
-                   eta      => sub ($)   { goto &eta },
-                   gamma    => sub ($)   { goto &gamma },
-                   lgamma   => sub ($)   { goto &lgamma },
-                   lngamma  => sub ($)   { goto &lngamma },
-                   digamma  => sub ($)   { goto &digamma },
-                   Ai       => sub ($)   { goto &Ai },
-                   Ei       => sub ($)   { goto &Ei },
-                   Li       => sub ($)   { goto &Li },
-                   Li2      => sub ($)   { goto &Li2 },
-                   LambertW => sub ($)   { goto &LambertW },
-                   BesselJ  => sub ($$)  { goto &BesselJ },
-                   BesselY  => sub ($$)  { goto &BesselY },
-                   lgrt     => sub ($)   { goto &lgrt },
-                   pow      => sub ($$)  { goto &pow },
-                   sqr      => sub ($)   { goto &sqr },
-                   norm     => sub ($)   { goto &norm },
-                   sqrt     => sub (_)   { goto &sqrt },       # built-in function
-                   cbrt     => sub ($)   { goto &cbrt },
-                   root     => sub ($$)  { goto &root },
-                   exp      => sub (_)   { goto &exp },        # built-in function
-                   exp2     => sub ($)   { goto &exp2 },
-                   exp10    => sub ($)   { goto &exp10 },
-                   ln       => sub ($)   { goto &ln },
-                   log      => sub (_;$) { goto &log },        # built-in function
-                   log2     => sub ($)   { goto &log2 },
-                   log10    => sub ($)   { goto &log10 },
-                   mod      => sub ($$)  { goto &mod },
-                   abs      => sub (_)   { goto &abs },        # built-in function
-                   erf      => sub ($)   { goto &erf },
-                   erfc     => sub ($)   { goto &erfc },
-                   hypot    => sub ($$)  { goto &hypot },
-                   agm      => sub ($$)  { goto &agm },
-                   bernreal => sub ($)   { goto &bernreal },
-                   harmreal => sub ($)   { goto &harmreal },
+        beta => sub ($$) { goto &beta },
+        zeta => sub ($)  { goto &zeta },
+        eta  => sub ($)  { goto &eta },
+
+        gamma   => sub ($) { goto &gamma },
+        lgamma  => sub ($) { goto &lgamma },
+        lngamma => sub ($) { goto &lngamma },
+        digamma => sub ($) { goto &digamma },
+
+        Ai  => sub ($) { goto &Ai },
+        Ei  => sub ($) { goto &Ei },
+        Li  => sub ($) { goto &Li },
+        Li2 => sub ($) { goto &Li2 },
+
+        lgrt     => sub ($) { goto &lgrt },
+        LambertW => sub ($) { goto &LambertW },
+
+        BesselJ => sub ($$) { goto &BesselJ },
+        BesselY => sub ($$) { goto &BesselY },
+
+        pow  => sub ($$) { goto &pow },
+        sqr  => sub ($)  { goto &sqr },
+        norm => sub ($)  { goto &norm },
+        sqrt => sub (_)  { goto &sqrt },    # built-in function
+        cbrt => sub ($)  { goto &cbrt },
+        root => sub ($$) { goto &root },
+
+        exp   => sub (_) { goto &exp },     # built-in function
+        exp2  => sub ($) { goto &exp2 },
+        exp10 => sub ($) { goto &exp10 },
+
+        ln    => sub ($)   { goto &ln },
+        log   => sub (_;$) { goto &log },     # built-in function
+        log2  => sub ($)   { goto &log2 },
+        log10 => sub ($)   { goto &log10 },
+
+        mod => sub ($$) { goto &mod },
+        abs => sub (_)  { goto &abs },        # built-in function
+
+        erf  => sub ($) { goto &erf },
+        erfc => sub ($) { goto &erfc },
+
+        hypot => sub ($$) { goto &hypot },
+        agm   => sub ($$) { goto &agm },
+
+        bernreal => sub ($) { goto &bernreal },
+        harmreal => sub ($) { goto &harmreal },
+
+        polygonal_root => sub ($$) { goto &polygonal_root },
                   );
 
     my %ntheory = (
@@ -202,9 +215,7 @@ use overload
         isqrtrem => sub ($)  { goto &isqrtrem },
         irootrem => sub ($$) { goto &irootrem },
 
-        polygonal => sub ($$) { goto &polygonal },
-
-        #polygonal_root => sub ($$) { goto &polygonal_root},            # TODO: implement it
+        polygonal       => sub ($$) { goto &polygonal },
         ipolygonal_root => sub ($$) { goto &ipolygonal_root },
 
         powmod => sub ($$$) { goto &powmod },
@@ -1884,6 +1895,15 @@ sub root {
 }
 
 #
+## Polygonal root
+#
+
+sub polygonal_root {
+    require Math::AnyNum::polygonal_root;
+    bless \__polygonal_root__(_star2mpfr_mpc($_[0]), _star2mpfr_mpc($_[1]));
+}
+
+#
 ## isqrt
 #
 
@@ -3554,7 +3574,7 @@ sub is_polygonal {
     Math::GMPz::Rmpz_sgn($n) || return 1;
 
     # polygonal_root(n, k)
-    #   = (sqrt(8 * (k - 2) * n + (k - 4)^2) + k - 4) / (2 * (k - 2))
+    #   = (sqrt(8 * (k - 2) * n + (k - 4)^2) ± (k - 4)) / (2 * (k - 2))
 
     state $t = Math::GMPz::Rmpz_init();
     state $u = Math::GMPz::Rmpz_init();
@@ -3590,7 +3610,7 @@ sub ipolygonal_root {
     $k = (ref($k) eq __PACKAGE__ ? _any2mpz($$k) : _star2mpz($k)) // goto &nan;
 
     # polygonal_root(n, k)
-    #   = (sqrt(8 * (k - 2) * n + (k - 4)^2) + k - 4) / (2 * (k - 2))
+    #   = (sqrt(8 * (k - 2) * n + (k - 4)^2) ± (k - 4)) / (2 * (k - 2))
 
     state $t = Math::GMPz::Rmpz_init();
     state $u = Math::GMPz::Rmpz_init();
