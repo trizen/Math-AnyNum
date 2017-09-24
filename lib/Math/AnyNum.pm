@@ -3626,8 +3626,8 @@ sub ipolygonal_root {
 sub polygonal {
     my ($n, $k) = @_;
 
-    $n = (ref($n) eq __PACKAGE__ ? _any2mpz($$n) : _star2mpz($n)) // return 0;
-    $k = (ref($k) eq __PACKAGE__ ? _any2mpz($$k) : _star2mpz($k)) // return 0;
+    $n = (ref($n) eq __PACKAGE__ ? _any2mpz($$n) : _star2mpz($n)) // goto &nan;
+    $k = (ref($k) eq __PACKAGE__ ? _any2mpz($$k) : _star2mpz($k)) // goto &nan;
 
     # polygonal(n, k) = n * (k*n - k - 2*n + 4) / 2
 
