@@ -205,8 +205,10 @@ use overload
         powmod => sub ($$$) { goto &powmod },
         invmod => sub ($$)  { goto &invmod },
 
-        is_power   => sub ($;$) { goto &is_power },
-        is_square  => sub ($)   { goto &is_square },
+        is_power     => sub ($;$) { goto &is_power },
+        is_square    => sub ($)   { goto &is_square },
+        is_polygonal => sub ($$)  { goto &is_polygonal },
+
         is_prime   => sub ($;$) { goto &is_prime },
         is_coprime => sub ($$)  { goto &is_coprime },
         next_prime => sub ($)   { goto &next_prime },
@@ -3117,7 +3119,7 @@ sub rising_factorial {
 }
 
 #
-## GCD
+## Greatest common multiple
 #
 
 sub gcd {
@@ -3143,7 +3145,7 @@ sub gcd {
 }
 
 #
-## LCM
+## Least common multiple
 #
 
 sub lcm {
@@ -3169,7 +3171,7 @@ sub lcm {
 }
 
 #
-## next_prime
+## Next prime after `x`.
 #
 
 sub next_prime {
@@ -3181,7 +3183,7 @@ sub next_prime {
 }
 
 #
-## is_prime
+## Is prime?
 #
 
 sub is_prime {
@@ -3195,6 +3197,10 @@ sub is_prime {
     $y = defined($y) ? (CORE::abs(CORE::int($y)) || 20) : 20;
     Math::GMPz::Rmpz_probab_prime_p(_any2mpz($x) // (return 0), $y);
 }
+
+#
+## Is `x` coprime to `y`?
+#
 
 sub is_coprime {
     require Math::AnyNum::is_int;
@@ -3224,17 +3230,29 @@ sub is_coprime {
     Math::GMPz::Rmpz_cmp_ui($t, 1) == 0;
 }
 
+#
+## Is integer?
+#
+
 sub is_int {
     require Math::AnyNum::is_int;
     my ($x) = @_;
     __is_int__(ref($x) eq __PACKAGE__ ? $$x : _star2obj($x));
 }
 
+#
+## Is rational?
+#
+
 sub is_rat {
     my ($x) = @_;
     my $ref = ref(ref($x) eq __PACKAGE__ ? $$x : _star2obj($x));
     $ref eq 'Math::GMPz' or $ref eq 'Math::GMPq';
 }
+
+#
+## Numerator of a number
+#
 
 sub numerator {
     my ($x) = @_;
@@ -3255,6 +3273,10 @@ sub numerator {
     }
 }
 
+#
+## Denominator of a number
+#
+
 sub denominator {
     my ($x) = @_;
 
@@ -3273,6 +3295,10 @@ sub denominator {
     }
 }
 
+#
+## (numerator, denominator)
+#
+
 sub nude {
     my ($x) = @_;
 
@@ -3283,12 +3309,20 @@ sub nude {
     ($x->numerator, $x->denominator);
 }
 
+#
+## Sign of a number
+#
+
 sub sgn {
     require Math::AnyNum::sgn;
     my ($x) = @_;
     my $r = __sgn__(ref($x) eq __PACKAGE__ ? $$x : _star2obj($x));
     ref($r) ? (bless \$r) : $r;
 }
+
+#
+## Is a real number?
+#
 
 sub is_real {
     my ($x) = @_;
@@ -3306,6 +3340,10 @@ sub is_real {
     }
 }
 
+#
+## Is an imaginary number?
+#
+
 sub is_imag {
     my ($x) = @_;
 
@@ -3319,6 +3357,10 @@ sub is_imag {
     !Math::MPFR::Rmpfr_zero_p($f);
 }
 
+#
+## Is a complex number?
+#
+
 sub is_complex {
     my ($x) = @_;
 
@@ -3331,6 +3373,10 @@ sub is_complex {
     Math::MPC::RMPC_RE($f, $r);
     !Math::MPFR::Rmpfr_zero_p($f);
 }
+
+#
+## Is positive infinity?
+#
 
 sub is_inf {
     my ($x) = @_;
@@ -3348,6 +3394,10 @@ sub is_inf {
     }
 }
 
+#
+## Is negative infinity?
+#
+
 sub is_ninf {
     my ($x) = @_;
 
@@ -3363,6 +3413,10 @@ sub is_ninf {
         redo;
     }
 }
+
+#
+## Is Not-A-Number?
+#
 
 sub is_nan {
     my ($x) = @_;
@@ -3384,6 +3438,10 @@ sub is_nan {
     return 0;
 }
 
+#
+## Is an even integer?
+#
+
 sub is_even {
     require Math::AnyNum::is_int;
     my ($x) = @_;
@@ -3393,6 +3451,10 @@ sub is_even {
     __is_int__($x)
       && Math::GMPz::Rmpz_even_p(_any2mpz($x) // (return 0));
 }
+
+#
+## Is an odd integer?
+#
 
 sub is_odd {
     require Math::AnyNum::is_int;
@@ -3404,12 +3466,20 @@ sub is_odd {
       && Math::GMPz::Rmpz_odd_p(_any2mpz($x) // (return 0));
 }
 
+#
+## Is zero?
+#
+
 sub is_zero {
     require Math::AnyNum::eq;
     my ($x) = @_;
     (@_) = ((ref($x) eq __PACKAGE__ ? $$x : _star2obj($x)), 0);
     goto &__eq__;
 }
+
+#
+## Is one?
+#
 
 sub is_one {
     require Math::AnyNum::eq;
@@ -3418,6 +3488,10 @@ sub is_one {
     goto &__eq__;
 }
 
+#
+## Is minus one?
+#
+
 sub is_mone {
     require Math::AnyNum::eq;
     my ($x) = @_;
@@ -3425,11 +3499,19 @@ sub is_mone {
     goto &__eq__;
 }
 
+#
+## Is positive?
+#
+
 sub is_pos {
     require Math::AnyNum::cmp;
     my ($x) = @_;
     (__cmp__((ref($x) eq __PACKAGE__ ? $$x : _star2obj($x)), 0) // return undef) > 0;
 }
+
+#
+## Is negative?
+#
 
 sub is_neg {
     require Math::AnyNum::cmp;
@@ -3438,8 +3520,9 @@ sub is_neg {
 }
 
 #
-## is_square
+## Is square?
 #
+
 sub is_square {
     require Math::AnyNum::is_int;
     my ($x, $y) = @_;
@@ -3448,6 +3531,47 @@ sub is_square {
 
     __is_int__($x)
       && Math::GMPz::Rmpz_perfect_square_p(_any2mpz($x) // (return 0));
+}
+
+#
+## Is a polygonal number?
+#
+
+sub is_polygonal {
+    require Math::AnyNum::is_int;
+    my ($n, $k) = @_;
+
+    $n = ref($n) eq __PACKAGE__ ? $$n : _star2obj($n);
+
+    $n = (__is_int__($n)         ? _any2mpz($n)  : return 0)      // return 0;
+    $k = (ref($k) eq __PACKAGE__ ? _any2mpz($$k) : _star2mpz($k)) // return 0;
+
+    Math::GMPz::Rmpz_sgn($n) || return 1;
+
+    # polygonal_root(n, k)
+    #   = (sqrt(8 * (k - 2) * n + (k - 4)^2) + k - 4) / (2 * (k - 2))
+
+    state $t = Math::GMPz::Rmpz_init();
+    state $u = Math::GMPz::Rmpz_init();
+
+    Math::GMPz::Rmpz_sub_ui($u, $k, 2);    # u = k-2
+    Math::GMPz::Rmpz_mul($t, $n, $u);      # t = n*u
+    Math::GMPz::Rmpz_mul_2exp($t, $t, 3);  # t = t*8
+
+    Math::GMPz::Rmpz_sub_ui($u, $u, 2);    # u = u-2
+    Math::GMPz::Rmpz_mul($u, $u, $u);      # u = u^2
+
+    Math::GMPz::Rmpz_add($t, $t, $u);      # t = t+u
+    Math::GMPz::Rmpz_perfect_square_p($t) || return 0;
+    Math::GMPz::Rmpz_sqrt($t, $t);         # t = sqrt(t)
+
+    Math::GMPz::Rmpz_sub_ui($u, $k, 4);    # u = k-4
+    Math::GMPz::Rmpz_add($t, $t, $u);      # t = t+u
+
+    Math::GMPz::Rmpz_add_ui($u, $u, 2);    # u = u+2
+    Math::GMPz::Rmpz_mul_2exp($u, $u, 1);  # u = u*2
+
+    Math::GMPz::Rmpz_divisible_p($t, $u);  # true iff u|t
 }
 
 #

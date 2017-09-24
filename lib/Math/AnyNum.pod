@@ -98,8 +98,8 @@ The following functions are exportable:
         iadd isub imul idiv imod ipow ipow2 ipow10
         iroot isqrt icbrt ilog ilog2 ilog10 invmod
         powmod isqrtrem irootrem is_power is_square
-        is_prime is_coprime next_prime rising_factorial
-        falling_factorial
+        is_polygonal is_prime is_coprime next_prime
+        rising_factorial falling_factorial
 
     :misc
         rand irand seed iseed floor ceil round sgn neg inv
@@ -1111,6 +1111,19 @@ Example:
 
 Returns a true value when C<n> is a perfect square.
 When C<n> is not an integer, a false value is returned.
+
+=head2 is_polygonal
+
+    is_polygonal(n, k)                            #=> Bool
+
+Returns a true value when C<n> is a k-gonal number.
+
+The values of C<n> and C<k> can be any arbitrary large integers.
+
+Example:
+
+    # Hexagonal (6-gonal) numbers in the range [1, 100]
+    say join(' ', grep { is_polygonal($_, 6) } 1..100);
 
 =head1 MISCELLANEOUS
 
