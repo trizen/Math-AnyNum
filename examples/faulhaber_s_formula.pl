@@ -40,7 +40,7 @@ sub faulhaber_s_formula {
 
     my $sum = 0;
     for my $j (0 .. $p) {
-        $sum += binomial($p + 1, $j) * bernoulli_number($j) * ($n + 1)**($p + 1 - $j);
+        $sum += binomial($p + 1, $j) * bernoulli_number($j) * $n**($p + 1 - $j);
     }
 
     $sum / ($p + 1);
@@ -61,7 +61,7 @@ sub bernoulli_polynomials {
 
 sub faulhaber_s_formula_2 {
     my ($p, $n) = @_;
-    1 + (bernoulli_polynomials($p + 1, $n + 1) - bernoulli_polynomials($p + 1, 1)) / ($p + 1);
+    1 + (bernoulli_polynomials($p + 1, $n) - bernoulli_polynomials($p + 1, 1)) / ($p + 1);
 }
 
 # Test for 1^4 + 2^4 + 3^4 + ... + 10^4

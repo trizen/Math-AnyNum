@@ -37,7 +37,7 @@ sub __ipolygonal_root__ {
     Math::GMPz::Rmpz_sgn($u) || return $n;         # `u` is zero
 
     my $r = Math::GMPz::Rmpz_init();
-    Math::GMPz::Rmpz_div($r, $t, $u);
+    Math::GMPz::Rmpz_div($r, $t, $u);              # r = floor(t/u)
     return $r;
 }
 
