@@ -6,8 +6,11 @@ Revision history for Math-AnyNum
 
         - polygonal(n, k): returns the nth k-gonal number.
         - polygonal_root(n, k): returns the k-gonal root of `n`.
+        - polygonal_root2(n, k): returns the second k-gonal root of `n`.
         - ipolygonal_root(n, k): returns the integer k-gonal root of `n`.
+        - ipolygonal_root2(n, k): returns the second integer k-gonal root of `n`.
         - is_polygonal(n, k): returns 1 when `n` is a k-gonal number.
+        - is_polygonal2(n, k): returns 1 when `n` is a second k-gonal number.
 
 0.12    2017-09-18
 

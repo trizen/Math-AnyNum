@@ -168,7 +168,8 @@ use overload
         bernreal => \&bernreal,
         harmreal => \&harmreal,
 
-        polygonal_root => \&polygonal_root,
+        polygonal_root  => \&polygonal_root,
+        polygonal_root2 => \&polygonal_root2,
                   );
 
     my %ntheory = (
@@ -216,15 +217,17 @@ use overload
         isqrtrem => \&isqrtrem,
         irootrem => \&irootrem,
 
-        polygonal       => \&polygonal,
-        ipolygonal_root => \&ipolygonal_root,
+        polygonal        => \&polygonal,
+        ipolygonal_root  => \&ipolygonal_root,
+        ipolygonal_root2 => \&ipolygonal_root2,
 
         powmod => \&powmod,
         invmod => \&invmod,
 
-        is_power     => \&is_power,
-        is_square    => \&is_square,
-        is_polygonal => \&is_polygonal,
+        is_power      => \&is_power,
+        is_square     => \&is_square,
+        is_polygonal  => \&is_polygonal,
+        is_polygonal2 => \&is_polygonal2,
 
         is_prime   => \&is_prime,
         is_coprime => \&is_coprime,
@@ -1903,6 +1906,15 @@ sub polygonal_root ($$) {
 }
 
 #
+## Second polygonal root
+#
+
+sub polygonal_root2 ($$) {
+    require Math::AnyNum::polygonal_root;
+    bless \__polygonal_root__(_star2mpfr_mpc($_[0]), _star2mpfr_mpc($_[1]), 1);
+}
+
+#
 ## isqrt
 #
 
@@ -3567,6 +3579,7 @@ sub is_square ($) {
 
 sub is_polygonal ($$) {
     require Math::AnyNum::is_int;
+    require Math::AnyNum::is_polygonal;
     my ($n, $k) = @_;
 
     $n = ref($n) eq __PACKAGE__ ? $$n : _star2obj($n);
@@ -3574,32 +3587,24 @@ sub is_polygonal ($$) {
     $n = (__is_int__($n)         ? _any2mpz($n)  : return 0)      // return 0;
     $k = (ref($k) eq __PACKAGE__ ? _any2mpz($$k) : _star2mpz($k)) // return 0;
 
-    Math::GMPz::Rmpz_sgn($n) || return 1;
+    __is_polygonal__($n, $k);
+}
 
-    # polygonal_root(n, k)
-    #   = (sqrt(8 * (k - 2) * n + (k - 4)^2) ± (k - 4)) / (2 * (k - 2))
+#
+## Is a second polygonal number?
+#
 
-    state $t = Math::GMPz::Rmpz_init();
-    state $u = Math::GMPz::Rmpz_init();
+sub is_polygonal2 ($$) {
+    require Math::AnyNum::is_int;
+    require Math::AnyNum::is_polygonal;
+    my ($n, $k) = @_;
 
-    Math::GMPz::Rmpz_sub_ui($u, $k, 2);    # u = k-2
-    Math::GMPz::Rmpz_mul($t, $n, $u);      # t = n*u
-    Math::GMPz::Rmpz_mul_2exp($t, $t, 3);  # t = t*8
+    $n = ref($n) eq __PACKAGE__ ? $$n : _star2obj($n);
 
-    Math::GMPz::Rmpz_sub_ui($u, $u, 2);    # u = u-2
-    Math::GMPz::Rmpz_mul($u, $u, $u);      # u = u^2
+    $n = (__is_int__($n)         ? _any2mpz($n)  : return 0)      // return 0;
+    $k = (ref($k) eq __PACKAGE__ ? _any2mpz($$k) : _star2mpz($k)) // return 0;
 
-    Math::GMPz::Rmpz_add($t, $t, $u);      # t = t+u
-    Math::GMPz::Rmpz_perfect_square_p($t) || return 0;
-    Math::GMPz::Rmpz_sqrt($t, $t);         # t = sqrt(t)
-
-    Math::GMPz::Rmpz_sub_ui($u, $k, 4);    # u = k-4
-    Math::GMPz::Rmpz_add($t, $t, $u);      # t = t+u
-
-    Math::GMPz::Rmpz_add_ui($u, $u, 2);    # u = u+2
-    Math::GMPz::Rmpz_mul_2exp($u, $u, 1);  # u = u*2
-
-    Math::GMPz::Rmpz_divisible_p($t, $u);  # true iff u|t
+    __is_polygonal__($n, $k, 1);
 }
 
 #
@@ -3607,39 +3612,27 @@ sub is_polygonal ($$) {
 #
 
 sub ipolygonal_root ($$) {
+    require Math::AnyNum::ipolygonal_root;
     my ($n, $k) = @_;
 
     $n = (ref($n) eq __PACKAGE__ ? _any2mpz($$n) : _star2mpz($n)) // goto &nan;
     $k = (ref($k) eq __PACKAGE__ ? _any2mpz($$k) : _star2mpz($k)) // goto &nan;
 
-    # polygonal_root(n, k)
-    #   = (sqrt(8 * (k - 2) * n + (k - 4)^2) ± (k - 4)) / (2 * (k - 2))
+    bless \__ipolygonal_root__($n, $k);
+}
 
-    state $t = Math::GMPz::Rmpz_init();
-    state $u = Math::GMPz::Rmpz_init();
+#
+## Second integer polygonal root
+#
 
-    Math::GMPz::Rmpz_sub_ui($u, $k, 2);    # u = k-2
-    Math::GMPz::Rmpz_mul($t, $n, $u);      # t = n*u
-    Math::GMPz::Rmpz_mul_2exp($t, $t, 3);  # t = t*8
+sub ipolygonal_root2 ($$) {
+    require Math::AnyNum::ipolygonal_root;
+    my ($n, $k) = @_;
 
-    Math::GMPz::Rmpz_sub_ui($u, $u, 2);    # u = u-2
-    Math::GMPz::Rmpz_mul($u, $u, $u);      # u = u^2
-    Math::GMPz::Rmpz_add($t, $t, $u);      # t = t+u
+    $n = (ref($n) eq __PACKAGE__ ? _any2mpz($$n) : _star2mpz($n)) // goto &nan;
+    $k = (ref($k) eq __PACKAGE__ ? _any2mpz($$k) : _star2mpz($k)) // goto &nan;
 
-    Math::GMPz::Rmpz_sgn($t) < 0 && goto &nan;    # `t` is negative
-
-    Math::GMPz::Rmpz_sqrt($t, $t);                # t = sqrt(t)
-    Math::GMPz::Rmpz_sub_ui($u, $k, 4);           # u = k-4
-    Math::GMPz::Rmpz_add($t, $t, $u);             # t = t+u
-
-    Math::GMPz::Rmpz_add_ui($u, $u, 2);           # u = u+2
-    Math::GMPz::Rmpz_mul_2exp($u, $u, 1);         # u = u*2
-
-    Math::GMPz::Rmpz_sgn($u) || return bless \$n; # `u` is zero
-
-    my $r = Math::GMPz::Rmpz_init();
-    Math::GMPz::Rmpz_div($r, $t, $u);
-    bless \$r;
+    bless \__ipolygonal_root__($n, $k, 1);
 }
 
 #

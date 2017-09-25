@@ -4,7 +4,7 @@ use warnings;
 our ($ROUND, $PREC);
 
 sub __polygonal_root__ {
-    my ($n, $k) = @_;
+    my ($n, $k, $second) = @_;
     goto(join('__', ref($n), ref($k)) =~ tr/:/_/rs);
 
     # polygonal_root(n, k)
@@ -31,13 +31,16 @@ sub __polygonal_root__ {
 
         Math::MPFR::Rmpfr_sqrt($t, $t, $ROUND);         # t = sqrt(t)
         Math::MPFR::Rmpfr_sub_ui($u, $k, 4, $ROUND);    # u = k-4
-        Math::MPFR::Rmpfr_add($t, $t, $u, $ROUND);      # t = t+u
 
-        Math::MPFR::Rmpfr_add_ui($u, $u, 2, $ROUND);    # u = u+2
-        Math::MPFR::Rmpfr_mul_2ui($u, $u, 1, $ROUND);   # u = u*2
+        $second
+          ? Math::MPFR::Rmpfr_sub($t, $t, $u, $ROUND)    # t = t-u
+          : Math::MPFR::Rmpfr_add($t, $t, $u, $ROUND);   # t = t+u
 
-        Math::MPFR::Rmpfr_sgn($u) || return $n;         # `u` is zero
-        Math::MPFR::Rmpfr_div($t, $t, $u, $ROUND);      # t = t/u
+        Math::MPFR::Rmpfr_add_ui($u, $u, 2, $ROUND);     # u = u+2
+        Math::MPFR::Rmpfr_mul_2ui($u, $u, 1, $ROUND);    # u = u*2
+
+        Math::MPFR::Rmpfr_sgn($u) || return $n;          # `u` is zero
+        Math::MPFR::Rmpfr_div($t, $t, $u, $ROUND);       # t = t/u
         return $t;
     }
 
@@ -65,16 +68,19 @@ sub __polygonal_root__ {
 
         Math::MPC::Rmpc_sqrt($t, $t, $ROUND);         # t = sqrt(t)
         Math::MPC::Rmpc_sub_ui($u, $k, 4, $ROUND);    # u = k-4
-        Math::MPC::Rmpc_add($t, $t, $u, $ROUND);      # t = t+u
 
-        Math::MPC::Rmpc_add_ui($u, $u, 2, $ROUND);    # u = u+2
-        Math::MPC::Rmpc_mul_2ui($u, $u, 1, $ROUND);   # u = u*2
+        $second
+          ? Math::MPC::Rmpc_sub($t, $t, $u, $ROUND)    # t = t-u
+          : Math::MPC::Rmpc_add($t, $t, $u, $ROUND);   # t = t+u
 
-        if (Math::MPC::Rmpc_cmp_si($t, 0) == 0) {     # `u` is zero
+        Math::MPC::Rmpc_add_ui($u, $u, 2, $ROUND);     # u = u+2
+        Math::MPC::Rmpc_mul_2ui($u, $u, 1, $ROUND);    # u = u*2
+
+        if (Math::MPC::Rmpc_cmp_si($t, 0) == 0) {      # `u` is zero
             return $n;
         }
 
-        Math::MPC::Rmpc_div($t, $t, $u, $ROUND);      # t = t/u
+        Math::MPC::Rmpc_div($t, $t, $u, $ROUND);       # t = t/u
         return $t;
     }
 }

@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 228;
+plan tests => 230;
 
 use Math::AnyNum qw(:special rat float complex);
 
@@ -219,6 +219,8 @@ like(polygonal_root( 9, -7), qr/^0\.611111111111+\-1\.27536003147211070575476372
 like(polygonal_root(-9, -7), qr/^-0\.9294916248735608277433522242912010263\d*\z/);
 #>>>
 
+is(join(' ', map { polygonal_root2($_, 5) } qw(0 2 7 15 26 40 57 77 100)), '0 1 2 3 4 5 6 7 8');
+
 #<<<
 is(join(' ', map {
 
@@ -228,6 +230,17 @@ is(join(' ', map {
     polygonal_root(Math::AnyNum::polygonal($n, $k), $k);
 
 } 1..10), join(' ', 1..10));
+#>>>
+
+#<<<
+is(join(' ', map {
+
+    my $n = $_;
+    my $k = int(rand(1000000000)) + 3;
+
+    polygonal_root2(Math::AnyNum::polygonal($n, $k), $k);
+
+} -10..0), join(' ', map{ abs($_) } -10..0));
 #>>>
 
 #<<<
