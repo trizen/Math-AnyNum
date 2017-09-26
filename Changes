@@ -4,6 +4,7 @@ Revision history for Math-AnyNum
 
         [ADDITIONS]
 
+        - acmp(x, y): absolute comparison of `x` and `y`.
         - polygonal(n, k): returns the nth k-gonal number.
         - polygonal_root(n, k): returns the k-gonal root of `n`.
         - polygonal_root2(n, k): returns the second k-gonal root of `n`.

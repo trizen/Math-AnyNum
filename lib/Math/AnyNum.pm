@@ -247,6 +247,7 @@ use overload
         ceil  => \&ceil,
         round => \&round,
         sgn   => \&sgn,
+        acmp  => \&acmp,
 
         popcount => \&popcount,
 
@@ -1178,6 +1179,21 @@ sub cmp ($$) {
 
     (@_) = ($$x, _star2obj($y));
     goto &__cmp__;
+}
+
+sub acmp ($$) {
+    require Math::AnyNum::abs;
+    require Math::AnyNum::cmp;
+    my ($x, $y) = @_;
+
+    if (!ref($y) and CORE::int($y) eq $y and $y >= 0 and $y <= ULONG_MAX) {
+        ## `y` is a native unsigned integer
+    }
+    else {
+        $y = __abs__(ref($y) eq __PACKAGE__ ? $$y : _star2obj($y));
+    }
+
+    __cmp__(__abs__(ref($x) eq __PACKAGE__ ? $$x : _star2obj($x)), $y);
 }
 
 #
