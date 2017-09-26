@@ -3817,6 +3817,8 @@ sub faulhaber_sum ($$) {
         $p = (ref($p) eq __PACKAGE__ ? _any2ui($$p) : _any2ui(_star2obj($p))) // goto &nan;
     }
 
+    state @cache;    # cache for bernoulli numbers
+
     my $t = Math::GMPz::Rmpz_init();
     my $u = Math::GMPz::Rmpz_init();
 
@@ -3839,7 +3841,7 @@ sub faulhaber_sum ($$) {
         Math::GMPz::Rmpz_mul($t, $t, $u);             # t = t * u
 
         # Compute bernouli(j)
-        my $bern = __bernfrac__($j);
+        my $bern = ($j <= 60 ? ($cache[$j] //= __bernfrac__($j)) : __bernfrac__($j));
 
         # `$bern` may be a "Math::GMPz" object
         if (ref($bern) eq 'Math::GMPz') {
