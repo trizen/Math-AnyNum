@@ -526,7 +526,7 @@ Example:
 
 =head2 polygonal_root2
 
-    polygonal_root2(n, k)                   #=> Any
+    polygonal_root2(n, k)                         #=> Any
 
 Returns the second k-gonal root of C<n>. Also defined for complex numbers.
 
@@ -1173,7 +1173,7 @@ Example:
 
 =head2 ipolygonal_root2
 
-    ipolygonal_root2(n, k)                  #=> Int | NaN
+    ipolygonal_root2(n, k)                        #=> Int | NaN
 
 Second integer k-gonal root of C<n>. Returns C<NaN> when a real root does not exists.
 
@@ -1197,7 +1197,7 @@ Example:
 
 =head2 is_polygonal2
 
-    is_polygonal2(n, k)                     #=> Bool
+    is_polygonal2(n, k)                           #=> Bool
 
 Returns a true value when C<n> is a second k-gonal number.
 
