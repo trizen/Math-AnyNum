@@ -3817,7 +3817,7 @@ sub faulhaber_sum ($$) {
         $p = (ref($p) eq __PACKAGE__ ? _any2ui($$p) : _any2ui(_star2obj($p))) // goto &nan;
     }
 
-    state @cache;    # cache for bernoulli numbers
+    state @cache;    # cache for Bernoulli numbers
 
     my $t = Math::GMPz::Rmpz_init();
     my $u = Math::GMPz::Rmpz_init();
@@ -3840,25 +3840,24 @@ sub faulhaber_sum ($$) {
 
         Math::GMPz::Rmpz_mul($t, $t, $u);             # t = t * u
 
-        # Compute bernouli(j)
-        my $bern = ($j <= 60 ? ($cache[$j] //= __bernfrac__($j)) : __bernfrac__($j));
+        # Compute Bernouli(j)
+        my $bern = ($j <= 100 ? ($cache[$j] //= __bernfrac__($j)) : __bernfrac__($j));
 
-        # bernoulli(j) is 1 for j=0
+        # Bernoulli(j) = 1 for j=0
         if (!$j) {
-            Math::GMPz::Rmpz_set_ui($u, 1);           # u = 1
+            Math::GMPz::Rmpz_addmul($numerator, $denominator, $t);    # numerator  += denominator * t
         }
         else {
+#<<<
             Math::GMPq::Rmpq_get_num($u, $bern);      # u = numerator(bern)
             Math::GMPz::Rmpz_mul($t, $t, $u);         # t = t * u
             Math::GMPq::Rmpq_get_den($u, $bern);      # u = denominator(bern)
-        }
 
-#<<<
-        Math::GMPz::Rmpz_mul(   $numerator,   $numerator,   $u);   # numerator   = numerator   * u
-        Math::GMPz::Rmpz_addmul($numerator,   $denominator, $t);   # numerator  += denominator * t
-        Math::GMPz::Rmpz_mul(   $denominator, $denominator, $u);   # denominator = denominator * u
+            Math::GMPz::Rmpz_mul(   $numerator,   $numerator,   $u);   # numerator   = numerator   * u
+            Math::GMPz::Rmpz_addmul($numerator,   $denominator, $t);   # numerator  += denominator * t
+            Math::GMPz::Rmpz_mul(   $denominator, $denominator, $u);   # denominator = denominator * u
 #>>>
-
+        }
     }
 
 #<<<
