@@ -3801,11 +3801,8 @@ sub faulhaber_sum ($$) {
         $p = (ref($p) eq __PACKAGE__ ? _any2ui($$p) : _any2ui(_star2obj($p))) // goto &nan;
     }
 
-    my $t1 = Math::GMPz::Rmpz_init();
-    my $t2 = Math::GMPz::Rmpz_init();
-
-    state $bern_num = Math::GMPz::Rmpz_init_nobless();
-    state $bern_den = Math::GMPz::Rmpz_init_nobless();
+    my $t = Math::GMPz::Rmpz_init();
+    my $u = Math::GMPz::Rmpz_init();
 
     my $numerator   = Math::GMPz::Rmpz_init_set_ui(0);
     my $denominator = Math::GMPz::Rmpz_init_set_ui(1);
@@ -3815,32 +3812,34 @@ sub faulhaber_sum ($$) {
         # When `j` is odd and greater than 1, we can skip it.
         $j % 2 == 0 or $j == 1 or next;
 
-        Math::GMPz::Rmpz_bin_uiui($t1, $p + 1, $j);    # t1 = binomial(p+1, j)
+        Math::GMPz::Rmpz_bin_uiui($t, $p + 1, $j);    # t = binomial(p+1, j)
 
+#<<<
         $native_n
-          ? Math::GMPz::Rmpz_ui_pow_ui($t2, $n, $p + 1 - $j)    # t2 = n^(p + 1 - j)
-          : Math::GMPz::Rmpz_pow_ui($t2, $n, $p + 1 - $j);      # ==//==
+          ? Math::GMPz::Rmpz_ui_pow_ui($u, $n, $p + 1 - $j)    # u = n^(p + 1 - j)
+          : Math::GMPz::Rmpz_pow_ui(   $u, $n, $p + 1 - $j);   # ==//==
+#>>>
+
+        Math::GMPz::Rmpz_mul($t, $t, $u);             # t = t * u
 
         # Compute bernouli(j)
         my $bern = __bernfrac__($j);
 
         # `$bern` may be a "Math::GMPz" object
         if (ref($bern) eq 'Math::GMPz') {
-            Math::GMPz::Rmpz_set($bern_num, $bern);             # bern_num = bern
-            Math::GMPz::Rmpz_set_ui($bern_den, 1);              # bern_den = 1
+            Math::GMPz::Rmpz_mul($t, $t, $bern);      # t = t * bern
+            Math::GMPz::Rmpz_set_ui($u, 1);           # u = 1
         }
         else {
-            Math::GMPq::Rmpq_get_num($bern_num, $bern);         # bern_num = numerator(bern)
-            Math::GMPq::Rmpq_get_den($bern_den, $bern);         # bern_den = denominator(bern)
+            Math::GMPq::Rmpq_get_num($u, $bern);      # u = numerator(bern)
+            Math::GMPz::Rmpz_mul($t, $t, $u);         # t = t * u
+            Math::GMPq::Rmpq_get_den($u, $bern);      # u = denominator(bern)
         }
 
-        Math::GMPz::Rmpz_mul($t1, $t1, $t2);                    # t1 = t1 * t2
-        Math::GMPz::Rmpz_mul($t1, $t1, $bern_num);              # t1 = t1 * bern_num
-
 #<<<
-        Math::GMPz::Rmpz_mul($numerator, $numerator, $bern_den);        # numerator  = numerator * bern_den
-        Math::GMPz::Rmpz_addmul($numerator, $denominator, $t1);         # numerator += denominator * t1
-        Math::GMPz::Rmpz_mul($denominator, $denominator, $bern_den);    # denominator = denominator * bern_den
+        Math::GMPz::Rmpz_mul(   $numerator,   $numerator,   $u);   # numerator   = numerator   * u
+        Math::GMPz::Rmpz_addmul($numerator,   $denominator, $t);   # numerator  += denominator * t
+        Math::GMPz::Rmpz_mul(   $denominator, $denominator, $u);   # denominator = denominator * u
 #>>>
 
     }
