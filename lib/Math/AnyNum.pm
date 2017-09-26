@@ -13,7 +13,7 @@ use Math::MPC qw();
 
 use POSIX qw(ULONG_MAX LONG_MIN);
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 our ($ROUND, $PREC);
 
 BEGIN {
