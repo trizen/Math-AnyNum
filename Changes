@@ -2,7 +2,7 @@ Revision history for Math-AnyNum
 
 0.14    2017-09-26
 
-        [FIXES]
+        [BUG-FIXES]
 
         - Fixed the sign in the results returned by the second-pentagonal functions `polygonal_root2(n,k)` and `ipolygonal_root2(n,k)`.
 
