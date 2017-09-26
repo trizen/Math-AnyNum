@@ -3843,9 +3843,8 @@ sub faulhaber_sum ($$) {
         # Compute bernouli(j)
         my $bern = ($j <= 60 ? ($cache[$j] //= __bernfrac__($j)) : __bernfrac__($j));
 
-        # `$bern` may be a "Math::GMPz" object
-        if (ref($bern) eq 'Math::GMPz') {
-            Math::GMPz::Rmpz_mul($t, $t, $bern);      # t = t * bern
+        # bernoulli(j) is 1 for j=0
+        if (!$j) {
             Math::GMPz::Rmpz_set_ui($u, 1);           # u = 1
         }
         else {
