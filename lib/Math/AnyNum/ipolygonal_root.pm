@@ -28,7 +28,7 @@ sub __ipolygonal_root__ {
     Math::GMPz::Rmpz_sub_ui($u, $k, 4);            # u = k-4
 
     $second
-      ? Math::GMPz::Rmpz_sub($t, $t, $u)           # t = t+u
+      ? Math::GMPz::Rmpz_sub($t, $u, $t)           # t = u-t
       : Math::GMPz::Rmpz_add($t, $t, $u);          # t = t+u
 
     Math::GMPz::Rmpz_add_ui($u, $u, 2);            # u = u+2

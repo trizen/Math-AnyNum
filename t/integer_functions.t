@@ -427,7 +427,7 @@ is(polygonal(12, 4), '144');
 is(join('', map { is_polygonal2($_, 5) ? 1 : 0 } qw(0 2 7 15 26 40 57 77 100)),   '1' x 9);
 is(join('', map { is_polygonal2($_, 6) ? 1 : 0 } qw(0 3 10 21 36 55 78 105 136)), '1' x 9);
 
-is(join(' ', map { ipolygonal_root2($_, 5) } qw(0 2 7 15 26 40 57 77 100)), '0 1 2 3 4 5 6 7 8');
+is(join(' ', map { ipolygonal_root2($_, 5) } qw(0 2 7 15 26 40 57 77 100)), '0 -1 -2 -3 -4 -5 -6 -7 -8');
 
 ok(!is_polygonal2(1234, 5));
 ok(!is_polygonal2(1234, 6));
@@ -451,7 +451,7 @@ is(join(' ', map {
 
     ipolygonal_root2(polygonal($n, $k), $k);
 
-} -10..0), join(' ', map{ abs($_) } -10..0));
+} -10..0), join(' ', -10..0));
 #>>>
 
 #<<<

@@ -33,7 +33,7 @@ sub __polygonal_root__ {
         Math::MPFR::Rmpfr_sub_ui($u, $k, 4, $ROUND);    # u = k-4
 
         $second
-          ? Math::MPFR::Rmpfr_sub($t, $t, $u, $ROUND)    # t = t-u
+          ? Math::MPFR::Rmpfr_sub($t, $u, $t, $ROUND)    # t = u-t
           : Math::MPFR::Rmpfr_add($t, $t, $u, $ROUND);   # t = t+u
 
         Math::MPFR::Rmpfr_add_ui($u, $u, 2, $ROUND);     # u = u+2
@@ -70,7 +70,7 @@ sub __polygonal_root__ {
         Math::MPC::Rmpc_sub_ui($u, $k, 4, $ROUND);    # u = k-4
 
         $second
-          ? Math::MPC::Rmpc_sub($t, $t, $u, $ROUND)    # t = t-u
+          ? Math::MPC::Rmpc_sub($t, $u, $t, $ROUND)    # t = u-t
           : Math::MPC::Rmpc_add($t, $t, $u, $ROUND);   # t = t+u
 
         Math::MPC::Rmpc_add_ui($u, $u, 2, $ROUND);     # u = u+2
