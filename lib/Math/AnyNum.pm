@@ -3845,7 +3845,7 @@ sub faulhaber_sum ($$) {
 
         # Bernoulli(j) = 1 for j=0
         if (!$j) {
-            Math::GMPz::Rmpz_addmul($numerator, $denominator, $t);    # numerator  += denominator * t
+            Math::GMPz::Rmpz_add($numerator, $numerator, $t);    # numerator = numerator + t
         }
         else {
 #<<<
