@@ -100,8 +100,8 @@ The following functions are exportable:
         iroot isqrt icbrt ilog ilog2 ilog10 invmod
         powmod isqrtrem irootrem is_power is_square
         is_prime is_coprime next_prime is_polygonal
-        is_polygonal2 polygonal ipolygonal_root
-        ipolygonal_root2 rising_factorial
+        is_polygonal2 faulhaber_sum ipolygonal_root
+        ipolygonal_root2 polygonal rising_factorial
         falling_factorial
 
     :misc
@@ -992,6 +992,18 @@ In general, the following statement holds true:
     kronecker(n, m)                               #=> Scalar
 
 Returns the Kronecker symbol I<(n|m)>, which is a generalization of the Jacobi symbol for all integers I<m>.
+
+=head2 faulhaber_sum
+
+    faulhaber_sum(n, p)                           #=> Int | NaN
+
+Computes the sum C<1**p + 2**p + 3**p +...+ n**p>, using Faulhaber's formula.
+
+C<n> and C<p> must be non-negative integers. Returns NaN otherwise.
+
+Example:
+
+    faulhaber_sum(5, 8) = 1**8 + 2**8 + 3**8 + 4**8 + 5**8
 
 =head2 lucas
 

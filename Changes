@@ -11,6 +11,7 @@ Revision history for Math-AnyNum
         - ipolygonal_root2(n, k): returns the second integer k-gonal root of `n`.
         - is_polygonal(n, k): returns 1 when `n` is a k-gonal number.
         - is_polygonal2(n, k): returns 1 when `n` is a second k-gonal number.
+        - faulhaber_sum(n, p): computes 1^p + 2^p + 3^p + ... + n^p, using Faulhaber's formula.
 
 0.12    2017-09-18
 

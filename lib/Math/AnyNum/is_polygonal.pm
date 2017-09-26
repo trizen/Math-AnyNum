@@ -13,8 +13,8 @@ sub __is_polygonal__ {
     # polygonal_root(n, k)
     #   = (sqrt(8 * (k - 2) * n + (k - 4)^2) ± (k - 4)) / (2 * (k - 2))
 
-    state $t = Math::GMPz::Rmpz_init();
-    state $u = Math::GMPz::Rmpz_init();
+    state $t = Math::GMPz::Rmpz_init_nobless();
+    state $u = Math::GMPz::Rmpz_init_nobless();
 
     Math::GMPz::Rmpz_sub_ui($u, $k, 2);    # u = k-2
     Math::GMPz::Rmpz_mul($t, $n, $u);      # t = n*u

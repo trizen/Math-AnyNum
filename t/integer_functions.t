@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 353;    # be careful
+plan tests => 359;    # be careful
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -463,6 +463,16 @@ is(join('', map {
     !!(polygonal(ipolygonal_root($n, $k), $k) == $n) eq !!is_polygonal($n, $k)
 
 } 0..20), '1' x 21);
+#>>>
+
+is(faulhaber_sum(10, 0), 10);
+is(faulhaber_sum(10, 1), 55);
+is(faulhaber_sum(10, 2), 385);
+
+#<<<
+is(faulhaber_sum(97,   20), '27930470253682554320726764539206479400753');
+is(faulhaber_sum(1234, 13), '1363782530586069716227147685797600627310545');
+is(faulhaber_sum(30,   80), '15824906698911682552620450221533100599157410235977820404994404262610329210567189683421455768203096083923986638110352399');
 #>>>
 
 ok(is_power('279841'), '23^4');

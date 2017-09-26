@@ -185,6 +185,8 @@ use overload
         lucas     => \&lucas,
         fibonacci => \&fibonacci,
 
+        faulhaber_sum => \&faulhaber_sum,
+
         bernfrac => \&bernfrac,
         harmfrac => \&harmfrac,
 
@@ -3766,6 +3768,89 @@ sub powmod ($$$) {
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_powm($r, $x, $y, $z);
     bless \$r;
+}
+
+#
+## Faulhaber summation formula
+#
+
+sub faulhaber_sum ($$) {
+    require Math::AnyNum::bernfrac;
+    my ($n, $p) = @_;
+
+    my $native_n = 0;    # true when `n` is a native integer
+
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n <= ULONG_MAX) {
+        ## `n` is a native unsigned integer
+        $native_n = 1;
+    }
+    else {
+        $n = (ref($n) eq __PACKAGE__ ? _any2mpz($$n) : _star2mpz($n)) // goto &nan;
+
+        # Try to unbox `n` when it fits inside a native unsinged integer
+        if (Math::GMPz::Rmpz_fits_ulong_p($n)) {
+            $native_n = 1;
+            $n        = Math::GMPz::Rmpz_get_ui($n);
+        }
+    }
+
+    if (!ref($p) and CORE::int($p) eq $p and $p >= 0 and $p <= ULONG_MAX) {
+        ## `p` is already a native unsigned integer
+    }
+    else {
+        $p = (ref($p) eq __PACKAGE__ ? _any2ui($$p) : _any2ui(_star2obj($p))) // goto &nan;
+    }
+
+    my $t1 = Math::GMPz::Rmpz_init();
+    my $t2 = Math::GMPz::Rmpz_init();
+
+    state $bern_num = Math::GMPz::Rmpz_init_nobless();
+    state $bern_den = Math::GMPz::Rmpz_init_nobless();
+
+    my $numerator   = Math::GMPz::Rmpz_init_set_ui(0);
+    my $denominator = Math::GMPz::Rmpz_init_set_ui(1);
+
+    foreach my $j (0 .. $p) {
+
+        # When `j` is odd and greater than 1, we can skip it.
+        $j % 2 == 0 or $j == 1 or next;
+
+        Math::GMPz::Rmpz_bin_uiui($t1, $p + 1, $j);    # t1 = binomial(p+1, j)
+
+        $native_n
+          ? Math::GMPz::Rmpz_ui_pow_ui($t2, $n, $p + 1 - $j)    # t2 = n^(p + 1 - j)
+          : Math::GMPz::Rmpz_pow_ui($t2, $n, $p + 1 - $j);      # ==//==
+
+        # Compute bernouli(j)
+        my $bern = __bernfrac__($j);
+
+        # `$bern` may be a "Math::GMPz" object
+        if (ref($bern) eq 'Math::GMPz') {
+            Math::GMPz::Rmpz_set($bern_num, $bern);             # bern_num = bern
+            Math::GMPz::Rmpz_set_ui($bern_den, 1);              # bern_den = 1
+        }
+        else {
+            Math::GMPq::Rmpq_get_num($bern_num, $bern);         # bern_num = numerator(bern)
+            Math::GMPq::Rmpq_get_den($bern_den, $bern);         # bern_den = denominator(bern)
+        }
+
+        Math::GMPz::Rmpz_mul($t1, $t1, $t2);                    # t1 = t1 * t2
+        Math::GMPz::Rmpz_mul($t1, $t1, $bern_num);              # t1 = t1 * bern_num
+
+#<<<
+        Math::GMPz::Rmpz_mul($numerator, $numerator, $bern_den);        # numerator  = numerator * bern_den
+        Math::GMPz::Rmpz_addmul($numerator, $denominator, $t1);         # numerator += denominator * t1
+        Math::GMPz::Rmpz_mul($denominator, $denominator, $bern_den);    # denominator = denominator * bern_den
+#>>>
+
+    }
+
+#<<<
+    Math::GMPz::Rmpz_mul_ui($denominator, $denominator, $p + 1);        # denominator = denominator * (p+1)
+    Math::GMPz::Rmpz_divexact($numerator, $numerator, $denominator);    # numerator = numerator / denominator
+#>>>
+
+    bless \$numerator;
 }
 
 #
