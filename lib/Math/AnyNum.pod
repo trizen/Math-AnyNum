@@ -233,7 +233,7 @@ Returns a new AnyNum object with the value specified in the first argument,
 which can be a Perl numerical value, a string representing a number in a
 rational form, such as C<"1/2">, a string holding a floating-point number,
 such as C<"0.5">, a string holding an integer, such as C<"255"> or a string
-holding a complex number, such C<"3+4i">.
+holding a complex number, such as C<"3+4i">.
 
     my $z = Math::AnyNum->new('42');        # integer
     my $r = Math::AnyNum->new('3/4');       # rational
@@ -372,7 +372,7 @@ Returns the imaginary unit, which is C<sqrt(-1)>.
 
     Math::AnyNum->e                               #=> Float
 
-Returns the e mathematical constant, which is C<2.718...>.
+Returns the I<e> mathematical constant, which is C<2.718...>.
 
 =head2 pi
 
@@ -981,7 +981,7 @@ Returns the number of times C<n> is divisible by C<k>.
 
     remdiv(n, k)                                  #=> Int
 
-Removes all occurrences of the factor C<k> from integer C<n>.
+Removes all occurrences of the divisor C<k> from integer C<n>.
 
 In general, the following statement holds true:
 
