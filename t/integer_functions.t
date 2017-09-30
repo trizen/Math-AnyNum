@@ -422,7 +422,7 @@ ok(is_polygonal('359999999999999999999999999999999999999999999999999999999999999
 #>>>
 
 is(polygonal(10, 3), '55');
-is(polygonal(12, 4), '144');
+is(polygonal(12, Math::AnyNum->new(4)), '144');
 
 is(join('', map { is_polygonal2($_, 5) ? 1 : 0 } qw(0 2 7 15 26 40 57 77 100)),   '1' x 9);
 is(join('', map { is_polygonal2($_, 6) ? 1 : 0 } qw(0 3 10 21 36 55 78 105 136)), '1' x 9);
