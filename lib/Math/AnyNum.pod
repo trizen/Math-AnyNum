@@ -37,9 +37,9 @@ Math::AnyNum provides a transparent and easy-to-use interface to L<Math::GMPq>, 
 Math::AnyNum focuses primarily on providing a friendly interface and good performance. In most cases, it can be used as
 a drop-in replacement for the L<bignum> and L<bigrat> pragmas.
 
-The philosophy of Math::AnyNum is that mathematics should just work, therefore the support for complex number is virtually transparent,
-without requiring any explicit conversions. All the needed conversions are done implicitly, using a sophisticated promotion system,
-that tries really hard to do the right thing and as efficiently as possible.
+The philosophy of Math::AnyNum is that mathematics should just work, therefore the support for complex numbers is virtually transparent,
+without requiring any explicit conversions. All the conversions are done implicitly, using a fairly sophisticated promotion system,
+which tries really hard to do the right thing and as efficiently as possible.
 
 In addition, each Math::AnyNum object is B<immutable>.
 
@@ -50,16 +50,16 @@ Based on the internal types, it decides what functions to call on each operation
 
 The promotion rules can be summarized as follows:
 
-    (Integer, Integer)   -> Integer | Rational | Float | Complex
-    (Integer, Rational)  -> Rational | Float | Complex
-    (Integer, Float)     -> Float | Complex
+    (Integer, Integer)   -> Integer  | Rational | Float   | Complex
+    (Integer, Rational)  -> Rational | Float    | Complex
+    (Integer, Float)     -> Float    | Complex
     (Integer, Complex)   -> Complex
 
-    (Rational, Rational) -> Rational | Float | Complex
-    (Rational, Float)    -> Float | Complex
+    (Rational, Rational) -> Rational | Float    | Complex
+    (Rational, Float)    -> Float    | Complex
     (Rational, Complex)  -> Complex
 
-    (Float, Float)       -> Float | Complex
+    (Float, Float)       -> Float    | Complex
     (Float, Complex)     -> Complex
 
     (Complex, Complex)   -> Complex
