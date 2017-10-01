@@ -681,7 +681,7 @@ The natural logarithm of the Gamma function on C<x>.
     digamma(x)                                    #=> Float | Inf | NaN
 
 The Digamma function (sometimes called Psi).
-Returns Nan when C<x> is negative, and -Inf when C<x> is 0.
+Returns NaN when C<x> is negative, and -Inf when C<x> is 0.
 
 =head2 beta
 
@@ -759,7 +759,7 @@ Exponential integral of C<x>. Returns -Inf when C<x> is zero, and NaN when C<x> 
     Li(x)                                         #=> Float | Inf | NaN
 
 The logarithmic integral of C<x>, defined as: C<Ei(ln(x))>.
-Returns -Inf when C<x> is 1, and Nan when C<x> is less than or equal to 0.
+Returns -Inf when C<x> is 1, and NaN when C<x> is less than or equal to 0.
 
 =head2 Li2
 
