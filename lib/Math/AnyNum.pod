@@ -999,7 +999,7 @@ Returns the Kronecker symbol I<(n|m)>, which is a generalization of the Jacobi s
 
 Computes the sum C<1**p + 2**p + 3**p +...+ n**p>, using Faulhaber's formula.
 
-C<n> and C<p> must be non-negative integers. Returns NaN otherwise.
+C<p> must be a non-negative integer. Returns NaN otherwise.
 
 Example:
 
@@ -1168,7 +1168,7 @@ Integer k-gonal root of C<n>. Returns C<NaN> when a real root does not exists.
 
 Example:
 
-    say ipolygonal_root($n, 5);                  # pentagonal root
+    say ipolygonal_root($n, 5);                  # integer pentagonal root
     say ipolygonal_root(polygonal(10, 5), 5);    # prints: "10"
 
 =head2 ipolygonal_root2
@@ -1179,7 +1179,7 @@ Second integer k-gonal root of C<n>. Returns C<NaN> when a real root does not ex
 
 Example:
 
-    say ipolygonal_root2($n, 5);                   # second pentagonal root
+    say ipolygonal_root2($n, 5);                   # integer second pentagonal root
     say ipolygonal_root2(polygonal(-10, 5), 5);    # prints: "-10"
 
 =head2 is_polygonal

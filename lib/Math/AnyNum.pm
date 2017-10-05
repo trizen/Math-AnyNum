@@ -3818,7 +3818,7 @@ sub faulhaber_sum ($$) {
     else {
         $n = (ref($n) eq __PACKAGE__ ? _any2mpz($$n) : _star2mpz($n)) // goto &nan;
 
-        # Try to unbox `n` when it fits inside a native unsinged integer
+        # Try to unbox `n` when it fits inside a native unsigned integer
         if (Math::GMPz::Rmpz_fits_ulong_p($n)) {
             $native_n = 1;
             $n        = Math::GMPz::Rmpz_get_ui($n);
