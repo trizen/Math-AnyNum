@@ -3192,7 +3192,7 @@ sub gcd ($$) {
     my $r = Math::GMPz::Rmpz_init();
 
     if (!ref($y) and CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
-        Math::GMPz::Rmpz_gcd_ui($r, $x, $y);
+        Math::GMPz::Rmpz_gcd_ui($r, $x, CORE::abs($y));
     }
     else {
         $y = (ref($y) eq __PACKAGE__ ? _any2mpz($$y) : _star2mpz($y)) // (goto &nan);
@@ -3218,7 +3218,7 @@ sub lcm ($$) {
     my $r = Math::GMPz::Rmpz_init();
 
     if (!ref($y) and CORE::int($y) eq $y and CORE::abs($y) <= ULONG_MAX) {
-        Math::GMPz::Rmpz_lcm_ui($r, $x, $y);
+        Math::GMPz::Rmpz_lcm_ui($r, $x, CORE::abs($y));
     }
     else {
         $y = (ref($y) eq __PACKAGE__ ? _any2mpz($$y) : _star2mpz($y)) // (goto &nan);
