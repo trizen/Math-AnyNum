@@ -1,5 +1,10 @@
 Revision history for Math-AnyNum
 
+0.15    2017-10-08
+
+        - Bug-fix in `gcd(x, -y)` and `lcm(x, -y)`, when `y` is a native integer.
+        - Minor internal optimizations.
+
 0.14    2017-09-26
 
         [BUG-FIXES]
