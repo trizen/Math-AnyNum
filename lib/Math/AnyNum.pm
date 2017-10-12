@@ -3684,8 +3684,7 @@ sub polygonal ($$) {
         Math::GMPz::Rmpz_sub($r, $r, $k);       # r = r-k
     }
 
-    Math::GMPz::Rmpz_sub($r, $r, $n);           # r = r-n
-    Math::GMPz::Rmpz_sub($r, $r, $n);           # r = r-n
+    Math::GMPz::Rmpz_submul_ui($r, $n, 2);      # r = r-2*n
     Math::GMPz::Rmpz_add_ui($r, $r, 4);         # r = r+4
     Math::GMPz::Rmpz_mul($r, $r, $n);           # r = r*n
     Math::GMPz::Rmpz_div_2exp($r, $r, 1);       # r = r/2
