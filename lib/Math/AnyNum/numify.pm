@@ -13,10 +13,25 @@ sub __numify__ {
     }
 
   Math_GMPq: {
+
+        if (Math::GMPq::Rmpq_integer_p($x)) {
+            $x = _mpq2mpz($x);
+            goto Math_GMPz;
+        }
+
         goto &Math::GMPq::Rmpq_get_d;
     }
 
   Math_GMPz: {
+
+        if (Math::GMPz::Rmpz_fits_slong_p($x)) {
+            goto &Math::GMPz::Rmpz_get_si;
+        }
+
+        if (Math::GMPz::Rmpz_fits_ulong_p($x)) {
+            goto &Math::GMPz::Rmpz_get_ui;
+        }
+
         goto &Math::GMPz::Rmpz_get_d;
     }
 

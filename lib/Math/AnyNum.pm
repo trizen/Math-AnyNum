@@ -693,12 +693,21 @@ sub _any2ui {
     my ($x) = @_;
 
     if (ref($x) eq 'Math::GMPz') {
-        my $d = CORE::int(Math::GMPz::Rmpz_get_d($x));
-        ($d < 0 or $d > ULONG_MAX) && return;
-        return $d;
+
+        if (Math::GMPz::Rmpz_fits_ulong_p($x)) {
+            return Math::GMPz::Rmpz_get_ui($x);
+        }
+
+        return;
     }
 
     if (ref($x) eq 'Math::GMPq') {
+
+        if (Math::GMPq::Rmpq_integer_p($x)) {
+            @_ = _mpq2mpz($x);
+            goto &_any2ui;
+        }
+
         my $d = CORE::int(Math::GMPq::Rmpq_get_d($x));
         ($d < 0 or $d > ULONG_MAX) && return;
         return $d;
@@ -721,12 +730,25 @@ sub _any2si {
     my ($x) = @_;
 
     if (ref($x) eq 'Math::GMPz') {
-        my $d = CORE::int(Math::GMPz::Rmpz_get_d($x));
-        ($d < LONG_MIN or $d > ULONG_MAX) && return;
-        return $d;
+
+        if (Math::GMPz::Rmpz_fits_slong_p($x)) {
+            return Math::GMPz::Rmpz_get_si($x);
+        }
+
+        if (Math::GMPz::Rmpz_fits_ulong_p($x)) {
+            return Math::GMPz::Rmpz_get_ui($x);
+        }
+
+        return;
     }
 
     if (ref($x) eq 'Math::GMPq') {
+
+        if (Math::GMPq::Rmpq_integer_p($x)) {
+            @_ = _mpq2mpz($x);
+            goto &_any2si;
+        }
+
         my $d = CORE::int(Math::GMPq::Rmpq_get_d($x));
         ($d < LONG_MIN or $d > ULONG_MAX) && return;
         return $d;
