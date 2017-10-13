@@ -15,7 +15,7 @@ sub __numify__ {
   Math_GMPq: {
 
         if (Math::GMPq::Rmpq_integer_p($x)) {
-            $x = _mpq2mpz($x);
+            @_ = ($x = _mpq2mpz($x));
             goto Math_GMPz;
         }
 
