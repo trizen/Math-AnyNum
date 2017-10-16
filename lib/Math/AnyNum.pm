@@ -710,21 +710,26 @@ sub _any2ui {
         }
 
         my $d = CORE::int(Math::GMPq::Rmpq_get_d($x));
-        ($d < 0 or $d > ULONG_MAX) && return;
-        return $d;
+        return (($d < 0 or $d > ULONG_MAX) ? undef : $d);
     }
 
   Math_MPFR: {
+
+        if (Math::MPFR::Rmpfr_integer_p($x) and Math::MPFR::Rmpfr_fits_ulong_p($x, $ROUND)) {
+            push @_, $ROUND;
+            goto &Math::MPFR::Rmpfr_get_ui;
+        }
+
         if (Math::MPFR::Rmpfr_number_p($x)) {
             my $d = CORE::int(Math::MPFR::Rmpfr_get_d($x, $ROUND));
-            ($d < 0 or $d > ULONG_MAX) && return;
-            return $d;
+            return (($d < 0 or $d > ULONG_MAX) ? undef : $d);
         }
+
         return;
     }
 
   Math_MPC: {
-        $x = _any2mpfr($x);
+        @_ = ($x = _any2mpfr($x));
         goto Math_MPFR;
     }
 }
@@ -754,21 +759,33 @@ sub _any2si {
         }
 
         my $d = CORE::int(Math::GMPq::Rmpq_get_d($x));
-        ($d < LONG_MIN or $d > ULONG_MAX) && return;
-        return $d;
+        return (($d < LONG_MIN or $d > ULONG_MAX) ? undef : $d);
     }
 
   Math_MPFR: {
+
+        if (Math::MPFR::Rmpfr_integer_p($x)) {
+            if (Math::MPFR::Rmpfr_fits_slong_p($x, $ROUND)) {
+                push @_, $ROUND;
+                goto &Math::MPFR::Rmpfr_get_si;
+            }
+
+            if (Math::MPFR::Rmpfr_fits_ulong_p($x, $ROUND)) {
+                push @_, $ROUND;
+                goto &Math::MPFR::Rmpfr_get_ui;
+            }
+        }
+
         if (Math::MPFR::Rmpfr_number_p($x)) {
             my $d = CORE::int(Math::MPFR::Rmpfr_get_d($x, $ROUND));
-            ($d < LONG_MIN or $d > ULONG_MAX) && return;
-            return $d;
+            return (($d < LONG_MIN or $d > ULONG_MAX) ? undef : $d);
         }
+
         return;
     }
 
   Math_MPC: {
-        $x = _any2mpfr($x);
+        @_ = ($x = _any2mpfr($x));
         goto Math_MPFR;
     }
 }
