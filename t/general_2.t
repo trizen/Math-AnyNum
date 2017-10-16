@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 568;
+plan tests => 572;
 
 {
     use Math::AnyNum;
@@ -19,6 +19,10 @@ plan tests => 568;
     is((-$q)->numify, -2);
     is($z->numify,    3);
     is((-$z)->numify, -3);
+    is($f->numify,    4);
+    is((-$f)->numify, -4);
+    is($c->numify,    5);
+    is((-$c)->numify, -5);
 
     ok($q == 2);
     ok($z == 3);
