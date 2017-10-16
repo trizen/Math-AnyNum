@@ -10,12 +10,14 @@ sub __numify__ {
   Math_MPFR: {
         push @_, $ROUND;
 
-        if (Math::MPFR::Rmpfr_fits_slong_p($x, $ROUND)) {
-            goto &Math::MPFR::Rmpfr_get_si;
-        }
+        if (Math::MPFR::Rmpfr_integer_p($x)) {
+            if (Math::MPFR::Rmpfr_fits_slong_p($x, $ROUND)) {
+                goto &Math::MPFR::Rmpfr_get_si;
+            }
 
-        if (Math::MPFR::Rmpfr_fits_ulong_p($x, $ROUND)) {
-            goto &Math::MPFR::Rmpfr_get_ui;
+            if (Math::MPFR::Rmpfr_fits_ulong_p($x, $ROUND)) {
+                goto &Math::MPFR::Rmpfr_get_ui;
+            }
         }
 
         goto &Math::MPFR::Rmpfr_get_d;
