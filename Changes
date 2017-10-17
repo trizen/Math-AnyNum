@@ -1,8 +1,8 @@
 Revision history for Math-AnyNum
 
-0.16    2017-xx-xx
+0.16    2017-10-17
 
-        - Fixed the numification of unsigned integers close to the maximum limit.
+        - Fixed the numification of signed and unsigned integers close to the native integer limits.
 
 0.15    2017-10-08
 
