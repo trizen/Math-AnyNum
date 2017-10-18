@@ -25,16 +25,16 @@ sub __bernfrac__ {
         goto &_zero;
     }
 
-    my $round = Math::MPFR::MPFR_RNDN();
+    state $round = Math::MPFR::MPFR_RNDN();
+    state $tau   = 6.28318530717958647692528676655900576839433879875;
 
-    my $tau   = 6.28318530717958647692528676655900576839433879875;
     my $log2B = (CORE::log(4 * $tau * $n) / 2 + $n * (CORE::log($n / $tau) - 1)) / CORE::log(2);
 
     my $prec = CORE::int($n + $log2B) +
           ($n <= 90 ? (3, 3, 4, 4, 6, 6, 6, 6, 7, 7, 7, 8, 8, 9, 10, 12, 9, 7, 6, 0, 0, 0,
                        0, 0, 0, 0, 0, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4)[($n>>1)-1] : 0);
 
-    my $d = Math::GMPz::Rmpz_init();
+    state $d = Math::GMPz::Rmpz_init_nobless();
     Math::GMPz::Rmpz_fac_ui($d, $n);                      # d = n!
 
     my $K = Math::MPFR::Rmpfr_init2($prec);
