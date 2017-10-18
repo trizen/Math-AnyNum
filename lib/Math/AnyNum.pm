@@ -858,13 +858,10 @@ sub _star2obj {
     if (ref($x) eq __PACKAGE__) {
         $$x;
     }
-    elsif (
-           ref($x)
-           and (   ref($x) eq 'Math::GMPz'
-                or ref($x) eq 'Math::GMPq'
-                or ref($x) eq 'Math::MPFR'
-                or ref($x) eq 'Math::MPC')
-      ) {
+    elsif (   ref($x) eq 'Math::GMPz'
+           or ref($x) eq 'Math::GMPq'
+           or ref($x) eq 'Math::MPFR'
+           or ref($x) eq 'Math::MPC') {
         $x;
     }
     else {
@@ -1404,9 +1401,9 @@ sub rat ($) {
             return bless \$q;
         }
 
-        my $r = __PACKAGE__->new($x);
-        ref($$r) eq 'Math::GMPq' && return $r;
-        bless(\_any2mpq($$r) // goto &nan);
+        my $r = _star2obj($x);
+        ref($r) eq 'Math::GMPq' && return bless \$r;
+        bless(\_any2mpq($r) // goto &nan);
     }
 }
 
