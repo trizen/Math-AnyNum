@@ -190,7 +190,7 @@ we get the following results:
 As shown above, integers and rational numbers do not obey this precision, because they can grow and
 shrink dynamically, without a specific limit.
 
-A rational number never losses accuracy in rational operations, therefore if we say:
+Furthermore, a rational number never losses precision and accuracy in rational operations, therefore if we say:
 
     my $x = 1/3;
     say $x*3;                                     #=> 1
@@ -537,7 +537,7 @@ Example:
 =head2 pow
 
     x ** y                                        #=> Any
-    pos(x, y)                                     #=> Any
+    pow(x, y)                                     #=> Any
 
 Raises C<x> to power C<y> and returns the result.
 
