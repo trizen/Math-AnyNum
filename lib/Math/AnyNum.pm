@@ -1843,7 +1843,7 @@ sub pow ($$) {
 sub ipow ($$) {
     my ($x, $y) = @_;
 
-    # Both `x` and `y` are strings
+    # Both `x` and `y` are unsigned native integers
     if (    !ref($x)
         and !ref($y)
         and CORE::int($x) eq $x
@@ -3878,10 +3878,16 @@ sub faulhaber_sum ($$) {
     my $t = Math::GMPz::Rmpz_init();
     my $u = Math::GMPz::Rmpz_init();
 
-    my $numerator   = Math::GMPz::Rmpz_init_set_ui(0);
+    my $numerator   = Math::GMPz::Rmpz_init();
     my $denominator = Math::GMPz::Rmpz_init_set_ui(1);
 
-    foreach my $j (0 .. $p) {
+#<<<
+    $native_n
+      ? Math::GMPz::Rmpz_ui_pow_ui($numerator, $n, $p + 1)    # numerator = n^(p + 1)
+      : Math::GMPz::Rmpz_pow_ui(   $numerator, $n, $p + 1);   # ==//==
+#>>>
+
+    foreach my $j (1 .. $p) {
 
         # When `j` is odd and greater than 1, we can skip it.
         $j % 2 == 0 or $j == 1 or next;
@@ -3894,26 +3900,19 @@ sub faulhaber_sum ($$) {
           : Math::GMPz::Rmpz_pow_ui(   $u, $n, $p + 1 - $j);   # ==//==
 #>>>
 
-        Math::GMPz::Rmpz_mul($t, $t, $u);             # t = t * u
-
         # Compute Bernouli(j)
         my $bern = ($j <= 100 ? ($cache[$j] //= __bernfrac__($j)) : __bernfrac__($j));
 
-        # Bernoulli(j) = 1 for j=0
-        if (!$j) {
-            Math::GMPz::Rmpz_add($numerator, $numerator, $t);    # numerator = numerator + t
-        }
-        else {
 #<<<
-            Math::GMPq::Rmpq_get_num($u, $bern);      # u = numerator(bern)
-            Math::GMPz::Rmpz_mul($t, $t, $u);         # t = t * u
-            Math::GMPq::Rmpq_get_den($u, $bern);      # u = denominator(bern)
+        Math::GMPz::Rmpz_mul($t, $t, $u);         # t = t * u
+        Math::GMPq::Rmpq_get_num($u, $bern);      # u = numerator(bern)
+        Math::GMPz::Rmpz_mul($t, $t, $u);         # t = t * u
+        Math::GMPq::Rmpq_get_den($u, $bern);      # u = denominator(bern)
 
-            Math::GMPz::Rmpz_mul(   $numerator,   $numerator,   $u);   # numerator   = numerator   * u
-            Math::GMPz::Rmpz_addmul($numerator,   $denominator, $t);   # numerator  += denominator * t
-            Math::GMPz::Rmpz_mul(   $denominator, $denominator, $u);   # denominator = denominator * u
+        Math::GMPz::Rmpz_mul(   $numerator,   $numerator,   $u);   # numerator   = numerator   * u
+        Math::GMPz::Rmpz_addmul($numerator,   $denominator, $t);   # numerator  += denominator * t
+        Math::GMPz::Rmpz_mul(   $denominator, $denominator, $u);   # denominator = denominator * u
 #>>>
-        }
     }
 
 #<<<
