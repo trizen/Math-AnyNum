@@ -1,5 +1,9 @@
 Revision history for Math-AnyNum
 
+0.17    2017-xx-xx
+
+        - Optimization for `is_div(n, k)`, when `n` and `k` are integers.
+
 0.16    2017-10-17
 
         - Fixed the numification of signed and unsigned integers close to the native integer limits.

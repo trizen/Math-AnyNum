@@ -2251,7 +2251,20 @@ sub divmod ($$) {
 
 sub is_div ($$) {
     require Math::AnyNum::eq;
-    (@_) = (${mod($_[0], $_[1])}, 0);
+    my ($x, $y) = @_;
+
+    if (ref($x) eq __PACKAGE__ and ref($$x) eq 'Math::GMPz') {
+        if (ref($y)) {
+            if (ref($y) eq __PACKAGE__ and ref($$y) eq 'Math::GMPz') {
+                return (Math::GMPz::Rmpz_divisible_p($$x, $$y) && Math::GMPz::Rmpz_sgn($$y));
+            }
+        }
+        elsif (CORE::int($y) eq $y and $y > 0 and $y <= ULONG_MAX) {
+            return Math::GMPz::Rmpz_divisible_ui_p($$x, $y);
+        }
+    }
+
+    (@_) = (${mod($x, $y)}, 0);
     goto &__eq__;
 }
 
