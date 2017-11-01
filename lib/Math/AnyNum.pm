@@ -3783,6 +3783,15 @@ sub kronecker ($$) {
     my ($x, $y) = @_;
 
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
+
+    if (!ref($y) and CORE::int($y) eq $y and $y <= ULONG_MAX and $y >= LONG_MIN) {
+        return (
+                $y < 0
+                ? Math::GMPz::Rmpz_kronecker_si($x, $y)
+                : Math::GMPz::Rmpz_kronecker_ui($x, $y)
+               );
+    }
+
     $y = (ref($y) eq __PACKAGE__ ? _any2mpz($$y) : _star2mpz($y)) // goto &nan;
 
     Math::GMPz::Rmpz_kronecker($x, $y);
