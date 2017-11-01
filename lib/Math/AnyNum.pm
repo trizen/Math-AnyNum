@@ -3372,7 +3372,6 @@ sub numerator ($) {
 
     my $r = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
     {
-        my $ref = ref($r);
         ref($r) eq 'Math::GMPz' && return $x;    # is an integer
 
         if (ref($r) eq 'Math::GMPq') {
@@ -3395,7 +3394,6 @@ sub denominator ($) {
 
     my $r = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
     {
-        my $ref = ref($r);
         ref($r) eq 'Math::GMPz' && goto &one;    # is an integer
 
         if (ref($r) eq 'Math::GMPq') {
@@ -3403,6 +3401,7 @@ sub denominator ($) {
             Math::GMPq::Rmpq_get_den($z, $r);
             return bless \$z;
         }
+
         $r = _any2mpq($r) // goto &nan;
         redo;
     }
