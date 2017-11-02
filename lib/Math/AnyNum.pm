@@ -2259,8 +2259,8 @@ sub is_div ($$) {
                 return (Math::GMPz::Rmpz_divisible_p($$x, $$y) && Math::GMPz::Rmpz_sgn($$y));
             }
         }
-        elsif (CORE::int($y) eq $y and $y > 0 and $y <= ULONG_MAX) {
-            return Math::GMPz::Rmpz_divisible_ui_p($$x, $y);
+        elsif (CORE::int($y) eq $y and $y and CORE::abs($y) <= ULONG_MAX) {
+            return Math::GMPz::Rmpz_divisible_ui_p($$x, CORE::abs($y));
         }
     }
 
