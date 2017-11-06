@@ -539,7 +539,7 @@ Example:
 
 Raises C<x> to power C<y> and returns the result.
 
-When both C<x> and C<y> are integers, it does integer exponentiation and returns the exact result.
+When C<x> and C<y> are both integers, it does integer exponentiation and returns the exact result.
 
 When C<x> is rational and C<y> is an integer, it does rational exponentiation based on the identity: C<(a/b)**n = a**n / b**n>,
 which also computes the exact result.
@@ -993,11 +993,11 @@ Returns the Kronecker symbol I<(n|m)>, which is a generalization of the Jacobi s
 
 =head2 faulhaber_sum
 
-    faulhaber_sum(n, p)                           #=> Int | NaN
+    faulhaber_sum(n, k)                           #=> Int | NaN
 
-Computes the sum C<1**p + 2**p + 3**p +...+ n**p>, using Faulhaber's formula.
+Computes the sum C<1**k + 2**k + 3**k +...+ n**k>, using Faulhaber's formula.
 
-C<p> must be a non-negative integer. Returns NaN otherwise.
+C<k> must be a non-negative integer. Returns NaN otherwise.
 
 Example:
 
@@ -1177,7 +1177,7 @@ Second integer k-gonal root of C<n>. Returns C<NaN> when a real root does not ex
 
 Example:
 
-    say ipolygonal_root2($n, 5);                   # integer second pentagonal root
+    say ipolygonal_root2($n, 5);                   # second integer pentagonal root
     say ipolygonal_root2(polygonal(-10, 5), 5);    # prints: "-10"
 
 =head2 is_polygonal
