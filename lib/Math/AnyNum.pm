@@ -1386,25 +1386,24 @@ sub int {    # used in overloading
 
 sub rat ($) {
     my ($x) = @_;
+
     if (ref($x) eq __PACKAGE__) {
         ref($$x) eq 'Math::GMPq' && return $x;
-        bless \(_any2mpq($$x) // (goto &nan));
+        return bless \(_any2mpq($$x) // (goto &nan));
     }
-    else {
 
-        # Parse a decimal number as an exact fraction
-        if ("$x" =~ /^([+-]?+(?=\.?[0-9])[0-9_]*+(?:\.[0-9_]++)?(?:[Ee](?:[+-]?+[0-9_]+))?)\z/) {
-            my $frac = _str2frac(lc($1));
-            my $q    = Math::GMPq::Rmpq_init();
-            Math::GMPq::Rmpq_set_str($q, $frac, 10);
-            Math::GMPq::Rmpq_canonicalize($q) if (index($frac, '/') != -1);
-            return bless \$q;
-        }
-
-        my $r = _star2obj($x);
-        ref($r) eq 'Math::GMPq' && return bless \$r;
-        bless \(_any2mpq($r) // (goto &nan));
+    # Parse a decimal number as an exact fraction
+    if ("$x" =~ /^([+-]?+(?=\.?[0-9])[0-9_]*+(?:\.[0-9_]++)?(?:[Ee](?:[+-]?+[0-9_]+))?)\z/) {
+        my $frac = _str2frac(lc($1));
+        my $q    = Math::GMPq::Rmpq_init();
+        Math::GMPq::Rmpq_set_str($q, $frac, 10);
+        Math::GMPq::Rmpq_canonicalize($q) if (index($frac, '/') != -1);
+        return bless \$q;
     }
+
+    my $r = _star2obj($x);
+    ref($r) eq 'Math::GMPq' && return bless \$r;
+    bless \(_any2mpq($r) // (goto &nan));
 }
 
 #
