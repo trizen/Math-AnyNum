@@ -1403,7 +1403,7 @@ sub rat ($) {
 
         my $r = _star2obj($x);
         ref($r) eq 'Math::GMPq' && return bless \$r;
-        bless(\_any2mpq($r) // goto &nan);
+        bless \(_any2mpq($r) // (goto &nan));
     }
 }
 

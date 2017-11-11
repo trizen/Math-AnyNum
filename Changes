@@ -1,5 +1,9 @@
 Revision history for Math-AnyNum
 
+0.18    2017-xx-xx
+
+        - Fixed a minor issue in `rat(str)` to return NaN when `str` cannot be parsed as a fraction.
+
 0.17    2017-11-04
 
         - Optimized `is_div(n, k)` when `n` and `k` are integers.

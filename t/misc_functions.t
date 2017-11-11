@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 288;
+plan tests => 291;
 
 use Math::AnyNum qw(:misc);
 
@@ -327,6 +327,10 @@ is(rat('12341.234125e2'),  '98729873/80');
 is(rat('12341.234125e-2'), '98729873/800000');
 is(rat('13e2'),            '1300');
 is(rat('13e-2'),           '13/100');
+
+is(rat('foo'),  'NaN');
+is(rat('3+4i'), 'NaN');
+is(rat(Math::AnyNum->new_c(3, 4)), 'NaN');
 
 ok(is_odd(int('43')));
 ok(is_odd(rat('43')));
