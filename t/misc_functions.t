@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 291;
+plan tests => 327;
 
 use Math::AnyNum qw(:misc);
 
@@ -331,6 +331,51 @@ is(rat('13e-2'),           '13/100');
 is(rat('foo'),  'NaN');
 is(rat('3+4i'), 'NaN');
 is(rat(Math::AnyNum->new_c(3, 4)), 'NaN');
+
+ok(!(float(0) != '0'));
+ok(!(complex(0) != '0'));
+ok(!(rat(0) != '0'));
+ok(!(int(0) != '0'));
+
+ok(float(0) != '-1');
+ok(complex(0) != '-1');
+ok(rat(0) != '-1');
+ok(int(0) != '-1');
+
+ok(float(0) != '1');
+ok(complex(0) != '1');
+ok(rat(0) != '1');
+ok(int(0) != '1');
+
+ok(float(0) == '0');
+ok(rat(0) == '0');
+ok(int(0) == '0');
+ok(complex(0) == '0');
+
+ok(!(float(0) == '1'));
+ok(!(rat(0) == '1'));
+ok(!(int(0) == '1'));
+ok(!(complex(0) == '1'));
+
+ok(!(float(0) == '-1'));
+ok(!(rat(0) == '-1'));
+ok(!(int(0) == '-1'));
+ok(!(complex(0) == '-1'));
+
+is(float(0) <=> '0',   0);
+is(rat(0) <=> '0',     0);
+is(int(0) <=> '0',     0);
+is(complex(0) <=> '0', 0);
+
+is(float(0) <=> '1',   -1);
+is(rat(0) <=> '1',     -1);
+is(int(0) <=> '1',     -1);
+is(complex(0) <=> '1', -1);
+
+is(float(0) <=> '-1',   1);
+is(rat(0) <=> '-1',     1);
+is(int(0) <=> '-1',     1);
+is(complex(0) <=> '-1', 1);
 
 ok(is_odd(int('43')));
 ok(is_odd(rat('43')));
