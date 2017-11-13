@@ -534,29 +534,30 @@ sub _str2frac {
             }
         }
 
-        my $numerator   = "$before$after";
-        my $denominator = "1";
+        my $numerator = "$sign$before$after";
 
-        if ($exp < 1) {
-            $denominator .= '0' x (CORE::abs($exp) + CORE::length($after));
-        }
-        else {
-            my $diff = ($exp - CORE::length($after));
-            if ($diff >= 0) {
-                $numerator .= '0' x $diff;
-            }
-            else {
-                my $s = "$before$after";
-                substr($s, $exp + CORE::length($before), 0, '.');
-                return _str2frac("$sign$s");
-            }
+        if ($exp < 0) {
+            return ("$numerator/1" . ('0' x (CORE::abs($exp) + CORE::length($after))));
         }
 
-        return "$sign$numerator/$denominator";
+        my $diff = ($exp - CORE::length($after));
+
+        if ($diff >= 0) {
+            return ($numerator . ('0' x $diff));
+        }
+
+        my $s = "$before$after";
+        substr($s, $exp + CORE::length($before), 0, '.');
+        return _str2frac("$sign$s");
     }
 
     if ((my $i = index($str, '.')) != -1) {
         my ($before, $after) = (substr($str, 0, $i), substr($str, $i + 1));
+
+        if (($after =~ tr/0//) == CORE::length($after)) {
+            return "$sign$before";
+        }
+
         return ($sign . "$before$after/1" . ('0' x CORE::length($after)));
     }
 

@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 339;
+plan tests => 342;
 
 use Math::AnyNum qw(:misc);
 
@@ -326,6 +326,9 @@ is(rat('+1.42e+13'),       '14200000000000');
 is(rat('12341.234125e2'),  '98729873/80');
 is(rat('12341.234125e-2'), '98729873/800000');
 is(rat('13e2'),            '1300');
+is(rat('0.13e2'),          '13');
+is(rat('0.013e2'),         '13/10');
+is(rat('0.013e5'),         '1300');
 is(rat('13e-2'),           '13/100');
 is(rat('12.0000'),         '12');
 is(rat('12.000e0'),        '12');
