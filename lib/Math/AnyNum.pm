@@ -383,7 +383,7 @@ use overload
     }
 }
 
-# Converts a string into an mpq object
+# Create and return a new {GMP*, MPFR, MPC} object, given a base-10 numerical string
 sub _str2obj {
     my ($s) = @_;
 
@@ -497,7 +497,7 @@ sub _str2obj {
     eval { Math::GMPz::Rmpz_init_set_str($s, 10) } // goto &_nan;
 }
 
-# Parse a base-10 string as a base-10 fraction
+# Parse a given decimal expansion string as a base-10 fraction
 sub _str2frac {
     my ($str) = @_;
 
@@ -511,8 +511,7 @@ sub _str2frac {
         $sign = '';
     }
 
-    my $i;
-    if (($i = index($str, 'e')) != -1) {
+    if ((my $i = index($str, 'e')) != -1) {
 
         my $exp = substr($str, $i + 1);
 
@@ -553,23 +552,21 @@ sub _str2frac {
             }
         }
 
-        "$sign$numerator/$denominator";
+        return "$sign$numerator/$denominator";
     }
-    elsif (($i = index($str, '.')) != -1) {
+
+    if ((my $i = index($str, '.')) != -1) {
         my ($before, $after) = (substr($str, 0, $i), substr($str, $i + 1));
-        if (($after =~ tr/0//) == CORE::length($after)) {
-            return "$sign$before";
-        }
-        $sign . ("$before$after/1" =~ s/^0+//r) . ('0' x CORE::length($after));
+        return ($sign . "$before$after/1" . ('0' x CORE::length($after)));
     }
-    else {
-        "$sign$str";
-    }
+
+    return "$sign$str";
 }
 
 #
 ## MPZ
 #
+
 sub _mpz2mpq {
     my $r = Math::GMPq::Rmpq_init();
     Math::GMPq::Rmpq_set_z($r, $_[0]);
@@ -901,7 +898,7 @@ sub new {
             my $r = Math::GMPq::Rmpq_init();
             eval { Math::GMPq::Rmpq_set_str($r, $num, $int_base); 1 } // goto &nan;
 
-            if (Math::GMPq::Rmpq_get_str($r, 10) !~ m{^\s*[-+]?[0-9]+\s*/\s*[-+]?[1-9]+[0-9]*\s*\z}) {
+            if (Math::GMPq::Rmpq_get_str($r, 10) !~ m{^\s*[-+]?[0-9]+\s*(?:/\s*[-+]?[1-9]+[0-9]*\s*)?\z}) {
                 goto &nan;
             }
 
