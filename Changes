@@ -3,6 +3,7 @@ Revision history for Math-AnyNum
 0.18    2017-xx-xx
 
         - Fixed a minor issue in `rat(str)` to return NaN when `str` cannot be parsed as a fraction.
+        - Fixed `polygonal_root(n, NaN)` to return `NaN` instead of `n`.
 
 0.17    2017-11-04
 
