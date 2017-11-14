@@ -1817,7 +1817,7 @@ support for complex numbers, therefore that project was abandoned and much of it
 
 =head1 AUTHOR
 
-Daniel Șuteu, C<< <trizenx at gmail.com> >>
+Daniel Șuteu, C<< <trizen@protonmail.com> >>
 
 =head1 BUGS
 

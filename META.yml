@@ -1,7 +1,7 @@
 ---
 abstract: 'Arbitrary size precision for integers, rationals, floating-points and complex numbers.'
 author:
-  - 'Daniel Șuteu <trizenx@gmail.com>'
+  - 'Daniel Șuteu <trizen@protonmail.com>'
 build_requires:
   Test::More: '0'
 configure_requires:
