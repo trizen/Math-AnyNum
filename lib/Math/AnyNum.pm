@@ -4293,10 +4293,58 @@ sub rat_approx ($) {
 
 sub digits ($;$) {
     my ($x, $y) = @_;
-    my $str = as_int($x, $y) // return ();
-    my @digits = split(//, $str);
-    shift(@digits) if $digits[0] eq '-';
-    (@digits);
+
+    $x = _star2mpz($x) // return;
+    $y //= 10;
+
+    if (!ref($y) and CORE::int($y) eq $y and $y > 1 and $y < ULONG_MAX) {
+
+        if ($y <= 10) {
+            my @digits = split(//, scalar reverse scalar Math::GMPz::Rmpz_get_str($x, $y));
+            pop(@digits) if $digits[-1] eq '-';
+            return @digits;
+        }
+
+        if ($y == 16) {
+            my @digits = split(//, scalar reverse scalar Math::GMPz::Rmpz_get_str($x, $y));
+            pop(@digits) if $digits[-1] eq '-';
+            return map { hex($_) } @digits;
+        }
+    }
+
+    $y = _star2mpz($y) // return;
+
+    # Not defined for y <= 1
+    if (Math::GMPz::Rmpz_cmp_ui($y, 1) <= 0) {
+        return;
+    }
+
+    # Return faster when y <= 10
+    if (Math::GMPz::Rmpz_cmp_ui($y, 10) <= 0) {
+        my @digits = split(//, scalar reverse scalar Math::GMPz::Rmpz_get_str($x, Math::GMPz::Rmpz_get_ui($y)));
+        pop(@digits) if $digits[-1] eq '-';
+        return @digits;
+    }
+
+    my @digits;
+    my $t = Math::GMPz::Rmpz_init_set($x);
+
+    my $sgn = Math::GMPz::Rmpz_sgn($t);
+
+    if ($sgn == 0) {
+        return (zero());
+    }
+    elsif ($sgn < 0) {
+        Math::GMPz::Rmpz_abs($t, $t);
+    }
+
+    while (Math::GMPz::Rmpz_sgn($t) > 0) {
+        my $m = Math::GMPz::Rmpz_init();
+        Math::GMPz::Rmpz_divmod($t, $m, $t, $y);
+        push @digits, bless \$m;
+    }
+
+    return @digits;
 }
 
 1;    # End of Math::AnyNum

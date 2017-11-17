@@ -1686,17 +1686,19 @@ Example:
 
 =head2 digits
 
-    digits(x)                                     #=> (Scalar, Scalar, ...)
-    digits(x, b)                                  #=> (Scalar, Scalar, ...)
+    digits(n)                                     #=> (Scalar, Scalar, ...)
+    digits(n, b)                                  #=> (Scalar | Int, Scalar | Int, ...)
 
-Returns a list with the digits of C<x> in a given base. When no base is specified, it defaults to base 10.
+Returns a list with the digits of C<n> in a given base. When no base is specified, it defaults to base 10.
 
-Only the absolute integer part of C<x> is considered.
+Only the absolute integer part of C<n> is considered.
+
+The value of C<b> must be greater than C<1>. Returns an empty list otherwise.
 
 Example:
 
-    digits(-1234.56) = (1,2,3,4)
-    digits(4095, 16) = ('f','f','f')
+    digits(-1234.56)       = (4, 3, 2, 1)
+    digits(3735928559, 16) = (15, 14, 14, 11, 13, 10, 14, 13)
 
 =head1 * Comparisons
 
