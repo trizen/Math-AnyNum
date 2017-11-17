@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 354;
+plan tests => 355;
 
 use Math::AnyNum qw(:misc);
 
@@ -203,6 +203,7 @@ is(join(' ', digits('-1234',          $o->new(9))),  '1 2 6 1');
 is(join(' ', digits($o->new('-1234'), $o->new(4))),  '2 0 1 3 0 1');
 is(join(' ', digits($o->new('-1234'), 36)),          '10 34');
 is(join(' ', digits('-1234',          2)),           '0 1 0 0 1 0 1 1 0 0 1');
+is(join(' ', digits('12345',          100)),         '45 23 1');
 
 is(join(' ', digits('3735928559', 16)), '15 14 14 11 13 10 14 13');
 is(join(' ', digits('3735928559', 17)), '8 7 16 6 3 13 1 9');

@@ -1697,8 +1697,8 @@ The value of C<b> must be greater than C<1>. Returns an empty list otherwise.
 
 Example:
 
-    digits(-1234.56)       = (4, 3, 2, 1)
-    digits(3735928559, 16) = (15, 14, 14, 11, 13, 10, 14, 13)
+    digits(12345)      = (5, 4, 3, 2, 1)
+    digits(12345, 100) = (45, 23, 1)
 
 =head1 * Comparisons
 
