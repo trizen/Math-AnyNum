@@ -1392,7 +1392,7 @@ sub rat ($) {
 
     # Parse a decimal number as an exact fraction
     if ("$x" =~ /^([+-]?+(?=\.?[0-9])[0-9_]*+(?:\.[0-9_]++)?(?:[Ee](?:[+-]?+[0-9_]+))?)\z/) {
-        my $frac = _str2frac(lc($1));
+        my $frac = _str2frac(lc($1) =~ tr/_//dr);
         my $q    = Math::GMPq::Rmpq_init();
         Math::GMPq::Rmpq_set_str($q, $frac, 10);
         Math::GMPq::Rmpq_canonicalize($q) if (index($frac, '/') != -1);
