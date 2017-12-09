@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 345;
+plan tests => 355;
 
 use Math::AnyNum qw(:misc);
 
@@ -172,24 +172,24 @@ is(numerator('123/567'),      '41');            # simplifies to '41/189'
 is(numerator(int(42)),        '42');
 is(numerator(rat('123/567')), '41');            # simplifies to '41/189'
 
-#is(numerator(float('12')),     '12');
-#is(numerator(float('0.75')),   '3');            # '3/4'
-#is(numerator(complex('12')),   '12');
-#is(numerator(complex('0.75')), '3');            # '3/4'
-#is(numerator('0.75'),          '3');            # '3/4'
+is(numerator(float('12')),     '12');
+is(numerator(float('0.75')),   '3');            # '3/4'
+is(numerator(complex('12')),   '12');
+is(numerator(complex('0.75')), '3');            # '3/4'
+is(numerator('0.75'),          '3');            # '3/4'
 is(numerator(complex('3+4i')), 'NaN');
 is(numerator("-42"),           "-42");
 
 is(denominator('3/4'),          '4');
-is(denominator('123/567'),      '189');    # simplifies to '41/189'
+is(denominator('123/567'),      '189');         # simplifies to '41/189'
 is(denominator(int(42)),        '1');
-is(denominator(rat('123/567')), '189');    # simplifies to '41/189'
+is(denominator(rat('123/567')), '189');         # simplifies to '41/189'
 
-#is(denominator(float('12')),     '1');
-#is(denominator(float('0.75')),   '4');          # '3/4'
-#is(denominator(complex('12')),   '1');
-#is(denominator(complex('0.75')), '4');          # '3/4'
-#is(denominator('0.75'),          '4');          # '3/4'
+is(denominator(float('12')),     '1');
+is(denominator(float('0.75')),   '4');          # '3/4'
+is(denominator(complex('12')),   '1');
+is(denominator(complex('0.75')), '4');          # '3/4'
+is(denominator('0.75'),          '4');          # '3/4'
 is(denominator(complex('3+4i')), 'NaN');
 is(denominator("-42"),           "1");
 
