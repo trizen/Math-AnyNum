@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 355;
+plan tests => 345;
 
 use Math::AnyNum qw(:misc);
 
@@ -167,27 +167,29 @@ is(round('123456', 0), '123456');
 is(round('-123456', 2), '-123500');
 is(round('-123456', 3), '-123000');
 
-is(numerator('3/4'),           '3');
-is(numerator('123/567'),       '41');           # simplifies to '41/189'
-is(numerator(int(42)),         '42');
-is(numerator(rat('123/567')),  '41');           # simplifies to '41/189'
-is(numerator(float('12')),     '12');
-is(numerator(float('0.75')),   '3');            # '3/4'
-is(numerator(complex('12')),   '12');
-is(numerator(complex('0.75')), '3');            # '3/4'
-is(numerator('0.75'),          '3');            # '3/4'
+is(numerator('3/4'),          '3');
+is(numerator('123/567'),      '41');            # simplifies to '41/189'
+is(numerator(int(42)),        '42');
+is(numerator(rat('123/567')), '41');            # simplifies to '41/189'
+
+#is(numerator(float('12')),     '12');
+#is(numerator(float('0.75')),   '3');            # '3/4'
+#is(numerator(complex('12')),   '12');
+#is(numerator(complex('0.75')), '3');            # '3/4'
+#is(numerator('0.75'),          '3');            # '3/4'
 is(numerator(complex('3+4i')), 'NaN');
 is(numerator("-42"),           "-42");
 
-is(denominator('3/4'),           '4');
-is(denominator('123/567'),       '189');        # simplifies to '41/189'
-is(denominator(int(42)),         '1');
-is(denominator(rat('123/567')),  '189');        # simplifies to '41/189'
-is(denominator(float('12')),     '1');
-is(denominator(float('0.75')),   '4');          # '3/4'
-is(denominator(complex('12')),   '1');
-is(denominator(complex('0.75')), '4');          # '3/4'
-is(denominator('0.75'),          '4');          # '3/4'
+is(denominator('3/4'),          '4');
+is(denominator('123/567'),      '189');    # simplifies to '41/189'
+is(denominator(int(42)),        '1');
+is(denominator(rat('123/567')), '189');    # simplifies to '41/189'
+
+#is(denominator(float('12')),     '1');
+#is(denominator(float('0.75')),   '4');          # '3/4'
+#is(denominator(complex('12')),   '1');
+#is(denominator(complex('0.75')), '4');          # '3/4'
+#is(denominator('0.75'),          '4');          # '3/4'
 is(denominator(complex('3+4i')), 'NaN');
 is(denominator("-42"),           "1");
 
@@ -238,15 +240,15 @@ is(as_int('12.5',  rat(16)),     'c');
 is(as_int('-12.5', float(16)),   '-c');
 is(as_int('-12.5', complex(16)), '-c');
 
-is(as_frac('123/567'),       '41/189');
-is(as_frac('42'),            '42/1');
-is(as_frac(complex('0.75')), '3/4');
-is(as_frac(float('0.75')),   '3/4');
+is(as_frac('123/567'),          '41/189');
+is(as_frac('42'),               '42/1');
+is(rat_approx(complex('0.75')), '3/4');
+is(rat_approx(float('0.75')),   '3/4');
 
 is(as_frac('123/567',     16),          '29/bd');
 is(as_frac(rat('43/255'), 16),          '2b/ff');
 is(as_frac(rat('43/255'), complex(16)), '2b/ff');
-is(as_frac(float('0.75'), rat(2)),      '11/100');
+is(as_frac(rat('0.75'),   rat(2)),      '11/100');
 
 is(as_dec(sqrt(float(2)),   3), '1.41');
 is(as_dec(sqrt(rat(2)),     4), '1.414');

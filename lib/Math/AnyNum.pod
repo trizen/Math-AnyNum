@@ -1475,6 +1475,8 @@ Converts C<x> to a rational number. Returns NaN when this conversion is not poss
 
 When the given argument is a decimal expansion string, it will be specially parsed as an exact fraction.
 
+If C<x> is a floating-point number, use C<rat_approx()> instead.
+
 Example:
 
     rat('0.5')       = 1/2
