@@ -670,7 +670,6 @@ sub _any2mpq {
         if (Math::MPFR::Rmpfr_number_p($x)) {
             my $q = Math::GMPq::Rmpq_init();
             Math::MPFR::Rmpfr_get_q($q, $x);
-            Math::GMPq::Rmpq_canonicalize($q);
             return $q;
         }
         return;
