@@ -1,5 +1,9 @@
 Revision history for Math-AnyNum
 
+0.20    2018-??-??
+
+        - Fixed the result of the `atan2(x, y)` function, when `x` and `y` are complex numbers.
+
 0.19    2017-12-09
 
         - Fixed some tests under mpfr-4.0.0.
