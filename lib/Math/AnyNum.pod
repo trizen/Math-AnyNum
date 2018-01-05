@@ -825,7 +825,9 @@ Cosecant, hyperbolic cosecant, inverse cosecant and inverse hyperbolic cosecant.
 
     atan2(x, y)                                   #=> Any
 
-The arctangent of the quotient of its arguments (i.e.: C<atan(x/y)>).
+The arc tangent of C<x> and C<y>, defined as:
+
+    atan2(x, y) = -i * log((y + x*i) / sqrt(x^2 + y^2))
 
 =head2 deg2rad
 
