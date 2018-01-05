@@ -1,7 +1,8 @@
 Revision history for Math-AnyNum
 
-0.20    2018-??-??
+0.20    2018-01-05
 
+        - Added parsing support for complex numbers in Cartesian form, such as "(3 4)" for "3+4i".
         - Fixed the result of the `atan2(x, y)` function, when `x` and `y` are complex numbers.
 
 0.19    2017-12-09
