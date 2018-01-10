@@ -383,14 +383,14 @@ use overload
     }
 }
 
-# Convert two real-number strings into an MPC object
+# Convert a given pair (real, imag) into an MPC object
 sub _reals2mpc {
     my ($re, $im) = @_;
 
     my $r = Math::MPC::Rmpc_init2($PREC);
 
-    $re = _str2obj($re);
-    $im = _str2obj($im);
+    $re = ref($re) ? _star2obj($re) : _str2obj($re);
+    $im = ref($im) ? _star2obj($im) : _str2obj($im);
 
     my $sig = join(' ', ref($re), ref($im));
 
@@ -420,6 +420,16 @@ sub _reals2mpc {
     }
     elsif ($sig eq q{Math::MPFR Math::GMPq}) {
         Math::MPC::Rmpc_set_fr_q($r, $re, $im, $ROUND);
+    }
+    elsif (ref($re) eq 'Math::MPC') {
+        Math::MPC::Rmpc_set($r, _any2mpc($im), $ROUND);
+        Math::MPC::Rmpc_mul_i($r, $r, 1, $ROUND);
+        Math::MPC::Rmpc_add($r, $r, $re, $ROUND);
+    }
+    elsif (ref($im) eq 'Math::MPC') {
+        Math::MPC::Rmpc_set($r, $im, $ROUND);
+        Math::MPC::Rmpc_mul_i($r, $r, 1, $ROUND);
+        Math::MPC::Rmpc_add($r, $r, _any2mpc($re), $ROUND);
     }
     else {    # this should never happen
         $re = _any2mpfr($re);
@@ -1448,8 +1458,13 @@ sub float ($) {
 ## CONVERSION TO COMPLEX
 #
 
-sub complex ($) {
-    my ($x) = @_;
+sub complex ($;$) {
+    my ($x, $y) = @_;
+
+    if (defined $y) {
+        return bless \_reals2mpc($x, $y);
+    }
+
     bless \(
               ref($x) eq __PACKAGE__
             ? ref($$x) eq 'Math::MPC'

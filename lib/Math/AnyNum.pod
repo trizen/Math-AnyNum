@@ -1477,7 +1477,7 @@ Converts C<x> to a rational number. Returns NaN when this conversion is not poss
 
 When the given argument is a decimal expansion string, it will be specially parsed as an exact fraction.
 
-If C<x> is a floating-point number, use C<rat_approx()> instead.
+If C<x> is a floating-point number, consider using C<rat_approx()> instead.
 
 Example:
 
@@ -1513,12 +1513,17 @@ Example:
 
     complex(x)                                    #=> Complex
     complex(str)                                  #=> Complex
+    complex(x, y)                                 #=> Complex
 
-Converts C<x> to a complex number.
+Converts C<x> to a complex number. When a second argument is given, it sets C<x> as the real part and C<y> as the imaginary part.
+
+If C<x> or C<y> are complex numbers, the function returns the result of C<x + y*i>.
 
 Example:
 
-    complex("3+4i") = 3+4*i
+    complex("3+4i")        = 3+4*i
+    complex(3, 4)          = 3+4*i
+    complex("5+2i", "-4i") = 9+2*i
 
 =head2 stringify
 
