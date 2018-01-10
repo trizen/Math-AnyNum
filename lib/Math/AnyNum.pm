@@ -379,7 +379,11 @@ use overload
     }
 
     sub unimport {
-        overload::remove_constant('binary', '', 'float', '', 'integer');
+        overload::remove_constant(
+                                  binary  => '',
+                                  float   => '',
+                                  integer => '',
+                                 );
     }
 }
 
