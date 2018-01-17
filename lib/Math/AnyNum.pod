@@ -231,7 +231,7 @@ Returns a new AnyNum object with the value specified in the first argument,
 which can be a Perl numerical value, a string representing a number in a
 rational form, such as C<"1/2">, a string holding a floating-point number,
 such as C<"0.5">, a string holding an integer, such as C<"255"> or a string
-holding a complex number, such as C<"3+4i">.
+holding a complex number, such as C<"3+4i"> or C<"(3 4)">.
 
     my $z = Math::AnyNum->new('42');        # integer
     my $r = Math::AnyNum->new('3/4');       # rational
