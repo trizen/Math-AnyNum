@@ -900,6 +900,9 @@ sub _star2obj {
            or ref($x) eq 'Math::MPC') {
         $x;
     }
+    elsif (ref($x) eq 'Math::GComplex') {
+        return _reals2mpc($x->reals);
+    }
     else {
         (@_) = "$x";
         goto &_str2obj;
