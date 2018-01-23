@@ -3,6 +3,7 @@ Revision history for Math-AnyNum
 0.21    2018-??-??
 
         - Extended the `complex()` function to accept an additional argument, which specifies the imaginary part.
+        - Reimplemented the `rat_approx()` method for much better performance (~3x faster).
 
 0.20    2018-01-05
 
