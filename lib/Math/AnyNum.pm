@@ -173,11 +173,12 @@ use overload
                   );
 
     my %ntheory = (
-        factorial  => \&factorial,
-        dfactorial => \&dfactorial,
-        mfactorial => \&mfactorial,
-        primorial  => \&primorial,
-        binomial   => \&binomial,
+        factorial    => \&factorial,
+        dfactorial   => \&dfactorial,
+        mfactorial   => \&mfactorial,
+        subfactorial => \&subfactorial,
+        primorial    => \&primorial,
+        binomial     => \&binomial,
 
         rising_factorial  => \&rising_factorial,
         falling_factorial => \&falling_factorial,
@@ -3100,8 +3101,74 @@ sub harmreal ($) {
 }
 
 #
+## Subfactorial
+#
+
+sub subfactorial ($;$) {
+    my ($x, $y) = @_;
+
+    my ($m, $k);
+
+    if (!ref($x) and CORE::int($x) eq $x and $x >= 0 and $x < ULONG_MAX) {
+        $m = $x;
+    }
+    elsif (ref($x) eq __PACKAGE__) {
+        $m = _any2ui($$x) // goto &nan;
+    }
+    else {
+        $m = _any2ui(_star2obj($x)) // goto &nan;
+    }
+
+    if (defined($y)) {
+        if (!ref($y) and CORE::int($y) eq $y and $y > LONG_MIN and $y < ULONG_MAX) {
+            $k = $y;
+        }
+        elsif (ref($y) eq __PACKAGE__) {
+            $k = _any2si($$y) // goto &nan;
+        }
+        else {
+            $k = _any2si(_star2obj($y)) // goto &nan;
+        }
+    }
+    else {
+        $k = 0;
+    }
+
+    my $n = $m - $k;
+
+    goto &zero if ($k < 0);
+    goto &one  if ($n == 0);
+    goto &nan  if ($n < 0);
+
+    my $tau  = 6.28318530717958647692528676655900576839433879875;
+    my $prec = 4 + CORE::int(($n * CORE::log($n) + CORE::log($tau * $n) / 2 - $n) / CORE::log(2));
+
+    my $z = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_fac_ui($z, $n);
+
+    state $round_z = Math::MPFR::MPFR_RNDZ();
+
+    my $f = Math::MPFR::Rmpfr_init2($prec);
+    Math::MPFR::Rmpfr_set_ui($f, 1, $round_z);
+    Math::MPFR::Rmpfr_exp($f, $f, $round_z);
+    Math::MPFR::Rmpfr_z_div($f, $z, $f, $round_z);
+    Math::MPFR::Rmpfr_add_d($f, $f, 0.5, $round_z);
+    Math::MPFR::Rmpfr_floor($f, $f);
+    Math::MPFR::Rmpfr_get_z($z, $f, $round_z);
+
+    if ($k != 0) {
+        my $t = Math::GMPz::Rmpz_init();
+        Math::GMPz::Rmpz_bin_uiui($t, $m, $k);
+        Math::GMPz::Rmpz_mul($z, $z, $t);
+    }
+
+    bless \$z;
+}
+
+#
 ## Factorial
 #
+
 sub factorial ($) {
     my ($x) = @_;
 

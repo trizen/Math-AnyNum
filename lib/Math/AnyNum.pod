@@ -1040,6 +1040,22 @@ Example:
 
 Generalized m-factorial of C<n>. Returns NaN when C<n> or C<m> is negative. (requires GMP>=5.1.0)
 
+=head2 subfactorial
+
+    subfactorial(n)                               #=> Int | NaN
+    subfactorial(n, k)                            #=> Int | NaN
+
+The number of permutations of C<{1, ..., n}> that have exactly C<k> fixed points,
+given a positive integer C<n> and an optional integer C<k> (if C<k> is ommited, then C<k=0>).
+
+See also:
+
+=over 4
+
+=item * L<https://en.wikipedia.org/wiki/Rencontres_numbers>
+
+=back
+
 =head2 rising_factorial
 
     rising_factorial(n, k)                        #=> Int | Rat | NaN

@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 364;    # be careful
+plan tests => 376;    # be careful
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -513,3 +513,29 @@ ok(!is_prime($o->new('113822804831'), $o->new(30)), '!is_prime');
 
 is(next_prime('165001'),          '165037');
 is(next_prime($o->new('165001')), '165037');
+
+is_deeply(
+    [map { subfactorial($_) } 0 .. 23],
+    [qw(
+       1 0 1 2 9 44 265 1854 14833 133496 1334961 14684570 176214841 2290792932
+       32071101049 481066515734 7697064251745 130850092279664 2355301661033953
+       44750731559645106 895014631192902121 18795307255050944540 413496759611120779881
+       9510425471055777937262
+       )
+    ],
+    "subfactoral(n) for n=0..23"
+         );
+
+is_deeply([map { subfactorial(7, $_) } 0 .. 7], [qw(1854 1855 924 315 70 21 0 1)], "subfactorial(7, n) for n=0..7");
+
+is(subfactorial(Math::AnyNum->new(7), Math::AnyNum->new(5)), 21);
+is(subfactorial(Math::AnyNum->new(7), 5),                    21);
+is(subfactorial(7,                    Math::AnyNum->new(5)), 21);
+
+is(subfactorial(-20, -20), 'NaN');
+is(subfactorial(12,  20),  'NaN');
+is(subfactorial(-12), 'NaN');
+is(subfactorial(0,  0),   1);
+is(subfactorial(0,  -1),  0);
+is(subfactorial(0,  -20), 0);
+is(subfactorial(30, -20), 0);
