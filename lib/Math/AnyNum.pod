@@ -102,7 +102,7 @@ The following functions are exportable:
         is_prime is_coprime next_prime is_polygonal
         is_polygonal2 faulhaber_sum ipolygonal_root
         ipolygonal_root2 polygonal rising_factorial
-        falling_factorial
+        falling_factorial subfactorial
 
     :misc
         rand irand seed iseed floor ceil round sgn neg inv

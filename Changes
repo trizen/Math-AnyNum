@@ -1,5 +1,9 @@
 Revision history for Math-AnyNum
 
+0.22    2018-??-??
+
+        - Added the `subfactorial(n,k)` function.
+
 0.21    2018-01-25
 
         - Extended the `complex()` function to accept an additional argument, which specifies the imaginary part.
