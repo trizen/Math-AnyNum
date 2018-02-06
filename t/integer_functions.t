@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 376;    # be careful
+plan tests => 379;    # be careful
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -539,3 +539,7 @@ is(subfactorial(0,  0),   1);
 is(subfactorial(0,  -1),  0);
 is(subfactorial(0,  -20), 0);
 is(subfactorial(30, -20), 0);
+
+is(multinomial(3, 17, 9), '11417105700');
+is(multinomial(7, 2, 5, 2, 12, 11), '440981754363423854380800');
+is(multinomial(Math::AnyNum->new(7), 2, 5, Math::AnyNum->new(2), 12, Math::AnyNum->new(11)), '440981754363423854380800');

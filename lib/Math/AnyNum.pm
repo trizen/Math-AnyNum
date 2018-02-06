@@ -179,6 +179,7 @@ use overload
         subfactorial => \&subfactorial,
         primorial    => \&primorial,
         binomial     => \&binomial,
+        multinomial  => \&multinomial,
 
         rising_factorial  => \&rising_factorial,
         falling_factorial => \&falling_factorial,
@@ -4057,7 +4058,7 @@ sub faulhaber_sum ($$) {
 }
 
 #
-## Binomial
+## Binomial coefficient
 #
 
 sub binomial ($$) {
@@ -4098,6 +4099,47 @@ sub binomial ($$) {
     }
 
     bless \$r;
+}
+
+#
+## Multinomial coefficient
+#
+
+sub multinomial {
+    my ($n, @mset) = @_;
+
+    $n = _star2mpz($n) // goto &nan;
+
+    my $bin  = Math::GMPz::Rmpz_init();
+    my $sum  = Math::GMPz::Rmpz_init_set($n);
+    my $prod = Math::GMPz::Rmpz_init_set_ui(1);
+
+    foreach my $k (@mset) {
+
+        if (!ref($k) and CORE::int($k) eq $k and $k > LONG_MIN and $k < ULONG_MAX) {
+            ## `k` is a native integer
+        }
+        else {
+            $k = _any2si(ref($k) eq __PACKAGE__ ? $$k : _star2obj($k)) // goto &nan;
+        }
+
+        $k < 0
+          ? Math::GMPz::Rmpz_sub_ui($sum, $sum, -$k)
+          : Math::GMPz::Rmpz_add_ui($sum, $sum, $k);
+
+        if ($k >= 0 and Math::GMPz::Rmpz_fits_ulong_p($sum)) {
+            Math::GMPz::Rmpz_bin_uiui($bin, Math::GMPz::Rmpz_get_ui($sum), $k);
+        }
+        else {
+            $k < 0
+              ? Math::GMPz::Rmpz_bin_si($bin, $sum, $k)
+              : Math::GMPz::Rmpz_bin_ui($bin, $sum, $k);
+        }
+
+        Math::GMPz::Rmpz_mul($prod, $prod, $bin);
+    }
+
+    bless \$prod;
 }
 
 #

@@ -3,6 +3,7 @@ Revision history for Math-AnyNum
 0.22    2018-??-??
 
         - Added the `subfactorial(n,k)` function.
+        - Added the `multinomial(a, b, c, ...)` function, which computes the multinomial coefficient.
 
 0.21    2018-01-25
 
