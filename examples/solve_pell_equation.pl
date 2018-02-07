@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Find a minimum solution to a Pell equation: x^2 - d*y^2 = 1, where `d` is known.
+# Find the smallest solution in integers to the Pell equation: x^2 - d*y^2 = 1, where `d` is known.
 
 # See also:
 #   https://en.wikipedia.org/wiki/Pell%27s_equation
@@ -30,9 +30,16 @@ sub sqrt_convergents {
     return @convergents;
 }
 
-sub continued_frac {
-    my ($i, $c) = @_;
-    $i < 0 ? 0 : ($c->[$i] + continued_frac($i - 1, $c))->inv;
+sub cfrac_denominator {
+    my (@cfrac) = @_;
+
+    my ($f1, $f2) = (0, 1);
+
+    foreach my $n (@cfrac) {
+        ($f1, $f2) = ($f2, $n * $f2 + $f1);
+    }
+
+    return $f1;
 }
 
 sub solve_pell {
@@ -40,11 +47,9 @@ sub solve_pell {
 
     my ($k, @c) = sqrt_convergents($d);
 
-    my @period = @c;
-    for (my $i = 0 ; ; ++$i) {
-        if ($i > $#c) { push @c, @period; $i = 2 * $i - 1 }
+    for (my @period = @c ; ; push @period, @c) {
 
-        my $x = continued_frac($i, [$k, @c])->denominator;
+        my $x = cfrac_denominator($k, @period);
         my $p = 4 * $d * ($x * $x - 1);
 
         if (is_square($p)) {
@@ -53,7 +58,7 @@ sub solve_pell {
     }
 }
 
-foreach my $d (1 .. 25) {
+foreach my $d (1 .. 30) {
     is_square($d) && next;
     my ($x, $y) = solve_pell($d);
     printf("x^2 - %2dy^2 = 1       minimum solution: x=%4s and y=%4s\n", $d, $x, $y);
