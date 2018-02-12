@@ -1064,9 +1064,9 @@ See also:
 Computes the binomial coefficient C<n> over C<k>, also called the
 "choose" function. The result is equivalent to:
 
-           ( n )       n!
-           |   |  = -------
-           ( k )    k!(n-k)!
+                        n!
+    binomial(n, k) = -------
+                     k!(n-k)!
 
 =head2 multinomial
 
