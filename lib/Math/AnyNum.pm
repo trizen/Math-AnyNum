@@ -11,7 +11,12 @@ use Math::GMPq qw();
 use Math::GMPz qw();
 use Math::MPC qw();
 
-use POSIX qw(ULONG_MAX LONG_MIN);
+#use POSIX qw(ULONG_MAX LONG_MIN);
+
+use constant {
+              ULONG_MAX => Math::GMPq::_ulong_max(),
+              LONG_MIN  => Math::GMPq::_long_min(),
+             };
 
 our $VERSION = '0.21';
 our ($ROUND, $PREC);
