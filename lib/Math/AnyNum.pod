@@ -87,9 +87,9 @@ The following functions are exportable:
     :special
         beta eta gamma lgamma lngamma digamma zeta
         Ai Ei Li Li2 LambertW BesselJ BesselY lgrt
-        pow sqrt cbrt root exp exp2 exp10 ln log
-        log2 log10 mod abs erf erfc sqr norm hypot
-        agm bernreal harmreal polygonal_root
+        pow sqr sqrt cbrt root exp exp2 exp10 log
+        ln log2 log10 mod polymod erf erfc abs agm
+        hypot norm bernreal harmreal polygonal_root
         polygonal_root2
 
     :ntheory
@@ -448,6 +448,16 @@ Remainder of C<x> when is divided by C<y>. Returns NaN when C<y> is zero.
 Implemented as:
 
     x % y = x - y*floor(x/y)
+
+=head2 polymod
+
+    polymod(n, a, b, c, ...)                      #=> (Any, Any, ..., Any)
+
+Polymod of a list of numbers.
+
+Example:
+
+    my ($s, $m, $h, $d) = polymod($seconds, 60, 60, 24);
 
 =head2 conj
 

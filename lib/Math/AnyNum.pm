@@ -159,7 +159,9 @@ use overload
         log2  => \&log2,
         log10 => \&log10,
 
-        mod => \&mod,
+        mod     => \&mod,
+        polymod => \&polymod,
+
         abs => sub (_) { goto &abs },      # built-in function
 
         erf  => \&erf,
@@ -906,7 +908,7 @@ sub _star2obj {
         $x;
     }
     elsif (ref($x) eq 'Math::GComplex') {
-        return _reals2mpc($x->reals);
+        _reals2mpc($x->reals);
     }
     else {
         (@_) = "$x";
@@ -2270,6 +2272,33 @@ sub imod ($$) {
     }
 
     bless \$r;
+}
+
+#
+## POLYMOD
+#
+
+sub polymod {
+    require Math::AnyNum::mod;
+    require Math::AnyNum::div;
+    require Math::AnyNum::sub;
+
+    my @list = map { _star2obj($_) } @_;
+
+    my @r;
+    my $x = shift(@list);
+
+    foreach my $m (@list) {
+        my $mod = __mod__($x, $m);
+
+        $x = __sub__($x, $mod);
+        $x = __div__($x, $m);
+
+        push @r, $mod;
+    }
+
+    push @r, $x;
+    map { bless \$_ } @r;
 }
 
 #

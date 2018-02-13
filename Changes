@@ -2,8 +2,19 @@ Revision history for Math-AnyNum
 
 0.22    2018-??-??
 
-        - Added the `subfactorial(n,k)` function.
-        - Added the `multinomial(a, b, c, ...)` function, which computes the multinomial coefficient.
+        [ADDITIONS]
+
+            - `polymod(n, a, b, c, ...)`  :: computes the polymod of `n` against a list of numbers.
+            - `subfactorial(n,k)`         :: computes the number of derangements of a set with `n` elements with `k` fixed points.
+            - `multinomial(a, b, c, ...)` :: computes the multinomial coefficient.
+
+        [IMPROVEMENTS]
+
+            - Minor performance improvement in the `mod(n,k)` method when `k` fits into a native unsigned integer.
+
+        [OTHER]
+
+            - Use the integer limits from Math::GMPq instead of POSIX. This makes POSIX no longer needed.
 
 0.21    2018-01-25
 
