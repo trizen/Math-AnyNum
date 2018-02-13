@@ -453,7 +453,9 @@ Implemented as:
 
     polymod(n, a, b, c, ...)                      #=> (Any, Any, ..., Any)
 
-Polymod of a list of numbers.
+Returns a list of mod results corresponding to the divisors in C<(a, b, c, ...)>. The divisors are
+given from smallest "unit" to the largest (e.g. 60 seconds per minute, 60 minutes per hour) and the results
+are returned in the same way: from smallest to the largest (5 seconds, 4 minutes).
 
 Example:
 
