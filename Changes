@@ -4,9 +4,10 @@ Revision history for Math-AnyNum
 
         [ADDITIONS]
 
-            - `polymod(n, a, b, c, ...)`  :: computes the polymod of `n` against a list of numbers.
-            - `subfactorial(n,k)`         :: computes the number of derangements of a set with `n` elements with `k` fixed points.
-            - `multinomial(a, b, c, ...)` :: computes the multinomial coefficient.
+            - is_smooth(n, k)           :: returns a true value when all the primes factors of `n` are <= `k`
+            - polymod(n, a, b, c, ...)  :: computes the polymod of `n` against a list of numbers.
+            - subfactorial(n,k)         :: computes the number of derangements of a set with `n` elements with `k` fixed points.
+            - multinomial(a, b, c, ...) :: computes the multinomial coefficient.
 
         [IMPROVEMENTS]
 
@@ -14,7 +15,7 @@ Revision history for Math-AnyNum
 
         [OTHER]
 
-            - Use the integer limits from Math::GMPq instead of POSIX. This makes POSIX no longer needed.
+            - Using the integer limits from Math::GMPq instead of POSIX. This makes POSIX no longer needed.
 
 0.21    2018-01-25
 

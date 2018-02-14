@@ -103,6 +103,7 @@ The following functions are exportable:
         is_polygonal2 faulhaber_sum ipolygonal_root
         ipolygonal_root2 polygonal rising_factorial
         falling_factorial subfactorial multinomial
+        is_smooth
 
     :misc
         rand irand seed iseed floor ceil round sgn neg inv
@@ -1167,6 +1168,17 @@ See also:
 
 Returns a true value when C<n> and C<k> are relatively prime to each other. That is, when C<gcd(n, k) == 1>.
 
+=head2 is_smooth
+
+    is_smooth(n, k)                               #=> Bool
+
+Returns a true value when all the prime factors of C<n> are less than or equal to C<k>, where C<n> and C<k> are positive integers.
+
+Example:
+
+    is_smooth(36, 3)    # true  : 36 = 2^2 * 3^2
+    is_smooth(39, 6)    # false : 39 = 3 * 13, where 13 > 6
+
 =head2 is_power
 
     is_power(n)
@@ -1186,7 +1198,6 @@ Example:
     is_power(100, 2)       # true: 100 is a square (10**2)
     is_power(125, 3)       # true: 125 is a cube   ( 5**3)
     is_power(279841)       # true: 279841 is 23**4
-
 
 =head2 is_square
 

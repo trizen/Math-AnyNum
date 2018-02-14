@@ -240,6 +240,7 @@ use overload
 
         is_prime   => \&is_prime,
         is_coprime => \&is_coprime,
+        is_smooth  => \&is_smooth,
         next_prime => \&next_prime,
                   );
 
@@ -3482,6 +3483,41 @@ sub is_coprime ($$) {
     ref($y)
       ? Math::GMPz::Rmpz_gcd($t, $x, $y)
       : Math::GMPz::Rmpz_gcd_ui($t, $x, $y);
+
+    Math::GMPz::Rmpz_cmp_ui($t, 1) == 0;
+}
+
+#
+## Returns a true value if all the divisors of `x` are <= n.
+#
+
+sub is_smooth ($$) {
+    require Math::AnyNum::is_int;
+    my ($x, $n) = @_;
+
+    $x = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
+
+    __is_int__($x) || return 0;
+
+    if (ref($x) ne 'Math::GMPz') {
+        $x = _any2mpz($x) // return 0;
+    }
+
+    return 0 if (Math::GMPz::Rmpz_sgn($x) <= 0);
+
+    $n = (ref($n) eq __PACKAGE__ ? _any2mpz($$n) : _star2mpz($n)) // return 0;
+
+    return 0 if (Math::GMPz::Rmpz_sgn($n) <= 0);
+
+    my $p = Math::GMPz::Rmpz_init_set_ui(2);
+    my $t = Math::GMPz::Rmpz_init_set($x);
+
+    for (; Math::GMPz::Rmpz_cmp($p, $n) <= 0 ; Math::GMPz::Rmpz_nextprime($p, $p)) {
+        if (Math::GMPz::Rmpz_divisible_p($t, $p)) {
+            Math::GMPz::Rmpz_remove($t, $t, $p);
+            Math::GMPz::Rmpz_cmp_ui($t, 1) == 0 and return 1;
+        }
+    }
 
     Math::GMPz::Rmpz_cmp_ui($t, 1) == 0;
 }
