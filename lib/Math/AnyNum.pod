@@ -1095,7 +1095,7 @@ See also:
 
 =over 4
 
-=item * https://en.wikipedia.org/wiki/Multinomial_theorem
+=item * L<https://en.wikipedia.org/wiki/Multinomial_theorem>
 
 =back
 
