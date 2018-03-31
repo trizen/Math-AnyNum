@@ -2,6 +2,12 @@ Revision history for Math-AnyNum
 
 0.23    2018-??-??
 
+        [ADDITIONS]
+
+        - setbit(n, k), clearbit(n, k) and testbit(n, k).
+
+        [OTHER]
+
         - Stricter validation for native integers.
 
 0.22    2018-02-17

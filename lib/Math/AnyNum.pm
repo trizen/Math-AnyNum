@@ -284,6 +284,10 @@ use overload
         as_frac => \&as_frac,
         as_dec  => \&as_dec,
 
+        setbit   => \&setbit,
+        testbit  => \&testbit,
+        clearbit => \&clearbit,
+
         rat_approx => \&rat_approx,
 
         is_inf     => \&is_inf,
@@ -4268,6 +4272,67 @@ sub not {    # used in overloading
     $x = _any2mpz($$x) // (goto &nan);
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_com($r, $x);
+    bless \$r;
+}
+
+#
+## TEST BIT (true if bit $y is 1, false otherwise)
+#
+
+sub testbit {
+    my ($x, $y) = @_;
+
+    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // return undef;
+
+    if (!ref($y) and CORE::int($y) eq $y and $y >= 0 and $y < ULONG_MAX) {
+        ## `y` is a native integer
+    }
+    else {
+        $y = (ref($y) eq __PACKAGE__ ? _any2ui($$y) : _any2ui(_star2obj($y))) // return undef;
+    }
+
+    Math::GMPz::Rmpz_tstbit($x, $y);
+}
+
+#
+## SET BIT (set bit $y to 1)
+#
+
+sub setbit {
+    my ($x, $y) = @_;
+
+    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
+
+    if (!ref($y) and CORE::int($y) eq $y and $y >= 0 and $y < ULONG_MAX) {
+        ## `y` is a native integer
+    }
+    else {
+        $y = (ref($y) eq __PACKAGE__ ? _any2ui($$y) : _any2ui(_star2obj($y))) // goto &nan;
+    }
+
+    my $r = Math::GMPz::Rmpz_init_set($x);
+    Math::GMPz::Rmpz_setbit($r, $y);
+    bless \$r;
+}
+
+#
+## CLEAR BIT (set bit $y to 0)
+#
+
+sub clearbit {
+    my ($x, $y) = @_;
+
+    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
+
+    if (!ref($y) and CORE::int($y) eq $y and $y >= 0 and $y < ULONG_MAX) {
+        ## `y` is a native integer
+    }
+    else {
+        $y = (ref($y) eq __PACKAGE__ ? _any2ui($$y) : _any2ui(_star2obj($y))) // goto &nan;
+    }
+
+    my $r = Math::GMPz::Rmpz_init_set($x);
+    Math::GMPz::Rmpz_clrbit($r, $y);
     bless \$r;
 }
 
