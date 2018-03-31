@@ -4,7 +4,7 @@ Revision history for Math-AnyNum
 
         [ADDITIONS]
 
-        - setbit(n, k), clearbit(n, k) and testbit(n, k).
+        - getbit(n, k), setbit(n, k) and clearbit(n, k).
 
         [OTHER]
 

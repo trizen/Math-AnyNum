@@ -233,8 +233,8 @@ is(join(' ', digits(1234, 0)),   '');
     is(clearbit(0b1001, 0), 0b1000);
     is(clearbit(0b1100, 2), 0b1000);
 
-    is(testbit(0b1001, 0), 1);
-    is(testbit(0b1000, 0), 0);
+    is(getbit(0b1001, 0), 1);
+    is(getbit(0b1000, 0), 0);
 
     is(setbit($x,     0),  0b1001);
     is(setbit(0b1000, $t), 0b1100);
@@ -244,8 +244,8 @@ is(join(' ', digits(1234, 0)),   '');
     is(clearbit(0b1100, $t), 0b1000);
     is(clearbit($y,     3),  $t - 1);
 
-    is(testbit($y,     0),  1);
-    is(testbit(0b1000, $z), 0);
+    is(getbit($y,     0),  1);
+    is(getbit(0b1000, $z), 0);
 }
 
 is(as_bin(42), '101010');

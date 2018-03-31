@@ -285,7 +285,7 @@ use overload
         as_dec  => \&as_dec,
 
         setbit   => \&setbit,
-        testbit  => \&testbit,
+        getbit  => \&getbit,
         clearbit => \&clearbit,
 
         rat_approx => \&rat_approx,
@@ -4279,7 +4279,7 @@ sub not {    # used in overloading
 ## TEST BIT (true if bit $y is 1, false otherwise)
 #
 
-sub testbit {
+sub getbit {
     my ($x, $y) = @_;
 
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // return undef;
