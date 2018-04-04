@@ -285,7 +285,8 @@ use overload
         as_dec  => \&as_dec,
 
         setbit   => \&setbit,
-        getbit  => \&getbit,
+        getbit   => \&getbit,
+        flipbit  => \&flipbit,
         clearbit => \&clearbit,
 
         rat_approx => \&rat_approx,
@@ -3496,7 +3497,7 @@ sub is_coprime ($$) {
 }
 
 #
-## Returns a true value if all the divisors of `x` are <= n.
+## Returns a true value if all the prime factors of `x` are <= n.
 #
 
 sub is_smooth ($$) {
@@ -4279,7 +4280,7 @@ sub not {    # used in overloading
 ## TEST BIT (true if bit $y is 1, false otherwise)
 #
 
-sub getbit {
+sub getbit ($$) {
     my ($x, $y) = @_;
 
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // return undef;
@@ -4298,7 +4299,7 @@ sub getbit {
 ## SET BIT (set bit $y to 1)
 #
 
-sub setbit {
+sub setbit ($$) {
     my ($x, $y) = @_;
 
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
@@ -4316,10 +4317,35 @@ sub setbit {
 }
 
 #
+## FLIP-BIT (XOR)
+#
+
+sub flipbit ($$) {
+    my ($x, $y) = @_;
+
+    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;
+
+    if (!ref($y) and CORE::int($y) eq $y and $y >= 0 and $y < ULONG_MAX) {
+        ## `y` is a native integer
+    }
+    else {
+        $y = (ref($y) eq __PACKAGE__ ? _any2ui($$y) : _any2ui(_star2obj($y))) // goto &nan;
+    }
+
+    my $r = Math::GMPz::Rmpz_init_set($x);
+
+    Math::GMPz::Rmpz_tstbit($r, $y)
+      ? Math::GMPz::Rmpz_clrbit($r, $y)
+      : Math::GMPz::Rmpz_setbit($r, $y);
+
+    bless \$r;
+}
+
+#
 ## CLEAR BIT (set bit $y to 0)
 #
 
-sub clearbit {
+sub clearbit ($$) {
     my ($x, $y) = @_;
 
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // goto &nan;

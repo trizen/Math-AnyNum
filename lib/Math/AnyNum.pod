@@ -112,7 +112,7 @@ The following functions are exportable:
         as_oct as_int as_dec as_frac is_pos is_neg is_int
         is_rat is_real is_imag is_complex is_inf is_ninf
         is_nan is_zero is_one is_mone is_even is_odd is_div
-        setbit clearbit getbit acmp rat_approx
+        getbit setbit flipbit clearbit acmp rat_approx
 
 Each function can be exported individually, as:
 
@@ -1423,6 +1423,17 @@ Example:
 
     setbit(0b1000, 0) = 0b1001
     setbit(0b1000, 2) = 0b1100
+
+=head2 flipbit
+
+    flipbit(n, k)                                 #=> Int
+
+Flips C<n>'s k-th bit from 1 to 0, and viceversa (without modifying C<n> in-place).
+
+Example:
+
+    flipbit(0b1000, 0) = 0b1001
+    flipbit(0b1001, 0) = 0b1000
 
 =head2 clearbit
 

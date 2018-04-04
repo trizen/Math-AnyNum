@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 380;
+plan tests => 384;
 
 use Math::AnyNum qw(:misc);
 
@@ -239,6 +239,11 @@ is(join(' ', digits(1234, 0)),   '');
     is(setbit($x,     0),  0b1001);
     is(setbit(0b1000, $t), 0b1100);
     is(setbit($x,     $t), 0b1100);
+
+    is(flipbit(0b1000, 0),  0b1001);
+    is(flipbit(0b1001, 0),  0b1000);
+    is(flipbit($y,     3),  1);
+    is(flipbit($y,     $t), 0b1101);
 
     is(clearbit($y,     0),  0b1000);
     is(clearbit(0b1100, $t), 0b1000);
