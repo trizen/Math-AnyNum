@@ -1027,8 +1027,17 @@ The n-th Lucas number. Returns NaN when C<n> is negative.
 =head2 fibonacci
 
     fibonacci(n)                                  #=> Int | NaN
+    fibonacci(n, k)                               #=> Int | NaN
 
 The n-th Fibonacci number. Returns NaN when C<n> is negative.
+
+When C<k> is specified, it returns the k-th order Fibonacci number.
+
+Example:
+
+    say fibonacci(100, 3);        # 100th Tribonacci number
+    say fibonacci(100, 4);        # 100th Tetranacci number
+    say fibonacci(100, 5);        # 100th Pentanacci number
 
 =head2 factorial
 

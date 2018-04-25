@@ -3011,21 +3011,68 @@ sub round ($;$) {
 #
 ## Fibonacci
 #
-sub fibonacci ($) {
-    my ($x) = @_;
+sub fibonacci ($;$) {
+    my ($n, $k) = @_;
 
-    if (!ref($x) and CORE::int($x) eq $x and $x >= 0 and $x < ULONG_MAX) {
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
         ## `x` is a native unsigned integer
     }
-    elsif (ref($x) eq __PACKAGE__) {
-        $x = _any2ui($$x) // goto &nan;
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
     }
     else {
-        $x = _any2ui(_star2obj($x)) // goto &nan;
+        $n = _any2ui(_star2obj($n)) // goto &nan;
+    }
+
+    # N-th k-th order Fibonacci number
+    if (defined($k)) {
+
+        if (!ref($k) and CORE::int($k) eq $k and $k >= 0 and $k < ULONG_MAX) {
+            ## `k` is a native unsigned integer
+        }
+        elsif (ref($k) eq __PACKAGE__) {
+            $k = _any2ui($$k) // goto &nan;
+        }
+        else {
+            $k = _any2ui(_star2obj($k)) // goto &nan;
+        }
+
+        if ($k == 2) {
+            my $z = Math::GMPz::Rmpz_init();
+            Math::GMPz::Rmpz_fib_ui($z, $n);
+            return bless \$z;
+        }
+
+        if ($n < $k - 1) {
+            return zero();
+        }
+
+        # Algorithm after M. F. Hasler
+        # See: https://oeis.org/A302990
+
+        my @f = map {
+            $_ < $k
+              ? do {
+                my $z = Math::GMPz::Rmpz_init();
+                Math::GMPz::Rmpz_setbit($z, $_);
+                $z;
+              }
+              : Math::GMPz::Rmpz_init_set_ui(1)
+        } 1 .. ($k + 1);
+
+        my $t = Math::GMPz::Rmpz_init();
+
+        foreach my $i (2 * ++$k - 2 .. $n) {
+            Math::GMPz::Rmpz_mul_2exp($t, $f[($i - 1) % $k], 1);
+            Math::GMPz::Rmpz_sub($f[$i % $k], $t, $f[$i % $k]);
+        }
+
+        my $r = $f[$n % $k];
+        return bless \$r;
     }
 
     my $r = Math::GMPz::Rmpz_init();
-    Math::GMPz::Rmpz_fib_ui($r, $x);
+    Math::GMPz::Rmpz_fib_ui($r, $n);
     bless \$r;
 }
 
