@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 393;
+plan tests => 407;
 
 use Math::AnyNum qw(:misc);
 
@@ -217,8 +217,14 @@ is(join(' ', digits('27875458237207974418',           '4728933560')),           
 is(join(' ', digits('996105818874172862495850884533', '81592785159219522212')), '40776745621457483269 12208258572');
 
 is(join(' ', digits(1234, -12)), '');    # not defined for negative bases
+is(join(' ', digits(1234, -92)), '');    # not defined for negative bases
 is(join(' ', digits(1234, 1)),   '');    # not defined for bases <= 1
 is(join(' ', digits(1234, 0)),   '');
+
+is(join(' ', sumdigits(1234, -12)), 'NaN');
+is(join(' ', sumdigits(1234, -75)), 'NaN');
+is(join(' ', sumdigits(1234, 1)),   'NaN');
+is(join(' ', sumdigits(1234, 0)),   'NaN');
 
 is(join(' ', sumdigits('1234.5678')), 4 + 3 + 2 + 1);    # only the integer part is considered
 is(join(' ', sumdigits('-1234',                          $o->new(9))),             1 + 2 + 6 + 1);
@@ -569,3 +575,16 @@ is(acmp(complex('3+4i'), rat(5)),       0);
 is(acmp(complex(42),     complex(-42)), 0);
 is(acmp(rat(42),         complex(-42)), 0);
 is(acmp(42,              complex(-43)), -1);
+
+is(approx_cmp(Math::AnyNum::e()**(Math::AnyNum::pi() * Math::AnyNum::i()),     -1), 0);
+is(approx_cmp(Math::AnyNum::e()**(Math::AnyNum::pi() * Math::AnyNum::i()) + 1, 0),  0);
+
+is(approx_cmp(exp(Math::AnyNum::pi() * Math::AnyNum::i()),     -1), 0);
+is(approx_cmp(exp(Math::AnyNum::pi() * Math::AnyNum::i()) + 1, 0),  0);
+
+is(approx_cmp('3.14159265358979323846264338327950288419716939938', Math::AnyNum::pi), 0);
+is(approx_cmp('3.1415926535897932384626433832795028841971693993',  Math::AnyNum::pi), -1);
+is(approx_cmp('3.14159265358979323846264338327950288419716939939', Math::AnyNum::pi), 1);
+
+is(approx_cmp('199573010111413366978755/63526062133920493691074', '237108599624676709032116/75474011359728834791267', -40), 0);
+is(approx_cmp('199573010111413366978755/63526062133920493691074', '237108599624676709032116/75474011359728834791267', -50), 1);

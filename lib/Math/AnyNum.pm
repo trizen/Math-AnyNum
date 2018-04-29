@@ -256,7 +256,9 @@ use overload
         ceil  => \&ceil,
         round => \&round,
         sgn   => \&sgn,
-        acmp  => \&acmp,
+
+        acmp       => \&acmp,
+        approx_cmp => \&approx_cmp,
 
         popcount => \&popcount,
 
@@ -1277,6 +1279,8 @@ sub cmp ($$) {
     goto &__cmp__;
 }
 
+# Absolute comparison
+
 sub acmp ($$) {
     require Math::AnyNum::abs;
     require Math::AnyNum::cmp;
@@ -1290,6 +1294,42 @@ sub acmp ($$) {
     }
 
     __cmp__(__abs__(ref($x) eq __PACKAGE__ ? $$x : _star2obj($x)), $y);
+}
+
+# Approximate comparison
+
+sub approx_cmp ($$;$) {
+    require Math::AnyNum::cmp;
+    require Math::AnyNum::round;
+    my ($x, $y, $places) = @_;
+
+    if (defined($places)) {
+        if (!ref($places) and CORE::int($places) eq $places and $places > LONG_MIN and $places < ULONG_MAX) {
+            ## places is a native integer
+        }
+        else {
+            $places = _any2si(_star2obj($places)) // return undef;
+        }
+    }
+    else {
+        $places = -((CORE::int($PREC) >> 2) - 1);
+    }
+
+    $x = _star2obj($x);
+    $y = _star2obj($y);
+
+    if (   ref($x) eq 'Math::MPFR'
+        or ref($y) eq 'Math::MPFR'
+        or ref($x) eq 'Math::MPC'
+        or ref($y) eq 'Math::MPC') {
+        $x = _star2mpfr_mpc($x);
+        $y = _star2mpfr_mpc($y);
+    }
+
+    $x = __round__($x, $places);
+    $y = __round__($y, $places);
+
+    __cmp__($x, $y);
 }
 
 #
@@ -4700,7 +4740,7 @@ sub digits ($;$) {
 sub sumdigits ($;$) {
     my ($n, $k) = @_;
 
-    $n = _star2mpz($n) // return;
+    $n = _star2mpz($n) // goto &nan;
     $k //= 10;
 
     if (!ref($k) and CORE::int($k) eq $k and $k > 1 and $k < ULONG_MAX) {
@@ -4723,12 +4763,12 @@ sub sumdigits ($;$) {
         }
     }
 
-    $k = _star2mpz($k) // return;
+    $k = _star2mpz($k) // goto &nan;
     $n = Math::GMPz::Rmpz_init_set($n);
 
     # Not defined for k <= 1
     if (Math::GMPz::Rmpz_cmp_ui($k, 1) <= 0) {
-        return;
+        goto &nan;
     }
 
     my $sgn = Math::GMPz::Rmpz_sgn($n);
