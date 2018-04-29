@@ -1820,6 +1820,22 @@ Example:
     digits(12345)      = (5, 4, 3, 2, 1)
     digits(12345, 100) = (45, 23, 1)
 
+=head2 sumdigits
+
+    sumdigits(n)                                  #=> Int
+    sumdigits(n, b)                               #=> Int
+
+Sum the digits of C<n> in a given base. When no base is specified, it defaults to base 10.
+
+Only the absolute integer part of C<n> is considered.
+
+The value of C<b> must be greater than C<1>. Returns undef otherwise.
+
+Example:
+
+    sumdigits(12345)      = 15
+    sumdigits(12345, 100) = 69
+
 =head1 * Comparisons
 
 =head2 eq
