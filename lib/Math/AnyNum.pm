@@ -1945,29 +1945,25 @@ sub pow ($$) {
 sub ipow ($$) {
     my ($x, $y) = @_;
 
-    # Both `x` and `y` are unsigned native integers
-    if (    !ref($x)
-        and !ref($y)
-        and CORE::int($x) eq $x
-        and $x >= 0
-        and $x < ULONG_MAX
-        and CORE::int($y) eq $y
-        and $y >= 0
-        and $y < ULONG_MAX) {
-
-        my $r = Math::GMPz::Rmpz_init();
-        Math::GMPz::Rmpz_ui_pow_ui($r, $x, $y);
-        return bless \$r;
-    }
-
-    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // (goto &nan);
-
     if (!ref($y) and CORE::int($y) eq $y and $y < ULONG_MAX and $y > LONG_MIN) {
         ## `y` is already a native integer
     }
     else {
         $y = _any2si(ref($y) eq __PACKAGE__ ? $$y : _star2obj($y)) // (goto &nan);
     }
+
+    # Both `x` and `y` are unsigned native integers
+    if (    !ref($x)
+        and CORE::int($x) eq $x
+        and $x >= 0
+        and $x < ULONG_MAX
+        and $y >= 0) {
+        my $r = Math::GMPz::Rmpz_init();
+        Math::GMPz::Rmpz_ui_pow_ui($r, $x, $y);
+        return bless \$r;
+    }
+
+    $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // (goto &nan);
 
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_pow_ui($r, $x, $y < 0 ? -$y : $y);
