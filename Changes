@@ -1,5 +1,11 @@
 Revision history for Math-AnyNum
 
+0.25    2018-??-??
+
+        [IMPROVEMENTS]
+
+        - Extended the optimizations in `digits(n, b)` and `sumdigits(n, b)` for all values of b <= 36.
+
 0.24    2018-05-06
 
         [ADDITIONS]

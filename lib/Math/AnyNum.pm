@@ -4682,6 +4682,17 @@ sub rat_approx ($) {
     bless \$q;
 }
 
+#<<<
+    my %DIGITS = (
+       0 => 0, 6 =>  6, c => 12, i => 18, o => 24, u => 30,
+       1 => 1, 7 =>  7, d => 13, j => 19, p => 25, v => 31,
+       2 => 2, 8 =>  8, e => 14, k => 20, q => 26, w => 32,
+       3 => 3, 9 =>  9, f => 15, l => 21, r => 27, x => 33,
+       4 => 4, a => 10, g => 16, m => 22, s => 28, y => 34,
+       5 => 5, b => 11, h => 17, n => 23, t => 29, z => 35,
+    );
+#>>>
+
 sub digits ($;$) {
     my ($n, $k) = @_;
 
@@ -4690,10 +4701,9 @@ sub digits ($;$) {
 
     if (!ref($k) and CORE::int($k) eq $k and $k > 1 and $k < ULONG_MAX) {
 
-        # Return faster for k=2..16
-        if ($k <= 16) {
-            my @digits = split(//, scalar reverse(Math::GMPz::Rmpz_get_str($n, $k) =~ s/^-//r));
-            return ($k > 10 ? (map { hex($_) } @digits) : @digits);
+        # Return faster for k=2..36
+        if ($k <= 36) {
+            return map { $DIGITS{$_} } split(//, scalar reverse lc(Math::GMPz::Rmpz_get_str($n, $k) =~ s/^-//r));
         }
     }
 
@@ -4704,11 +4714,10 @@ sub digits ($;$) {
         return;
     }
 
-    # Return faster for k=2..16
-    if (Math::GMPz::Rmpz_cmp_ui($k, 16) <= 0) {
+    # Return faster for k=2..36
+    if (Math::GMPz::Rmpz_cmp_ui($k, 36) <= 0) {
         $k = Math::GMPz::Rmpz_get_ui($k);
-        my @digits = split(//, scalar reverse(Math::GMPz::Rmpz_get_str($n, $k) =~ s/^-//r));
-        return ($k > 10 ? (map { hex($_) } @digits) : @digits);
+        return map { $DIGITS{$_} } split(//, scalar reverse lc(Math::GMPz::Rmpz_get_str($n, $k) =~ s/^-//r));
     }
 
     $n = Math::GMPz::Rmpz_init_set($n);
@@ -4716,7 +4725,7 @@ sub digits ($;$) {
     my $sgn = Math::GMPz::Rmpz_sgn($n);
 
     if ($sgn == 0) {
-        return (zero());
+        goto &zero;
     }
     elsif ($sgn < 0) {
         Math::GMPz::Rmpz_abs($n, $n);
@@ -4752,11 +4761,16 @@ sub sumdigits ($;$) {
             return bless \Math::GMPz::Rmpz_init_set_ui(Math::GMPz::Rmpz_popcount($n));
         }
 
-        # Return faster for k=3..16
-        if ($k <= 16) {
-            my @digits = split(//, Math::GMPz::Rmpz_get_str($n, $k) =~ s/^-//r);
-            return bless \Math::GMPz::Rmpz_init_set_ui(List::Util::sum($k > 10 ? (map { hex($_) } @digits) : @digits));
+        # Return faster for k=3..36
+#<<<
+        if ($k <= 36) {
+            return bless \Math::GMPz::Rmpz_init_set_ui(
+                List::Util::sum(
+                    map { $DIGITS{$_} } split(//, lc(Math::GMPz::Rmpz_get_str($n, $k) =~ s/^-//r))
+                )
+            );
         }
+#>>>
     }
 
     $k = _star2mpz($k) // goto &nan;
@@ -4770,19 +4784,20 @@ sub sumdigits ($;$) {
     my $sgn = Math::GMPz::Rmpz_sgn($n);
 
     if ($sgn == 0) {
-        return zero();
+        goto &zero;
     }
     elsif ($sgn < 0) {
         Math::GMPz::Rmpz_abs($n, $n);
     }
 
-    # Return faster for k=2..16
-    if (Math::GMPz::Rmpz_cmp_ui($k, 16) <= 0) {
+    # Return faster for k=2..36
+#<<<
+    if (Math::GMPz::Rmpz_cmp_ui($k, 36) <= 0) {
         $k = Math::GMPz::Rmpz_get_ui($k);
         return bless \Math::GMPz::Rmpz_init_set_ui(Math::GMPz::Rmpz_popcount($n)) if $k == 2;
-        my @digits = split(//, Math::GMPz::Rmpz_get_str($n, $k));
-        return bless \Math::GMPz::Rmpz_init_set_ui(List::Util::sum($k > 10 ? (map { hex($_) } @digits) : @digits));
+        return bless \Math::GMPz::Rmpz_init_set_ui(List::Util::sum(map { $DIGITS{$_} } split(//, lc Math::GMPz::Rmpz_get_str($n, $k))));
     }
+#>>>
 
     my $m   = Math::GMPz::Rmpz_init();
     my $sum = Math::GMPz::Rmpz_init_set_ui(0);
