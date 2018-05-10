@@ -4792,7 +4792,7 @@ sub sumdigits ($;$) {
     if (Math::GMPz::Rmpz_cmp_ui($k, 62) <= 0) {
         $k = Math::GMPz::Rmpz_get_ui($k);
         return bless \Math::GMPz::Rmpz_init_set_ui(Math::GMPz::Rmpz_popcount($n)) if $k == 2;
-        return bless \Math::GMPz::Rmpz_init_set_ui(List::Util::sum(map { $_ <= 36 ? $DIGITS_36{$_} : $DIGITS_62{$_} } split(//, Math::GMPz::Rmpz_get_str($n, $k))));
+        return bless \Math::GMPz::Rmpz_init_set_ui(List::Util::sum(map { $k <= 36 ? $DIGITS_36{$_} : $DIGITS_62{$_} } split(//, Math::GMPz::Rmpz_get_str($n, $k))));
     }
 #>>>
 

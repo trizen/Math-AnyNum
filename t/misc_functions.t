@@ -5,9 +5,10 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 407;
+plan tests => 419;
 
 use Math::AnyNum qw(:misc);
+use List::Util qw();
 
 my $o = 'Math::AnyNum';
 
@@ -221,18 +222,32 @@ is(join(' ', digits(1234, -92)), '');    # not defined for negative bases
 is(join(' ', digits(1234, 1)),   '');    # not defined for bases <= 1
 is(join(' ', digits(1234, 0)),   '');
 
-is(join(' ', sumdigits(1234, -12)), 'NaN');
-is(join(' ', sumdigits(1234, -75)), 'NaN');
-is(join(' ', sumdigits(1234, 1)),   'NaN');
-is(join(' ', sumdigits(1234, 0)),   'NaN');
+is(sumdigits(1234, -12), 'NaN');
+is(sumdigits(1234, -75), 'NaN');
+is(sumdigits(1234, 1),   'NaN');
+is(sumdigits(1234, 0),   'NaN');
 
-is(join(' ', sumdigits('1234.5678')), 4 + 3 + 2 + 1);    # only the integer part is considered
-is(join(' ', sumdigits('-1234',                          $o->new(9))),             1 + 2 + 6 + 1);
-is(join(' ', sumdigits($o->new('-1234'),                 36)),                     10 + 34);
-is(join(' ', sumdigits('-1234',                          9)),                      1 + 2 + 6 + 1);
-is(join(' ', sumdigits('62748517',                       $o->new('2744'))),        '2392');
-is(join(' ', sumdigits($o->new('62748517'),              $o->new('2744'))),        '2392');
-is(join(' ', sumdigits('996105818874172862495850884533', '81592785159219522212')), '40776745633665741841');
+is(sumdigits('1234.5678'), 4 + 3 + 2 + 1);    # only the integer part is considered
+is(sumdigits('-1234',                          $o->new(9)),             1 + 2 + 6 + 1);
+is(sumdigits($o->new('-1234'),                 36),                     10 + 34);
+is(sumdigits('-1234',                          9),                      1 + 2 + 6 + 1);
+is(sumdigits('62748517',                       $o->new('2744')),        '2392');
+is(sumdigits($o->new('62748517'),              $o->new('2744')),        '2392');
+is(sumdigits('996105818874172862495850884533', '81592785159219522212'), '40776745633665741841');
+
+is(sumdigits('686826004874792510055462773868368874990',                37),          '414');
+is(sumdigits('66584215709534655468641985856223026563233736779476',     38),          '572');
+is(sumdigits('777167811371535604138338540903539713319011224805',       46),          '730');
+is(sumdigits('613136010035433834160054719450842585569017976622615403', 45),          '751');
+is(sumdigits('505738355663143406692565836710328900161705022531597459', 54),          '846');
+is(sumdigits('8704872396456046071051264811294183381856891',            $o->new(42)), '517');
+
+is(List::Util::sum(digits('686826004874792510055462773868368874990',                37)),          '414');
+is(List::Util::sum(digits('66584215709534655468641985856223026563233736779476',     38)),          '572');
+is(List::Util::sum(digits('777167811371535604138338540903539713319011224805',       46)),          '730');
+is(List::Util::sum(digits('613136010035433834160054719450842585569017976622615403', 45)),          '751');
+is(List::Util::sum(digits('505738355663143406692565836710328900161705022531597459', 54)),          '846');
+is(List::Util::sum(digits('8704872396456046071051264811294183381856891',            $o->new(42))), '517');
 
 sub factorial_power_1 {
     my ($n, $p) = @_;
