@@ -240,7 +240,7 @@ holding a complex number, such as C<"3+4i"> or C<"(3 4)">.
     my $c = Math::AnyNum->new('3+4i');      # complex
 
 The second argument specifies the base of the number, which can range from 2
-to 36 inclusive and defaults to 10.
+to 62 inclusive and defaults to 10.
 
 For setting an hexadecimal number, we can say:
 

@@ -946,9 +946,9 @@ sub new {
 
         my $int_base = CORE::int($base);
 
-        if ($int_base < 2 or $int_base > 36) {
+        if ($int_base < 2 or $int_base > 62) {
             require Carp;
-            Carp::croak("base must be between 2 and 36, got $base");
+            Carp::croak("base must be between 2 and 62, got $base");
         }
 
         $num = defined($num) ? "$num" : '0';
@@ -4547,9 +4547,9 @@ sub as_int ($;$) {
             $base = _any2ui(_star2mpz($y) // return undef) // 0;
         }
 
-        if ($base < 2 or $base > 36) {
+        if ($base < 2 or $base > 62) {
             require Carp;
-            Carp::croak("base must be between 2 and 36, got $y");
+            Carp::croak("base must be between 2 and 62, got $y");
         }
     }
 
@@ -4572,9 +4572,9 @@ sub as_frac ($;$) {
             $base = _any2ui(_star2mpz($y) // return undef) // 0;
         }
 
-        if ($base < 2 or $base > 36) {
+        if ($base < 2 or $base > 62) {
             require Carp;
-            Carp::croak("base must be between 2 and 36, got $y");
+            Carp::croak("base must be between 2 and 62, got $y");
         }
     }
 
@@ -4682,16 +4682,11 @@ sub rat_approx ($) {
     bless \$q;
 }
 
-#<<<
-    my %DIGITS = (
-       0 => 0, 6 =>  6, c => 12, i => 18, o => 24, u => 30,
-       1 => 1, 7 =>  7, d => 13, j => 19, p => 25, v => 31,
-       2 => 2, 8 =>  8, e => 14, k => 20, q => 26, w => 32,
-       3 => 3, 9 =>  9, f => 15, l => 21, r => 27, x => 33,
-       4 => 4, a => 10, g => 16, m => 22, s => 28, y => 34,
-       5 => 5, b => 11, h => 17, n => 23, t => 29, z => 35,
-    );
-#>>>
+my %DIGITS_36;
+@DIGITS_36{0 .. 9, 'a' .. 'z'} = (0 .. 35);
+
+my %DIGITS_62;
+@DIGITS_62{0 .. 9, 'A' .. 'Z', 'a' .. 'z'} = (0 .. 61);
 
 sub digits ($;$) {
     my ($n, $k) = @_;
@@ -4701,9 +4696,10 @@ sub digits ($;$) {
 
     if (!ref($k) and CORE::int($k) eq $k and $k > 1 and $k < ULONG_MAX) {
 
-        # Return faster for k=2..36
-        if ($k <= 36) {
-            return map { $DIGITS{$_} } split(//, scalar reverse lc(Math::GMPz::Rmpz_get_str($n, $k) =~ s/^-//r));
+        # Return faster for k=2..62
+        if ($k <= 62) {
+            return map { $k <= 36 ? $DIGITS_36{$_} : $DIGITS_62{$_} }
+              split(//, scalar reverse scalar(Math::GMPz::Rmpz_get_str($n, $k) =~ s/^-//r));
         }
     }
 
@@ -4714,10 +4710,11 @@ sub digits ($;$) {
         return;
     }
 
-    # Return faster for k=2..36
-    if (Math::GMPz::Rmpz_cmp_ui($k, 36) <= 0) {
+    # Return faster for k=2..62
+    if (Math::GMPz::Rmpz_cmp_ui($k, 62) <= 0) {
         $k = Math::GMPz::Rmpz_get_ui($k);
-        return map { $DIGITS{$_} } split(//, scalar reverse lc(Math::GMPz::Rmpz_get_str($n, $k) =~ s/^-//r));
+        return map { $k <= 36 ? $DIGITS_36{$_} : $DIGITS_62{$_} }
+          split(//, scalar reverse scalar(Math::GMPz::Rmpz_get_str($n, $k) =~ s/^-//r));
     }
 
     $n = Math::GMPz::Rmpz_init_set($n);
@@ -4761,12 +4758,12 @@ sub sumdigits ($;$) {
             return bless \Math::GMPz::Rmpz_init_set_ui(Math::GMPz::Rmpz_popcount($n));
         }
 
-        # Return faster for k=3..36
+        # Return faster for k=3..62
 #<<<
-        if ($k <= 36) {
+        if ($k <= 62) {
             return bless \Math::GMPz::Rmpz_init_set_ui(
                 List::Util::sum(
-                    map { $DIGITS{$_} } split(//, lc(Math::GMPz::Rmpz_get_str($n, $k) =~ s/^-//r))
+                    map { $k <= 36 ? $DIGITS_36{$_} : $DIGITS_62{$_} } split(//, Math::GMPz::Rmpz_get_str($n, $k) =~ s/^-//r)
                 )
             );
         }
@@ -4790,12 +4787,12 @@ sub sumdigits ($;$) {
         Math::GMPz::Rmpz_abs($n, $n);
     }
 
-    # Return faster for k=2..36
+    # Return faster for k=2..62
 #<<<
-    if (Math::GMPz::Rmpz_cmp_ui($k, 36) <= 0) {
+    if (Math::GMPz::Rmpz_cmp_ui($k, 62) <= 0) {
         $k = Math::GMPz::Rmpz_get_ui($k);
         return bless \Math::GMPz::Rmpz_init_set_ui(Math::GMPz::Rmpz_popcount($n)) if $k == 2;
-        return bless \Math::GMPz::Rmpz_init_set_ui(List::Util::sum(map { $DIGITS{$_} } split(//, lc Math::GMPz::Rmpz_get_str($n, $k))));
+        return bless \Math::GMPz::Rmpz_init_set_ui(List::Util::sum(map { $_ <= 36 ? $DIGITS_36{$_} : $DIGITS_62{$_} } split(//, Math::GMPz::Rmpz_get_str($n, $k))));
     }
 #>>>
 

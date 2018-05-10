@@ -4,7 +4,8 @@ Revision history for Math-AnyNum
 
         [IMPROVEMENTS]
 
-        - Extended the optimizations in `digits(n, b)` and `sumdigits(n, b)` for all values of b <= 36.
+        - Extended the optimizations in `digits(n, b)` and `sumdigits(n, b)` for all values of b <= 62.
+        - Extended the allowed value of `b` in `base(n, b)`, `as_int(n, b)`, `as_frac(n, b)` and `new(n, b`) to be between 0 and 62.
 
 0.24    2018-05-06
 
