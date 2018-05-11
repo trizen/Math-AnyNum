@@ -4701,6 +4701,26 @@ sub digits ($;$) {
             return map { $k <= 36 ? $DIGITS_36{$_} : $DIGITS_62{$_} }
               split(//, scalar reverse scalar(Math::GMPz::Rmpz_get_str($n, $k) =~ s/^-//r));
         }
+
+        $n = Math::GMPz::Rmpz_init_set($n);
+
+        my $sgn = Math::GMPz::Rmpz_sgn($n);
+
+        if ($sgn == 0) {
+            goto &zero;
+        }
+        elsif ($sgn < 0) {
+            Math::GMPz::Rmpz_abs($n, $n);
+        }
+
+        my @digits;
+        while (Math::GMPz::Rmpz_sgn($n) > 0) {
+            my $m = Math::GMPz::Rmpz_init();
+            Math::GMPz::Rmpz_divmod_ui($n, $m, $n, $k);
+            push @digits, bless \$m;
+        }
+
+        return @digits;
     }
 
     $k = _star2mpz($k) // return;
@@ -4768,6 +4788,26 @@ sub sumdigits ($;$) {
             );
         }
 #>>>
+
+        $n = Math::GMPz::Rmpz_init_set($n);
+
+        my $sgn = Math::GMPz::Rmpz_sgn($n);
+
+        if ($sgn == 0) {
+            goto &zero;
+        }
+        elsif ($sgn < 0) {
+            Math::GMPz::Rmpz_abs($n, $n);
+        }
+
+        my $m   = Math::GMPz::Rmpz_init();
+        my $sum = Math::GMPz::Rmpz_init_set_ui(0);
+
+        while (Math::GMPz::Rmpz_sgn($n) > 0) {
+            Math::GMPz::Rmpz_add_ui($sum, $sum, Math::GMPz::Rmpz_divmod_ui($n, $m, $n, $k));
+        }
+
+        return bless \$sum;
     }
 
     $k = _star2mpz($k) // goto &nan;
