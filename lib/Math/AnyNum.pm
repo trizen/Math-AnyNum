@@ -1998,10 +1998,9 @@ sub ipow2 ($) {
     }
 
     goto &zero if $n < 0;
-    state $one = Math::GMPz::Rmpz_init_set_ui_nobless(1);
 
-    my $r = Math::GMPz::Rmpz_init();
-    Math::GMPz::Rmpz_mul_2exp($r, $one, $n);
+    my $r = Math::GMPz::Rmpz_init_set_ui(0);
+    Math::GMPz::Rmpz_setbit($r, $n);
     bless \$r;
 }
 
@@ -3572,13 +3571,13 @@ sub is_coprime ($$) {
         $y = _any2mpz($y) // return 0;
     }
 
-    state $t = Math::GMPz::Rmpz_init_nobless();
+    if (ref($y)) {
+        state $t = Math::GMPz::Rmpz_init_nobless();
+        Math::GMPz::Rmpz_gcd($t, $x, $y);
+        return (Math::GMPz::Rmpz_cmp_ui($t, 1) == 0);
+    }
 
-    ref($y)
-      ? Math::GMPz::Rmpz_gcd($t, $x, $y)
-      : Math::GMPz::Rmpz_gcd_ui($t, $x, $y);
-
-    Math::GMPz::Rmpz_cmp_ui($t, 1) == 0;
+    Math::GMPz::Rmpz_gcd_ui($Math::GMPz::NULL, $x, $y) == 1;
 }
 
 #
