@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 404;    # be careful
+plan tests => 412;    # be careful
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -181,6 +181,8 @@ is(ipow10($o->new(3)),      1000);
 is(ipow10($o->new('13/2')), 1000000);
 is(ipow10($o->new('3.7')),  1000);
 
+is(lcm(),   0);
+is(lcm(42), 42);
 is(lcm(13,          14),          182);
 is(lcm(14,          $o->new(13)), 182);
 is(lcm($o->new(14), 13),          182);
@@ -191,6 +193,7 @@ is(lcm(42,          "1210923789812382173912783"), '7265542738874293043476698');
 
 is(lcm(12, -28),          84);
 is(lcm(12, $o->new(-28)), 84);
+is(lcm(4, 9, 13, 11), 5148);
 
 ok(is_coprime(27,          8));
 ok(is_coprime(8,           27));
@@ -204,10 +207,16 @@ ok(!is_coprime($o->new(6), 42));
 ok(!is_coprime($o->new(6), $o->new(42)));
 ok(!is_coprime(6,          $o->new(42)));
 
+is(gcd(),   0);
+is(gcd(42), 42);
 is(gcd(20,          12),          4);
 is(gcd($o->new(20), 12),          4);
 is(gcd(20,          $o->new(12)), 4);
 is(gcd($o->new(12), $o->new(20)), 4);
+
+is(gcd(42,   98,   8),   2);
+is(gcd(5040, 5020, -50), 10);
+is(gcd(5040, 5020, 49, 124), 1);
 
 is(gcd(8993, -207),          23);
 is(gcd(8993, $o->new(-207)), 23);

@@ -201,11 +201,12 @@ use overload
         euler     => \&euler,
         bernoulli => \&bernfrac,
 
-        bernoulli_polynomial => \&bernoulli_polynomial,
         euler_polynomial     => \&euler_polynomial,
+        bernoulli_polynomial => \&bernoulli_polynomial,
 
-        lcm       => \&lcm,
-        gcd       => \&gcd,
+        lcm => \&lcm,
+        gcd => \&gcd,
+
         valuation => \&valuation,
         kronecker => \&kronecker,
 
@@ -3711,16 +3712,32 @@ sub rising_factorial ($$) {
 ## Greatest common multiple
 #
 
-sub gcd ($$) {
+sub gcd {
     my ($x, $y) = @_;
+
+    @_ or goto &zero;
+    @_ == 1 and return $x;
+
+    my $r = Math::GMPz::Rmpz_init();
+
+    if (@_ > 2) {
+        my @terms = map { _star2mpz($_) // goto &nan } @_;
+
+        Math::GMPz::Rmpz_set($r, shift(@terms));
+
+        foreach my $z (@terms) {
+            Math::GMPz::Rmpz_gcd($r, $r, $z);
+            Math::GMPz::Rmpz_cmp_ui($r, 1) || last;
+        }
+
+        return bless \$r;
+    }
 
     if (ref($y) and !ref($x)) {
         ($x, $y) = ($y, $x);
     }
 
     $x = (ref($x) eq __PACKAGE__ ? _any2mpz($$x) : _star2mpz($x)) // (goto &nan);
-
-    my $r = Math::GMPz::Rmpz_init();
 
     if (!ref($y) and CORE::int($y) eq $y and $y < ULONG_MAX and $y > LONG_MIN) {
         Math::GMPz::Rmpz_gcd_ui($r, $x, $y < 0 ? -$y : $y);
@@ -3737,8 +3754,23 @@ sub gcd ($$) {
 ## Least common multiple
 #
 
-sub lcm ($$) {
+sub __lcm__ {
+    my ($n, $k) = @_;
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_lcm($r, $n, $k);
+    $r;
+}
+
+sub lcm {
     my ($x, $y) = @_;
+
+    @_ or goto &zero;
+    @_ == 1 and return $x;
+
+    if (@_ > 2) {
+        my @terms = map { _star2mpz($_) // goto &nan } @_;
+        return bless \_binsplit(\@terms, \&__lcm__);
+    }
 
     if (ref($y) and !ref($x)) {
         ($x, $y) = ($y, $x);

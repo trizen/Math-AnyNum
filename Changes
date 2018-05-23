@@ -12,6 +12,7 @@ Revision history for Math-AnyNum
 
         [IMPROVEMENTS]
 
+        - Extended the `gcd()` and `lcm()` functions to accept an arbitrary number of arguments.
         - Extended the optimizations in `digits(n, b)` and `sumdigits(n, b)` for all values of b <= 62.
         - Extended the allowed value of `b` in `base(n, b)`, `as_int(n, b)`, `as_frac(n, b)` and `new(n, b`) to be between 0 and 62.
 
