@@ -75,16 +75,16 @@ use overload
 {
 
     my %const = (    # prototypes are assigned in import()
-                  e       => \&e,
-                  phi     => \&phi,
-                  tau     => \&tau,
-                  pi      => \&pi,
-                  ln2     => \&ln2,
-                  euler   => \&euler,
-                  i       => \&i,
-                  catalan => \&catalan,
-                  Inf     => \&inf,
-                  NaN     => \&nan,
+                  e          => \&e,
+                  phi        => \&phi,
+                  tau        => \&tau,
+                  pi         => \&pi,
+                  ln2        => \&ln2,
+                  i          => \&i,
+                  CatalanG   => \&CatalanG,
+                  EulerGamma => \&EulerGamma,
+                  Inf        => \&inf,
+                  NaN        => \&nan,
                 );
 
     my %trig = (
@@ -1141,13 +1141,13 @@ sub ln2 {
     bless \$ln2;
 }
 
-sub euler {
+sub EulerGamma {
     my $euler = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_const_euler($euler, $ROUND);
     bless \$euler;
 }
 
-sub catalan {
+sub CatalanG {
     my $catalan = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_const_catalan($catalan, $ROUND);
     bless \$catalan;
@@ -1999,7 +1999,7 @@ sub ipow2 ($) {
 
     goto &zero if $n < 0;
 
-    my $r = Math::GMPz::Rmpz_init_set_ui(0);
+    my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_setbit($r, $n);
     bless \$r;
 }
@@ -3159,21 +3159,221 @@ sub primorial ($) {
 ## bernfrac
 #
 
-sub bernfrac ($) {
+sub bernfrac ($;$) {
     require Math::AnyNum::bernfrac;
-    my ($x) = @_;
+    my ($n, $x) = @_;
 
-    if (!ref($x) and CORE::int($x) eq $x and $x >= 0 and $x < ULONG_MAX) {
-        ## `x` is a native unsigned integer
+    if (defined($x)) {
+        goto &bernoulli_polynomial;
     }
-    elsif (ref($x) eq __PACKAGE__) {
-        $x = _any2ui($$x) // goto &nan;
+
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
     }
     else {
-        $x = _any2ui(_star2obj($x)) // goto &nan;
+        $n = _any2ui(_star2obj($n)) // goto &nan;
     }
 
-    bless \__bernfrac__($x);
+    bless \__bernfrac__($n);
+}
+
+*bernoulli = \&bernfrac;
+
+sub _secant_numbers {
+    my ($n) = @_;
+
+    state @cache;
+
+    if (!@cache) {
+        @cache = (Math::GMPz::Rmpz_init_set_ui(1));
+    }
+
+    if ($n <= $#cache) {
+        return @cache;
+    }
+
+    my @S = (Math::GMPz::Rmpz_init_set_ui(1));
+
+    foreach my $k (1 .. $n) {
+        Math::GMPz::Rmpz_mul_ui($S[$k] = Math::GMPz::Rmpz_init(), $S[$k - 1], $k);
+    }
+
+    foreach my $k (1 .. $n) {
+        foreach my $j ($k + 1 .. $n) {
+            Math::GMPz::Rmpz_addmul_ui($S[$j], $S[$j - 1], ($j - $k) * ($j - $k + 2));
+        }
+    }
+
+    push @cache, @S[@cache .. ((@S <= 1000) ? $#S : 1000)];
+
+    return @S;
+}
+
+sub _tangent_numbers {
+    my ($n) = @_;
+
+    state @cache;
+
+    if (!@cache) {
+        @cache = (Math::GMPz::Rmpz_init_set_ui(1));
+    }
+
+    if ($n <= $#cache) {
+        return @cache;
+    }
+
+    my @T = (Math::GMPz::Rmpz_init_set_ui(1));
+
+    foreach my $k (1 .. $n) {
+        Math::GMPz::Rmpz_mul_ui($T[$k] = Math::GMPz::Rmpz_init(), $T[$k - 1], $k);
+    }
+
+    foreach my $k (1 .. $n) {
+        foreach my $j ($k .. $n) {
+            Math::GMPz::Rmpz_mul_ui($T[$j], $T[$j], $j - $k + 2);
+            Math::GMPz::Rmpz_addmul_ui($T[$j], $T[$j - 1], $j - $k);
+        }
+    }
+
+    push @cache, @T[@cache .. ((@T <= 1000) ? $#T : 1000)];
+
+    return @T;
+}
+
+sub euler {
+    my ($n, $x) = @_;
+
+    ref($n) || goto &EulerGamma;
+    defined($x) && goto &euler_polynomial;
+
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
+    }
+    else {
+        $n = _any2ui(_star2obj($n)) // goto &nan;
+    }
+
+    $n & 1 and goto &zero;    # E_n = 0 for all odd indices
+
+    my $e = Math::GMPz::Rmpz_init_set((_secant_numbers($n >> 1))[$n >> 1]);
+    Math::GMPz::Rmpz_neg($e, $e) if (($n >> 1) & 1);
+    bless \$e;
+}
+
+sub bernoulli_polynomial {
+    require Math::AnyNum::add;
+    require Math::AnyNum::mul;
+    require Math::AnyNum::pow;
+    my ($n, $x) = @_;
+
+    #
+    ## B_n(x) = Sum_{k=0..n} binomial(n, k) * bernoulli(n-k) * x^k
+    #
+
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
+    }
+    else {
+        $n = _any2ui(_star2obj($n)) // goto &nan;
+    }
+
+    $x = _star2obj($x);
+
+    my @T = _tangent_numbers(($n >> 1) - 1);
+
+    my $u = $n + 1;
+    my $z = Math::GMPz::Rmpz_init();
+    my $q = Math::GMPq::Rmpq_init();
+
+    my $sum = Math::GMPz::Rmpz_init_set_ui(0);
+
+    foreach my $k (0 .. $n) {
+        --$u & 1 and $u > 1 and next;    # B_n = 0 for odd n > 1
+
+        if ($u == 0) {
+            Math::GMPq::Rmpq_set_ui($q, 1, 1);
+        }
+        elsif ($u == 1) {
+            Math::GMPq::Rmpq_set_si($q, -1, 2);
+        }
+        else {
+            Math::GMPz::Rmpz_mul_ui($z, $T[($u >> 1) - 1], $u);
+            Math::GMPz::Rmpz_neg($z, $z) if ((($u >> 1) - 1) & 1);
+            Math::GMPq::Rmpq_set_z($q, $z);
+
+            # z = (2^n - 1) * 2^n
+            Math::GMPz::Rmpz_set_ui($z, 0);
+            Math::GMPz::Rmpz_setbit($z, $u);
+            Math::GMPz::Rmpz_sub_ui($z, $z, 1);
+            Math::GMPz::Rmpz_mul_2exp($z, $z, $u);
+
+            Math::GMPq::Rmpq_div_z($q, $q, $z);
+        }
+
+        Math::GMPz::Rmpz_bin_uiui($z, $n, $k);
+        Math::GMPq::Rmpq_mul_z($q, $q, $z);
+
+        $sum = __add__($sum, __mul__(__pow__($x, $k), $q));
+    }
+
+    bless \$sum;
+}
+
+sub euler_polynomial {
+    require Math::AnyNum::dec;
+    require Math::AnyNum::add;
+    require Math::AnyNum::mul;
+    require Math::AnyNum::pow;
+    require Math::AnyNum::div;
+    my ($n, $x) = @_;
+
+    #
+    ## E_n(x) = Sum_{k=0..n} binomial(n, n-k) * euler_number(n-k) / 2^(n-k) * (x - 1/2)^k
+    #
+
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
+    }
+    else {
+        $n = _any2ui(_star2obj($n)) // goto &nan;
+    }
+
+    $x = _star2obj($x);
+
+    my @S = _secant_numbers($n >> 1);
+
+    my $u = $n + 1;
+    my $z = Math::GMPz::Rmpz_init();
+
+    $x = __dec__(__add__($x, $x));    # x = 2*x - 1
+
+    my $sum = Math::GMPz::Rmpz_init_set_ui(0);
+
+    foreach my $k (0 .. $n) {
+        --$u & 1 and next;            # E_n = 0 for all odd n
+
+        Math::GMPz::Rmpz_bin_uiui($z, $n, $u);
+        Math::GMPz::Rmpz_mul($z, $z, $S[$u >> 1]);
+        Math::GMPz::Rmpz_neg($z, $z) if (($u >> 1) & 1);
+
+        $sum = __add__($sum, __mul__(__pow__($x, $k), $z));
+    }
+
+    Math::GMPz::Rmpz_set_ui($z, 0);
+    Math::GMPz::Rmpz_setbit($z, $n);
+    bless \__div__($sum, $z);
 }
 
 #
@@ -4141,23 +4341,19 @@ sub powmod ($$$) {
 ## Faulhaber summation formula
 #
 
-sub faulhaber_sum ($$) {
-    require Math::AnyNum::bernfrac;
+sub faulhaber_sum {
     my ($n, $p) = @_;
 
-    my $native_n = 0;    # true when `n` is a native integer
+    my $native_n = 0;
 
     if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
-        ## `n` is a native unsigned integer
         $native_n = 1;
     }
     else {
         $n = (ref($n) eq __PACKAGE__ ? _any2mpz($$n) : _star2mpz($n)) // goto &nan;
 
-        # Try to unbox `n` when it fits inside a native unsigned integer
         if (Math::GMPz::Rmpz_fits_ulong_p($n)) {
-            $native_n = 1;
-            $n        = Math::GMPz::Rmpz_get_ui($n);
+            ($native_n, $n) = (1, Math::GMPz::Rmpz_get_ui($n));
         }
     }
 
@@ -4168,54 +4364,58 @@ sub faulhaber_sum ($$) {
         $p = (ref($p) eq __PACKAGE__ ? _any2ui($$p) : _any2ui(_star2obj($p))) // goto &nan;
     }
 
-    state @cache;    # cache for Bernoulli numbers
+    my @T = _tangent_numbers(($p >> 1) - 1);
 
-    my $t = Math::GMPz::Rmpz_init();
+    my $z = Math::GMPz::Rmpz_init();
     my $u = Math::GMPz::Rmpz_init();
+    my $q = Math::GMPq::Rmpq_init();
 
-    my $numerator   = Math::GMPz::Rmpz_init();
-    my $denominator = Math::GMPz::Rmpz_init_set_ui(1);
+    my $sum = Math::GMPq::Rmpq_init();
+    Math::GMPq::Rmpq_set_ui($sum, 0, 1);
 
-#<<<
-    $native_n
-      ? Math::GMPz::Rmpz_ui_pow_ui($numerator, $n, $p + 1)    # numerator = n^(p + 1)
-      : Math::GMPz::Rmpz_pow_ui(   $numerator, $n, $p + 1);   # ==//==
-#>>>
+    foreach my $j (0 .. $p) {
 
-    foreach my $j (1 .. $p) {
-
-        # When `j` is odd and greater than 1, we can skip it.
         $j % 2 == 0 or $j == 1 or next;
 
-        Math::GMPz::Rmpz_bin_uiui($t, $p + 1, $j);    # t = binomial(p+1, j)
+        Math::GMPz::Rmpz_bin_uiui($z, $p + 1, $j);    # z = binomial(p+1, j)
 
 #<<<
         $native_n
-          ? Math::GMPz::Rmpz_ui_pow_ui($u, $n, $p + 1 - $j)    # u = n^(p + 1 - j)
-          : Math::GMPz::Rmpz_pow_ui(   $u, $n, $p + 1 - $j);   # ==//==
+          ? Math::GMPz::Rmpz_ui_pow_ui($u, $n, $p + 1 - $j)     # u = n^(p+1 - j)
+          : Math::GMPz::Rmpz_pow_ui(   $u, $n, $p + 1 - $j);    # ==//==
 #>>>
 
-        # Compute Bernouli(j)
-        my $bern = ($j <= 100 ? ($cache[$j] //= __bernfrac__($j)) : __bernfrac__($j));
+        Math::GMPz::Rmpz_mul($z, $z, $u);             # z = z * u
 
-#<<<
-        Math::GMPz::Rmpz_mul($t, $t, $u);         # t = t * u
-        Math::GMPq::Rmpq_get_num($u, $bern);      # u = numerator(bern)
-        Math::GMPz::Rmpz_mul($t, $t, $u);         # t = t * u
-        Math::GMPq::Rmpq_get_den($u, $bern);      # u = denominator(bern)
+        if ($j == 0) {
+            Math::GMPq::Rmpq_set_ui($q, 1, 1);
+        }
+        elsif ($j == 1) {
+            Math::GMPq::Rmpq_set_ui($q, 1, 2);
+        }
+        else {
+            Math::GMPz::Rmpz_mul_ui($u, $T[($j >> 1) - 1], $j);
+            Math::GMPz::Rmpz_neg($u, $u) if ((($j >> 1) - 1) & 1);
+            Math::GMPq::Rmpq_set_z($q, $u);
 
-        Math::GMPz::Rmpz_mul(   $numerator,   $numerator,   $u);   # numerator   = numerator   * u
-        Math::GMPz::Rmpz_addmul($numerator,   $denominator, $t);   # numerator  += denominator * t
-        Math::GMPz::Rmpz_mul(   $denominator, $denominator, $u);   # denominator = denominator * u
-#>>>
+            # (2^n - 1) * 2^n
+            Math::GMPz::Rmpz_set_ui($u, 0);
+            Math::GMPz::Rmpz_setbit($u, $j);
+            Math::GMPz::Rmpz_sub_ui($u, $u, 1);
+            Math::GMPz::Rmpz_mul_2exp($u, $u, $j);
+
+            # B_j = q
+            Math::GMPq::Rmpq_div_z($q, $q, $u);
+        }
+
+        Math::GMPq::Rmpq_mul_z($q, $q, $z);
+        Math::GMPq::Rmpq_add($sum, $sum, $q);
     }
 
-#<<<
-    Math::GMPz::Rmpz_mul_ui($denominator, $denominator, $p + 1);        # denominator = denominator * (p+1)
-    Math::GMPz::Rmpz_divexact($numerator, $numerator, $denominator);    # numerator = numerator / denominator
-#>>>
+    Math::GMPq::Rmpq_get_num($z, $sum);
+    Math::GMPz::Rmpz_divexact_ui($z, $z, $p + 1);
 
-    bless \$numerator;
+    bless \$z;
 }
 
 #

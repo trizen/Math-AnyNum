@@ -2,10 +2,21 @@ Revision history for Math-AnyNum
 
 0.25    2018-??-??
 
+        [ADDITIONS]
+
+        - `euler(n)`: n-th Euler number (OEIS: A122045).
+        - `euler_polynomial(n, x)`: Euler polynomial (also available as `euler(n, x)`)
+        - `bernoulli_polynomial(n, x)`: Bernoulli polynomial (also available as `bernoulli(n, x)`).
+
         [IMPROVEMENTS]
 
         - Extended the optimizations in `digits(n, b)` and `sumdigits(n, b)` for all values of b <= 62.
         - Extended the allowed value of `b` in `base(n, b)`, `as_int(n, b)`, `as_frac(n, b)` and `new(n, b`) to be between 0 and 62.
+
+        [INCOMPATIBLE CHANGES]
+
+        - Renamed the Euler-Mascheroni constant from `euler` to `EulerGamma`.
+        - Renamed the Catalan constant from `catalan` to `CatalanG`.
 
 0.24    2018-05-06
 

@@ -151,8 +151,8 @@ useful mathematical constants that can be exported, such as:
     tau         # TAU constant               6.283185307179...
     ln2         # natural logarithm of 2     0.693147180559...
     phi         # golden ratio               1.618033988749...
-    euler       # Euler-Mascheroni constant  0.577215664901...
-    catalan     # Catalan constant           0.915965594177...
+    EulerGamma  # Euler-Mascheroni constant  0.577215664901...
+    CatalanG    # Catalan G constant         0.915965594177...
     Inf         # positive Infinity
     NaN         # Not-a-Number
 
@@ -397,19 +397,17 @@ Returns the natural logarithm of C<2>.
 
 Returns the value of the golden ratio, which is C<1.61803...>.
 
-=head2 euler
+=head2 EulerGamma
 
-    Math::AnyNum->euler                           #=> Float
+    Math::AnyNum->EulerGamma                      #=> Float
 
-Returns the Euler-Mascheroni constant, which is C<0.57721...>.
+Returns the Euler-Mascheroni γ constant, which is C<0.57721...>.
 
-=head2 catalan
+=head2 CatalanG
 
-    Math::AnyNum->catalan                         #=> Float
+    Math::AnyNum->CatalanG                        #=> Float
 
-Returns the Catalan constant, also known as C<Beta(2)> or C<G>,
-and starts as: C<0.91596...>.
-
+Returns the Catalan G constant, also known as C<Beta(2)>, which is C<0.91596...>.
 
 =head1 ARITHMETIC OPERATIONS
 
@@ -653,9 +651,9 @@ Returns NaN for negative integers.
 
 Defined as:
 
-    harmreal(n) = digamma(n+1) + euler
+    harmreal(n) = digamma(n+1) + γ
 
-where C<euler> is the Euler-Mascheroni constant.
+where C<γ> is the Euler-Mascheroni constant.
 
 =head2 agm
 
