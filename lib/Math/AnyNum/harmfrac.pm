@@ -1,4 +1,4 @@
-use 5.014;
+use 5.016;
 use warnings;
 
 our ($ROUND, $PREC);
@@ -21,8 +21,7 @@ sub __harmfrac__ {    # takes an unsigned integer
         # Translation of Dana Jacobsen's code from Math::Prime::Util::{PP,GMP}.
         #   https://metacpan.org/pod/Math::Prime::Util::PP
         #   https://metacpan.org/pod/Math::Prime::Util::GMP
-        my $sub;
-        $sub = sub {
+        sub {
             my ($num, $den) = @_;
             Math::GMPz::Rmpz_sub($temp, $den, $num);
 
@@ -41,17 +40,15 @@ sub __harmfrac__ {    # takes an unsigned integer
                 Math::GMPz::Rmpz_tdiv_q_2exp($temp, $temp, 1);
                 my $q = Math::GMPz::Rmpz_init_set($temp);
                 my $r = Math::GMPz::Rmpz_init_set($temp);
-                $sub->($num, $q);
-                $sub->($r,   $den);
+                __SUB__->($num, $q);
+                __SUB__->($r,   $den);
                 Math::GMPz::Rmpz_mul($num,  $num, $den);
                 Math::GMPz::Rmpz_mul($temp, $q,   $r);
                 Math::GMPz::Rmpz_add($num, $num, $temp);
                 Math::GMPz::Rmpz_mul($den, $den, $q);
             }
-        };
-
-        $sub->($num, $den);
-        undef $sub;
+          }
+          ->($num, $den);
 
         my $q = Math::GMPq::Rmpq_init();
         Math::GMPq::Rmpq_set_num($q, $num);

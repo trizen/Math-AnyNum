@@ -4,6 +4,8 @@ Revision history for Math-AnyNum
 
         [ADDITIONS]
 
+        - `sum(a,b,c,...)`: sum of a list of numbers.
+        - `prod(a,b,c,...)`: product of a list of numbers (using binary splitting).
         - `euler(n)`: n-th Euler number (OEIS: A122045).
         - `euler_polynomial(n, x)`: Euler polynomial (also available as `euler(n, x)`)
         - `bernoulli_polynomial(n, x)`: Bernoulli polynomial (also available as `bernoulli(n, x)`).
@@ -17,6 +19,10 @@ Revision history for Math-AnyNum
 
         - Renamed the Euler-Mascheroni constant from `euler` to `EulerGamma`.
         - Renamed the Catalan constant from `catalan` to `CatalanG`.
+
+        [OTHER]
+
+        - Increased the minimum version of Perl from 5.14 to 5.16 (for `__SUB__`).
 
 0.24    2018-05-06
 

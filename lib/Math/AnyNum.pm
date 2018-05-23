@@ -1,6 +1,6 @@
 package Math::AnyNum;
 
-use 5.014;
+use 5.016;
 use strict;
 use warnings;
 
@@ -198,6 +198,12 @@ use overload
         bernfrac => \&bernfrac,
         harmfrac => \&harmfrac,
 
+        euler     => \&euler,
+        bernoulli => \&bernfrac,
+
+        bernoulli_polynomial => \&bernoulli_polynomial,
+        euler_polynomial     => \&euler_polynomial,
+
         lcm       => \&lcm,
         gcd       => \&gcd,
         valuation => \&valuation,
@@ -248,6 +254,9 @@ use overload
     my %misc = (
         rand  => \&rand,
         irand => \&irand,
+
+        sum  => \&sum,
+        prod => \&prod,
 
         seed  => \&seed,
         iseed => \&iseed,
@@ -3155,41 +3164,51 @@ sub primorial ($) {
     bless \$r;
 }
 
-#
-## bernfrac
-#
+sub _binsplit {
+    my ($arr, $func) = @_;
 
-sub bernfrac ($;$) {
-    require Math::AnyNum::bernfrac;
-    my ($n, $x) = @_;
+    my $sub = sub {
+        my ($s, $n, $m) = @_;
 
-    if (defined($x)) {
-        goto &bernoulli_polynomial;
+        $n == $m
+          ? $s->[$n]
+          : $func->(__SUB__->($s, $n, ($n + $m) >> 1), __SUB__->($s, (($n + $m) >> 1) + 1, $m));
+    };
+
+    my $end = $#$arr;
+
+    if ($end <= 1e5) {
+        return $sub->($arr, 0, $end);
     }
 
-    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
-        ## `n` is a native unsigned integer
-    }
-    elsif (ref($n) eq __PACKAGE__) {
-        $n = _any2ui($$n) // goto &nan;
-    }
-    else {
-        $n = _any2ui(_star2obj($n)) // goto &nan;
+    my @partial;
+
+    while (@$arr) {
+        my @head = splice(@$arr, 0, 1e5);
+        push @partial, $sub->(\@head, 0, $#head);
     }
 
-    bless \__bernfrac__($n);
+    __SUB__->(\@partial, $func);
 }
 
-*bernoulli = \&bernfrac;
+sub sum {
+    require Math::AnyNum::add;
+    my @terms = map { _star2obj($_) } @_;
+    @terms || goto &zero;
+    bless \_binsplit(\@terms, \&__add__);
+}
+
+sub prod {
+    require Math::AnyNum::mul;
+    my @terms = map { _star2obj($_) } @_;
+    @terms || goto &one;
+    bless \_binsplit(\@terms, \&__mul__);
+}
 
 sub _secant_numbers {
     my ($n) = @_;
 
     state @cache;
-
-    if (!@cache) {
-        @cache = (Math::GMPz::Rmpz_init_set_ui(1));
-    }
 
     if ($n <= $#cache) {
         return @cache;
@@ -3217,10 +3236,6 @@ sub _tangent_numbers {
 
     state @cache;
 
-    if (!@cache) {
-        @cache = (Math::GMPz::Rmpz_init_set_ui(1));
-    }
-
     if ($n <= $#cache) {
         return @cache;
     }
@@ -3243,30 +3258,7 @@ sub _tangent_numbers {
     return @T;
 }
 
-sub euler {
-    my ($n, $x) = @_;
-
-    ref($n) || goto &EulerGamma;
-    defined($x) && goto &euler_polynomial;
-
-    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
-        ## `n` is a native unsigned integer
-    }
-    elsif (ref($n) eq __PACKAGE__) {
-        $n = _any2ui($$n) // goto &nan;
-    }
-    else {
-        $n = _any2ui(_star2obj($n)) // goto &nan;
-    }
-
-    $n & 1 and goto &zero;    # E_n = 0 for all odd indices
-
-    my $e = Math::GMPz::Rmpz_init_set((_secant_numbers($n >> 1))[$n >> 1]);
-    Math::GMPz::Rmpz_neg($e, $e) if (($n >> 1) & 1);
-    bless \$e;
-}
-
-sub bernoulli_polynomial {
+sub bernoulli_polynomial ($$) {
     require Math::AnyNum::add;
     require Math::AnyNum::mul;
     require Math::AnyNum::pow;
@@ -3328,7 +3320,32 @@ sub bernoulli_polynomial {
     bless \$sum;
 }
 
-sub euler_polynomial {
+#
+## bernfrac
+#
+
+sub bernfrac ($;$) {
+    require Math::AnyNum::bernfrac;
+    my ($n, $x) = @_;
+
+    @_ == 2 && goto &bernoulli_polynomial;
+
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
+    }
+    else {
+        $n = _any2ui(_star2obj($n)) // goto &nan;
+    }
+
+    bless \__bernfrac__($n);
+}
+
+*bernoulli = \&bernfrac;
+
+sub euler_polynomial ($$) {
     require Math::AnyNum::dec;
     require Math::AnyNum::add;
     require Math::AnyNum::mul;
@@ -3374,6 +3391,28 @@ sub euler_polynomial {
     Math::GMPz::Rmpz_set_ui($z, 0);
     Math::GMPz::Rmpz_setbit($z, $n);
     bless \__div__($sum, $z);
+}
+
+sub euler ($;$) {
+    my ($n, $x) = @_;
+
+    @_ == 2 && goto &euler_polynomial;
+
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
+    }
+    else {
+        $n = _any2ui(_star2obj($n)) // goto &nan;
+    }
+
+    $n & 1 and goto &zero;    # E_n = 0 for all odd indices
+
+    my $e = Math::GMPz::Rmpz_init_set((_secant_numbers($n >> 1))[$n >> 1]);
+    Math::GMPz::Rmpz_neg($e, $e) if (($n >> 1) & 1);
+    bless \$e;
 }
 
 #

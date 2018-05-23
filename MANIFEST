@@ -107,7 +107,7 @@ META.json
 META.yml
 README.md
 t/00-load.t
-t/bernoulli.t
+t/bernoulli_and_euler_numbers.t
 t/constants.t
 t/exp.t
 t/fib.t
