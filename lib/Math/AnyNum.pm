@@ -1320,24 +1320,23 @@ sub stringify {    # used in overloading
 ## Numification (object to a native integer or a double)
 #
 
-sub __numify__ {
-    my ($x) = @_;
+sub numify {    # used in overloading
+    my $x = ${$_[0]};
+
     goto(ref($x) =~ tr/:/_/rs);
 
   Math_MPFR: {
-        push @_, $ROUND;
-
         if (Math::MPFR::Rmpfr_integer_p($x)) {
             if (Math::MPFR::Rmpfr_fits_slong_p($x, $ROUND)) {
-                goto &Math::MPFR::Rmpfr_get_si;
+                return Math::MPFR::Rmpfr_get_si($x, $ROUND);
             }
 
             if (Math::MPFR::Rmpfr_fits_ulong_p($x, $ROUND)) {
-                goto &Math::MPFR::Rmpfr_get_ui;
+                return Math::MPFR::Rmpfr_get_ui($x, $ROUND);
             }
         }
 
-        goto &Math::MPFR::Rmpfr_get_d;
+        return Math::MPFR::Rmpfr_get_d($x, $ROUND);
     }
 
   Math_GMPq: {
@@ -1347,37 +1346,33 @@ sub __numify__ {
             goto Math_GMPz;
         }
 
-        goto &Math::GMPq::Rmpq_get_d;
+        return Math::GMPq::Rmpq_get_d($x);
     }
 
   Math_GMPz: {
 
         if (Math::GMPz::Rmpz_fits_slong_p($x)) {
-            goto &Math::GMPz::Rmpz_get_si;
+            return Math::GMPz::Rmpz_get_si($x);
         }
 
         if (Math::GMPz::Rmpz_fits_ulong_p($x)) {
-            goto &Math::GMPz::Rmpz_get_ui;
+            return Math::GMPz::Rmpz_get_ui($x);
         }
 
-        goto &Math::GMPz::Rmpz_get_d;
+        return Math::GMPz::Rmpz_get_d($x);
     }
 
   Math_MPC: {
         my $r = Math::MPFR::Rmpfr_init2($PREC);
         Math::MPC::RMPC_RE($r, $x);
-        @_ = ($x = $r);
+        $x = $r;
         goto Math_MPFR;
     }
 }
 
-sub numify {    # used in overloading
-    (@_) = (${$_[0]});
-    goto &__numify__;
-}
+sub boolify {    # used in overloading
+    my $x = ${$_[0]};
 
-sub __boolify__ {
-    my ($x) = @_;
     goto(ref($x) =~ tr/:/_/rs);
 
   Math_MPFR: {
@@ -1399,11 +1394,6 @@ sub __boolify__ {
         Math::MPC::RMPC_IM($r, $x);
         return !Math::MPFR::Rmpfr_zero_p($r);
     }
-}
-
-sub boolify {    # used in overloading
-    (@_) = (${$_[0]});
-    goto &__boolify__;
 }
 
 #
