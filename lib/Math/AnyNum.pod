@@ -144,6 +144,7 @@ Additionally, each Math::AnyNum object is B<immutable>.
     agm(x,y)                     arithmetic-geometric mean
     hypot(x,y)                   hypotenuse: sqrt(x^2 + y^2)
     norm(x,y)                    the norm function: x^2 + y^2
+    lnbern(n)                    natural logarithm of bernoulli(n)
     bernreal(n)                  Bernoulli number as floating-point
     harmreal(n)                  Harmonic number as floating-point
     polymod(@list)               Poly modulo function
@@ -815,9 +816,15 @@ When an additional argument is provided, it returns the the n-th Euler polynomia
 
 =head2 bernreal
 
-    bernreal(n)                                   #=> Float | NaN
+    bernreal(n)                                   #=> Float
 
-Returns the nth-Bernoulli number, as a floating-point approximation, with C<bernreal(0) = 1>.
+Returns the n-th Bernoulli number, as a floating-point approximation, with C<bernreal(0) = 1>.
+
+=head2 lnbern
+
+    lnbern(n)                                     #=> Float | Complex
+
+Returns the natural logarithm of the n-th Bernoulli number.
 
 =head2 harmonic / harmfrac
 

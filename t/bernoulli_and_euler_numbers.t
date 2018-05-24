@@ -5,9 +5,9 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 32;
+plan tests => 37;
 
-use Math::AnyNum qw(:overload sum binomial bernoulli euler faulhaber_sum irand);
+use Math::AnyNum qw(:overload sum binomial bernoulli bernreal lnbern euler faulhaber_sum irand);
 
 # Bernoulli numbers
 {
@@ -42,14 +42,24 @@ use Math::AnyNum qw(:overload sum binomial bernoulli euler faulhaber_sum irand);
     #
     ## bernreal()
     #
-    is((-2)->bernreal, NaN);    # check for negative values
+    is(bernreal(-2), NaN);    # check for negative values
 
-    is((1)->bernreal,              0.5);
-    is((0)->bernreal,              1);
-    is((3)->bernreal,              0);
-    is((2)->bernreal->round(-10),  '0.1666666667');
-    is((14)->bernreal->round(-25), '1.1666666666666666666666667');
-    is((52)->bernreal->round(-10), '-503877810148106891413789303.0522012579');
+    is(bernreal(1),              0.5);
+    is(bernreal(0),              1);
+    is(bernreal(3),              0);
+    is(bernreal(2)->round(-10),  '0.1666666667');
+    is(bernreal(14)->round(-25), '1.1666666666666666666666667');
+    is(bernreal(52)->round(-10), '-503877810148106891413789303.0522012579');
+
+    #
+    ## lnbern()
+    #
+
+    is(lnbern(-2),  NaN);
+    is(lnbern(5),   -Inf);
+    is(lnbern(6),   log(bernreal(6)));
+    is(lnbern(42),  log(bernreal(42)));
+    is(lnbern(100), log(bernreal(100)));
 }
 
 {
