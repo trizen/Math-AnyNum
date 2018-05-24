@@ -10,6 +10,7 @@ Revision history for Math-AnyNum
         - euler(n)                    n-th Euler number (OEIS: A122045).
         - euler_polynomial(n, x)      Euler polynomial (also available as `euler(n, x)`)
         - bernoulli_polynomial(n, x)  Bernoulli polynomial (also available as `bernoulli(n, x)`).
+        - geometric_sum(n,r)          geometric sum: r^0 + r^1 + ... + r^n
         - superfactorial(n)           product of first n factorials
         - lnsuperfactorial(n)         natural logarithm of superfactorial(n)
         - hyperfactorial(n)           product of k^k for k=1..n

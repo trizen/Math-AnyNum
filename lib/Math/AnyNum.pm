@@ -202,6 +202,7 @@ use overload
         fibonacci => \&fibonacci,
 
         faulhaber_sum => \&faulhaber_sum,
+        geometric_sum => \&geometric_sum,
 
         bernfrac => \&bernfrac,
         harmfrac => \&harmfrac,
@@ -2469,6 +2470,15 @@ sub __add__ {
         return $c;
     }
 
+  Math_GMPq__Scalar: {
+        my $r = Math::GMPq::Rmpq_init();
+        $y < 0
+          ? Math::GMPq::Rmpq_set_si($r, $y, 1)
+          : Math::GMPq::Rmpq_set_ui($r, $y, 1);
+        Math::GMPq::Rmpq_add($r, $r, $x);
+        return $r;
+    }
+
     #
     ## GMPz
     #
@@ -2589,16 +2599,6 @@ sub add {    # used in overloading
 
     if (!ref($y)) {
         if (CORE::int($y) eq $y and $y < ULONG_MAX and $y > LONG_MIN) {
-
-            if (ref($x) eq 'Math::GMPq') {
-                my $r = Math::GMPq::Rmpq_init();
-                $y < 0
-                  ? Math::GMPq::Rmpq_set_si($r, $y, 1)
-                  : Math::GMPq::Rmpq_set_ui($r, $y, 1);
-                Math::GMPq::Rmpq_add($r, $r, $x);
-                return bless \$r;
-            }
-
             return bless \__add__($x, $y);
         }
 
@@ -2642,6 +2642,15 @@ sub __sub__ {
         my $r = Math::MPC::Rmpc_init2($PREC);
         Math::MPC::Rmpc_set_q($r, $x, $ROUND);
         Math::MPC::Rmpc_sub($r, $r, $y, $ROUND);
+        return $r;
+    }
+
+  Math_GMPq__Scalar: {
+        my $r = Math::GMPq::Rmpq_init();
+        $y < 0
+          ? Math::GMPq::Rmpq_set_si($r, $y, 1)
+          : Math::GMPq::Rmpq_set_ui($r, $y, 1);
+        Math::GMPq::Rmpq_sub($r, $x, $r);
         return $r;
     }
 
@@ -2783,16 +2792,6 @@ sub sub {    # used in overloading
 
     if (!ref($y)) {
         if (CORE::int($y) eq $y and $y < ULONG_MAX and $y > LONG_MIN) {
-
-            if (ref($x) eq 'Math::GMPq') {
-                my $r = Math::GMPq::Rmpq_init();
-                $y < 0
-                  ? Math::GMPq::Rmpq_set_si($r, $y, 1)
-                  : Math::GMPq::Rmpq_set_ui($r, $y, 1);
-                Math::GMPq::Rmpq_sub($r, $x, $r);
-                return bless \$r;
-            }
-
             return bless \__sub__($x, $y);
         }
 
@@ -2835,6 +2834,15 @@ sub __mul__ {
         my $r = Math::MPC::Rmpc_init2($PREC);
         Math::MPC::Rmpc_set_q($r, $x, $ROUND);
         Math::MPC::Rmpc_mul($r, $r, $y, $ROUND);
+        return $r;
+    }
+
+  Math_GMPq__Scalar: {
+        my $r = Math::GMPq::Rmpq_init();
+        $y < 0
+          ? Math::GMPq::Rmpq_set_si($r, $y, 1)
+          : Math::GMPq::Rmpq_set_ui($r, $y, 1);
+        Math::GMPq::Rmpq_mul($r, $r, $x);
         return $r;
     }
 
@@ -2958,16 +2966,6 @@ sub mul {    # used in overloading
 
     if (!ref($y)) {
         if (CORE::int($y) eq $y and $y < ULONG_MAX and $y > LONG_MIN) {
-
-            if (ref($x) eq 'Math::GMPq') {
-                my $r = Math::GMPq::Rmpq_init();
-                $y < 0
-                  ? Math::GMPq::Rmpq_set_si($r, $y, 1)
-                  : Math::GMPq::Rmpq_set_ui($r, $y, 1);
-                Math::GMPq::Rmpq_mul($r, $r, $x);
-                return bless \$r;
-            }
-
             return bless \__mul__($x, $y);
         }
 
@@ -3024,6 +3022,15 @@ sub __div__ {
         my $r = Math::MPC::Rmpc_init2($PREC);
         Math::MPC::Rmpc_set_q($r, $x, $ROUND);
         Math::MPC::Rmpc_div($r, $r, $y, $ROUND);
+        return $r;
+    }
+
+  Math_GMPq__Scalar: {
+        my $r = Math::GMPq::Rmpq_init();
+        $y < 0
+          ? Math::GMPq::Rmpq_set_si($r, -1, -$y)
+          : Math::GMPq::Rmpq_set_ui($r, 1, $y);
+        Math::GMPq::Rmpq_mul($r, $r, $x);
         return $r;
     }
 
@@ -3188,16 +3195,6 @@ sub div {    # used in overloading
 
     if (!ref($y)) {
         if (CORE::int($y) eq $y and $y < ULONG_MAX and $y > LONG_MIN and CORE::int($y)) {
-
-            if (ref($x) eq 'Math::GMPq') {
-                my $r = Math::GMPq::Rmpq_init();
-                $y < 0
-                  ? Math::GMPq::Rmpq_set_si($r, -1, -$y)
-                  : Math::GMPq::Rmpq_set_ui($r, 1, $y);
-                Math::GMPq::Rmpq_mul($r, $r, $x);
-                return bless \$r;
-            }
-
             return bless \__div__($x, $y);
         }
 
@@ -8208,6 +8205,19 @@ sub powmod ($$$) {
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_powm($r, $x, $y, $z);
     bless \$r;
+}
+
+#
+## Geometric summation formula
+#
+
+sub geometric_sum {
+    my ($n, $r) = @_;
+
+    $n = _star2obj($n);
+    $r = _star2obj($r);
+
+    bless \__div__(__sub__(__pow__($r, __add__($n, 1)), 1), __sub__($r, 1));
 }
 
 #

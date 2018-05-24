@@ -69,6 +69,7 @@ Additionally, each Math::AnyNum object is B<immutable>.
     euler(n,x)                   Euler polynomial
     bernoulli(n,x)               Bernoulli polynomial
     faulhaber_sum(n,k)           sum of powers: 1^k + 2^k + ... + n^k
+    geometric_sum(n,r)           geometric sum: r^0 + r^1 + ... + r^n
     kronecker(n,k)               Kronecker (Jacobi) symbol
     gcd(@list)                   greatest common divisor
     lcm(@list)                   least common multiple
@@ -1214,13 +1215,25 @@ Returns the Kronecker symbol I<(n|m)>, which is a generalization of the Jacobi s
 
     faulhaber_sum(n, k)                           #=> Int | NaN
 
-Computes the sum C<1**k + 2**k + 3**k +...+ n**k>, using Faulhaber's formula.
+Computes the power sum C<1^k + 2^k + 3^k +...+ n^k>, using Faulhaber's formula.
 
 C<k> must be a non-negative integer. Returns NaN otherwise.
 
 Example:
 
-    faulhaber_sum(5, 8) = 1**8 + 2**8 + 3**8 + 4**8 + 5**8
+    faulhaber_sum(5, 8) = 1^8 + 2^8 + 3^8 + 4^8 + 5^8 = 462979
+
+=head2 geometric_sum
+
+    geometric_sum(n, r)                           #=> Any
+
+Computes the geometric sum C<1 + r + r^2 + r^3 + ... + r^n>, using the following formula:
+
+    geometric_sum(n, r) = (r^(n+1) - 1) / (r - 1)
+
+Example:
+
+    geometric_sum(5, 8) = 8^0 + 8^1 + 8^2 + 8^3 + 8^4 + 8^5 = 37449
 
 =head2 lucas
 
