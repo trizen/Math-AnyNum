@@ -16,6 +16,12 @@ Revision history for Math-AnyNum
         - lnsuperfactorial(n)         natural logarithm of superfactorial(n)
         - hyperfactorial(n)           product of k^k for k=1..n
         - lnhyperfactorial(n)         natural logarithm of hyperfactorial(n)
+        - bsearch(n,\&f)              binary search from 0 to n (exact match)
+        - bsearch(a,b,\&f)            binary search from a to b (exact match)
+        - bsearch_le(n,\&f)           binary search from 0 to n (less than or equal to)
+        - bsearch_le(a,b,\&f)         binary search from a to b (less than or equal to)
+        - bsearch_ge(n,\&f)           binary search from 0 to n (greater than or equal to)
+        - bsearch_ge(a,b,\&f)         binary search from a to b (greater than or equal to)
 
         [IMPROVEMENTS]
 

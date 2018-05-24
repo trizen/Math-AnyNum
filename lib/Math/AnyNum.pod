@@ -140,6 +140,7 @@ Additionally, each Math::AnyNum object is B<immutable>.
     log2(x)                      logarithm of x to base 2
     log10(x)                     logarithm of x to base 10
     mod(x,y)                     remainder of x/y
+    polymod(n,@list)             n modulo a list of numbers
     erf(x)                       the Gauss error function
     erfc(x)                      the complementary error function
     abs(x)                       absolute value of x
@@ -149,7 +150,6 @@ Additionally, each Math::AnyNum object is B<immutable>.
     lnbern(n)                    natural logarithm of bernoulli(n)
     bernreal(n)                  Bernoulli number as floating-point
     harmreal(n)                  Harmonic number as floating-point
-    polymod(@list)               Poly modulo function
     polygonal_root(n,k)          first k-gonal root of n
     polygonal_root2(n,k)         second k-gonal root of n
 
@@ -201,6 +201,8 @@ Additionally, each Math::AnyNum object is B<immutable>.
     round(x)            round x to the nearest integer
     round(x,+k)         round x before the decimal point
     round(x,-k)         round x after the decimal point
+    acmp(a,b)           absolute comparison: abs(a) <=> abs(b)
+    approx_cmp(a,b,k)   approximate comparison: round(a,k) <=> round(b,k)
     rat(x)              convert x into a rational number
     rat(str)            parse a decimal expansion as fraction
     rat_approx(x)       rational approximation of real number x
@@ -209,6 +211,7 @@ Additionally, each Math::AnyNum object is B<immutable>.
     nude(q)             numerator and denominator of q
     float(x)            convert x into a floating-point number
     complex(x)          convert x into a complex number
+    complex(a,b)        complex number: a + b*i
     real(z)             real part of complex number z
     imag(z)             imaginary part of complex number z
     reals(z)            real and imaginary part of z as reals
@@ -216,7 +219,6 @@ Additionally, each Math::AnyNum object is B<immutable>.
     neg(x)              additive inverse of x: -x
     inv(x)              multiplicative inverse of x: 1/x
     conj(x)             complex conjugate of x
-    acmp(a,b,k)         approximate comparison of round(a,k) and round(b,k)
     digits(n,b)         digits of n in base b
     sumdigits(n,b)      sum of digits of n in base b
     popcount(n)         number of 1's in binary representation of n
@@ -224,6 +226,16 @@ Additionally, each Math::AnyNum object is B<immutable>.
     setbit(n,k)         set the k-th bit of integer to 1
     clearbit(n,k)       set the k-th bit of integer to 0
     flipbit(n,k)        flip the k-th bit of integer
+
+    sum(@list)          sum of a list of numbers
+    prod(@list)         product of a list of numbers
+
+    bsearch(n,\&f)      binary search from 0 to n (exact match)
+    bsearch(a,b,\&f)    binary search from a to b (exact match)
+    bsearch_le(n,\&f)   binary search from 0 to n (less than or equal to)
+    bsearch_le(a,b,\&f) binary search from a to b (less than or equal to)
+    bsearch_ge(n,\&f)   binary search from 0 to n (greater than or equal to)
+    bsearch_ge(a,b,\&f) binary search from a to b (greater than or equal to)
 
     as_bin(n)           binary string-representation of n
     as_oct(n)           octal string-representation of n
@@ -1531,6 +1543,52 @@ Sum of a list of numbers.
     prod(@list)                                   #=> Any
 
 Product of a list of numbers.
+
+=head2 bsearch
+
+    bsearch(n, \&f)                               #=> Int | undef
+    bsearch(a, b, \&f)                            #=> Int | undef
+
+Binary search from to 0 to n, or from a to b, which can be any arbitrary large integers.
+
+The last argument is a subroutine reference which does the comparisons.
+
+This function finds a value C<k> such that f(k) = 0. Returns C<undef> otherwise.
+
+Example:
+
+    bsearch(20,      sub { $_*$_  <=> 49   });   #=> 7   (7*7  = 49)
+    bsearch(3, 1000, sub { $_**$_ <=> 3125 });   #=> 5   (5**5 = 3125)
+
+=head2 bsearch_le
+
+    bsearch_le(n, \&f)                               #=> Int | undef
+    bsearch_le(a, b, \&f)                            #=> Int | undef
+
+Binary search from to 0 to n, or from a to b, which can be any arbitrary large integers.
+
+The last argument is a subroutine reference which does the comparisons.
+
+This function finds a value C<k> such that f(k) <= 0 and f(k+1) > 0. Returns C<undef> otherwise.
+
+Example:
+
+    bsearch_le(10**6,         sub { exp($_) <=> 1e+9 });  #=>  20   (exp( 20) <= 1e+9)
+    bsearch_le(-10**6, 10**6, sub { exp($_) <=> 1e-9 });  #=> -21   (exp(-21) <= 1e-9)
+
+=head2 bsearch_ge
+
+    bsearch_ge(n, \&f)                               #=> Int | undef
+    bsearch_ge(a, b, \&f)                            #=> Int | undef
+
+Binary search from to 0 to n, or from a to b, which can be any arbitrary large integers.
+
+The last argument is a subroutine reference which does the comparisons.
+
+This function finds a value C<k> such that f(k-1) < 0 and f(k) >= 0. Returns C<undef> otherwise.
+
+    bsearch_ge(10**6,         sub { exp($_) <=> 1e+9 });  #=>  21   (exp( 21) >= 1e+9)
+    bsearch_ge(-10**6, 10**6, sub { exp($_) <=> 1e-9 });  #=> -20   (exp(-20) >= 1e-9)
 
 =head2 floor
 

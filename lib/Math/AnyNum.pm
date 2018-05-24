@@ -302,6 +302,10 @@ use overload
         digits    => \&digits,
         sumdigits => \&sumdigits,
 
+        bsearch    => \&bsearch,
+        bsearch_le => \&bsearch_le,
+        bsearch_ge => \&bsearch_ge,
+
         as_bin  => \&as_bin,
         as_hex  => \&as_hex,
         as_oct  => \&as_oct,
@@ -8987,6 +8991,119 @@ sub sumdigits ($;$) {
     }
 
     bless \$sum;
+}
+
+sub bsearch ($$;$) {
+    my ($left, $right, $block) = @_;
+
+    if (@_ == 3) {
+        $left  = Math::GMPz::Rmpz_init_set(_star2mpz($left) // return undef);
+        $right = Math::GMPz::Rmpz_init_set(_star2mpz($right) // return undef);
+    }
+    else {
+        $block = $right;
+        $right = Math::GMPz::Rmpz_init_set(_star2mpz($left) // return undef);
+        $left  = Math::GMPz::Rmpz_init_set_ui(0);
+    }
+
+    my $middle = Math::GMPz::Rmpz_init();
+
+    while (Math::GMPz::Rmpz_cmp($left, $right) <= 0) {
+
+        Math::GMPz::Rmpz_add($middle, $left, $right);
+        Math::GMPz::Rmpz_div_2exp($middle, $middle, 1);
+
+        local $_ = bless \Math::GMPz::Rmpz_init_set($middle);
+        my $cmp = $block->($_) || return $_;
+
+        if ($cmp > 0) {
+            Math::GMPz::Rmpz_sub_ui($right, $middle, 1);
+        }
+        else {
+            Math::GMPz::Rmpz_add_ui($left, $middle, 1);
+        }
+    }
+
+    return undef;
+}
+
+sub bsearch_ge ($$;$) {
+    my ($left, $right, $block) = @_;
+
+    if (@_ == 3) {
+        $left  = Math::GMPz::Rmpz_init_set(_star2mpz($left) // return undef);
+        $right = Math::GMPz::Rmpz_init_set(_star2mpz($right) // return undef);
+    }
+    else {
+        $block = $right;
+        $right = Math::GMPz::Rmpz_init_set(_star2mpz($left) // return undef);
+        $left  = Math::GMPz::Rmpz_init_set_ui(0);
+    }
+
+    my $middle = Math::GMPz::Rmpz_init();
+
+    while (1) {
+
+        Math::GMPz::Rmpz_add($middle, $left, $right);
+        Math::GMPz::Rmpz_div_2exp($middle, $middle, 1);
+
+        local $_ = bless \Math::GMPz::Rmpz_init_set($middle);
+        my $cmp = $block->($_) || return $_;
+
+        if ($cmp < 0) {
+            Math::GMPz::Rmpz_add_ui($left, $middle, 1);
+
+            if (Math::GMPz::Rmpz_cmp($left, $right) > 0) {
+                Math::GMPz::Rmpz_add_ui($middle, $middle, 1);
+                last;
+            }
+        }
+        else {
+            Math::GMPz::Rmpz_sub_ui($right, $middle, 1);
+            Math::GMPz::Rmpz_cmp($left, $right) > 0 and last;
+        }
+    }
+
+    bless \$middle;
+}
+
+sub bsearch_le ($$;$) {
+    my ($left, $right, $block) = @_;
+
+    if (@_ == 3) {
+        $left  = Math::GMPz::Rmpz_init_set(_star2mpz($left) // return undef);
+        $right = Math::GMPz::Rmpz_init_set(_star2mpz($right) // return undef);
+    }
+    else {
+        $block = $right;
+        $right = Math::GMPz::Rmpz_init_set(_star2mpz($left) // return undef);
+        $left  = Math::GMPz::Rmpz_init_set_ui(0);
+    }
+
+    my $middle = Math::GMPz::Rmpz_init();
+
+    while (1) {
+
+        Math::GMPz::Rmpz_add($middle, $left, $right);
+        Math::GMPz::Rmpz_div_2exp($middle, $middle, 1);
+
+        local $_ = bless \Math::GMPz::Rmpz_init_set($middle);
+        my $cmp = $block->($_) || return $_;
+
+        if ($cmp < 0) {
+            Math::GMPz::Rmpz_add_ui($left, $middle, 1);
+            Math::GMPz::Rmpz_cmp($left, $right) > 0 and last;
+        }
+        else {
+            Math::GMPz::Rmpz_sub_ui($right, $middle, 1);
+            if (Math::GMPz::Rmpz_cmp($left, $right) > 0) {
+                Math::GMPz::Rmpz_sub_ui($middle, $middle, 1);
+                last;
+            }
+        }
+    }
+
+    bless \$middle;
 }
 
 1;    # End of Math::AnyNum

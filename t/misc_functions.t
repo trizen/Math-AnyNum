@@ -5,9 +5,9 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 421;
+plan tests => 434;
 
-use Math::AnyNum qw(:misc);
+use Math::AnyNum qw(:misc lngamma ipow10 log);
 use List::Util qw();
 
 my $o = 'Math::AnyNum';
@@ -251,6 +251,97 @@ is(List::Util::sum(digits('777167811371535604138338540903539713319011224805',   
 is(List::Util::sum(digits('613136010035433834160054719450842585569017976622615403', 45)),          '751');
 is(List::Util::sum(digits('505738355663143406692565836710328900161705022531597459', 54)),          '846');
 is(List::Util::sum(digits('8704872396456046071051264811294183381856891',            $o->new(42))), '517');
+
+is(
+    bsearch(
+        100, 120,
+        sub {
+            $_**2 <=> 12769;
+        }
+    ),
+    113
+  );
+
+is(bsearch_le(10**6, sub { exp($_) <=> 1e+9 }), 20);    #=>  20   (exp( 20) <= 1e+9)
+is(bsearch_le(-10**6, 10**6, sub { exp($_) <=> 1e-9 }), -21);    #=> -21   (exp(-21) <= 1e-9)
+
+is(bsearch_ge(10**6, sub { exp($_) <=> 1e+9 }), 21);             #=>  21   (exp( 21) >= 1e+9)
+is(bsearch_ge(-10**6, 10**6, sub { exp($_) <=> 1e-9 }), -20);    #=> -20   (exp(-20) >= 1e-9)
+
+is(
+    bsearch(
+        100, 120,
+        sub {
+            my ($n) = @_;
+            $n * $n <=> 12769;
+        }
+    ),
+    113
+  );
+
+is(
+    bsearch(
+        100,
+        sub {
+            $_ * $_ <=> 49;
+        }
+    ),
+    7
+  );
+
+is(
+    bsearch_le(
+        5,
+        10**6,
+        sub {
+            my ($n) = @_;
+            $n <=> int(exp(12));
+        }
+    ),
+    '162754'
+  );
+
+is(
+    bsearch_ge(
+        5,
+        10**6,
+        sub {
+            my ($n) = @_;
+            $n <=> int(exp(12));
+        }
+    ),
+    '162754'
+  );
+
+sub largest_factorial_lt {
+    my ($n) = @_;
+
+    my $t = $n * log(10);
+    bsearch_le(
+        $n,
+        sub {
+            lngamma($_ + 1) <=> $t;
+        }
+    );
+}
+
+is(largest_factorial_lt(10**6),      '205022');
+is(largest_factorial_lt(ipow10(21)), '51865645374019695121');
+
+sub largest_factorial_gt {
+    my ($n) = @_;
+
+    my $t = $n * log(10);
+    bsearch_ge(
+        $n,
+        sub {
+            lngamma($_ + 1) <=> $t;
+        }
+    );
+}
+
+is(largest_factorial_gt(10**6),      '205023');
+is(largest_factorial_gt(ipow10(21)), '51865645374019695122');
 
 sub factorial_power_1 {
     my ($n, $p) = @_;
