@@ -12,7 +12,7 @@ Version 0.24
 
 Math::AnyNum provides a transparent and easy-to-use interface to L<Math::GMPz>, L<Math::GMPq>, L<Math::MPFR> and L<Math::MPC>.
 
-    use 5.014;
+    use 5.016;
     use Math::AnyNum qw(:overload factorial);
 
     # Integers

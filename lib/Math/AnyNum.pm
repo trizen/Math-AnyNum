@@ -3294,7 +3294,7 @@ sub bernoulli_polynomial ($$) {
     my $z = Math::GMPz::Rmpz_init();
     my $q = Math::GMPq::Rmpq_init();
 
-    my $sum = Math::GMPz::Rmpz_init_set_ui(0);
+    my @terms;
 
     foreach my $k (0 .. $n) {
         --$u & 1 and $u > 1 and next;    # B_n = 0 for odd n > 1
@@ -3322,10 +3322,10 @@ sub bernoulli_polynomial ($$) {
         Math::GMPz::Rmpz_bin_uiui($z, $n, $k);
         Math::GMPq::Rmpq_mul_z($q, $q, $z);
 
-        $sum = __add__($sum, __mul__(__pow__($x, $k), $q));
+        push @terms, __mul__(__pow__($x, $k), $q);
     }
 
-    bless \$sum;
+    bless \_binsplit(\@terms, \&__add__);
 }
 
 #
@@ -3384,7 +3384,7 @@ sub euler_polynomial ($$) {
 
     $x = __dec__(__add__($x, $x));    # x = 2*x - 1
 
-    my $sum = Math::GMPz::Rmpz_init_set_ui(0);
+    my @terms;
 
     foreach my $k (0 .. $n) {
         --$u & 1 and next;            # E_n = 0 for all odd n
@@ -3393,12 +3393,13 @@ sub euler_polynomial ($$) {
         Math::GMPz::Rmpz_mul($z, $z, $S[$u >> 1]);
         Math::GMPz::Rmpz_neg($z, $z) if (($u >> 1) & 1);
 
-        $sum = __add__($sum, __mul__(__pow__($x, $k), $z));
+        push @terms, __mul__(__pow__($x, $k), $z);
     }
 
     Math::GMPz::Rmpz_set_ui($z, 0);
     Math::GMPz::Rmpz_setbit($z, $n);
-    bless \__div__($sum, $z);
+
+    bless \__div__(_binsplit(\@terms, \&__add__), $z);
 }
 
 sub euler ($;$) {
