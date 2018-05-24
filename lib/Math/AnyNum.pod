@@ -47,66 +47,66 @@ Additionally, each Math::AnyNum object is B<immutable>.
 
   :ntheory
 
-    binomial(n,k)                binomial coefficient
-    multinomial(@list)           multinomial coefficient
-    factorial(n)                 product of first n integers: n!
-    dfactorial(n)                double-factorial: n!!
-    mfactorial(n,k)              multi-factorial: n*(n-k)*(n-2k)*...
-    subfactorial(n)              number of derangements: !n
-    subfactorial(n,k)            number of derangements with k fixed points
-    superfactorial(n)            product of first n factorials
-    hyperfactorial(n)            product of k^k for k=1..n
-    rising_factorial(n,k)        rising factorial: n^(k)
-    falling_factorial(n,k)       falling factorial: (n)_k
-    bell(n)                      n-th Bell number
-    catalan(n)                   n-th Catalan number
-    lucas(n)                     n-th Lucas number
-    fibonacci(n)                 n-th Fibonacci number
-    fibonacci(n,k)               n-th Fibonacci number of k-th order
-    polygonal(n,k)               n-th k-gonal number
-    harmonic(n)                  n-th harmonic numbers: 1+1/2+...+1/n
-    euler(n)                     n-th Euler number
-    bernoulli(n)                 n-th Bernoulli number
-    euler(n,x)                   Euler polynomial
-    bernoulli(n,x)               Bernoulli polynomial
-    faulhaber_sum(n,k)           sum of powers: 1^k + 2^k + ... + n^k
-    geometric_sum(n,r)           geometric sum: r^0 + r^1 + ... + r^n
-    kronecker(n,k)               Kronecker (Jacobi) symbol
-    gcd(@list)                   greatest common divisor
-    lcm(@list)                   least common multiple
-    iadd(a,b)                    integer addition: a+b
-    isub(a,b)                    integer subtraction: a-b
-    imul(a,b)                    integer multiplication: a*b
-    idiv(a,b)                    integer division: int(a/b)
-    imod(a,b)                    integer remainder of a/b
-    ipow(n,k)                    integer exponentiation: n^k
-    ipow2(k)                     integer exponentiation: 2^k
-    ipow10(k)                    integer exponentiation: 10^k
-    iroot(n,k)                   integer k-th root of n
-    isqrt(n)                     integer square root of n
-    icbrt(n)                     integer cube root of n
-    ilog(n,k)                    integer logarithm of n to base k
-    ilog2(n)                     integer logarithm of n to base 2
-    ilog10(n)                    integer logarithm of n to base 10
-    divmod(a,b)                  quotient and remainder of a/b
-    invmod(n,k)                  inverse of n modulo k
-    powmod(a,b,n)                modular exponentiation: a ^ b mod n
-    isqrtrem(n)                  integer sqrt remainder: n - isqrt(n)^2
-    irootrem(n,k)                integer root remainder: n - iroot(n,k)^k
-    is_square(n)                 return 1 if n is a perfect square
-    is_power(n)                  return 1 if n = c^k for integer c
-    is_power(n,k)                return 1 if n = c^k for integer c, k
-    is_polygonal(n,k)            return 1 if n is a first k-polygonal number
-    is_polygonal2(n,k)           return 1 if n is a second k-polygonal number
-    is_coprime(n,k)              return 1 if gcd(n,k) = 1
-    is_smooth(n,k)               return 1 if all prime factors of n are <= k
-    is_prime(n,[r])              Miller-Rabin primality test
-    primorial(n)                 product of primes below n
-    next_prime(n)                next prime > n
-    valuation(n,k)               number of times n is divisible by k
-    remdiv(n,k)                  n / k^valuation(n,k)
-    ipolygonal_root(n,k)         first integer k-gonal root of n
-    ipolygonal_root2(n,k)        second integer k-gonal root of n
+    binomial(n,k)             binomial coefficient
+    multinomial(@list)        multinomial coefficient
+    factorial(n)              product of first n integers: n!
+    dfactorial(n)             double-factorial: n!!
+    mfactorial(n,k)           multi-factorial: n*(n-k)*(n-2k)*...
+    subfactorial(n)           number of derangements: !n
+    subfactorial(n,k)         number of derangements with k fixed points
+    superfactorial(n)         product of first n factorials
+    hyperfactorial(n)         product of k^k for k=1..n
+    rising_factorial(n,k)     rising factorial: n^(k)
+    falling_factorial(n,k)    falling factorial: (n)_k
+    bell(n)                   n-th Bell number
+    catalan(n)                n-th Catalan number
+    lucas(n)                  n-th Lucas number
+    fibonacci(n)              n-th Fibonacci number
+    fibonacci(n,k)            n-th Fibonacci number of k-th order
+    polygonal(n,k)            n-th k-gonal number
+    harmonic(n)               n-th harmonic numbers: 1+1/2+...+1/n
+    euler(n)                  n-th Euler number
+    bernoulli(n)              n-th Bernoulli number
+    euler(n,x)                Euler polynomial
+    bernoulli(n,x)            Bernoulli polynomial
+    faulhaber_sum(n,k)        sum of powers: 1^k + 2^k + ... + n^k
+    geometric_sum(n,r)        geometric sum: r^0 + r^1 + ... + r^n
+    kronecker(n,k)            Kronecker (Jacobi) symbol
+    gcd(@list)                greatest common divisor
+    lcm(@list)                least common multiple
+    iadd(a,b)                 integer addition: a+b
+    isub(a,b)                 integer subtraction: a-b
+    imul(a,b)                 integer multiplication: a*b
+    idiv(a,b)                 integer division: int(a/b)
+    imod(a,b)                 integer remainder of a/b
+    ipow(n,k)                 integer exponentiation: n^k
+    ipow2(k)                  integer exponentiation: 2^k
+    ipow10(k)                 integer exponentiation: 10^k
+    iroot(n,k)                integer k-th root of n
+    isqrt(n)                  integer square root of n
+    icbrt(n)                  integer cube root of n
+    ilog(n,k)                 integer logarithm of n to base k
+    ilog2(n)                  integer logarithm of n to base 2
+    ilog10(n)                 integer logarithm of n to base 10
+    divmod(a,b)               quotient and remainder of a/b
+    invmod(n,k)               inverse of n modulo k
+    powmod(a,b,n)             modular exponentiation: a ^ b mod n
+    isqrtrem(n)               integer sqrt remainder: n - isqrt(n)^2
+    irootrem(n,k)             integer root remainder: n - iroot(n,k)^k
+    is_square(n)              return 1 if n is a perfect square
+    is_power(n)               return 1 if n = c^k for integer c
+    is_power(n,k)             return 1 if n = c^k for integer c, k
+    is_polygonal(n,k)         return 1 if n is a first k-polygonal number
+    is_polygonal2(n,k)        return 1 if n is a second k-polygonal number
+    is_coprime(n,k)           return 1 if gcd(n,k) = 1
+    is_smooth(n,k)            return 1 if all prime factors of n are <= k
+    is_prime(n,[r])           Miller-Rabin primality test
+    primorial(n)              product of primes below n
+    next_prime(n)             next prime > n
+    valuation(n,k)            number of times n is divisible by k
+    remdiv(n,k)               n / k^valuation(n,k)
+    ipolygonal_root(n,k)      first integer k-gonal root of n
+    ipolygonal_root2(n,k)     second integer k-gonal root of n
 
   :special
 
