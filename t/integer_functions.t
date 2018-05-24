@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 425;    # be careful
+plan tests => 428;    # be careful
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -32,9 +32,10 @@ is(fibonacci(12),          '144');
 is(fibonacci(-3),          'NaN');
 is(fibonacci($o->new(12)), '144');
 
-is(join(' ', map { fibonacci($_, 3) } 0 .. 14), '0 0 1 1 2 4 7 13 24 44 81 149 274 504 927');
-is(join(' ', map { fibonacci(Math::AnyNum->new_ui($_), Math::AnyNum->new_ui(4)) } 0 .. 14),
-    '0 0 0 1 1 2 4 8 15 29 56 108 208 401 773');
+#<<<
+is(join(' ', map { fibonacci($_, 3) } 0 .. 14),                                             '0 0 1 1 2 4 7 13 24 44 81 149 274 504 927');
+is(join(' ', map { fibonacci(Math::AnyNum->new_ui($_), Math::AnyNum->new_ui(4)) } 0 .. 14), '0 0 0 1 1 2 4 8 15 29 56 108 208 401 773');
+#>>>
 
 is(binomial(12,           5),           '792');
 is(binomial(0,            0),           '1');
@@ -96,9 +97,14 @@ is(superfactorial(5),  '34560');
 is(hyperfactorial(-1), 'NaN');
 is(hyperfactorial(5),  '86400000');
 
+is(bell(-1),    'NaN');
 is(catalan(-1), 'NaN');
-is(catalan(10), '16796');
-is(catalan(25), '4861946401452');
+
+is(join(', ', map { catalan($_) } 0 .. 10), '1, 1, 2, 5, 14, 42, 132, 429, 1430, 4862, 16796');
+is(join(', ', map { bell($_) } 0 .. 10),    '1, 1, 2, 5, 15, 52, 203, 877, 4140, 21147, 115975');
+
+is(bell($o->new(30)),    '846749014511809332450147');
+is(catalan($o->new(45)), '2257117854077248073253720');
 
 #<<<
 is(falling_factorial(123, $o->new(-42)),          '1/4465482258831228787047309106389002878492944333613461706826678255930625748893696000000000000');

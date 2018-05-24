@@ -58,6 +58,7 @@ Additionally, each Math::AnyNum object is B<immutable>.
     hyperfactorial(n)            product of k^k for k=1..n
     rising_factorial(n,k)        rising factorial: n^(k)
     falling_factorial(n,k)       falling factorial: (n)_k
+    bell(n)                      n-th Bell number
     catalan(n)                   n-th Catalan number
     lucas(n)                     n-th Lucas number
     fibonacci(n)                 n-th Fibonacci number
@@ -1307,11 +1308,17 @@ Product of first C<n> factorials: C<Prod_{k=1..n} k!>.
 
 Hyperfactorial of C<n>, defined as: C<Prod_{k=1..n} k^k>.
 
+=head2 bell
+
+    bell(n)                                       #=> Int | NaN
+
+Returns the n-th Bell number.
+
 =head2 catalan
 
     catalan(n)                                    #=> Int | NaN
 
-Returns the n-th Catalan numbers.
+Returns the n-th Catalan number.
 
 =head2 binomial
 

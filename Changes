@@ -6,6 +6,7 @@ Revision history for Math-AnyNum
 
         - sum(a,b,c,...)              sum of a list of numbers.
         - prod(a,b,c,...)             product of a list of numbers (using binary splitting).
+        - bell(n)                     n-th Bell number (OEIS: A000110)
         - catalan(n)                  n-th Catalan number (OEIS: A000108)
         - euler(n)                    n-th Euler number (OEIS: A122045).
         - euler_polynomial(n, x)      Euler polynomial (also available as `euler(n, x)`)

@@ -188,6 +188,7 @@ use overload
         mfactorial   => \&mfactorial,
         subfactorial => \&subfactorial,
         primorial    => \&primorial,
+        bell         => \&bell,
         catalan      => \&catalan,
         binomial     => \&binomial,
         multinomial  => \&multinomial,
@@ -6946,7 +6947,7 @@ sub bernreal ($) {
 
 # Natural logarithm of the n-th Bernoulli number
 
-sub lnbern {
+sub lnbern ($) {
     my ($n) = @_;
 
     $n = _star2mpz($n) // goto &nan;
@@ -7094,7 +7095,7 @@ sub subfactorial ($;$) {
     bless \$z;
 }
 
-sub superfactorial {
+sub superfactorial ($) {
     my ($n) = @_;
 
     if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
@@ -7117,7 +7118,7 @@ sub superfactorial {
     bless \_binsplit(\@list, \&__mul__);
 }
 
-sub lnsuperfactorial {
+sub lnsuperfactorial ($) {
     my ($n) = @_;
 
     if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
@@ -7145,7 +7146,7 @@ sub lnsuperfactorial {
     bless \$r;
 }
 
-sub hyperfactorial {
+sub hyperfactorial ($) {
     my ($n) = @_;
 
     if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
@@ -7168,7 +7169,7 @@ sub hyperfactorial {
     bless \_binsplit(\@list, \&__mul__);
 }
 
-sub lnhyperfactorial {
+sub lnhyperfactorial ($) {
     my ($n) = @_;
 
     if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
@@ -7223,20 +7224,20 @@ sub factorial ($) {
 #
 
 sub dfactorial ($) {
-    my ($x) = @_;
+    my ($n) = @_;
 
-    if (!ref($x) and CORE::int($x) eq $x and $x >= 0 and $x < ULONG_MAX) {
-        ## `x` is a native unsigned integer
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
     }
-    elsif (ref($x) eq __PACKAGE__) {
-        $x = _any2ui($$x) // goto &nan;
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
     }
     else {
-        $x = _any2ui(_star2obj($x)) // goto &nan;
+        $n = _any2ui(_star2obj($n)) // goto &nan;
     }
 
     my $r = Math::GMPz::Rmpz_init();
-    Math::GMPz::Rmpz_2fac_ui($r, $x);
+    Math::GMPz::Rmpz_2fac_ui($r, $n);
     bless \$r;
 }
 
@@ -8211,7 +8212,7 @@ sub powmod ($$$) {
 ## Geometric summation formula
 #
 
-sub geometric_sum {
+sub geometric_sum ($$) {
     my ($n, $r) = @_;
 
     $n = _star2obj($n);
@@ -8224,7 +8225,7 @@ sub geometric_sum {
 ## Faulhaber summation formula
 #
 
-sub faulhaber_sum {
+sub faulhaber_sum ($$) {
     my ($n, $p) = @_;
 
     my $native_n = 0;
@@ -8305,7 +8306,7 @@ sub faulhaber_sum {
 ## Catalan numbers
 #
 
-sub catalan {
+sub catalan ($) {
     my ($n) = @_;
 
     if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
@@ -8322,6 +8323,44 @@ sub catalan {
     Math::GMPz::Rmpz_bin_uiui($r, $n << 1, $n);
     Math::GMPz::Rmpz_divexact_ui($r, $r, $n + 1);
     bless \$r;
+}
+
+#
+## Bell numbers
+#
+
+sub bell ($) {
+    my ($n) = @_;
+
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
+    }
+    else {
+        $n = _any2ui(_star2obj($n)) // goto &nan;
+    }
+
+    my @acc;
+
+    my $t    = Math::GMPz::Rmpz_init();
+    my $bell = Math::GMPz::Rmpz_init_set_ui(1);
+
+    foreach my $k (1 .. $n) {
+
+        Math::GMPz::Rmpz_set($t, $bell);
+
+        foreach my $item (@acc) {
+            Math::GMPz::Rmpz_add($t, $t, $item);
+            Math::GMPz::Rmpz_set($item, $t);
+        }
+
+        unshift @acc, $bell;
+        $bell = Math::GMPz::Rmpz_init_set($acc[-1]);
+    }
+
+    bless \$bell;
 }
 
 #
