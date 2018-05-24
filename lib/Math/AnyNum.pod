@@ -16,21 +16,21 @@ Math::AnyNum provides a transparent and easy-to-use interface to L<Math::GMPz>, 
     use Math::AnyNum qw(:overload factorial);
 
     # Integers
-    say factorial(30);                            #=> 265252859812191058636308480000000
+    say factorial(30);              #=> 265252859812191058636308480000000
 
     # Floating-point numbers
-    say sqrt(1 / factorial(100));                 #=> 1.0351378111756264713204945[...]e-79
+    say sqrt(1 / factorial(100));   #=> 1.0351378111756264713204945[...]e-79
 
     # Rational numbers
     my $x = 2/3;
-    say ($x * 3);                                 #=> 2
-    say (2 / $x);                                 #=> 3
-    say $x;                                       #=> 2/3
+    say ($x * 3);                   #=> 2
+    say (2 / $x);                   #=> 3
+    say $x;                         #=> 2/3
 
     # Complex numbers
-    say 3 + 4*i;                                  #=> 3+4i
-    say sqrt(-4);                                 #=> 2i
-    say log(-1);                                  #=> 3.1415926535897932384626433832[...]i
+    say 3 + 4*i;                    #=> 3+4i
+    say sqrt(-4);                   #=> 2i
+    say log(-1);                    #=> 3.1415926535897932384626433832[...]i
 
 =head1 DESCRIPTION
 
@@ -43,76 +43,209 @@ which tries really hard to do the right thing and as efficiently as possible.
 
 Additionally, each Math::AnyNum object is B<immutable>.
 
-=head1 HOW IT WORKS
+=head1 FUNCTIONS
 
-Internally, each Math::AnyNum object holds a reference to an object of type Math::GMPz, Math::GMPq, Math::MPFR or Math::MPC.
-Based on the internal types, it decides what functions to call on each operation and does automatic promotion whenever necessarily.
+  :ntheory
 
-The promotion rules can be summarized as follows:
+    binomial(n,k)                binomial coefficient
+    multinomial(@list)           multinomial coefficient
+    factorial(n)                 product of first n integers: n!
+    dfactorial(n)                double-factorial: n!!
+    mfactorial(n,k)              multi-factorial: n*(n-k)*(n-2k)*...
+    subfactorial(n)              number of derangements: !n
+    subfactorial(n,k)            number of derangements with k fixed points
+    superfactorial(n)            product of first n factorials
+    hyperfactorial(n)            product of k^k for k=1..n
+    rising_factorial(n,k)        rising factorial: n^(k)
+    falling_factorial(n,k)       falling factorial: (n)_k
+    lucas(n)                     n-th Lucas number
+    fibonacci(n)                 n-th Fibonacci number
+    fibonacci(n,k)               n-th Fibonacci number of k-th order
+    polygonal(n,k)               n-th k-gonal number
+    harmonic(n)                  n-th harmonic numbers: 1+1/2+...+1/n
+    euler(n)                     n-th Euler number
+    bernoulli(n)                 n-th Bernoulli number
+    euler(n,x)                   Euler polynomial
+    bernoulli(n,x)               Bernoulli polynomial
+    faulhaber_sum(n,k)           sum of powers: 1^k + 2^k + ... + n^k
+    kronecker(n,k)               Kronecker (Jacobi) symbol
+    gcd(@list)                   greatest common divisor
+    lcm(@list)                   least common multiple
+    iadd(a,b)                    integer addition: a+b
+    isub(a,b)                    integer subtraction: a-b
+    imul(a,b)                    integer multiplication: a*b
+    idiv(a,b)                    integer division: int(a/b)
+    imod(a,b)                    integer remainder of a/b
+    ipow(n,k)                    integer exponentiation: n^k
+    ipow2(k)                     integer exponentiation: 2^k
+    ipow10(k)                    integer exponentiation: 10^k
+    iroot(n,k)                   integer k-th root of n
+    isqrt(n)                     integer square root of n
+    icbrt(n)                     integer cube root of n
+    ilog(n,k)                    integer logarithm of n to base k
+    ilog2(n)                     integer logarithm of n to base 2
+    ilog10(n)                    integer logarithm of n to base 10
+    divmod(a,b)                  quotient and remainder of a/b
+    invmod(n,k)                  inverse of n modulo k
+    powmod(a,b,n)                modular exponentiation: a ^ b mod n
+    isqrtrem(n)                  integer sqrt remainder: n - isqrt(n)^2
+    irootrem(n,k)                integer root remainder: n - iroot(n,k)^k
+    is_square(n)                 return 1 if n is a perfect square
+    is_power(n)                  return 1 if n = c^k for integer c
+    is_power(n,k)                return 1 if n = c^k for integer c, k
+    is_polygonal(n,k)            return 1 if n is a first k-polygonal number
+    is_polygonal2(n,k)           return 1 if n is a second k-polygonal number
+    is_coprime(n,k)              return 1 if gcd(n,k) = 1
+    is_smooth(n,k)               return 1 if all prime factors of n are <= k
+    is_prime(n,[r])              Miller-Rabin primality test
+    primorial(n)                 product of primes below n
+    next_prime(n)                next prime > n
+    valuation(n,k)               number of times n is divisible by k
+    remdiv(n,k)                  n / k^valuation(n,k)
+    ipolygonal_root(n,k)         first integer k-gonal root of n
+    ipolygonal_root2(n,k)        second integer k-gonal root of n
 
-    (Integer, Integer)   -> Integer  | Rational | Float   | Complex
-    (Integer, Rational)  -> Rational | Float    | Complex
-    (Integer, Float)     -> Float    | Complex
-    (Integer, Complex)   -> Complex
+  :special
 
-    (Rational, Rational) -> Rational | Float    | Complex
-    (Rational, Float)    -> Float    | Complex
-    (Rational, Complex)  -> Complex
+    beta(x,y)                    Beta function
+    eta(x)                       Dirichlet eta function η(x)
+    gamma(x)                     Gamma function Γ(x)
+    lgamma(x)                    natural logarithm of abs(Γ(x))
+    lngamma(x)                   natural logarithm of Γ(x)
+    lnsuperfactorial(n)          natural logarithm of superfactorial(n)
+    lnhyperfactorial(n)          natural logarithm of hyperfactorial(n)
+    digamma(x)                   Digamma function ψ(x)
+    zeta(x)                      Zeta function ζ(x)
+    Ai(x)                        Airy function
+    Ei(x)                        exponential integral function
+    Li(x)                        logarithmic integral function
+    Li2(x)                       dilogarithm function
+    lgrt(x)                      logarithmic-root: lgrt(x^x) = x
+    LambertW(x)                  Lambert W function
+    BesselJ(x,n)                 first order Bessel function J_n(x)
+    BesselY(x,n)                 second order Bessel function Y_n(x)
+    pow(x,y)                     power function: x^y
+    sqr(x)                       square function: x^2
+    sqrt(x)                      square root function: x^(1/2)
+    cbrt(x)                      cube root function: x^(1/3)
+    root(x,y)                    root function: x^(1/y)
+    exp(x)                       exponential function: e^x
+    exp2(x)                      exponential function: 2^x
+    exp10(x)                     exponential function: 10^x
+    ln(x)                        natural logarithm of x
+    log(x,y)                     logarithm of x to base y
+    log2(x)                      logarithm of x to base 2
+    log10(x)                     logarithm of x to base 10
+    mod(x,y)                     remainder of x/y
+    erf(x)                       the Gauss error function
+    erfc(x)                      the complementary error function
+    abs(x)                       absolute value of x
+    agm(x,y)                     arithmetic-geometric mean
+    hypot(x,y)                   hypotenuse: sqrt(x^2 + y^2)
+    norm(x,y)                    the norm function: x^2 + y^2
+    bernreal(n)                  Bernoulli number as floating-point
+    harmreal(n)                  Harmonic number as floating-point
+    polymod(@list)               Poly modulo function
+    polygonal_root(n,k)          first k-gonal root of n
+    polygonal_root2(n,k)         second k-gonal root of n
 
-    (Float, Float)       -> Float    | Complex
-    (Float, Complex)     -> Complex
+  :trig
 
-    (Complex, Complex)   -> Complex
+    sin(x)              trigonometric sine function
+    cos(x)              trigonometric cosine function
+    tan(x)              trigonometric tangent function
+    csc(x)              trigonometric cosecant function
+    sec(x)              trigonometric secant function
+    cot(x)              trigonometric cotangent function
 
-For explicit conversions, Math::AnyNum provides the following functions:
+    asin(x)             inverse of trigonometric sine
+    acos(x)             inverse of trigonometric cosine
+    atan(x)             inverse of trigonometric tangent
+    acsc(x)             inverse of trigonometric cosecant
+    asec(x)             inverse of trigonometric secant
+    acot(x)             inverse of trigonometric cotangent
 
-    int(x)          # converts x to an integer (NaN if not possible)
-    rat(x)          # converts x to a rational (NaN if not possible)
-    float(x)        # converts x to a real-float (NaN if not possible)
-    complex(x)      # converts x to a complex number (always possible)
+    sinh(x)             hyperbolic sine function
+    cosh(x)             hyperbolic cosine function
+    tanh(x)             hyperbolic tangent function
+    csch(x)             hyperbolic cosecant function
+    sech(x)             hyperbolic secant function
+    coth(x)             hyperbolic cotangent function
+
+    asinh(x)            inverse of hyperbolic sine
+    acosh(x)            inverse of hyperbolic cosine function
+    atanh(x)            inverse of hyperbolic tangent
+    acsch(x)            inverse of hyperbolic cosecant
+    asech(x)            inverse of hyperbolic secant
+    acoth(x)            inverse of hyperbolic cotangent
+
+    atan2(x,y)          two-argument variant of arctangent
+    rad2deg(x)          convert radians to degrees
+    deg2rad(x)          convert degrees to radians
+
+  :misc
+
+    rand(a)             pseudo-random floating-point: 0 <= r < a
+    rand(a,b)           pseudo-random floating-point: a <= r < b
+    irand(a)            pseudo-random integer: 0 <= r <= a
+    irand(a,b)          pseudo-random integer: a <= r <= b
+    seed(n)             re-seed the `rand()` function
+    iseed(n)            re-seed the `irand()` function
+    int(x)              truncate x to an integer
+    floor(x)            round x towards -Infinity
+    ceil(x)             round x towards +Infinity
+    round(x)            round x to the nearest integer
+    round(x,+k)         round x before the decimal point
+    round(x,-k)         round x after the decimal point
+    rat(x)              convert x into a rational number
+    rat(str)            parse a decimal expansion as fraction
+    rat_approx(x)       rational approximation of real number x
+    numerator(q)        numerator of rational number q
+    denominator(q)      denominator of rational number q
+    nude(q)             numerator and denominator of q
+    float(x)            convert x into a floating-point number
+    complex(x)          convert x into a complex number
+    real(z)             real part of complex number z
+    imag(z)             imaginary part of complex number z
+    reals(z)            real and imaginary part of z as reals
+    sgn(x)              -1 if x < 0; 0 if x = 0; 1 if x > 0
+    neg(x)              additive inverse of x: -x
+    inv(x)              multiplicative inverse of x: 1/x
+    conj(x)             complex conjugate of x
+    acmp(a,b,k)         approximate comparison of round(a,k) and round(b,k)
+    digits(n,b)         digits of n in base b
+    sumdigits(n,b)      sum of digits of n in base b
+    popcount(n)         number of 1's in binary representation of n
+    getbit(n,k)         k-th bit of integer n (1 or 0)
+    setbit(n,k)         set the k-th bit of integer to 1
+    clearbit(n,k)       set the k-th bit of integer to 0
+    flipbit(n,k)        flip the k-th bit of integer
+
+    as_bin(n)           binary string-representation of n
+    as_oct(n)           octal string-representation of n
+    as_hex(n)           hexadecimal string-representation of n
+    as_int(n,b)         integer string-representation of n in base b
+    as_frac(n,b)        fraction string-representation of n in base b
+    as_dec(n,d)         decimal string-expansion of n with d digits
+
+    is_pos(n)           return 1 if n > 0
+    is_neg(n)           return 1 if n < 0
+    is_int(n)           return 1 if n is an integer
+    is_rat(n)           return 1 if n is a rational number
+    is_real(n)          return 1 if n is a real number
+    is_imag(n)          return 1 if n is an imaginary number
+    is_complex(n)       return 1 if n is a complex number
+    is_inf(n)           return 1 if n is +Infinity
+    is_ninf(n)          return 1 if n is -Infinity
+    is_nan(n)           return 1 if n is Not-a-Number (NaN)
+    is_zero(n)          return 1 if n = 0
+    is_one(n)           return 1 if n = 1
+    is_mone(n)          return 1 if n = -1
+    is_even(n)          return 1 if n is an integer divisible by 2
+    is_odd(n)           return 1 if n is an integer not divisible by 2
+    is_div(n,k)         return 1 if n is exactly divisible by k
 
 =head1 IMPORT / EXPORT
-
-The following functions are exportable:
-
-    :trig
-        sin sinh asin asinh
-        cos cosh acos acosh
-        tan tanh atan atanh
-        cot coth acot acoth
-        sec sech asec asech
-        csc csch acsc acsch
-        atan2 rad2deg deg2rad
-
-    :special
-        beta eta gamma lgamma lngamma digamma zeta
-        Ai Ei Li Li2 LambertW BesselJ BesselY lgrt
-        pow sqr sqrt cbrt root exp exp2 exp10 log
-        ln log2 log10 mod polymod erf erfc abs agm
-        hypot norm bernreal harmreal polygonal_root
-        polygonal_root2
-
-    :ntheory
-        factorial dfactorial mfactorial primorial
-        binomial lucas fibonacci bernfrac harmfrac
-        lcm gcd valuation kronecker remdiv divmod
-        iadd isub imul idiv imod ipow ipow2 ipow10
-        iroot isqrt icbrt ilog ilog2 ilog10 invmod
-        powmod isqrtrem irootrem is_power is_square
-        is_prime is_coprime next_prime is_polygonal
-        is_polygonal2 faulhaber_sum ipolygonal_root
-        ipolygonal_root2 polygonal rising_factorial
-        falling_factorial subfactorial multinomial
-        is_smooth
-
-    :misc
-        rand irand seed iseed floor ceil round sgn neg inv
-        conj int rat float complex real imag reals digits
-        numerator denominator nude popcount as_bin as_hex
-        as_oct as_int as_dec as_frac is_pos is_neg is_int
-        is_rat is_real is_imag is_complex is_inf is_ninf
-        is_nan is_zero is_one is_mone is_even is_odd is_div
-        getbit setbit flipbit clearbit acmp rat_approx
 
 Each function can be exported individually, as:
 
@@ -162,6 +295,34 @@ The syntax for importing a constant, is:
     say pi;                          # 3.141592653589...
 
 Nothing is exported by default.
+
+=head1 HOW IT WORKS
+
+Internally, each Math::AnyNum object holds a reference to an object of type Math::GMPz, Math::GMPq, Math::MPFR or Math::MPC.
+Based on the internal types, it decides what functions to call on each operation and does automatic promotion whenever necessarily.
+
+The promotion rules can be summarized as follows:
+
+    (Integer, Integer)   -> Integer  | Rational | Float   | Complex
+    (Integer, Rational)  -> Rational | Float    | Complex
+    (Integer, Float)     -> Float    | Complex
+    (Integer, Complex)   -> Complex
+
+    (Rational, Rational) -> Rational | Float    | Complex
+    (Rational, Float)    -> Float    | Complex
+    (Rational, Complex)  -> Complex
+
+    (Float, Float)       -> Float    | Complex
+    (Float, Complex)     -> Complex
+
+    (Complex, Complex)   -> Complex
+
+For explicit conversions, Math::AnyNum provides the following functions:
+
+    int(x)          # converts x to an integer (NaN if not possible)
+    rat(x)          # converts x to a rational (NaN if not possible)
+    float(x)        # converts x to a real-float (NaN if not possible)
+    complex(x)      # converts x to a complex number (always possible)
 
 =head1 PRECISION
 
@@ -601,28 +762,55 @@ When the value of C<x> is less than C<e**(-1/e)>, it returns a complex number. I
 
 Example:
 
-     lgrt(100)            # solves for x in `x**x = 100` and returns: `3.59728...`
+     lgrt(100)          # solves for x in `x**x = 100` and returns: `3.59728...`
+
+This function is related to the Lambert-W function via the following identities:
+
+    log(lgrt(exp(x)))     = LambertW(x)
+    exp(LambertW(log(x))) = lgrt(x)
 
 =head2 LambertW
 
     LambertW(x)                                   #=> Any
 
 The Lambert-W function. When the value of C<x> is less than C<-1/e>, it returns a complex number.
+
 It also accepts a complex number as input.
 
-Example:
+Examples (assumming x>0):
 
-     exp(LambertW(log(100)))    # solves for x in `x**x = 100` and returns: `3.59728...`
+     LambertW(exp(x)*x) = x
+     LambertW(log(x)*x) = log(x)
 
-=head2 bernfrac
+=head2 bernoulli_polynomial
 
-    bernfrac(n)                                   #=> Rat | NaN
+    bernoulli_polynomial(n, x)                    #=> Any
 
-Returns the nth-Bernoulli number C<B_n> as an exact fraction, starting with C<bernfrac(0) = 1>.
+Returns the n-th Bernoulli polynomial.
 
-Algorithm due to Kevin J. McGown (December 8, 2005). Described in his paper: "Computing Bernoulli Numbers Quickly".
+=head2 euler_polynomial
 
-Returns NaN for negatives values of C<n>.
+    euler_polynomial(n, x)                        #=> Any
+
+Returns the n-th Euler polynomial.
+
+=head2 bernoulli / bernfrac
+
+    bernoulli(n)                                  #=> Rat | NaN
+    bernoulli(n, x)                               #=> Any
+
+Returns the n-th Bernoulli number C<B_n> as an exact fraction, starting with C<bernoulli(0) = 1>.
+
+When an additional argument is provided, it returns the the n-th Bernoulli polynomial.
+
+=head2 euler
+
+    euler(n)                                      #=> Rat | NaN
+    euler(n, x)                                   #=> Any
+
+Returns the n-th Euler number C<E_n>, starting with C<euler(0) = 1>.
+
+When an additional argument is provided, it returns the the n-th Euler polynomial.
 
 =head2 bernreal
 
@@ -630,11 +818,9 @@ Returns NaN for negatives values of C<n>.
 
 Returns the nth-Bernoulli number, as a floating-point approximation, with C<bernreal(0) = 1>.
 
-Returns NaN for negatives values of C<n>.
+=head2 harmonic / harmfrac
 
-=head2 harmfrac
-
-    harmfrac(n)                                   #=> Rat | NaN
+    harmonic(n)                                   #=> Rat | NaN
 
 Returns the nth-Harmonic number C<H_n>. The harmonic numbers are the sum of
 reciprocals of the first C<n> natural numbers: C<1 + 1/2 + 1/3 + ... + 1/n>.
@@ -669,32 +855,44 @@ The value of the hypotenuse for catheti C<x> and C<y>. Equivalent to C<sqrt(x**2
 
 =head2 gamma
 
-    gamma(x)                                      #=> Float | Inf | NaN
+    gamma(x)                                      #=> Float
 
 The Gamma function on C<x>. Returns Inf when C<x> is zero, and NaN when C<x> is a negative integer.
 
 =head2 lgamma
 
-    lgamma(x)                                     #=> Float | Inf | NaN
+    lgamma(x)                                     #=> Float
 
-The logarithm of the absolute value of the Gamma function.
+Natural logarithm of the absolute value of the Gamma function.
 
 =head2 lngamma
 
-    lngamma(x)                                    #=> Float | Inf | NaN
+    lngamma(x)                                    #=> Float
 
-The natural logarithm of the Gamma function on C<x>.
+Natural logarithm of the Gamma function on C<x>.
+
+=head2 lnsuperfactorial
+
+    lnsuperfactorial(n)                           #=> Float
+
+Natural logarithm of C<superfactorial(n)>, where C<n> is a non-negative integer.
+
+=head2 lnhyperfactorial
+
+    lnsuperfactorial(n)                           #=> Float
+
+Natural logarithm of C<hyperfactorial(n)>, where C<n> is a non-negative integer.
 
 =head2 digamma
 
-    digamma(x)                                    #=> Float | Inf | NaN
+    digamma(x)                                    #=> Float
 
 The Digamma function (sometimes called Psi).
 Returns NaN when C<x> is negative, and -Inf when C<x> is 0.
 
 =head2 beta
 
-    beta(x, y)                                    #=> Float | Inf | NaN
+    beta(x, y)                                    #=> Float
 
 The beta function (also called the Euler integral of the first kind).
 
@@ -704,13 +902,13 @@ Defined as:
 
 =head2 zeta
 
-    zeta(x)                                       #=> Float | Inf | NaN
+    zeta(x)                                       #=> Float
 
 The Riemann zeta function at C<x>. Returns Inf when C<x> is 1.
 
 =head2 eta
 
-    eta(x)                                        #=> Float | Inf | NaN
+    eta(x)                                        #=> Float
 
 The Dirichlet eta function at C<x>.
 
@@ -721,7 +919,7 @@ Defined as:
 
 =head2 BesselJ
 
-    BesselJ(x, n)                                 #=> Float | NaN
+    BesselJ(x, n)                                 #=> Float
 
 The first order Bessel function, C<J_n(x)>, where C<n> is a signed integer.
 
@@ -731,7 +929,7 @@ Example:
 
 =head2 BesselY
 
-    BesselY(x, n)                                 #=> Float | NaN
+    BesselY(x, n)                                 #=> Float
 
 The second order Bessel function, C<Y_n(x)>, where C<n> is a signed integer. Returns NaN for negative values of C<x>.
 
@@ -759,13 +957,13 @@ The Airy function on C<x>.
 
 =head2 Ei
 
-    Ei(x)                                         #=> Float | Inf | NaN
+    Ei(x)                                         #=> Float
 
 Exponential integral of C<x>. Returns -Inf when C<x> is zero, and NaN when C<x> is negative.
 
 =head2 Li
 
-    Li(x)                                         #=> Float | Inf | NaN
+    Li(x)                                         #=> Float
 
 The logarithmic integral of C<x>, defined as: C<Ei(ln(x))>.
 Returns -Inf when C<x> is 1, and NaN when C<x> is less than or equal to 0.
@@ -972,15 +1170,15 @@ The bitwise integer operations.
 
 =head2 gcd
 
-    gcd(x, y)                                     #=> Int
+    gcd(@list)                                    #=> Int
 
-The greatest common divisor of C<x> and C<y>.
+The greatest common divisor of a list of integers.
 
 =head2 lcm
 
-    lcm(x, y)                                     #=> Int
+    lcm(@list)                                    #=> Int
 
-The least common multiple of C<x> and C<y>.
+The least common multiple of a list of integers.
 
 =head2 valuation
 
@@ -1076,6 +1274,17 @@ See also:
 
 =back
 
+=head2 superfactorial
+
+    superfactorial(n)                               #=> Int | NaN
+
+Product of first C<n> factorials: C<Prod_{k=1..n} k!>.
+
+=head2 hyperfactorial
+
+    hyperfactorial(n)                               #=> Int | NaN
+
+Hyperfactorial of C<n>, defined as: C<Prod_{k=1..n} k^k>.
 
 =head2 binomial
 
@@ -1276,6 +1485,18 @@ Example:
 =head1 MISCELLANEOUS
 
 This section includes various useful methods.
+
+=head2 sum
+
+    sum(@list)                                    #=>  Any
+
+Sum of a list of numbers.
+
+=head2 prod
+
+    prod(@list)                                   #=> Any
+
+Product of a list of numbers.
 
 =head2 floor
 

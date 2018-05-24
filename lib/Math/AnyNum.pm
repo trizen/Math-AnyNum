@@ -174,6 +174,9 @@ use overload
         bernreal => \&bernreal,
         harmreal => \&harmreal,
 
+        lnsuperfactorial => \&lnsuperfactorial,
+        lnhyperfactorial => \&lnhyperfactorial,
+
         polygonal_root  => \&polygonal_root,
         polygonal_root2 => \&polygonal_root2,
                   );
@@ -187,6 +190,9 @@ use overload
         binomial     => \&binomial,
         multinomial  => \&multinomial,
 
+        superfactorial => \&superfactorial,
+        hyperfactorial => \&hyperfactorial,
+
         rising_factorial  => \&rising_factorial,
         falling_factorial => \&falling_factorial,
 
@@ -197,6 +203,7 @@ use overload
 
         bernfrac => \&bernfrac,
         harmfrac => \&harmfrac,
+        harmonic => \&harmfrac,
 
         euler     => \&euler,
         bernoulli => \&bernfrac,
@@ -1322,7 +1329,7 @@ sub approx_cmp ($$;$) {
         }
     }
     else {
-        $places = -((CORE::int($PREC) >> 2) - 1);
+        $places = -(($PREC >> 2) - 1);
     }
 
     $x = _star2obj($x);
@@ -3437,6 +3444,8 @@ sub harmfrac ($) {
     bless \__harmfrac__($x);
 }
 
+*harmonic = \&harmfrac;
+
 #
 ## bernreal
 #
@@ -3532,25 +3541,129 @@ sub subfactorial ($;$) {
     bless \$z;
 }
 
+sub superfactorial {
+    require Math::AnyNum::mul;
+    my ($n) = @_;
+
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
+    }
+    else {
+        $n = _any2ui(_star2obj($n)) // goto &nan;
+    }
+
+    my @list;
+    foreach my $k (2 .. $n) {
+        my $z = Math::GMPz::Rmpz_init();
+        Math::GMPz::Rmpz_ui_pow_ui($z, $k, $n - $k + 1);
+        push @list, $z;
+    }
+
+    bless \_binsplit(\@list, \&__mul__);
+}
+
+sub lnsuperfactorial {
+    my ($n) = @_;
+
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
+    }
+    else {
+        $n = _any2ui(_star2obj($n)) // goto &nan;
+    }
+
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    my $t = Math::MPFR::Rmpfr_init2($PREC);
+
+    Math::MPFR::Rmpfr_set_ui($r, 0, $ROUND);
+
+    foreach my $k (2 .. $n) {
+        Math::MPFR::Rmpfr_set_ui($t, $k, $ROUND);
+        Math::MPFR::Rmpfr_log($t, $t, $ROUND);
+        Math::MPFR::Rmpfr_mul_ui($t, $t, $n - $k + 1, $ROUND);
+        Math::MPFR::Rmpfr_add($r, $r, $t, $ROUND);
+    }
+
+    bless \$r;
+}
+
+sub hyperfactorial {
+    require Math::AnyNum::mul;
+    my ($n) = @_;
+
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
+    }
+    else {
+        $n = _any2ui(_star2obj($n)) // goto &nan;
+    }
+
+    my @list;
+    foreach my $k (2 .. $n) {
+        my $z = Math::GMPz::Rmpz_init();
+        Math::GMPz::Rmpz_ui_pow_ui($z, $k, $k);
+        push @list, $z;
+    }
+
+    bless \_binsplit(\@list, \&__mul__);
+}
+
+sub lnhyperfactorial {
+    my ($n) = @_;
+
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
+    }
+    else {
+        $n = _any2ui(_star2obj($n)) // goto &nan;
+    }
+
+    my $r = Math::MPFR::Rmpfr_init2($PREC);
+    my $t = Math::MPFR::Rmpfr_init2($PREC);
+
+    Math::MPFR::Rmpfr_set_ui($r, 0, $ROUND);
+
+    foreach my $k (2 .. $n) {
+        Math::MPFR::Rmpfr_set_ui($t, $k, $ROUND);
+        Math::MPFR::Rmpfr_log($t, $t, $ROUND);
+        Math::MPFR::Rmpfr_mul_ui($t, $t, $k, $ROUND);
+        Math::MPFR::Rmpfr_add($r, $r, $t, $ROUND);
+    }
+
+    bless \$r;
+}
+
 #
 ## Factorial
 #
 
 sub factorial ($) {
-    my ($x) = @_;
+    my ($n) = @_;
 
-    if (!ref($x) and CORE::int($x) eq $x and $x >= 0 and $x < ULONG_MAX) {
-        ## `x` is a native unsigned integer
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
     }
-    elsif (ref($x) eq __PACKAGE__) {
-        $x = _any2ui($$x) // goto &nan;
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
     }
     else {
-        $x = _any2ui(_star2obj($x)) // goto &nan;
+        $n = _any2ui(_star2obj($n)) // goto &nan;
     }
 
     my $r = Math::GMPz::Rmpz_init();
-    Math::GMPz::Rmpz_fac_ui($r, $x);
+    Math::GMPz::Rmpz_fac_ui($r, $n);
     bless \$r;
 }
 

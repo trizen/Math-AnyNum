@@ -4,11 +4,15 @@ Revision history for Math-AnyNum
 
         [ADDITIONS]
 
-        - `sum(a,b,c,...)`: sum of a list of numbers.
-        - `prod(a,b,c,...)`: product of a list of numbers (using binary splitting).
-        - `euler(n)`: n-th Euler number (OEIS: A122045).
-        - `euler_polynomial(n, x)`: Euler polynomial (also available as `euler(n, x)`)
-        - `bernoulli_polynomial(n, x)`: Bernoulli polynomial (also available as `bernoulli(n, x)`).
+        - sum(a,b,c,...)              sum of a list of numbers.
+        - prod(a,b,c,...)             product of a list of numbers (using binary splitting).
+        - euler(n)                    n-th Euler number (OEIS: A122045).
+        - euler_polynomial(n, x)      Euler polynomial (also available as `euler(n, x)`)
+        - bernoulli_polynomial(n, x)  Bernoulli polynomial (also available as `bernoulli(n, x)`).
+        - superfactorial(n)           product of first n factorials
+        - lnsuperfactorial(n)         natural logarithm of superfactorial(n)
+        - hyperfactorial(n)           product of k^k for k=1..n
+        - lnhyperfactorial(n)         natural logarithm of hyperfactorial(n)
 
         [IMPROVEMENTS]
 

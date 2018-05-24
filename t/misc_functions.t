@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 419;
+plan tests => 421;
 
 use Math::AnyNum qw(:misc);
 use List::Util qw();
@@ -66,6 +66,9 @@ foreach my $i (1 .. 1000) {
     }
 }
 ok($end_inclusive, 'rand is end-inclusive');
+
+is(sum(3, 5, 9, 41), 3 + 5 + 9 + 41);
+is(prod(3, 5, 9, 41), 3 * 5 * 9 * 41);
 
 is(sgn(-3), -1);
 is(sgn(0),  0);
