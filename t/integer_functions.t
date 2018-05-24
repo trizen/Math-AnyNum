@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 416;    # be careful
+plan tests => 419;    # be careful
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -95,6 +95,10 @@ is(superfactorial(5),  '34560');
 
 is(hyperfactorial(-1), 'NaN');
 is(hyperfactorial(5),  '86400000');
+
+is(catalan(-1), 'NaN');
+is(catalan(10), '16796');
+is(catalan(25), '4861946401452');
 
 #<<<
 is(falling_factorial(123, $o->new(-42)),          '1/4465482258831228787047309106389002878492944333613461706826678255930625748893696000000000000');

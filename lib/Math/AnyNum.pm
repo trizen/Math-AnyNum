@@ -187,6 +187,7 @@ use overload
         mfactorial   => \&mfactorial,
         subfactorial => \&subfactorial,
         primorial    => \&primorial,
+        catalan      => \&catalan,
         binomial     => \&binomial,
         multinomial  => \&multinomial,
 
@@ -4601,6 +4602,29 @@ sub faulhaber_sum {
     Math::GMPz::Rmpz_divexact_ui($z, $z, $p + 1);
 
     bless \$z;
+}
+
+#
+## Catalan numbers
+#
+
+sub catalan {
+    my ($n) = @_;
+
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
+    }
+    else {
+        $n = _any2ui(_star2obj($n)) // goto &nan;
+    }
+
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_bin_uiui($r, $n << 1, $n);
+    Math::GMPz::Rmpz_divexact_ui($r, $r, $n + 1);
+    bless \$r;
 }
 
 #
