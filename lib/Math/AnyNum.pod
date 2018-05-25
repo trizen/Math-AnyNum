@@ -206,9 +206,9 @@ Additionally, each Math::AnyNum object is B<immutable>.
     rat(x)              convert x into a rational number
     rat(str)            parse a decimal expansion as fraction
     rat_approx(x)       rational approximation of real number x
-    numerator(q)        numerator of rational number q
-    denominator(q)      denominator of rational number q
-    nude(q)             numerator and denominator of q
+    numerator(r)        numerator of rational number r
+    denominator(r)      denominator of rational number r
+    nude(r)             numerator and denominator of r
     float(x)            convert x to a floating-point number
     complex(x)          convert x to a floating-point complex number
     complex(a,b)        complex number: a + b*i
