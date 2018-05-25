@@ -1314,7 +1314,7 @@ Generalized m-factorial of C<n>. Returns NaN when C<n> or C<m> is negative. (req
     subfactorial(n, k)                            #=> Int | NaN
 
 The number of permutations of C<{1, ..., n}> that have exactly C<k> fixed points,
-given a positive integer C<n> and an optional integer C<k> (if C<k> is ommited, then C<k=0>).
+given a positive integer C<n> and an optional integer C<k> (if C<k> is omitted, then C<k=0>).
 
 See also:
 
