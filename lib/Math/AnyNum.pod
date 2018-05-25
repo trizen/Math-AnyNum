@@ -1565,13 +1565,11 @@ Product of a list of numbers.
     bsearch(n, \&f)                               #=> Int | undef
     bsearch(a, b, \&f)                            #=> Int | undef
 
-Binary search from to 0 to n, or from a to b, which can be any arbitrary large integers.
+Binary search from to C<0> to C<n>, or from C<a> to C<b>, which can be any arbitrary large integers.
 
 The last argument is a subroutine reference which does the comparisons.
 
 This function finds a value C<k> such that f(k) = 0. Returns C<undef> otherwise.
-
-Example:
 
     bsearch(20,      sub { $_*$_  <=> 49   });   #=> 7   (7*7  = 49)
     bsearch(3, 1000, sub { $_**$_ <=> 3125 });   #=> 5   (5**5 = 3125)
@@ -1581,13 +1579,11 @@ Example:
     bsearch_le(n, \&f)                               #=> Int | undef
     bsearch_le(a, b, \&f)                            #=> Int | undef
 
-Binary search from to 0 to n, or from a to b, which can be any arbitrary large integers.
+Binary search from to C<0> to C<n>, or from C<a> to C<b>, which can be any arbitrary large integers.
 
 The last argument is a subroutine reference which does the comparisons.
 
 This function finds a value C<k> such that f(k) <= 0 and f(k+1) > 0. Returns C<undef> otherwise.
-
-Example:
 
     bsearch_le(10**6,         sub { exp($_) <=> 1e+9 });  #=>  20   (exp( 20) <= 1e+9)
     bsearch_le(-10**6, 10**6, sub { exp($_) <=> 1e-9 });  #=> -21   (exp(-21) <= 1e-9)
@@ -1597,7 +1593,7 @@ Example:
     bsearch_ge(n, \&f)                               #=> Int | undef
     bsearch_ge(a, b, \&f)                            #=> Int | undef
 
-Binary search from to 0 to n, or from a to b, which can be any arbitrary large integers.
+Binary search from to C<0> to C<n>, or from C<a> to C<b>, which can be any arbitrary large integers.
 
 The last argument is a subroutine reference which does the comparisons.
 
