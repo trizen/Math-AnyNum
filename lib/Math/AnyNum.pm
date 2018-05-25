@@ -9398,8 +9398,10 @@ sub bsearch ($$;$) {
         Math::GMPz::Rmpz_add($middle, $left, $right);
         Math::GMPz::Rmpz_div_2exp($middle, $middle, 1);
 
-        local $_ = bless \Math::GMPz::Rmpz_init_set($middle);
-        my $cmp = $block->($_) || return $_;
+        my $cmp = do {
+            local $_ = bless \Math::GMPz::Rmpz_init_set($middle);
+            $block->($_) || return $_;
+        };
 
         if ($cmp > 0) {
             Math::GMPz::Rmpz_sub_ui($right, $middle, 1);
@@ -9432,8 +9434,10 @@ sub bsearch_ge ($$;$) {
         Math::GMPz::Rmpz_add($middle, $left, $right);
         Math::GMPz::Rmpz_div_2exp($middle, $middle, 1);
 
-        local $_ = bless \Math::GMPz::Rmpz_init_set($middle);
-        my $cmp = $block->($_) || return $_;
+        my $cmp = do {
+            local $_ = bless \Math::GMPz::Rmpz_init_set($middle);
+            $block->($_) || return $_;
+        };
 
         if ($cmp < 0) {
             Math::GMPz::Rmpz_add_ui($left, $middle, 1);
@@ -9472,8 +9476,10 @@ sub bsearch_le ($$;$) {
         Math::GMPz::Rmpz_add($middle, $left, $right);
         Math::GMPz::Rmpz_div_2exp($middle, $middle, 1);
 
-        local $_ = bless \Math::GMPz::Rmpz_init_set($middle);
-        my $cmp = $block->($_) || return $_;
+        my $cmp = do {
+            local $_ = bless \Math::GMPz::Rmpz_init_set($middle);
+            $block->($_) || return $_;
+        };
 
         if ($cmp < 0) {
             Math::GMPz::Rmpz_add_ui($left, $middle, 1);
