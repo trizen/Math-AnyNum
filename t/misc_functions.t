@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 434;
+plan tests => 446;
 
 use Math::AnyNum qw(:misc lngamma ipow10 log);
 use List::Util qw();
@@ -69,6 +69,12 @@ ok($end_inclusive, 'rand is end-inclusive');
 
 is(sum(3, 5, 9, 41), 3 + 5 + 9 + 41);
 is(prod(3, 5, 9, 41), 3 * 5 * 9 * 41);
+
+is(float(3.14159),         '3.14159');
+is(float('777/222'),       '3.5');
+is(float('123+45i'),       '123+45i');
+is(float('3.1+4.2i'),      '3.1+4.2i');
+is(float(sqrt(float(-1))), 'i');
 
 is(sgn(-3), -1);
 is(sgn(0),  0);
@@ -429,8 +435,16 @@ is(as_int('12.5',  rat(16)),     'c');
 is(as_int('-12.5', float(16)),   '-c');
 is(as_int('-12.5', complex(16)), '-c');
 
-is(as_frac('123/567'),          '41/189');
-is(as_frac('42'),               '42/1');
+ok(!defined(as_rat(complex(-1)->sqrt)));
+ok(!defined(as_frac(complex(-1)->sqrt)));
+
+is(as_rat('2/4'), '1/2');
+is(as_rat('42'),  '42');
+is(as_rat(255, 16), "ff");
+
+is(as_frac('123/567'), '41/189');
+is(as_frac('42'),      '42/1');
+
 is(rat_approx(complex('0.75')), '3/4');
 is(rat_approx(float('0.75')),   '3/4');
 
@@ -438,6 +452,9 @@ is(as_frac('123/567',     16),          '29/bd');
 is(as_frac(rat('43/255'), 16),          '2b/ff');
 is(as_frac(rat('43/255'), complex(16)), '2b/ff');
 is(as_frac(rat('0.75'),   rat(2)),      '11/100');
+
+is(as_rat(complex(43), complex(5)), '133');
+is(as_rat(rat('0.75'), rat(2)),     '11/100');
 
 is(as_dec(sqrt(float(2)),   3), '1.41');
 is(as_dec(sqrt(rat(2)),     4), '1.414');

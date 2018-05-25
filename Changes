@@ -1,11 +1,12 @@
 Revision history for Math-AnyNum
 
-0.25    2018-??-??
+0.25    2018-05-25
 
         [ADDITIONS]
 
         - sum(a,b,c,...)              sum of a list of numbers.
         - prod(a,b,c,...)             product of a list of numbers (using binary splitting).
+        - as_rat(n,b)                 rational string-representation of n in base b
         - bell(n)                     n-th Bell number (OEIS: A000110)
         - catalan(n)                  n-th Catalan number (OEIS: A000108)
         - euler(n)                    n-th Euler number (OEIS: A122045).
@@ -27,7 +28,9 @@ Revision history for Math-AnyNum
 
         - Extended the `gcd()` and `lcm()` functions to accept an arbitrary number of arguments.
         - Extended the optimizations in `digits(n, b)` and `sumdigits(n, b)` for all values of b <= 62.
-        - Extended the allowed value of `b` in `base(n, b)`, `as_int(n, b)`, `as_frac(n, b)` and `new(n, b`) to be between 0 and 62.
+        - Extended the allowed value of `b` in `base(n, b)`, `as_int(n, b)`, `as_frac(n, b)` and `new(n, b`) to be between 2 and 62.
+        - Extended the `float(x)` function to convert `x` to any floating-point number, either real or complex (in this order).
+        - Documentation improvements: added a brief description for each function at the top of the POD file.
 
         [INCOMPATIBLE CHANGES]
 
@@ -36,7 +39,8 @@ Revision history for Math-AnyNum
 
         [OTHER]
 
-        - Increased the minimum version of Perl from 5.14 to 5.16 (for `__SUB__`).
+        - Increased the minimum required version of Perl from 5.14 to 5.16 (for `__SUB__`).
+        - Merged all the `AnyNum/*.pm` files into the main `AnyNum.pm` file.
 
 0.24    2018-05-06
 
