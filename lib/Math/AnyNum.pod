@@ -65,10 +65,10 @@ Additionally, each Math::AnyNum object is B<immutable>.
     fibonacci(n,k)            n-th Fibonacci number of k-th order
     polygonal(n,k)            n-th k-gonal number
     harmonic(n)               n-th harmonic numbers: 1+1/2+...+1/n
-    euler(n)                  n-th Euler number
-    bernoulli(n)              n-th Bernoulli number
-    euler(n,x)                Euler polynomial
-    bernoulli(n,x)            Bernoulli polynomial
+    euler(n)                  n-th Euler number: E_n
+    bernoulli(n)              n-th Bernoulli number: B_n
+    euler(n,x)                Euler polynomial: E_n(x)
+    bernoulli(n,x)            Bernoulli polynomial: B_n(x)
     faulhaber_sum(n,k)        sum of powers: 1^k + 2^k + ... + n^k
     geometric_sum(n,r)        geometric sum: r^0 + r^1 + ... + r^n
     kronecker(n,k)            Kronecker (Jacobi) symbol
@@ -818,13 +818,13 @@ Identities (assumming x>0):
 
     bernoulli_polynomial(n, x)                    #=> Any
 
-Returns the n-th Bernoulli polynomial.
+Returns the n-th Bernoulli polynomial: C<B_n(x)>.
 
 =head2 euler_polynomial
 
     euler_polynomial(n, x)                        #=> Any
 
-Returns the n-th Euler polynomial.
+Returns the n-th Euler polynomial: C<E_n(x)>.
 
 =head2 bernoulli / bernfrac
 
@@ -833,7 +833,7 @@ Returns the n-th Euler polynomial.
 
 Returns the n-th Bernoulli number C<B_n> as an exact fraction, with C<bernoulli(1) = 1/2>.
 
-When an additional argument is provided, it returns the the n-th Bernoulli polynomial.
+When an additional argument is provided, it returns the the n-th Bernoulli polynomial: C<B_n(x)>.
 
 =head2 euler
 
@@ -842,7 +842,7 @@ When an additional argument is provided, it returns the the n-th Bernoulli polyn
 
 Returns the n-th Euler number C<E_n>, starting with C<euler(0) = 1>.
 
-When an additional argument is provided, it returns the the n-th Euler polynomial.
+When an additional argument is provided, it returns the the n-th Euler polynomial: C<E_n(x)>.
 
 =head2 bernreal
 
