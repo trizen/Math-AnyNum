@@ -1349,7 +1349,7 @@ sub numify {    # used in overloading
   Math_GMPq: {
 
         if (Math::GMPq::Rmpq_integer_p($x)) {
-            @_ = ($x = _mpq2mpz($x));
+            $x = _mpq2mpz($x);
             goto Math_GMPz;
         }
 
@@ -9135,7 +9135,7 @@ sub as_dec ($;$) {
 
         if ($prec < $min_prec or $prec > $max_prec) {
             require Carp;
-            Carp::croak("precision must be between $min_prec and $max_prec, got ", $prec >> 2);
+            Carp::croak("precision must be between $min_prec and $max_prec, got ", $prec);
         }
     }
 
