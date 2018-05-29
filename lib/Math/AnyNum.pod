@@ -1976,7 +1976,7 @@ Returns a string representing the value of C<x>, in base 10.
 
     !!$x                                          #=> Bool
 
-Returns a false value when the number is zero. True otherwise.
+Returns a false value when the number is zero or when the value of the number is C<NaN>. True otherwise.
 
 =head2 numify
 

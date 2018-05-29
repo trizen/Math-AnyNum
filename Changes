@@ -1,5 +1,11 @@
 Revision history for Math-AnyNum
 
+0.26    2018-??-??
+
+        [CHANGES]
+
+        - Boolification of `NaN` is now false (before `NaN` evaluated to a true value in boolean context, which was not very convenient).
+
 0.25    2018-05-25
 
         [ADDITIONS]

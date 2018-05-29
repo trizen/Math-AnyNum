@@ -1383,7 +1383,7 @@ sub boolify {    # used in overloading
     goto(ref($x) =~ tr/:/_/rs);
 
   Math_MPFR: {
-        return !Math::MPFR::Rmpfr_zero_p($x);
+        return !!Math::MPFR::Rmpfr_sgn($x);
     }
 
   Math_GMPq: {
@@ -1397,9 +1397,10 @@ sub boolify {    # used in overloading
   Math_MPC: {
         my $r = Math::MPFR::Rmpfr_init2($PREC);
         Math::MPC::RMPC_RE($r, $x);
-        Math::MPFR::Rmpfr_zero_p($r) || return 1;
+        Math::MPFR::Rmpfr_sgn($r)   && return 1;
+        Math::MPFR::Rmpfr_nan_p($r) && return 0;
         Math::MPC::RMPC_IM($r, $x);
-        return !Math::MPFR::Rmpfr_zero_p($r);
+        return !!Math::MPFR::Rmpfr_sgn($r);
     }
 }
 
