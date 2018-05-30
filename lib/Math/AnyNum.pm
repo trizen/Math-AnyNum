@@ -7233,6 +7233,7 @@ sub superfactorial ($) {
         push @list, $z;
     }
 
+    @list || goto &one;
     bless \_binsplit(\@list, \&__mul__);
 }
 
@@ -7284,6 +7285,7 @@ sub hyperfactorial ($) {
         push @list, $z;
     }
 
+    @list || goto &one;
     bless \_binsplit(\@list, \&__mul__);
 }
 
