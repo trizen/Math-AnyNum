@@ -6,7 +6,7 @@ Math::AnyNum - Arbitrary size precision for integers, rationals, floating-points
 
 =head1 VERSION
 
-Version 0.25
+Version 0.26
 
 =head1 SYNOPSIS
 
@@ -189,10 +189,10 @@ Additionally, each Math::AnyNum object is B<immutable>.
 
   :misc
 
-    rand(a)             pseudo-random floating-point: 0 <= r < a
-    rand(a,b)           pseudo-random floating-point: a <= r < b
-    irand(a)            pseudo-random integer: 0 <= r <= a
-    irand(a,b)          pseudo-random integer: a <= r <= b
+    rand(a)             pseudorandom floating-point: 0 <= R < a
+    rand(a,b)           pseudorandom floating-point: a <= R < b
+    irand(a)            pseudorandom integer: 0 <= R <= a
+    irand(a,b)          pseudorandom integer: a <= R <= b
     seed(n)             re-seed the `rand()` function
     iseed(n)            re-seed the `irand()` function
     int(x)              truncate x to an integer
@@ -1648,14 +1648,16 @@ Returns a pseudorandom floating-point value. When an additional argument is prov
 it returns a number between C<x> (inclusive) and C<y> (exclusive). Otherwise, returns a number between
 C<0> (inclusive) and C<x> (exclusive).
 
+If C<x> is greater than C<y>, the returned value will be in the range "[y, x)".
+
 The PRNG behind this function is called the "Mersenne Twister". Although it generates pseudorandom
 numbers of very good quality, B<it is NOT cryptographically secure>. You should not rely on it in
 security-sensitive situations.
 
 Example:
 
-    rand(10)        # a random number in the interval [0, 10)
-    rand(10, 20)    # a random number in the interval [10, 20)
+    rand(10)        # a pseudorandom floating-point in the interval [0, 10)
+    rand(10, 20)    # a pseudorandom floating-point in the interval [10, 20)
 
 =head2 irand
 
@@ -1667,7 +1669,7 @@ Returns a pseudorandom integer. Unlike the C<rand()> function, C<irand()> is inc
 When an additional argument is provided, it returns an integer between C<x> (inclusive) and C<y> (inclusive),
 otherwise returns an integer between C<0> (inclusive) and C<x> (inclusive).
 
-If C<x> is greater that C<y>, the returned result will be in the range C<[y, x]>.
+If C<x> is greater than C<y>, the returned integer will be in the range C<[y, x]>.
 
 The PRNG behind this function is called the "Mersenne Twister". Although it generates high-quality
 pseudorandom integers, B<it is NOT cryptographically secure>. You should not rely on it in
@@ -1675,8 +1677,8 @@ security-sensitive situations.
 
 Example:
 
-    irand(10)        # a random integer in the interval [0, 10]
-    irand(10, 20)    # a random integer in the interval [10, 20]
+    irand(10)        # a pseudorandom integer in the interval [0, 10]
+    irand(10, 20)    # a pseudorandom integer in the interval [10, 20]
 
 =head2 seed / iseed
 
