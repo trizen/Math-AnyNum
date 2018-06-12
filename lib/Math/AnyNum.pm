@@ -4508,7 +4508,11 @@ sub __ilog__ {
         my $e = (Math::GMPz::Rmpz_sizeinbase($x, $y) || goto &_nan) - 1;
 
         if ($e > 0) {
-            Math::GMPz::Rmpz_ui_pow_ui($t, $y, $e);
+
+            $y == 2
+              ? Math::GMPz::Rmpz_setbit($t, $e)
+              : Math::GMPz::Rmpz_ui_pow_ui($t, $y, $e);
+
             Math::GMPz::Rmpz_cmp($t, $x) > 0 and --$e;
         }
 
