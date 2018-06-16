@@ -2619,7 +2619,7 @@ sub add {    # used in overloading
 
 sub __sub__ {
     my ($x, $y) = @_;
-    goto(join('__', ref($x), ref($y) || 'Scalar') =~ tr/:/_/rs);
+    goto(join('__', ref($x) || 'Scalar', ref($y) || 'Scalar') =~ tr/:/_/rs);
 
     #
     ## GMPq
@@ -2659,6 +2659,15 @@ sub __sub__ {
         return $r;
     }
 
+  Scalar__Math_GMPq: {
+        my $r = Math::GMPq::Rmpq_init();
+        $x < 0
+          ? Math::GMPq::Rmpq_set_si($r, $x, 1)
+          : Math::GMPq::Rmpq_set_ui($r, $x, 1);
+        Math::GMPq::Rmpq_sub($r, $r, $y);
+        return $r;
+    }
+
     #
     ## GMPz
     #
@@ -2673,6 +2682,17 @@ sub __sub__ {
         $y < 0
           ? Math::GMPz::Rmpz_add_ui($r, $x, -$y)
           : Math::GMPz::Rmpz_sub_ui($r, $x, $y);
+        return $r;
+    }
+
+  Scalar__Math_GMPz: {
+        my $r = Math::GMPz::Rmpz_init();
+        $x < 0
+          ? do {
+            Math::GMPz::Rmpz_add_ui($r, $y, -$x);
+            Math::GMPz::Rmpz_neg($r, $r);
+          }
+          : Math::GMPz::Rmpz_ui_sub($r, $x, $y);
         return $r;
     }
 
@@ -2725,6 +2745,14 @@ sub __sub__ {
         return $r;
     }
 
+  Scalar__Math_MPFR: {
+        my $r = Math::MPFR::Rmpfr_init2($PREC);
+        $x < 0
+          ? Math::MPFR::Rmpfr_si_sub($r, $x, $y, $ROUND)
+          : Math::MPFR::Rmpfr_ui_sub($r, $x, $y, $ROUND);
+        return $r;
+    }
+
   Math_MPFR__Math_GMPq: {
         my $r = Math::MPFR::Rmpfr_init2($PREC);
         Math::MPFR::Rmpfr_sub_q($r, $x, $y, $ROUND);
@@ -2761,6 +2789,17 @@ sub __sub__ {
         return $r;
     }
 
+  Scalar__Math_MPC: {
+        my $r = Math::MPC::Rmpc_init2($PREC);
+        $x < 0
+          ? do {
+            Math::MPC::Rmpc_add_ui($r, $y, -$x, $ROUND);
+            Math::MPC::Rmpc_neg($r, $r, $ROUND);
+          }
+          : Math::MPC::Rmpc_ui_sub($r, $x, $y, $ROUND);
+        return $r;
+    }
+
   Math_MPC__Math_MPFR: {
         my $r = Math::MPC::Rmpc_init2($PREC);
         Math::MPC::Rmpc_set_fr($r, $y, $ROUND);
@@ -2781,10 +2820,33 @@ sub __sub__ {
         Math::MPC::Rmpc_sub($r, $x, $r, $ROUND);
         return $r;
     }
+
+  Scalar__Scalar: {
+        my $r = (
+                 $x < 0
+                 ? Math::GMPz::Rmpz_init_set_si($x)
+                 : Math::GMPz::Rmpz_init_set_ui($x)
+                );
+
+        $y < 0
+          ? Math::GMPz::Rmpz_add_ui($r, $r, -$y)
+          : Math::GMPz::Rmpz_sub_ui($r, $r, $y);
+
+        return $r;
+    }
 }
 
 sub sub {    # used in overloading
     my ($x, $y) = @_;
+
+    if (!ref($x) and CORE::int($x) eq $x and $x < ULONG_MAX and $x > LONG_MIN) {
+
+        if (ref($y) eq __PACKAGE__) {
+            return bless \__sub__($x, $$y);
+        }
+
+        return bless \__sub__($x, ref($y) ? _star2obj($y) : _str2obj($y));
+    }
 
     $x =
         ref($x) eq __PACKAGE__ ? $$x
@@ -8476,7 +8538,11 @@ sub powmod ($$$) {
     }
 
     my $r = Math::GMPz::Rmpz_init();
-    Math::GMPz::Rmpz_powm($r, $n, $k, $z);
+
+    Math::GMPz::Rmpz_fits_ulong_p($k)
+      ? Math::GMPz::Rmpz_powm_ui($r, $n, Math::GMPz::Rmpz_get_ui($k), $z)
+      : Math::GMPz::Rmpz_powm($r, $n, $k, $z);
+
     bless \$r;
 }
 
