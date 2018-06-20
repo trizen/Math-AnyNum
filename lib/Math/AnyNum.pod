@@ -907,7 +907,7 @@ Natural logarithm of the absolute value of the Gamma function.
 
     lngamma(x)                                    #=> Float
 
-Natural logarithm of the Gamma function on C<x>.
+Natural logarithm of the Gamma function for which the logarithm is a real number. Returns NaN otherwise.
 
 =head2 lnsuperfactorial
 
@@ -1004,13 +1004,13 @@ Exponential integral of C<x>. Returns -Inf when C<x> is zero, and NaN when C<x> 
     Li(x)                                         #=> Float
 
 The logarithmic integral of C<x>, defined as: C<Ei(ln(x))>.
-Returns -Inf when C<x> is 1, and NaN when C<x> is less than or equal to 0.
+Returns -Inf when C<x> is 1, and NaN when C<x> is less than or equal to C<0>.
 
 =head2 Li2
 
     Li2(x)                                        #=> Float
 
-The dilogarithm function, defined as the integral of C<-log(1-t)/t> from 0 to C<x>.
+The dilogarithm function, defined as the integral of C<-log(1-t)/t> from C<0> to C<x>.
 
 =head1 TRIGONOMETRIC FUNCTIONS
 
@@ -1186,7 +1186,7 @@ Returns C<(NaN,NaN)> when a real root does not exists.
 
 The integer part of the logarithm of C<n> to base C<m> or base I<e> when C<m> is not specified.
 
-C<n> must be greater than 0 and C<m> must greater than 1. Returns NaN otherwise.
+C<n> must be greater than 0 and C<m> must be greater than 1. Returns NaN otherwise.
 
 =head2 ilog2 / ilog10
 
@@ -1648,7 +1648,7 @@ Returns a pseudorandom floating-point value. When an additional argument is prov
 it returns a number between C<x> (inclusive) and C<y> (exclusive). Otherwise, returns a number between
 C<0> (inclusive) and C<x> (exclusive).
 
-If C<x> is greater than C<y>, the returned value will be in the range "[y, x)".
+If C<x> is greater than C<y>, the returned value will be in the range C<[y, x)>.
 
 The PRNG behind this function is called the "Mersenne Twister". Although it generates pseudorandom
 numbers of very good quality, B<it is NOT cryptographically secure>. You should not rely on it in
