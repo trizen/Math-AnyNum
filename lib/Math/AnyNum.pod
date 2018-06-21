@@ -65,6 +65,8 @@ Additionally, each Math::AnyNum object is B<immutable>.
     fibonacci(n,k)            n-th Fibonacci number of k-th order
     polygonal(n,k)            n-th k-gonal number
     harmonic(n)               n-th harmonic numbers: 1+1/2+...+1/n
+    secant_number(n)          n-th secant/zig number
+    tangent_number(n)         n-th tangent/zag number
     euler(n)                  n-th Euler number: E_n
     bernoulli(n)              n-th Bernoulli number: B_n
     euler(n,x)                Euler polynomial: E_n(x)
@@ -813,6 +815,18 @@ Identities (assumming x>0):
 
      LambertW(exp(x)*x) = x
      LambertW(log(x)*x) = log(x)
+
+=head2 secant_number
+
+    secant_number(n)                              #=> Any
+
+Returns the n-th secant number (A000364), starting with C<secant_number(0) = 1>.
+
+=head2 tangent_number
+
+    tangent_number(n)                             #=> Any
+
+Returns the n-th tangent number (A000182), starting with C<tangent_number(1) = 1>.
 
 =head2 bernoulli_polynomial
 

@@ -2,6 +2,10 @@ Revision history for Math-AnyNum
 
 0.27    2018-??-??
 
+        [ADDITIONS]
+
+        - Added the `secant_number(n)` and `tangent_number(n)` functions, to compute the secant/zig numbers (A000364) and the tangent/zag numbers (A000182).
+
         [IMPROVEMENTS]
 
         - Optimized the case `sub(Scalar, Object)` by using the `*_ui_sub()` functions from Math::{GMPz,MPFR,MPC}.

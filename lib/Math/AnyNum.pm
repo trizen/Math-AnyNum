@@ -209,6 +209,9 @@ use overload
         harmfrac => \&harmfrac,
         harmonic => \&harmfrac,
 
+        secant_number  => \&secant_number,
+        tangent_number => \&tangent_number,
+
         euler     => \&euler,
         bernoulli => \&bernfrac,
 
@@ -6684,6 +6687,8 @@ sub _secant_numbers {
         return @cache;
     }
 
+    $n <<= 1 if ($n <= 250);
+
     my @S = (Math::GMPz::Rmpz_init_set_ui(1));
 
     foreach my $k (1 .. $n) {
@@ -6709,6 +6714,8 @@ sub _tangent_numbers {
     if ($n <= $#cache) {
         return @cache;
     }
+
+    $n <<= 1 if ($n <= 250);
 
     my @T = (Math::GMPz::Rmpz_init_set_ui(1));
 
@@ -6986,6 +6993,41 @@ sub euler ($;$) {
     my $e = Math::GMPz::Rmpz_init_set((_secant_numbers($n >> 1))[$n >> 1]);
     Math::GMPz::Rmpz_neg($e, $e) if (($n >> 1) & 1);
     bless \$e;
+}
+
+sub secant_number ($) {
+    my ($n) = @_;
+
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
+    }
+    else {
+        $n = _any2ui(_star2obj($n)) // goto &nan;
+    }
+
+    my @E = _secant_numbers($n);
+    bless \Math::GMPz::Rmpz_init_set($E[$n]);
+}
+
+sub tangent_number ($) {
+    my ($n) = @_;
+
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
+    }
+    else {
+        $n = _any2ui(_star2obj($n)) // goto &nan;
+    }
+
+    $n || goto &zero;
+    my @T = _tangent_numbers($n);
+    bless \Math::GMPz::Rmpz_init_set($T[$n - 1]);
 }
 
 #
