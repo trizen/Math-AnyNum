@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 438;    # be careful
+plan tests => 470;
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -57,6 +57,57 @@ is(lucasmod(-1, 1234), 'NaN');
 
 is(fibmod(42, 0), 'NaN');
 is(lucasmod(42, 0), 'NaN');
+
+{
+    my $x = Math::AnyNum->new('1/3');
+
+    is(chebyshevT(0, $x), 1);
+    is(chebyshevT(1, $x), $x);
+    is(chebyshevT(2, $x), 2 * $x * $x - 1);
+
+    is(chebyshevU(0, $x), 1);
+    is(chebyshevU(1, $x), 2 * $x);
+    is(chebyshevU(2, $x), 4 * $x * $x - 1);
+
+    is(chebyshevT(4, -$x), (-1)**4 * chebyshevT(4, $x));
+    is(chebyshevT(5, -$x), (-1)**5 * chebyshevT(5, $x));
+
+    is(chebyshevU(4, -$x), (-1)**4 * chebyshevU(4, $x));
+    is(chebyshevU(5, -$x), (-1)**5 * chebyshevU(5, $x));
+
+    $x = Math::AnyNum->new('-7/11');
+
+    is(chebyshevT(Math::AnyNum->new(10), $x), '-21191511863/25937424601');
+    is(chebyshevT(Math::AnyNum->new(11), $x), '275243014193/285311670611');
+
+    is(chebyshevU(Math::AnyNum->new(10), $x), '-8853775501/25937424601');
+    is(chebyshevU(Math::AnyNum->new(11), $x), '337219442700/285311670611');
+
+    is(chebyshevT(-1,                    $x), '-7/11');
+    is(chebyshevT(-2,                    $x), '-23/121');
+    is(chebyshevT(-3,                    $x), '1169/1331');
+    is(chebyshevT(Math::AnyNum->new(-4), $x), '-13583/14641');
+
+    is(chebyshevU(-1,                    $x), 0);
+    is(chebyshevU(-2,                    $x), -1);
+    is(chebyshevU(-3,                    $x), '14/11');
+    is(chebyshevU(Math::AnyNum->new(-4), $x), '-75/121');
+
+    is(chebyshevT(4, -$x), (-1)**4 * chebyshevT(4, $x));
+    is(chebyshevT(5, -$x), (-1)**5 * chebyshevT(5, $x));
+
+    is(chebyshevU(4, -$x), (-1)**4 * chebyshevU(4, $x));
+    is(chebyshevU(5, -$x), (-1)**5 * chebyshevU(5, $x));
+
+    is(chebyshevT(4.7, -$x), (-1)**4 * chebyshevT(4, $x));    # 4.7 gets truncated to 4
+    is(chebyshevU(4.7, -$x), (-1)**4 * chebyshevU(4, $x));    # =//=
+
+    is(chebyshevT(Math::AnyNum->new(4.7), -$x), (-1)**4 * chebyshevT(4, $x));    # 4.7 gets truncated to 4
+    is(chebyshevU(Math::AnyNum->new(4.7), -$x), (-1)**4 * chebyshevU(4, $x));    # =//=
+
+    is(chebyshevT(5, cos($x)), cos($x * 5));
+    is(chebyshevU(5, cos($x)), sin(6 * $x) / sin($x));
+}
 
 is(binomial(12,           5),           '792');
 is(binomial(0,            0),           '1');

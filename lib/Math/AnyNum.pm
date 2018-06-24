@@ -205,6 +205,9 @@ use overload
         fibmod   => \&fibmod,
         lucasmod => \&lucasmod,
 
+        chebyshevT => \&chebyshevT,
+        chebyshevU => \&chebyshevU,
+
         faulhaber_sum => \&faulhaber_sum,
         geometric_sum => \&geometric_sum,
 
@@ -6631,20 +6634,20 @@ sub fibonacci ($;$) {
 ## Lucas
 #
 sub lucas ($) {
-    my ($x) = @_;
+    my ($n) = @_;
 
-    if (!ref($x) and CORE::int($x) eq $x and $x >= 0 and $x < ULONG_MAX) {
-        ## `x` is a native unsigned integer
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
     }
-    elsif (ref($x) eq __PACKAGE__) {
-        $x = _any2ui($$x) // goto &nan;
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
     }
     else {
-        $x = _any2ui(_star2obj($x)) // goto &nan;
+        $n = _any2ui(_star2obj($n)) // goto &nan;
     }
 
     my $r = Math::GMPz::Rmpz_init();
-    Math::GMPz::Rmpz_lucnum_ui($r, $x);
+    Math::GMPz::Rmpz_lucnum_ui($r, $n);
     bless \$r;
 }
 
@@ -6743,6 +6746,78 @@ sub lucasmod ($$) {
     Math::GMPz::Rmpz_sgn($m) == 0 and goto &nan;
 
     bless \__fibmod__($n, $m, 2, 1);
+}
+
+sub chebyshevT ($$) {
+    my ($n, $x) = @_;
+
+    if (!ref($n) and CORE::int($n) eq $n and $n > LONG_MIN and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2si($$n) // goto &nan;
+    }
+    else {
+        $n = _any2si(_star2obj($n)) // goto &nan;
+    }
+
+    $n = -$n if $n < 0;
+    $n == 0 and goto &one;
+
+    $x = _star2obj($x);
+    $n == 1 and return bless \$x;
+
+    state $ONE = ${one()};
+
+    my $t = __add__($x, $x);
+    my ($u, $v) = ($ONE, $x);
+
+    foreach my $i (2 .. $n) {
+        ($u, $v) = ($v, __sub__(__mul__($t, $v), $u));
+    }
+
+    bless \$v;
+}
+
+sub chebyshevU ($$) {
+    my ($n, $x) = @_;
+
+    if (!ref($n) and CORE::int($n) eq $n and $n > LONG_MIN and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2si($$n) // goto &nan;
+    }
+    else {
+        $n = _any2si(_star2obj($n)) // goto &nan;
+    }
+
+    $n == 0 and goto &one;
+
+    my $negative = 0;
+
+    if ($n < 0) {
+
+        $n == -1 and goto &zero;
+        $n == -2 and goto &mone;
+
+        $n        = -$n - 2;
+        $negative = 1;
+    }
+
+    $x = _star2obj($x);
+
+    state $ONE = ${one()};
+
+    my $t = __add__($x, $x);
+    my ($u, $v) = ($ONE, $t);
+
+    foreach my $i (2 .. $n) {
+        ($u, $v) = ($v, __sub__(__mul__($t, $v), $u));
+    }
+
+    $v = __neg__($v) if $negative;
+    bless \$v;
 }
 
 #
