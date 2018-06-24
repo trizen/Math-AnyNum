@@ -63,6 +63,8 @@ Additionally, each Math::AnyNum object is B<immutable>.
     lucas(n)                  n-th Lucas number
     fibonacci(n)              n-th Fibonacci number
     fibonacci(n,k)            n-th Fibonacci number of k-th order
+    fibmod(n,m)               n-th Fibonacci number modulo m
+    lucasmod(n,m)             n-th Lucas number modulo m
     polygonal(n,k)            n-th k-gonal number
     harmonic(n)               n-th harmonic numbers: 1+1/2+...+1/n
     secant_number(n)          n-th secant/zig number
@@ -1298,6 +1300,18 @@ Example:
     say fibonacci(100, 3);        # 100th Tribonacci number
     say fibonacci(100, 4);        # 100th Tetranacci number
     say fibonacci(100, 5);        # 100th Pentanacci number
+
+=head2 fibmod
+
+    fibmod(n, m)                                  #=> Int | NaN
+
+Efficiently compute the n-th Fibonacci number modulo m.
+
+=head2 lucasmod
+
+    lucasmod(n, m)                                #=> Int | NaN
+
+Efficiently compute the n-th Lucas number modulo m.
 
 =head2 factorial
 

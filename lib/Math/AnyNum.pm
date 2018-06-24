@@ -202,6 +202,9 @@ use overload
         lucas     => \&lucas,
         fibonacci => \&fibonacci,
 
+        fibmod   => \&fibmod,
+        lucasmod => \&lucasmod,
+
         faulhaber_sum => \&faulhaber_sum,
         geometric_sum => \&geometric_sum,
 
@@ -6643,6 +6646,103 @@ sub lucas ($) {
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_lucnum_ui($r, $x);
     bless \$r;
+}
+
+sub __fibmod__ {
+    my ($n, $m, $T1, $T2) = @_;
+
+    # T1 = 0, T2 = 1 for Fibonacci numbers
+    # T1 = 2, T2 = 1 for Lucas numbers
+
+    $n = Math::GMPz::Rmpz_init_set($n);
+
+    state $t = Math::GMPz::Rmpz_init_nobless();
+    state $u = Math::GMPz::Rmpz_init_nobless();
+
+    my $f = Math::GMPz::Rmpz_init_set_ui($T1 // 0);
+    my $g = Math::GMPz::Rmpz_init_set_ui($T2 // 1);
+
+    my $A = Math::GMPz::Rmpz_init_set_ui(0);
+    my $B = Math::GMPz::Rmpz_init_set_ui(1);
+
+    for (; ;) {
+
+        if (Math::GMPz::Rmpz_odd_p($n)) {
+
+            # (f, g) = (f*a + g*b, f*b + g*(a+b))  mod m
+
+            Math::GMPz::Rmpz_mul($u, $g, $B);
+            Math::GMPz::Rmpz_mul($t, $f, $A);
+            Math::GMPz::Rmpz_mul($g, $g, $A);
+
+            Math::GMPz::Rmpz_add($t, $t, $u);
+            Math::GMPz::Rmpz_add($g, $g, $u);
+
+            Math::GMPz::Rmpz_addmul($g, $f, $B);
+
+            Math::GMPz::Rmpz_mod($f, $t, $m);
+            Math::GMPz::Rmpz_mod($g, $g, $m);
+        }
+
+        # (a, b) = (a*a + b*b, a*b + b*(a+b))  mod m
+
+        Math::GMPz::Rmpz_div_2exp($n, $n, 1);
+        Math::GMPz::Rmpz_sgn($n) || last;
+
+        Math::GMPz::Rmpz_mul($t, $A, $A);
+        Math::GMPz::Rmpz_mul($u, $B, $B);
+        Math::GMPz::Rmpz_mul($B, $B, $A);
+
+        Math::GMPz::Rmpz_mul_2exp($B, $B, 1);
+
+        Math::GMPz::Rmpz_add($B, $B, $u);
+        Math::GMPz::Rmpz_add($t, $t, $u);
+
+        Math::GMPz::Rmpz_mod($A, $t, $m);
+        Math::GMPz::Rmpz_mod($B, $B, $m);
+    }
+
+    return $f;
+}
+
+sub fibmod ($$) {
+    my ($n, $m) = @_;
+
+    $n = $$n if (ref($n) eq __PACKAGE__);
+    $m = $$m if (ref($m) eq __PACKAGE__);
+
+    if (ref($n) ne 'Math::GMPz') {
+        $n = _star2mpz($n) // goto &nan;
+    }
+
+    if (ref($m) ne 'Math::GMPz') {
+        $m = _star2mpz($m) // goto &nan;
+    }
+
+    Math::GMPz::Rmpz_sgn($n) < 0  and goto &nan;
+    Math::GMPz::Rmpz_sgn($m) == 0 and goto &nan;
+
+    bless \__fibmod__($n, $m, 0, 1);
+}
+
+sub lucasmod ($$) {
+    my ($n, $m) = @_;
+
+    $n = $$n if (ref($n) eq __PACKAGE__);
+    $m = $$m if (ref($m) eq __PACKAGE__);
+
+    if (ref($n) ne 'Math::GMPz') {
+        $n = _star2mpz($n) // goto &nan;
+    }
+
+    if (ref($m) ne 'Math::GMPz') {
+        $m = _star2mpz($m) // goto &nan;
+    }
+
+    Math::GMPz::Rmpz_sgn($n) < 0  and goto &nan;
+    Math::GMPz::Rmpz_sgn($m) == 0 and goto &nan;
+
+    bless \__fibmod__($n, $m, 2, 1);
 }
 
 #
