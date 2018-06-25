@@ -211,6 +211,9 @@ use overload
         laguerreL => \&laguerreL,
         legendreP => \&legendreP,
 
+        hermiteH  => \&hermiteH,
+        hermiteHe => \&hermiteHe,
+
         faulhaber_sum => \&faulhaber_sum,
         geometric_sum => \&geometric_sum,
 
@@ -6778,10 +6781,10 @@ sub chebyshevT ($$) {
         $n = _any2si(_star2obj($n)) // goto &nan;
     }
 
+    $x = _star2obj($x);
+
     $n = -$n if $n < 0;
     $n == 0 and goto &one;
-
-    $x = _star2obj($x);
     $n == 1 and return bless \$x;
 
     state $ONE = ${one()};
@@ -6858,8 +6861,9 @@ sub laguerreL ($$) {
         $n = _any2ui(_star2obj($n)) // goto &nan;
     }
 
-    $n || goto &one;    # L_0(x) = 1
     $x = _star2obj($x);
+
+    $n == 0 and goto &one;                       # L_0(x) = 1
     $n == 1 and return bless \__sub__(1, $x);    # L_1(x) = 1-x
 
     my $t = Math::GMPz::Rmpz_init();
@@ -6880,7 +6884,7 @@ sub laguerreL ($$) {
 ## Legendre polynomials: P_n(x)
 #
 
-sub legendreP {
+sub legendreP ($$) {
     my ($n, $x) = @_;
 
     if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
@@ -6893,10 +6897,10 @@ sub legendreP {
         $n = _any2ui(_star2obj($n)) // goto &nan;
     }
 
-    $n == 0 and goto &one;
-    $n == 1 and return $x;
-
     $x = _star2obj($x);
+
+    $n == 0 and goto &one;
+    $n == 1 and return bless \$x;
 
     my $x1 = __dec__($x);
     my $x2 = __inc__($x);
@@ -6916,6 +6920,98 @@ sub legendreP {
     Math::GMPz::Rmpz_setbit($t, $n);
 
     bless \__div__($sum, $t);
+}
+
+#
+## The physicists' Hermite polynomials H_n(x)
+#
+
+sub hermiteH ($$) {
+    my ($n, $x) = @_;
+
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
+    }
+    else {
+        $n = _any2ui(_star2obj($n)) // goto &nan;
+    }
+
+    $x = _star2obj($x);
+    $x = __add__($x, $x);
+
+    $n == 0 and goto &one;
+    $n == 1 and return bless \$x;
+
+    my $t = Math::GMPz::Rmpz_init();
+    my $u = Math::GMPz::Rmpz_init_set_ui(1);
+
+    my $v = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_fac_ui($v, $n);
+
+    my @terms;
+    foreach my $m (0 .. $n >> 1) {
+        Math::GMPz::Rmpz_mul($t, $v, $u);
+        Math::GMPz::Rmpz_neg($t, $t) if ($m & 1);
+
+        push @terms, __div__(__pow__($x, $n - ($m << 1)), $t);
+
+        my $d = ($n - ($m << 1)) * ($n - ($m << 1) - 1);
+        Math::GMPz::Rmpz_divexact_ui($v, $v, $d) if $d;
+        Math::GMPz::Rmpz_mul_ui($u, $u, $m + 1);
+    }
+
+    my $sum = _binsplit(\@terms, \&__add__);
+    Math::GMPz::Rmpz_fac_ui($v, $n);
+    bless \__mul__($sum, $v);
+}
+
+#
+## The probabilists' Hermite polynomials He_n(x)
+#
+
+sub hermiteHe ($$) {
+    my ($n, $x) = @_;
+
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
+    }
+    else {
+        $n = _any2ui(_star2obj($n)) // goto &nan;
+    }
+
+    $x = _star2obj($x);
+
+    $n == 0 and goto &one;
+    $n == 1 and return bless \$x;
+
+    my $t = Math::GMPz::Rmpz_init();
+    my $u = Math::GMPz::Rmpz_init_set_ui(1);
+
+    my $v = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_fac_ui($v, $n);
+
+    my @terms;
+    foreach my $m (0 .. $n >> 1) {
+        Math::GMPz::Rmpz_mul($t, $v, $u);
+        Math::GMPz::Rmpz_mul_2exp($t, $t, $m);
+        Math::GMPz::Rmpz_neg($t, $t) if ($m & 1);
+
+        push @terms, __div__(__pow__($x, $n - ($m << 1)), $t);
+
+        my $d = ($n - ($m << 1)) * ($n - ($m << 1) - 1);
+        Math::GMPz::Rmpz_divexact_ui($v, $v, $d) if $d;
+        Math::GMPz::Rmpz_mul_ui($u, $u, $m + 1);
+    }
+
+    my $sum = _binsplit(\@terms, \&__add__);
+    Math::GMPz::Rmpz_fac_ui($v, $n);
+    bless \__mul__($sum, $v);
 }
 
 #

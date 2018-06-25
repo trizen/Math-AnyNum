@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 476;
+plan tests => 482;
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -113,17 +113,30 @@ is(lucasmod(42, 0), 'NaN');
     # LaguerreL(n,x)
     my $x = Math::AnyNum->new('7/5');
     my $y = Math::AnyNum->new('-5/9');
+    my $t = Math::AnyNum->new(12);
 
     is(join(', ', map { laguerreL($_, $x) } 0 .. 5), '1, -2/5, -41/50, -269/375, -5839/15000, -3341/187500');
     is(join(', ', map { laguerreL($_, $y) } 0 .. 5), '1, 14/9, 367/162, 6907/2187, 671809/157464, 3987263/708588');
 
-    is(laguerreL(Math::AnyNum->new(12), 5) * factorial(12), '-693883775');
+    is(laguerreL($t, 5) * factorial(12), '-693883775');
 
     # LegendreP(n,x)
     is(join(', ', map { legendreP($_, $x) } 0 .. 5), '1, 7/5, 61/25, 119/25, 1229/125, 65527/3125');
     is(join(', ', map { legendreP($_, $y) } 0 .. 5), '1, -5/9, -1/27, 295/729, -2399/6561, 275/6561');
 
-    is(legendreP(Math::AnyNum->new(12), 5), '143457011569');
+    is(legendreP($t, 5), '143457011569');
+
+    # HermiteH(n,x)
+    is(join(', ', map { hermiteH($_, $x) } 0 .. 5), '1, 14/5, 146/25, 644/125, -12884/625, -309176/3125');
+    is(join(', ', map { hermiteH($_, $y) } 0 .. 5), '1, -10/9, -62/81, 3860/729, -8468/6561, -2416600/59049');
+
+    is(hermiteH($t, 5), '171237081280');
+
+    # HermiteHe(n, x)
+    is(join(', ', map { hermiteHe($_, $x) } 0 .. 5), '1, 7/5, 24/25, -182/125, -3074/625, -3318/3125');
+    is(join(', ', map { hermiteHe($_, $y) } 0 .. 5), '1, -5/9, -56/81, 1090/729, 8158/6561, -393950/59049');
+
+    is(hermiteHe($t, 5), '-5939480');
 }
 
 is(binomial(12,           5),           '792');
