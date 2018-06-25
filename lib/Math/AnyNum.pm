@@ -208,6 +208,8 @@ use overload
         chebyshevT => \&chebyshevT,
         chebyshevU => \&chebyshevU,
 
+        laguerreL => \&laguerreL,
+
         faulhaber_sum => \&faulhaber_sum,
         geometric_sum => \&geometric_sum,
 
@@ -6818,6 +6820,37 @@ sub chebyshevU ($$) {
 
     $v = __neg__($v) if $negative;
     bless \$v;
+}
+
+sub laguerreL ($$) {
+    my ($n, $x) = @_;
+
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
+    }
+    else {
+        $n = _any2ui(_star2obj($n)) // goto &nan;
+    }
+
+    $n || goto &one;    # L_0(x) = 1
+    $x = _star2obj($x);
+    $n == 1 and return bless \__sub__(1, $x);    # L_1(x) = 1-x
+
+    my $t = Math::GMPz::Rmpz_init();
+    my $u = Math::GMPz::Rmpz_init_set_ui(1);
+
+    my @terms;
+    foreach my $k (0 .. $n) {
+        Math::GMPz::Rmpz_bin_uiui($t, $n, $k);
+        Math::GMPz::Rmpz_neg($t, $t) if ($k & 1);
+        push @terms, __div__(__mul__(__pow__($x, $k), $t), $u);
+        Math::GMPz::Rmpz_mul_ui($u, $u, $k + 1);
+    }
+
+    bless \_binsplit(\@terms, \&__add__);
 }
 
 #

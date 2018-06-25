@@ -7,6 +7,7 @@ Revision history for Math-AnyNum
         - Added the `secant_number(n)` and `tangent_number(n)` functions, to compute the secant/zig numbers (A000364) and the tangent/zag numbers (A000182).
         - Added the `fibmod(n,m)` and `lucasmod(n,m)` functions to efficiently compute the n-th Fibonacci and n-th Lucas number modulo m.
         - Added the `chebyshevT(n,x)` and `chebyshevU(n,x)` functions, which compute the Chebyshev polynomials of 1st and 2nd kind.
+        - Added the `laguerreL(n,x)` function, which compute the Laguerre polynomials: `L_n(x)`.
 
         [IMPROVEMENTS]
 

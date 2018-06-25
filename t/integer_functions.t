@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 470;
+plan tests => 473;
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -107,6 +107,16 @@ is(lucasmod(42, 0), 'NaN');
 
     is(chebyshevT(5, cos($x)), cos($x * 5));
     is(chebyshevU(5, cos($x)), sin(6 * $x) / sin($x));
+}
+
+{
+    my $x = Math::AnyNum->new('7/5');
+    is(join(', ', map { laguerreL($_, $x) } 0 .. 5), '1, -2/5, -41/50, -269/375, -5839/15000, -3341/187500');
+
+    $x = Math::AnyNum->new('-5/9');
+    is(join(', ', map { laguerreL($_, $x) } 0 .. 5), '1, 14/9, 367/162, 6907/2187, 671809/157464, 3987263/708588');
+
+    is(laguerreL(Math::AnyNum->new(12), 5) * factorial(12), '-693883775');
 }
 
 is(binomial(12,           5),           '792');

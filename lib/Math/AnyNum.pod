@@ -71,10 +71,11 @@ Additionally, each Math::AnyNum object is B<immutable>.
     tangent_number(n)         n-th tangent/zag number
     euler(n)                  n-th Euler number: E_n
     bernoulli(n)              n-th Bernoulli number: B_n
-    euler(n,x)                Euler polynomial: E_n(x)
-    bernoulli(n,x)            Bernoulli polynomial: B_n(x)
-    chebyshevT(n,x)           Chebyshev polynomial of the 1st kind: T_n(x)
-    chebyshevU(n,x)           Chebyshev polynomial of the 2nd kind: U_n(x)
+    euler(n,x)                Euler polynomials: E_n(x)
+    bernoulli(n,x)            Bernoulli polynomials: B_n(x)
+    laguerreL(n,x)            Laguerre polynomials: L_n(x)
+    chebyshevT(n,x)           Chebyshev polynomials of the 1st kind: T_n(x)
+    chebyshevU(n,x)           Chebyshev polynomials of the 2nd kind: U_n(x)
     faulhaber_sum(n,k)        sum of powers: 1^k + 2^k + ... + n^k
     geometric_sum(n,r)        geometric sum: r^0 + r^1 + ... + r^n
     kronecker(n,k)            Kronecker (Jacobi) symbol
@@ -1319,7 +1320,7 @@ Efficiently compute the n-th Lucas number modulo m.
 
     chebyshevT(n, x)                              #=> Any
 
-Compute the Chebyshev polynomial of the first kind: C<T_n(x)>, where C<n> must be a native integer.
+Compute the Chebyshev polynomials of the first kind: C<T_n(x)>, where C<n> must be a native integer.
 
 Defined as:
 
@@ -1331,13 +1332,19 @@ Defined as:
 
     chebyshevU(n, x)                              #=> Any
 
-Compute the Chebyshev polynomial of the second kind: C<U_n(x)>, where C<n> must be a native integer.
+Compute the Chebyshev polynomials of the second kind: C<U_n(x)>, where C<n> must be a native integer.
 
 Defined as:
 
     U(0, x) = 1
     U(1, x) = 2*x
     U(n, x) = 2*x*U(n-1, x) - U(n-2, x)
+
+=head2 laguerreL
+
+    laguerreL(n, x)                               #=> Any
+
+Compute the Laguerre polynomials: C<L_n(x)>, where C<n> must be a non-negative native integer.
 
 =head2 factorial
 
