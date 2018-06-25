@@ -209,6 +209,7 @@ use overload
         chebyshevU => \&chebyshevU,
 
         laguerreL => \&laguerreL,
+        legendreP => \&legendreP,
 
         faulhaber_sum => \&faulhaber_sum,
         geometric_sum => \&geometric_sum,
@@ -6565,8 +6566,9 @@ sub __irand__ {
 }
 
 #
-## Fibonacci
+## n-th Fibonacci number of k-th order
 #
+
 sub fibonacci ($;$) {
     my ($n, $k) = @_;
 
@@ -6580,7 +6582,7 @@ sub fibonacci ($;$) {
         $n = _any2ui(_star2obj($n)) // goto &nan;
     }
 
-    # N-th k-th order Fibonacci number
+    # N-th Fibonacci number of k-th order
     if (defined($k)) {
 
         if (!ref($k) and CORE::int($k) eq $k and $k >= 0 and $k < ULONG_MAX) {
@@ -6633,8 +6635,9 @@ sub fibonacci ($;$) {
 }
 
 #
-## Lucas
+## n-th Lucas number
 #
+
 sub lucas ($) {
     my ($n) = @_;
 
@@ -6710,6 +6713,10 @@ sub __fibmod__ {
     return $f;
 }
 
+#
+## fibonacci(n) mod m
+#
+
 sub fibmod ($$) {
     my ($n, $m) = @_;
 
@@ -6730,6 +6737,10 @@ sub fibmod ($$) {
     bless \__fibmod__($n, $m, 0, 1);
 }
 
+#
+## lucas(n) mod m
+#
+
 sub lucasmod ($$) {
     my ($n, $m) = @_;
 
@@ -6749,6 +6760,10 @@ sub lucasmod ($$) {
 
     bless \__fibmod__($n, $m, 2, 1);
 }
+
+#
+## Chebyshev polynomials: T_n(x)
+#
 
 sub chebyshevT ($$) {
     my ($n, $x) = @_;
@@ -6780,6 +6795,10 @@ sub chebyshevT ($$) {
 
     bless \$v;
 }
+
+#
+## Chebyshev polynomials: U_n(x)
+#
 
 sub chebyshevU ($$) {
     my ($n, $x) = @_;
@@ -6822,6 +6841,10 @@ sub chebyshevU ($$) {
     bless \$v;
 }
 
+#
+## Laguerre polynomials: L_n(x)
+#
+
 sub laguerreL ($$) {
     my ($n, $x) = @_;
 
@@ -6851,6 +6874,48 @@ sub laguerreL ($$) {
     }
 
     bless \_binsplit(\@terms, \&__add__);
+}
+
+#
+## Legendre polynomials: P_n(x)
+#
+
+sub legendreP {
+    my ($n, $x) = @_;
+
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
+    }
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
+    }
+    else {
+        $n = _any2ui(_star2obj($n)) // goto &nan;
+    }
+
+    $n == 0 and goto &one;
+    $n == 1 and return $x;
+
+    $x = _star2obj($x);
+
+    my $x1 = __dec__($x);
+    my $x2 = __inc__($x);
+
+    my $t = Math::GMPz::Rmpz_init();
+
+    my @terms;
+    foreach my $k (0 .. $n) {
+        Math::GMPz::Rmpz_bin_uiui($t, $n, $k);
+        Math::GMPz::Rmpz_mul($t, $t, $t);
+        push @terms, __mul__(__mul__(__pow__($x1, $n - $k), __pow__($x2, $k)), $t);
+    }
+
+    my $sum = _binsplit(\@terms, \&__add__);
+
+    Math::GMPz::Rmpz_set_ui($t, 0);
+    Math::GMPz::Rmpz_setbit($t, $n);
+
+    bless \__div__($sum, $t);
 }
 
 #

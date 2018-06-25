@@ -74,6 +74,7 @@ Additionally, each Math::AnyNum object is B<immutable>.
     euler(n,x)                Euler polynomials: E_n(x)
     bernoulli(n,x)            Bernoulli polynomials: B_n(x)
     laguerreL(n,x)            Laguerre polynomials: L_n(x)
+    legendreP(n,x)            Legendre polynomials: P_n(x)
     chebyshevT(n,x)           Chebyshev polynomials of the 1st kind: T_n(x)
     chebyshevU(n,x)           Chebyshev polynomials of the 2nd kind: U_n(x)
     faulhaber_sum(n,k)        sum of powers: 1^k + 2^k + ... + n^k
@@ -1345,6 +1346,12 @@ Defined as:
     laguerreL(n, x)                               #=> Any
 
 Compute the Laguerre polynomials: C<L_n(x)>, where C<n> must be a non-negative native integer.
+
+=head2 legendreP
+
+    legendreP(n, x)                               #=> Any
+
+Compute the Legendre polynomials: P_n(x), where C<n> must be a non-negative native integer.
 
 =head2 factorial
 

@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 473;
+plan tests => 476;
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -110,13 +110,20 @@ is(lucasmod(42, 0), 'NaN');
 }
 
 {
+    # LaguerreL(n,x)
     my $x = Math::AnyNum->new('7/5');
-    is(join(', ', map { laguerreL($_, $x) } 0 .. 5), '1, -2/5, -41/50, -269/375, -5839/15000, -3341/187500');
+    my $y = Math::AnyNum->new('-5/9');
 
-    $x = Math::AnyNum->new('-5/9');
-    is(join(', ', map { laguerreL($_, $x) } 0 .. 5), '1, 14/9, 367/162, 6907/2187, 671809/157464, 3987263/708588');
+    is(join(', ', map { laguerreL($_, $x) } 0 .. 5), '1, -2/5, -41/50, -269/375, -5839/15000, -3341/187500');
+    is(join(', ', map { laguerreL($_, $y) } 0 .. 5), '1, 14/9, 367/162, 6907/2187, 671809/157464, 3987263/708588');
 
     is(laguerreL(Math::AnyNum->new(12), 5) * factorial(12), '-693883775');
+
+    # LegendreP(n,x)
+    is(join(', ', map { legendreP($_, $x) } 0 .. 5), '1, 7/5, 61/25, 119/25, 1229/125, 65527/3125');
+    is(join(', ', map { legendreP($_, $y) } 0 .. 5), '1, -5/9, -1/27, 295/729, -2399/6561, 275/6561');
+
+    is(legendreP(Math::AnyNum->new(12), 5), '143457011569');
 }
 
 is(binomial(12,           5),           '792');
