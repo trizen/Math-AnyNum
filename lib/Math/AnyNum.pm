@@ -17,7 +17,7 @@ use constant {
               LONG_MIN  => Math::GMPq::_long_min(),
              };
 
-our $VERSION = '0.26';
+our $VERSION = '0.27';
 our ($ROUND, $PREC);
 
 BEGIN {
@@ -6576,7 +6576,7 @@ sub fibonacci ($;$) {
     my ($n, $k) = @_;
 
     if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
-        ## `x` is a native unsigned integer
+        ## `n` is a native unsigned integer
     }
     elsif (ref($n) eq __PACKAGE__) {
         $n = _any2ui($$n) // goto &nan;
@@ -7018,20 +7018,20 @@ sub hermiteHe ($$) {
 ## Primorial
 #
 sub primorial ($) {
-    my ($x) = @_;
+    my ($n) = @_;
 
-    if (!ref($x) and CORE::int($x) eq $x and $x >= 0 and $x < ULONG_MAX) {
-        ## `x` is a native unsigned integer
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is a native unsigned integer
     }
-    elsif (ref($x) eq __PACKAGE__) {
-        $x = _any2ui($$x) // goto &nan;
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
     }
     else {
-        $x = _any2ui(_star2obj($x)) // goto &nan;
+        $n = _any2ui(_star2obj($n)) // goto &nan;
     }
 
     my $r = Math::GMPz::Rmpz_init();
-    Math::GMPz::Rmpz_primorial_ui($r, $x);
+    Math::GMPz::Rmpz_primorial_ui($r, $n);
     bless \$r;
 }
 
@@ -7843,30 +7843,30 @@ sub dfactorial ($) {
 #
 
 sub mfactorial ($$) {
-    my ($x, $y) = @_;
+    my ($n, $k) = @_;
 
-    if (!ref($x) and CORE::int($x) eq $x and $x >= 0 and $x < ULONG_MAX) {
-        ## `x` is an unsigned native integer
+    if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
+        ## `n` is an unsigned native integer
     }
-    elsif (ref($x) eq __PACKAGE__) {
-        $x = _any2ui($$x) // goto &nan;
+    elsif (ref($n) eq __PACKAGE__) {
+        $n = _any2ui($$n) // goto &nan;
     }
     else {
-        $x = _any2ui(_star2obj($x)) // goto &nan;
+        $n = _any2ui(_star2obj($n)) // goto &nan;
     }
 
-    if (!ref($y) and CORE::int($y) eq $y and $y >= 0 and $y < ULONG_MAX) {
-        ## `y` is an unsigned native integer
+    if (!ref($k) and CORE::int($k) eq $k and $k >= 0 and $k < ULONG_MAX) {
+        ## `k` is an unsigned native integer
     }
-    elsif (ref($y) eq __PACKAGE__) {
-        $y = _any2ui($$y) // goto &nan;
+    elsif (ref($k) eq __PACKAGE__) {
+        $k = _any2ui($$k) // goto &nan;
     }
     else {
-        $y = _any2ui(_star2obj($y)) // goto &nan;
+        $k = _any2ui(_star2obj($k)) // goto &nan;
     }
 
     my $r = Math::GMPz::Rmpz_init();
-    Math::GMPz::Rmpz_mfac_uiui($r, $x, $y);
+    Math::GMPz::Rmpz_mfac_uiui($r, $n, $k);
     bless \$r;
 }
 

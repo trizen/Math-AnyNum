@@ -6,7 +6,7 @@ Math::AnyNum - Arbitrary size precision for integers, rationals, floating-points
 
 =head1 VERSION
 
-Version 0.26
+Version 0.27
 
 =head1 SYNOPSIS
 
@@ -819,7 +819,7 @@ The Lambert-W function. When the value of C<x> is less than C<-1/e>, it returns 
 
 It also accepts a complex number as input.
 
-Identities (assumming x>0):
+Identities (assuming x>0):
 
      LambertW(exp(x)*x) = x
      LambertW(log(x)*x) = log(x)
@@ -2405,7 +2405,7 @@ See his great presentation at: L<https://www.youtube.com/watch?v=Dhl4_Chvm_g>.
 The main aim of this module is to provide a fast and correct alternative to L<Math::BigInt>,
 L<Maht::BigFloat> and L<Math::BigRat>, as well as to L<bigint>, L<bignum> and L<bigrat> pragmas.
 
-The original project was called C<Math::BigNum>, but because of some design flaws, the project
+The original project was called C<Math::BigNum>, but because of some design flaws, that project
 was abandoned and much of its code ended up in this module.
 
 =head1 AUTHOR
