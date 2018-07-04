@@ -156,7 +156,7 @@ Additionally, each Math::AnyNum object is B<immutable>.
     abs(x)                       absolute value of x
     agm(x,y)                     arithmetic-geometric mean
     hypot(x,y)                   hypotenuse: sqrt(x^2 + y^2)
-    norm(x,y)                    the norm function: x^2 + y^2
+    norm(x)                      normalized value of x: abs(x)^2
     lnbern(n)                    natural logarithm of bernoulli(n)
     bernreal(n)                  Bernoulli number as floating-point
     harmreal(n)                  Harmonic number as floating-point
