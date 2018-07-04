@@ -233,9 +233,9 @@ Additionally, each Math::AnyNum object is B<immutable>.
     sumdigits(n,b)      sum of digits of n in base b
     popcount(n)         number of 1's in binary representation of n
     getbit(n,k)         k-th bit of integer n (1 or 0)
-    setbit(n,k)         set the k-th bit of integer to 1
-    clearbit(n,k)       set the k-th bit of integer to 0
-    flipbit(n,k)        flip the k-th bit of integer
+    setbit(n,k)         set the k-th bit of integer n to 1
+    clearbit(n,k)       set the k-th bit of integer n to 0
+    flipbit(n,k)        flip the k-th bit of integer n
 
     sum(@list)          sum of a list of numbers
     prod(@list)         product of a list of numbers
