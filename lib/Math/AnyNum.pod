@@ -61,17 +61,17 @@ Additionally, each Math::AnyNum object is B<immutable>.
     bell(n)                   n-th Bell number
     catalan(n)                n-th Catalan number
     lucas(n)                  n-th Lucas number
+    lucasmod(n,m)             n-th Lucas number modulo m
     fibonacci(n)              n-th Fibonacci number
     fibonacci(n,k)            n-th Fibonacci number of k-th order
     fibmod(n,m)               n-th Fibonacci number modulo m
-    lucasmod(n,m)             n-th Lucas number modulo m
     polygonal(n,k)            n-th k-gonal number
     harmonic(n)               n-th harmonic numbers: 1+1/2+...+1/n
     secant_number(n)          n-th secant/zig number
     tangent_number(n)         n-th tangent/zag number
     euler(n)                  n-th Euler number: E_n
-    bernoulli(n)              n-th Bernoulli number: B_n
     euler(n,x)                Euler polynomials: E_n(x)
+    bernoulli(n)              n-th Bernoulli number: B_n
     bernoulli(n,x)            Bernoulli polynomials: B_n(x)
     laguerreL(n,x)            Laguerre polynomials: L_n(x)
     legendreP(n,x)            Legendre polynomials: P_n(x)
@@ -209,8 +209,8 @@ Additionally, each Math::AnyNum object is B<immutable>.
     floor(x)            round x towards -Infinity
     ceil(x)             round x towards +Infinity
     round(x)            round x to the nearest integer
-    round(x,+k)         round x before the decimal point
-    round(x,-k)         round x after the decimal point
+    round(x,+k)         round x to k places before the decimal point
+    round(x,-k)         round x to k places after the decimal point
     acmp(a,b)           absolute comparison: abs(a) <=> abs(b)
     approx_cmp(a,b,k)   approximate comparison: round(a,k) <=> round(b,k)
     rat(x)              convert x into a rational number
@@ -1293,6 +1293,12 @@ When an additional argument is provided, it returns the the n-th Euler polynomia
 
 The n-th Lucas number. Returns NaN when C<n> is negative.
 
+=head2 lucasmod
+
+    lucasmod(n, m)                                #=> Int | NaN
+
+Efficiently compute the n-th Lucas number modulo m.
+
 =head2 fibonacci
 
     fibonacci(n)                                  #=> Int | NaN
@@ -1313,12 +1319,6 @@ Example:
     fibmod(n, m)                                  #=> Int | NaN
 
 Efficiently compute the n-th Fibonacci number modulo m.
-
-=head2 lucasmod
-
-    lucasmod(n, m)                                #=> Int | NaN
-
-Efficiently compute the n-th Lucas number modulo m.
 
 =head2 chebyshevT
 
