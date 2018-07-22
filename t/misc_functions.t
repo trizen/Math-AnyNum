@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 448;
+plan tests => 490;
 
 use Math::AnyNum qw(:misc lngamma ipow10 log);
 use List::Util qw();
@@ -660,6 +660,55 @@ ok(is_div('17',           complex('3.4')));
 ok(is_div(float('17'),    complex('3.4')));
 ok(is_div(rat('17'),      complex('3.4')));
 ok(is_div(complex('17'),  complex('3.4')));
+
+ok(!is_congruent(int('55'), 0, 13));
+ok(!is_congruent(int('55'), 0, int('13')));
+
+ok(!is_congruent(123, 0, 11));
+ok(!is_congruent(123, 0, int(11)));
+
+ok(is_congruent(int('42'),      0, int('3')));
+ok(is_congruent(int('42'),      0, '2'));
+ok(is_congruent('42',           0, '2'));
+ok(is_congruent('4i',           0, '2'));
+ok(is_congruent(complex('12i'), 0, '3'));
+ok(is_congruent('17',           0, '17/5'));
+ok(is_congruent('17',           0, '3.4'));
+ok(is_congruent('17',           0, complex('3.4')));
+ok(is_congruent(float('17'),    0, complex('3.4')));
+ok(is_congruent(rat('17'),      0, complex('3.4')));
+ok(is_congruent(complex('17'),  0, complex('3.4')));
+
+ok(is_congruent(83, 3,  5));
+ok(is_congruent(83, -2, 5));
+
+ok(is_congruent(int(83),     3,  5));
+ok(is_congruent(rat(83),     3,  5));
+ok(is_congruent(complex(83), 3,  5));
+ok(is_congruent(int(83),     -2, 5));
+ok(is_congruent(complex(83), -2, 5));
+ok(is_congruent(rat(83),     -2, 5));
+ok(is_congruent(float(83),   -2, 5));
+
+ok(is_congruent(int(83),     3,       rat(5)));
+ok(is_congruent(rat(83),     3,       5));
+ok(is_congruent(int(83),     int(3),  5));
+ok(is_congruent(int(83),     3,       int(5)));
+ok(is_congruent(int(83),     int(3),  int(5)));
+ok(is_congruent(complex(83), 3,       float(5)));
+ok(is_congruent(int(83),     -2,      int(5)));
+ok(is_congruent(int(83),     int(-2), 5));
+ok(is_congruent(complex(83), -2,      5));
+ok(is_congruent(rat(83),     -2,      5));
+ok(is_congruent(float(83),   -2,      5));
+
+ok(!is_congruent(int(83),     1,  5));
+ok(!is_congruent(rat(83),     1,  5));
+ok(!is_congruent(complex(83), 1,  5));
+ok(!is_congruent(int(83),     -1, 5));
+ok(!is_congruent(complex(83), -1, 5));
+ok(!is_congruent(rat(83),     -1, 5));
+ok(!is_congruent(float(83),   -1, 5));
 
 ok(is_rat(rat('1/2')));
 ok(!is_rat(complex('3+4i')));

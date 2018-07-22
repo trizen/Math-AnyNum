@@ -1,5 +1,11 @@
 Revision history for Math-AnyNum
 
+0.28    2018-??-??
+
+        [ADDITIONS]
+
+        - Added the `is_congruent(n, k, m)` function, which returns 1 when `n` is congruent to `k` mod `m`.
+
 0.27    2018-07-04
 
         [ADDITIONS]

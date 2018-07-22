@@ -271,6 +271,7 @@ Additionally, each Math::AnyNum object is B<immutable>.
     is_even(n)          return 1 if n is an integer divisible by 2
     is_odd(n)           return 1 if n is an integer not divisible by 2
     is_div(n,k)         return 1 if n is exactly divisible by k
+    is_congruent(n,k,m) return 1 if n is congruent to k mod m
 
 =head1 IMPORT / EXPORT
 
@@ -1930,11 +1931,19 @@ Returns a true value when C<n> is a real integer not divisible by 2.
 
 =head2 is_div
 
-    is_div(x, y)                                  #=> Bool
+    is_div(n, k)                                  #=> Bool
 
-Returns a true value when C<x> is exactly divisible by C<y> (i.e.: when the remainder C<x % y> is zero).
+Returns a true value when C<n> is exactly divisible by C<k> (i.e.: when the remainder C<n % k> is zero).
 
-This is a generalized version of the above two methods and it also works with complex numbers.
+Also defined for rationals, floats and complex numbers.
+
+=head2 is_congruent
+
+    is_congruent(n, k, m)                         #=> Bool
+
+Returns a true value when C<n> is congruent to C<k> modulo C<m> (i.e.: when the remainder C<n % m> equals C<k % m>).
+
+Also defined for rationals, floats and complex numbers.
 
 =head2 is_pos
 

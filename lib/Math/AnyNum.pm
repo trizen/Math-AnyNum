@@ -350,9 +350,10 @@ use overload
         is_one     => \&is_one,
         is_mone    => \&is_mone,
 
-        is_odd  => \&is_odd,
-        is_even => \&is_even,
-        is_div  => \&is_div,
+        is_odd       => \&is_odd,
+        is_even      => \&is_even,
+        is_div       => \&is_div,
+        is_congruent => \&is_congruent,
                );
 
     sub import {
@@ -4418,20 +4419,61 @@ sub divmod ($$) {
 #
 
 sub is_div ($$) {
-    my ($x, $y) = @_;
+    my ($n, $k) = @_;
 
-    if (ref($x) eq __PACKAGE__ and ref($$x) eq 'Math::GMPz') {
-        if (ref($y)) {
-            if (ref($y) eq __PACKAGE__ and ref($$y) eq 'Math::GMPz') {
-                return (Math::GMPz::Rmpz_divisible_p($$x, $$y) && Math::GMPz::Rmpz_sgn($$y));
+    if (ref($n) eq __PACKAGE__ and ref($$n) eq 'Math::GMPz') {
+        if (ref($k)) {
+            if (ref($k) eq __PACKAGE__ and ref($$k) eq 'Math::GMPz') {
+                return (Math::GMPz::Rmpz_sgn($$k) && Math::GMPz::Rmpz_divisible_p($$n, $$k));
             }
         }
-        elsif (CORE::int($y) eq $y and $y and $y < ULONG_MAX and $y > LONG_MIN) {
-            return Math::GMPz::Rmpz_divisible_ui_p($$x, $y < 0 ? -$y : $y);
+        elsif (CORE::int($k) eq $k and $k and $k < ULONG_MAX and $k > LONG_MIN) {
+            return Math::GMPz::Rmpz_divisible_ui_p($$n, $k < 0 ? -$k : $k);
         }
     }
 
-    @_ = (${mod($x, $y)}, 0);
+    @_ = (${mod($n, $k)}, 0);
+    goto &__eq__;
+}
+
+#
+## is_congruent
+#
+
+sub is_congruent ($$$) {
+    my ($n, $k, $m) = @_;
+
+    $n = $$n if (ref($n) eq __PACKAGE__);
+    $k = $$k if (ref($k) eq __PACKAGE__);
+    $m = $$m if (ref($m) eq __PACKAGE__);
+
+    if (ref($n) eq 'Math::GMPz') {
+
+        if (    !ref($k)
+            and !ref($m)
+            and CORE::int($k) eq $k
+            and $k >= 0
+            and $k < ULONG_MAX
+            and CORE::int($m) eq $m
+            and $m > 0
+            and $m < ULONG_MAX) {
+            return Math::GMPz::Rmpz_congruent_ui_p($n, $k, $m);
+        }
+
+        if (ref($k) eq 'Math::GMPz' and ref($m) eq 'Math::GMPz') {
+            return (Math::GMPz::Rmpz_sgn($m) && Math::GMPz::Rmpz_congruent_p($n, $k, $m));
+        }
+    }
+
+    $n = _star2obj($n) if !ref($n);
+    $k = _star2obj($k) if !ref($k);
+    $m = _star2obj($m) if !ref($m);
+
+    if (ref($n) eq 'Math::GMPz' and ref($k) eq 'Math::GMPz' and ref($m) eq 'Math::GMPz') {
+        return (Math::GMPz::Rmpz_sgn($m) && Math::GMPz::Rmpz_congruent_p($n, $k, $m));
+    }
+
+    @_ = (__mod__($n, $m), __mod__($k, $m));
     goto &__eq__;
 }
 
