@@ -2836,20 +2836,6 @@ sub __sub__ {
         Math::MPC::Rmpc_sub($r, $x, $r, $ROUND);
         return $r;
     }
-
-  Scalar__Scalar: {
-        my $r = (
-                 $x < 0
-                 ? Math::GMPz::Rmpz_init_set_si($x)
-                 : Math::GMPz::Rmpz_init_set_ui($x)
-                );
-
-        $y < 0
-          ? Math::GMPz::Rmpz_add_ui($r, $r, -$y)
-          : Math::GMPz::Rmpz_sub_ui($r, $r, $y);
-
-        return $r;
-    }
 }
 
 sub sub {    # used in overloading
@@ -3064,7 +3050,7 @@ sub mul {    # used in overloading
 
 sub __div__ {
     my ($x, $y) = @_;
-    goto(join('__', ref($x), ref($y) || 'Scalar') =~ tr/:/_/rs);
+    goto(join('__', ref($x) || 'Scalar', ref($y) || 'Scalar') =~ tr/:/_/rs);
 
     #
     ## GMPq
@@ -3117,6 +3103,29 @@ sub __div__ {
         return $r;
     }
 
+  Scalar__Math_GMPq: {
+
+        # Check for division by zero
+        Math::GMPq::Rmpq_sgn($y) || do {
+            $y = _mpq2mpfr($y);
+            goto Scalar__Math_MPFR;
+        };
+
+        my $r = Math::GMPq::Rmpq_init();
+
+        if ($x == 1 or $x == -1) {
+            Math::GMPq::Rmpq_inv($r, $y);
+            Math::GMPq::Rmpq_neg($r, $r) if $x < 0;
+            return $r;
+        }
+
+        $x < 0
+          ? Math::GMPq::Rmpq_set_si($r, $x, 1)
+          : Math::GMPq::Rmpq_set_ui($r, $x, 1);
+        Math::GMPq::Rmpq_div($r, $r, $y);
+        return $r;
+    }
+
     #
     ## GMPz
     #
@@ -3156,6 +3165,32 @@ sub __div__ {
         Math::GMPq::Rmpq_set_ui($r, 1, CORE::abs($y));
         Math::GMPq::Rmpq_set_num($r, $x);
         Math::GMPq::Rmpq_neg($r, $r) if $y < 0;
+        Math::GMPq::Rmpq_canonicalize($r);
+        return $r;
+    }
+
+  Scalar__Math_GMPz: {
+
+        # Check for division by zero
+        Math::GMPz::Rmpz_sgn($y) || do {
+            $y = _mpz2mpfr($y);
+            goto Scalar__Math_MPFR;
+        };
+
+        my $r = Math::GMPq::Rmpq_init();
+
+        if ($x == 1 or $x == -1) {
+            Math::GMPq::Rmpq_set_z($r, $y);
+            Math::GMPq::Rmpq_inv($r, $r);
+            Math::GMPq::Rmpq_neg($r, $r) if $x < 0;
+            return $r;
+        }
+
+        $x < 0
+          ? Math::GMPq::Rmpq_set_si($r, $x, 1)
+          : Math::GMPq::Rmpq_set_ui($r, $x, 1);
+
+        Math::GMPq::Rmpq_set_den($r, $y);
         Math::GMPq::Rmpq_canonicalize($r);
         return $r;
     }
@@ -3203,6 +3238,14 @@ sub __div__ {
         return $r;
     }
 
+  Scalar__Math_MPFR: {
+        my $r = Math::MPFR::Rmpfr_init2($PREC);
+        $x < 0
+          ? Math::MPFR::Rmpfr_si_div($r, $x, $y, $ROUND)
+          : Math::MPFR::Rmpfr_ui_div($r, $x, $y, $ROUND);
+        return $r;
+    }
+
   Math_MPFR__Math_GMPq: {
         my $r = Math::MPFR::Rmpfr_init2($PREC);
         Math::MPFR::Rmpfr_div_q($r, $x, $y, $ROUND);
@@ -3243,6 +3286,18 @@ sub __div__ {
         return $r;
     }
 
+  Scalar__Math_MPC: {
+        my $r = Math::MPC::Rmpc_init2($PREC);
+        if ($x < 0) {
+            Math::MPC::Rmpc_ui_div($r, -$x, $y, $ROUND);
+            Math::MPC::Rmpc_neg($r, $r, $ROUND);
+        }
+        else {
+            Math::MPC::Rmpc_ui_div($r, $x, $y, $ROUND);
+        }
+        return $r;
+    }
+
   Math_MPC__Math_MPFR: {
         my $r = Math::MPC::Rmpc_init2($PREC);
         Math::MPC::Rmpc_div_fr($r, $x, $y, $ROUND);
@@ -3266,6 +3321,15 @@ sub __div__ {
 
 sub div {    # used in overloading
     my ($x, $y) = @_;
+
+    if (!ref($x) and CORE::int($x) eq $x and $x < ULONG_MAX and $x > LONG_MIN) {
+
+        if (ref($y) eq __PACKAGE__) {
+            return bless \__div__($x, $$y);
+        }
+
+        return bless \__div__($x, ref($y) ? _star2obj($y) : _str2obj($y));
+    }
 
     $x =
         ref($x) eq __PACKAGE__ ? $$x

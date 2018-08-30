@@ -6,6 +6,10 @@ Revision history for Math-AnyNum
 
         - Added the `is_congruent(n, k, m)` function, which returns 1 when `n` is congruent to `k` mod `m`.
 
+        [IMPROVEMENTS]
+
+        - Optimized the `div(Scalar, AnyNum)` case. It no longer converts the Scalar to a temporary object.
+
 0.27    2018-07-04
 
         [ADDITIONS]
@@ -19,7 +23,7 @@ Revision history for Math-AnyNum
 
         [IMPROVEMENTS]
 
-        - Optimized the case `sub(Scalar, Object)` by using the `*_ui_sub()` functions from Math::{GMPz,MPFR,MPC}.
+        - Optimized the case `sub(Scalar, AnyNum)` by using the `*_ui_sub()` functions from Math::{GMPz,MPFR,MPC}.
         - Use `mpz_powm_ui()` in `powmod(n, k, m)` when `k` fits inside an unsigned native integer, as it is considerably faster than `mpz_powm()` for small `k`.
 
 0.26    2018-05-30
