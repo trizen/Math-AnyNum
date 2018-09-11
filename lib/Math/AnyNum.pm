@@ -587,7 +587,7 @@ sub _str2obj {
         return $r;
     }
 
-    # Remove the plus sign (if any)
+    # Remove the leading plus sign (if any)
     $s =~ s/^\+// if substr($s, 0, 1) eq '+';
 
     # Fraction
@@ -1026,6 +1026,9 @@ sub new {
         }
 
         $num = defined($num) ? "$num" : '0';
+
+        # Remove the leading plus sign (if any)
+        $num =~ s/^\+// if substr($num, 0, 1) eq '+';
 
         if (index($num, '/') != -1) {
             my $r = Math::GMPq::Rmpq_init();
