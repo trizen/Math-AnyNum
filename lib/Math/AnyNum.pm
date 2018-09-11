@@ -587,8 +587,8 @@ sub _str2obj {
         return $r;
     }
 
-    # Remove the plus sign
-    $s =~ s/^\+//;
+    # Remove the plus sign (if any)
+    $s =~ s/^\+// if substr($s, 0, 1) eq '+';
 
     # Fraction
     if (index($s, '/') != -1 and $s =~ m{^\s*[-+]?[0-9]+\s*/\s*[-+]?[1-9]+[0-9]*\s*\z}) {
