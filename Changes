@@ -9,6 +9,7 @@ Revision history for Math-AnyNum
         [IMPROVEMENTS]
 
         - Optimized the `div(Scalar, AnyNum)` case. It no longer converts the Scalar to a temporary object.
+        - Faster algorithms in `fibmod(n, m)` and `lucasmod(n, m)`. (~5x faster)
 
 0.27    2018-07-04
 

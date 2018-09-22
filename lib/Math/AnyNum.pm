@@ -6768,63 +6768,6 @@ sub lucas ($) {
     bless \$r;
 }
 
-sub __fibmod__ {
-    my ($n, $m, $T1, $T2) = @_;
-
-    # T1 = 0, T2 = 1 for Fibonacci numbers
-    # T1 = 2, T2 = 1 for Lucas numbers
-
-    $n = Math::GMPz::Rmpz_init_set($n);
-
-    state $t = Math::GMPz::Rmpz_init_nobless();
-    state $u = Math::GMPz::Rmpz_init_nobless();
-
-    my $f = Math::GMPz::Rmpz_init_set_ui($T1 // 0);
-    my $g = Math::GMPz::Rmpz_init_set_ui($T2 // 1);
-
-    my $A = Math::GMPz::Rmpz_init_set_ui(0);
-    my $B = Math::GMPz::Rmpz_init_set_ui(1);
-
-    for (; ;) {
-
-        if (Math::GMPz::Rmpz_odd_p($n)) {
-
-            # (f, g) = (f*a + g*b, f*b + g*(a+b))  mod m
-
-            Math::GMPz::Rmpz_mul($u, $g, $B);
-            Math::GMPz::Rmpz_mul($t, $f, $A);
-            Math::GMPz::Rmpz_mul($g, $g, $A);
-
-            Math::GMPz::Rmpz_add($t, $t, $u);
-            Math::GMPz::Rmpz_add($g, $g, $u);
-
-            Math::GMPz::Rmpz_addmul($g, $f, $B);
-
-            Math::GMPz::Rmpz_mod($f, $t, $m);
-            Math::GMPz::Rmpz_mod($g, $g, $m);
-        }
-
-        # (a, b) = (a*a + b*b, a*b + b*(a+b))  mod m
-
-        Math::GMPz::Rmpz_div_2exp($n, $n, 1);
-        Math::GMPz::Rmpz_sgn($n) || last;
-
-        Math::GMPz::Rmpz_mul($t, $A, $A);
-        Math::GMPz::Rmpz_mul($u, $B, $B);
-        Math::GMPz::Rmpz_mul($B, $B, $A);
-
-        Math::GMPz::Rmpz_mul_2exp($B, $B, 1);
-
-        Math::GMPz::Rmpz_add($B, $B, $u);
-        Math::GMPz::Rmpz_add($t, $t, $u);
-
-        Math::GMPz::Rmpz_mod($A, $t, $m);
-        Math::GMPz::Rmpz_mod($B, $B, $m);
-    }
-
-    return $f;
-}
-
 #
 ## fibonacci(n) mod m
 #
@@ -6846,7 +6789,43 @@ sub fibmod ($$) {
     Math::GMPz::Rmpz_sgn($n) < 0  and goto &nan;
     Math::GMPz::Rmpz_sgn($m) == 0 and goto &nan;
 
-    bless \__fibmod__($n, $m, 0, 1);
+#<<<
+    my ($f, $g, $w) = (
+        Math::GMPz::Rmpz_init_set_ui(0),
+        Math::GMPz::Rmpz_init_set_ui(1),
+    );
+#>>>
+
+    my $t = Math::GMPz::Rmpz_init();
+
+    foreach my $bit (split(//, substr(Math::GMPz::Rmpz_get_str($n, 2), 1))) {
+
+        Math::GMPz::Rmpz_powm_ui($g, $g, 2, $m);
+        Math::GMPz::Rmpz_powm_ui($f, $f, 2, $m);
+
+        Math::GMPz::Rmpz_mul_2exp($t, $g, 2);
+        Math::GMPz::Rmpz_sub($t, $t, $f);
+
+        $w
+          ? Math::GMPz::Rmpz_add_ui($t, $t, 2)
+          : Math::GMPz::Rmpz_sub_ui($t, $t, 2);
+
+        Math::GMPz::Rmpz_add($f, $f, $g);
+
+        if ($bit) {
+            Math::GMPz::Rmpz_sub($f, $t, $f);
+            Math::GMPz::Rmpz_set($g, $t);
+            $w = 0;
+        }
+        else {
+            Math::GMPz::Rmpz_sub($g, $t, $f);
+            $w = 1;
+        }
+    }
+
+    Math::GMPz::Rmpz_mod($g, $g, $m);
+
+    return bless \$g;
 }
 
 #
@@ -6870,7 +6849,40 @@ sub lucasmod ($$) {
     Math::GMPz::Rmpz_sgn($n) < 0  and goto &nan;
     Math::GMPz::Rmpz_sgn($m) == 0 and goto &nan;
 
-    bless \__fibmod__($n, $m, 2, 1);
+#<<<
+    my ($f, $g, $w) = (
+        Math::GMPz::Rmpz_init_set_ui(3),
+        Math::GMPz::Rmpz_init_set_ui(1),
+    );
+#>>>
+
+    foreach my $bit (split(//, substr(Math::GMPz::Rmpz_get_str($n, 2), 1))) {
+
+        Math::GMPz::Rmpz_powm_ui($g, $g, 2, $m);
+        Math::GMPz::Rmpz_powm_ui($f, $f, 2, $m);
+
+        if ($w) {
+            Math::GMPz::Rmpz_sub_ui($g, $g, 2);
+            Math::GMPz::Rmpz_add_ui($f, $f, 2);
+        }
+        else {
+            Math::GMPz::Rmpz_add_ui($g, $g, 2);
+            Math::GMPz::Rmpz_sub_ui($f, $f, 2);
+        }
+
+        if ($bit) {
+            Math::GMPz::Rmpz_sub($g, $f, $g);
+            $w = 0;
+        }
+        else {
+            Math::GMPz::Rmpz_sub($f, $f, $g);
+            $w = 1;
+        }
+    }
+
+    Math::GMPz::Rmpz_mod($g, $g, $m);
+
+    bless \$g;
 }
 
 #
