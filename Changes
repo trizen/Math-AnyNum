@@ -4,12 +4,15 @@ Revision history for Math-AnyNum
 
         [ADDITIONS]
 
-        - Added the `is_congruent(n, k, m)` function, which returns 1 when `n` is congruent to `k` mod `m`.
+        - lucasU(p, q, n)               Lucas U sequence
+        - lucasV(p, q, n)               Lucas V sequence
+        - lucasUV(p, q, n)              Lucas U and V sequences
+        - is_congruent(n, k, m)`        true if `n` is congruent to `k` mod `m`.
 
         [IMPROVEMENTS]
 
+        - More efficient algorithms in `fibmod(n, m)` and `lucasmod(n, m)`. (~5x faster)
         - Optimized the `div(Scalar, AnyNum)` case. It no longer converts the Scalar to a temporary object.
-        - Faster algorithms in `fibmod(n, m)` and `lucasmod(n, m)`. (~5x faster)
 
 0.27    2018-07-04
 

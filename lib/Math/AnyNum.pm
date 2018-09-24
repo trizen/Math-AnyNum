@@ -202,6 +202,10 @@ use overload
         lucas     => \&lucas,
         fibonacci => \&fibonacci,
 
+        lucasU  => \&lucasU,
+        lucasV  => \&lucasV,
+        lucasUV => \&lucasUV,
+
         fibmod   => \&fibmod,
         lucasmod => \&lucasmod,
 
@@ -6766,6 +6770,157 @@ sub lucas ($) {
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_lucnum_ui($r, $n);
     bless \$r;
+}
+
+sub __lucasV__ {
+    my ($P, $Q, $n) = @_;
+
+    my ($V1, $V2) = (Math::GMPz::Rmpz_init_set_ui(2), Math::GMPz::Rmpz_init_set($P));
+    my ($Q1, $Q2) = (Math::GMPz::Rmpz_init_set_ui(1), Math::GMPz::Rmpz_init_set_ui(1));
+
+    foreach my $bit (split(//, Math::GMPz::Rmpz_get_str($n, 2))) {
+
+        Math::GMPz::Rmpz_mul($Q1, $Q1, $Q2);
+
+        if ($bit) {
+            Math::GMPz::Rmpz_mul($Q2, $Q1, $Q);
+            Math::GMPz::Rmpz_mul($V1, $V1, $V2);
+            Math::GMPz::Rmpz_mul($V2, $V2, $V2);
+            Math::GMPz::Rmpz_submul($V1, $P, $Q1);
+            Math::GMPz::Rmpz_submul_ui($V2, $Q2, 2);
+        }
+        else {
+            Math::GMPz::Rmpz_set($Q2, $Q1);
+            Math::GMPz::Rmpz_mul($V2, $V2, $V1);
+            Math::GMPz::Rmpz_mul($V1, $V1, $V1);
+            Math::GMPz::Rmpz_submul($V2, $P, $Q1);
+            Math::GMPz::Rmpz_submul_ui($V1, $Q2, 2);
+        }
+    }
+
+    return ($V1, $V2);
+}
+
+sub __lucasUV__ {
+    my ($P, $Q, $n) = @_;
+
+    my $U1 = Math::GMPz::Rmpz_init_set_ui(1);
+
+    my ($V1, $V2) = (Math::GMPz::Rmpz_init_set_ui(2), Math::GMPz::Rmpz_init_set($P));
+    my ($Q1, $Q2) = (Math::GMPz::Rmpz_init_set_ui(1), Math::GMPz::Rmpz_init_set_ui(1));
+
+    my $t = Math::GMPz::Rmpz_init_set_ui(2);
+    my $s = Math::GMPz::Rmpz_remove($t, $n, $t);
+
+    foreach my $bit (split(//, substr(Math::GMPz::Rmpz_get_str($t, 2), 0, -1))) {
+
+        Math::GMPz::Rmpz_mul($Q1, $Q1, $Q2);
+
+        if ($bit) {
+            Math::GMPz::Rmpz_mul($Q2, $Q1, $Q);
+            Math::GMPz::Rmpz_mul($U1, $U1, $V2);
+            Math::GMPz::Rmpz_mul($V1, $V1, $V2);
+
+            Math::GMPz::Rmpz_mul($V2, $V2, $V2);
+            Math::GMPz::Rmpz_submul($V1, $Q1, $P);
+            Math::GMPz::Rmpz_submul_ui($V2, $Q2, 2);
+        }
+        else {
+            Math::GMPz::Rmpz_set($Q2, $Q1);
+            Math::GMPz::Rmpz_mul($U1, $U1, $V1);
+            Math::GMPz::Rmpz_mul($V2, $V2, $V1);
+            Math::GMPz::Rmpz_sub($U1, $U1, $Q1);
+            Math::GMPz::Rmpz_mul($V1, $V1, $V1);
+            Math::GMPz::Rmpz_submul($V2, $Q1, $P);
+            Math::GMPz::Rmpz_submul_ui($V1, $Q2, 2);
+        }
+    }
+
+    Math::GMPz::Rmpz_mul($Q1, $Q1, $Q2);
+    Math::GMPz::Rmpz_mul($Q2, $Q1, $Q);
+    Math::GMPz::Rmpz_mul($U1, $U1, $V1);
+    Math::GMPz::Rmpz_mul($V1, $V1, $V2);
+    Math::GMPz::Rmpz_sub($U1, $U1, $Q1);
+    Math::GMPz::Rmpz_submul($V1, $Q1, $P);
+    Math::GMPz::Rmpz_mul($Q1, $Q1, $Q2);
+
+    for (1 .. $s) {
+        Math::GMPz::Rmpz_mul($U1, $U1, $V1);
+        Math::GMPz::Rmpz_mul($V1, $V1, $V1);
+        Math::GMPz::Rmpz_submul_ui($V1, $Q1, 2);
+        Math::GMPz::Rmpz_mul($Q1, $Q1, $Q1);
+    }
+
+    return ($U1, $V1);
+}
+
+sub lucasU ($$$) {
+    my ($P, $Q, $n) = @_;
+
+    $P = _star2mpz($P) // goto &nan;
+    $Q = _star2mpz($Q) // goto &nan;
+    $n = _star2mpz($n) // goto &nan;
+
+    my $D = Math::GMPz::Rmpz_init();
+
+    Math::GMPz::Rmpz_mul($D, $P, $P);
+    Math::GMPz::Rmpz_submul_ui($D, $Q, 4);
+
+    # When `P*P - 4*Q != 0`, we can use a faster algorithm
+    if (Math::GMPz::Rmpz_sgn($D)) {
+
+        my ($V1, $V2) = __lucasV__($P, $Q, $n);
+
+        Math::GMPz::Rmpz_mul_2exp($V2, $V2, 1);
+        Math::GMPz::Rmpz_submul($V2, $V1, $P);
+        Math::GMPz::Rmpz_divexact($V2, $V2, $D);
+
+        return bless \$V2;
+    }
+
+    my ($U) = __lucasUV__($P, $Q, $n);
+
+    bless \$U;
+}
+
+sub lucasV ($$$) {
+    my ($P, $Q, $n) = @_;
+
+    $P = _star2mpz($P) // goto &nan;
+    $Q = _star2mpz($Q) // goto &nan;
+    $n = _star2mpz($n) // goto &nan;
+
+    my ($V) = __lucasV__($P, $Q, $n);
+
+    bless \$V;
+}
+
+sub lucasUV ($$$) {
+    my ($P, $Q, $n) = @_;
+
+    $P = _star2mpz($P) // goto &nan;
+    $Q = _star2mpz($Q) // goto &nan;
+    $n = _star2mpz($n) // goto &nan;
+
+    my $D = Math::GMPz::Rmpz_init();
+
+    Math::GMPz::Rmpz_mul($D, $P, $P);
+    Math::GMPz::Rmpz_submul_ui($D, $Q, 4);
+
+    # When `P*P - 4*Q != 0`, we can use a faster algorithm
+    if (Math::GMPz::Rmpz_sgn($D)) {
+        my ($V1, $V2) = __lucasV__($P, $Q, $n);
+
+        Math::GMPz::Rmpz_mul_2exp($V2, $V2, 1);
+        Math::GMPz::Rmpz_submul($V2, $V1, $P);
+        Math::GMPz::Rmpz_divexact($V2, $V2, $D);
+
+        return ((bless \$V2), (bless \$V1));
+    }
+
+    my ($U, $V) = __lucasUV__($P, $Q, $n);
+
+    ((bless \$U), (bless \$V));
 }
 
 #
