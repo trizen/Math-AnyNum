@@ -6861,6 +6861,9 @@ sub lucasU ($$$) {
     $Q = _star2mpz($Q) // goto &nan;
     $n = _star2mpz($n) // goto &nan;
 
+    # U_0(P, Q) = 0
+    Math::GMPz::Rmpz_sgn($n) || goto &zero;
+
     my $D = Math::GMPz::Rmpz_init();
 
     Math::GMPz::Rmpz_mul($D, $P, $P);
@@ -6916,6 +6919,11 @@ sub lucasUV ($$$) {
         Math::GMPz::Rmpz_divexact($V2, $V2, $D);
 
         return ((bless \$V2), (bless \$V1));
+    }
+
+    # U_0(P, Q) = 0, V_0(P, Q) = 2
+    if (!Math::GMPz::Rmpz_sgn($n)) {
+        return (zero(), bless \Math::GMPz::Rmpz_init_set_ui(2));
     }
 
     my ($U, $V) = __lucasUV__($P, $Q, $n);
