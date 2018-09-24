@@ -202,9 +202,11 @@ use overload
         lucas     => \&lucas,
         fibonacci => \&fibonacci,
 
-        lucasU  => \&lucasU,
-        lucasV  => \&lucasV,
-        lucasUV => \&lucasUV,
+        lucasU => \&lucasU,
+        lucasV => \&lucasV,
+
+        lucasUmod => \&lucasUmod,
+        lucasVmod => \&lucasVmod,
 
         fibmod   => \&fibmod,
         lucasmod => \&lucasmod,
@@ -6801,6 +6803,40 @@ sub __lucasV__ {
     return ($V1, $V2);
 }
 
+sub __lucasVmod__ {
+    my ($P, $Q, $n, $m) = @_;
+
+    my ($V1, $V2) = (Math::GMPz::Rmpz_init_set_ui(2), Math::GMPz::Rmpz_init_set($P));
+    my ($Q1, $Q2) = (Math::GMPz::Rmpz_init_set_ui(1), Math::GMPz::Rmpz_init_set_ui(1));
+
+    foreach my $bit (split(//, Math::GMPz::Rmpz_get_str($n, 2))) {
+
+        Math::GMPz::Rmpz_mul($Q1, $Q1, $Q2);
+        Math::GMPz::Rmpz_mod($Q1, $Q1, $m);
+
+        if ($bit) {
+            Math::GMPz::Rmpz_mul($Q2, $Q1, $Q);
+            Math::GMPz::Rmpz_mul($V1, $V1, $V2);
+            Math::GMPz::Rmpz_powm_ui($V2, $V2, 2, $m);
+            Math::GMPz::Rmpz_submul($V1, $P, $Q1);
+            Math::GMPz::Rmpz_submul_ui($V2, $Q2, 2);
+            Math::GMPz::Rmpz_mod($V1, $V1, $m);
+        }
+        else {
+            Math::GMPz::Rmpz_set($Q2, $Q1);
+            Math::GMPz::Rmpz_mul($V2, $V2, $V1);
+            Math::GMPz::Rmpz_powm_ui($V1, $V1, 2, $m);
+            Math::GMPz::Rmpz_submul($V2, $P, $Q1);
+            Math::GMPz::Rmpz_submul_ui($V1, $Q2, 2);
+            Math::GMPz::Rmpz_mod($V2, $V2, $m);
+        }
+    }
+
+    Math::GMPz::Rmpz_mod($V1, $V1, $m);
+
+    return ($V1, $V2);
+}
+
 sub __lucasUV__ {
     my ($P, $Q, $n) = @_;
 
@@ -6854,6 +6890,71 @@ sub __lucasUV__ {
     return ($U1, $V1);
 }
 
+sub __lucasUVmod__ {
+    my ($P, $Q, $n, $m) = @_;
+
+    my $U1 = Math::GMPz::Rmpz_init_set_ui(1);
+
+    my ($V1, $V2) = (Math::GMPz::Rmpz_init_set_ui(2), Math::GMPz::Rmpz_init_set($P));
+    my ($Q1, $Q2) = (Math::GMPz::Rmpz_init_set_ui(1), Math::GMPz::Rmpz_init_set_ui(1));
+
+    my $t = Math::GMPz::Rmpz_init_set_ui(2);
+    my $s = Math::GMPz::Rmpz_remove($t, $n, $t);
+
+    foreach my $bit (split(//, substr(Math::GMPz::Rmpz_get_str($t, 2), 0, -1))) {
+
+        Math::GMPz::Rmpz_mul($Q1, $Q1, $Q2);
+        Math::GMPz::Rmpz_mod($Q1, $Q1, $m);
+
+        if ($bit) {
+            Math::GMPz::Rmpz_mul($Q2, $Q1, $Q);
+            Math::GMPz::Rmpz_mul($U1, $U1, $V2);
+            Math::GMPz::Rmpz_mul($V1, $V1, $V2);
+
+            Math::GMPz::Rmpz_powm_ui($V2, $V2, 2, $m);
+            Math::GMPz::Rmpz_submul($V1, $Q1, $P);
+            Math::GMPz::Rmpz_submul_ui($V2, $Q2, 2);
+
+            Math::GMPz::Rmpz_mod($V1, $V1, $m);
+            Math::GMPz::Rmpz_mod($U1, $U1, $m);
+        }
+        else {
+            Math::GMPz::Rmpz_set($Q2, $Q1);
+            Math::GMPz::Rmpz_mul($U1, $U1, $V1);
+            Math::GMPz::Rmpz_mul($V2, $V2, $V1);
+            Math::GMPz::Rmpz_sub($U1, $U1, $Q1);
+
+            Math::GMPz::Rmpz_powm_ui($V1, $V1, 2, $m);
+            Math::GMPz::Rmpz_submul($V2, $Q1, $P);
+            Math::GMPz::Rmpz_submul_ui($V1, $Q2, 2);
+
+            Math::GMPz::Rmpz_mod($V2, $V2, $m);
+            Math::GMPz::Rmpz_mod($U1, $U1, $m);
+        }
+    }
+
+    Math::GMPz::Rmpz_mul($Q1, $Q1, $Q2);
+    Math::GMPz::Rmpz_mul($Q2, $Q1, $Q);
+    Math::GMPz::Rmpz_mul($U1, $U1, $V1);
+    Math::GMPz::Rmpz_mul($V1, $V1, $V2);
+    Math::GMPz::Rmpz_sub($U1, $U1, $Q1);
+    Math::GMPz::Rmpz_submul($V1, $Q1, $P);
+    Math::GMPz::Rmpz_mul($Q1, $Q1, $Q2);
+
+    for (1 .. $s) {
+        Math::GMPz::Rmpz_mul($U1, $U1, $V1);
+        Math::GMPz::Rmpz_mod($U1, $U1, $m);
+        Math::GMPz::Rmpz_powm_ui($V1, $V1, 2, $m);
+        Math::GMPz::Rmpz_submul_ui($V1, $Q1, 2);
+        Math::GMPz::Rmpz_powm_ui($Q1, $Q1, 2, $m);
+    }
+
+    Math::GMPz::Rmpz_mod($U1, $U1, $m);
+    Math::GMPz::Rmpz_mod($V1, $V1, $m);
+
+    return ($U1, $V1);
+}
+
 sub lucasU ($$$) {
     my ($P, $Q, $n) = @_;
 
@@ -6886,6 +6987,43 @@ sub lucasU ($$$) {
     bless \$U;
 }
 
+sub lucasUmod ($$$$) {
+    my ($P, $Q, $n, $m) = @_;
+
+    $P = _star2mpz($P) // goto &nan;
+    $Q = _star2mpz($Q) // goto &nan;
+    $n = _star2mpz($n) // goto &nan;
+    $m = _star2mpz($m) // goto &nan;
+
+    # undefined for m=0
+    Math::GMPz::Rmpz_sgn($m) || goto &nan;
+
+    # U_0(P, Q) = 0
+    Math::GMPz::Rmpz_sgn($n) || goto &zero;
+
+    my $D = Math::GMPz::Rmpz_init();
+
+    Math::GMPz::Rmpz_mul($D, $P, $P);
+    Math::GMPz::Rmpz_submul_ui($D, $Q, 4);
+
+    # When `gcd(P*P - 4*Q, m) = 1`, we can use a faster algorithm
+    if (Math::GMPz::Rmpz_invert($D, $D, $m)) {
+
+        my ($V1, $V2) = __lucasVmod__($P, $Q, $n, $m);
+
+        Math::GMPz::Rmpz_mul_2exp($V2, $V2, 1);
+        Math::GMPz::Rmpz_submul($V2, $V1, $P);
+        Math::GMPz::Rmpz_mul($V2, $V2, $D);
+        Math::GMPz::Rmpz_mod($V2, $V2, $m);
+
+        return bless \$V2;
+    }
+
+    my ($U) = __lucasUVmod__($P, $Q, $n, $m);
+
+    bless \$U;
+}
+
 sub lucasV ($$$) {
     my ($P, $Q, $n) = @_;
 
@@ -6898,37 +7036,20 @@ sub lucasV ($$$) {
     bless \$V;
 }
 
-sub lucasUV ($$$) {
-    my ($P, $Q, $n) = @_;
+sub lucasVmod ($$$$) {
+    my ($P, $Q, $n, $m) = @_;
 
     $P = _star2mpz($P) // goto &nan;
     $Q = _star2mpz($Q) // goto &nan;
     $n = _star2mpz($n) // goto &nan;
+    $m = _star2mpz($m) // goto &nan;
 
-    my $D = Math::GMPz::Rmpz_init();
+    # undefined for m=0
+    Math::GMPz::Rmpz_sgn($m) || goto &nan;
 
-    Math::GMPz::Rmpz_mul($D, $P, $P);
-    Math::GMPz::Rmpz_submul_ui($D, $Q, 4);
+    my ($V) = __lucasVmod__($P, $Q, $n, $m);
 
-    # When `P*P - 4*Q != 0`, we can use a faster algorithm
-    if (Math::GMPz::Rmpz_sgn($D)) {
-        my ($V1, $V2) = __lucasV__($P, $Q, $n);
-
-        Math::GMPz::Rmpz_mul_2exp($V2, $V2, 1);
-        Math::GMPz::Rmpz_submul($V2, $V1, $P);
-        Math::GMPz::Rmpz_divexact($V2, $V2, $D);
-
-        return ((bless \$V2), (bless \$V1));
-    }
-
-    # U_0(P, Q) = 0, V_0(P, Q) = 2
-    if (!Math::GMPz::Rmpz_sgn($n)) {
-        return (zero(), bless \Math::GMPz::Rmpz_init_set_ui(2));
-    }
-
-    my ($U, $V) = __lucasUV__($P, $Q, $n);
-
-    ((bless \$U), (bless \$V));
+    bless \$V;
 }
 
 #

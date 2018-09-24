@@ -6,8 +6,9 @@ Revision history for Math-AnyNum
 
         - lucasU(p, q, n)               Lucas U sequence
         - lucasV(p, q, n)               Lucas V sequence
-        - lucasUV(p, q, n)              Lucas U and V sequences
-        - is_congruent(n, k, m)`        true if `n` is congruent to `k` mod `m`.
+        - lucasUmod(p, q, n, m)         Lucas U sequence mod m
+        - lucasVmod(p, q, n, m)         Lucas V sequence mod m
+        - is_congruent(n, k, m)`        true if `n` is congruent to `k` mod `m`
 
         [IMPROVEMENTS]
 
