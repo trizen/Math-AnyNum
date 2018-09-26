@@ -62,6 +62,10 @@ Additionally, each Math::AnyNum object is B<immutable>.
     catalan(n)                n-th Catalan number
     lucas(n)                  n-th Lucas number
     lucasmod(n,m)             n-th Lucas number modulo m
+    lucasU(P,Q,n)             Lucas U_n(P, Q) function
+    lucasV(P,Q,n)             Lucas V_n(P, Q) function
+    lucasUmod(P,Q,n,m)        Lucas U_n(P, Q) modulo m
+    lucasVmod(P,Q,n,m)        Lucas V_n(P, Q) modulo m
     fibonacci(n)              n-th Fibonacci number
     fibonacci(n,k)            n-th Fibonacci number of k-th order
     fibmod(n,m)               n-th Fibonacci number modulo m
@@ -1293,11 +1297,47 @@ When an additional argument is provided, it returns the the n-th Euler polynomia
 
 The n-th Lucas number. Returns NaN when C<n> is negative.
 
+=head2 lucasU
+
+    lucasU(P, Q, n)                               #=> Int | NaN
+
+The Lucas C<U_n(P, Q)> function.
+
+Example:
+
+    lucasU(1, -1, $n)       # the Fibonacci numbers
+    lucasU(2, -1, $n)       # the Pell numbers
+    lucasU(1, -2, $n)       # the Jacobsthal numbers
+
+=head2 lucasV
+
+    lucasV(P, Q, n)                               #=> Int | NaN
+
+The Lucas C<V_n(P, Q)> function.
+
+Example:
+
+    lucasV(1, -1, $n)       # the Lucas numbers
+    lucasV(2, -1, $n)       # the Pell-Lucas numbers
+    lucasV(1, -2, $n)       # the Jacobsthal-Lucas numbers
+
 =head2 lucasmod
 
     lucasmod(n, m)                                #=> Int | NaN
 
 Efficiently compute the n-th Lucas number modulo m.
+
+=head2 lucasUmod
+
+    lucasUmod(P, Q, n, m)                         #=> Int | NaN
+
+Efficiently compute the Lucas C<U_n(P, Q)> function modulo m.
+
+=head2 lucasVmod
+
+    lucasVmod(P, Q, n, m)                         #=> Int | NaN
+
+Efficiently compute the Lucas C<V_n(P, Q)> function modulo m.
 
 =head2 fibonacci
 
