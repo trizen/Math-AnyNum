@@ -86,8 +86,9 @@ Additionally, each Math::AnyNum object is B<immutable>.
     faulhaber_sum(n,k)        sum of powers: 1^k + 2^k + ... + n^k
     geometric_sum(n,r)        geometric sum: r^0 + r^1 + ... + r^n
     kronecker(n,k)            Kronecker (Jacobi) symbol
-    gcd(@list)                greatest common divisor
     lcm(@list)                least common multiple
+    gcd(@list)                greatest common divisor
+    gcdext(n,k)               return (u,v,d) where u*n+v*k=d
     iadd(a,b)                 integer addition: a+b
     isub(a,b)                 integer subtraction: a-b
     imul(a,b)                 integer multiplication: a*b
@@ -1182,17 +1183,25 @@ The integer part of the logarithm of C<n> to base C<2> or base C<10>, respective
 
 The bitwise integer operations.
 
+=head2 lcm
+
+    lcm(@list)                                    #=> Int
+
+The least common multiple of a list of integers.
+
 =head2 gcd
 
     gcd(@list)                                    #=> Int
 
 The greatest common divisor of a list of integers.
 
-=head2 lcm
+=head2 gcdext
 
-    lcm(@list)                                    #=> Int
+    gcdext(n, k)                                  #=> (Int, Int, Int)
 
-The least common multiple of a list of integers.
+The extended greatest common divisor of C<n> and C<k>, returning C<(u, v, d)>, where C<d> is
+the greatest common divisor of C<n> and C<k>, while C<u> and C<v> are the coefficients satisfying
+C<u*n + v*k = d>. The value of C<d> is always non-negative.
 
 =head2 valuation
 
@@ -1859,7 +1868,7 @@ Returns a deep-copy of the self-object.
 Returns the population count of the positive integer part of C<x>, which is the number of 1's in
 its binary representation.
 
-This value is also known as the Hamming weight.
+This value is also known as the Hamming weight value.
 
 Example:
 
@@ -1869,7 +1878,7 @@ Example:
 
     getbit(n, k)                                  #=> Bool
 
-Verifies C<n>'s k-th bit and returns a true value if the bit is set to 1. False otherwise.
+Returns 1 if bit C<k> of C<n> is set, and 0 if it is not set.
 
 Example:
 
@@ -1880,7 +1889,7 @@ Example:
 
     setbit(n, k)                                  #=> Int
 
-Sets C<n>'s k-th bit to 1 (without modifying C<n> in-place).
+Returns a copy of C<n> with bit C<k> set to 1.
 
 Example:
 
@@ -1891,7 +1900,7 @@ Example:
 
     flipbit(n, k)                                 #=> Int
 
-Flips C<n>'s k-th bit from 1 to 0, and viceversa (without modifying C<n> in-place).
+Returns a copy of C<n> with bit C<k> inverted.
 
 Example:
 
@@ -1902,7 +1911,7 @@ Example:
 
     clearbit(n, k)                                #=> Int
 
-Clears C<n>'s k-th bit, by setting it to 0 (without modifying C<n> in-place).
+Returns a copy of C<n> with bit C<k> set to 0.
 
 Example:
 

@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 519;
+plan tests => 522;
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -383,6 +383,10 @@ is(gcd(20,          12),          4);
 is(gcd($o->new(20), 12),          4);
 is(gcd(20,          $o->new(12)), 4);
 is(gcd($o->new(12), $o->new(20)), 4);
+
+is(join(' ', gcdext(12,  20)),  '2 -1 4');
+is(join(' ', gcdext(196, 147)), '1 -1 49');
+is(join(' ', gcdext(147, 196)), '-1 1 49');
 
 is(gcd(42,   98,   8),   2);
 is(gcd(5040, 5020, -50), 10);

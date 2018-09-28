@@ -236,8 +236,9 @@ use overload
         euler_polynomial     => \&euler_polynomial,
         bernoulli_polynomial => \&bernoulli_polynomial,
 
-        lcm => \&lcm,
-        gcd => \&gcd,
+        lcm    => \&lcm,
+        gcd    => \&gcd,
+        gcdext => \&gcdext,
 
         valuation => \&valuation,
         kronecker => \&kronecker,
@@ -8433,6 +8434,21 @@ sub gcd {
     }
 
     bless \$r;
+}
+
+sub gcdext ($$) {
+    my ($n, $k) = @_;
+
+    $n = _star2mpz($n) // return (nan(), nan());
+    $k = _star2mpz($k) // return (nan(), nan());
+
+    my $g = Math::GMPz::Rmpz_init();
+    my $u = Math::GMPz::Rmpz_init();
+    my $v = Math::GMPz::Rmpz_init();
+
+    Math::GMPz::Rmpz_gcdext($g, $u, $v, $n, $k);
+
+    ((bless \$u), (bless \$v), (bless \$g));
 }
 
 #

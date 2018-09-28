@@ -9,6 +9,7 @@ Revision history for Math-AnyNum
         - lucasUmod(p, q, n, m)         Lucas U sequence mod m
         - lucasVmod(p, q, n, m)         Lucas V sequence mod m
         - is_congruent(n, k, m)`        true if `n` is congruent to `k` mod `m`
+        - gcdext(n, k)                  return (u,v,d) where u*n+v*k=d
 
         [IMPROVEMENTS]
 
