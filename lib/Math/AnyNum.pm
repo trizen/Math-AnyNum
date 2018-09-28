@@ -304,6 +304,7 @@ use overload
         approx_cmp => \&approx_cmp,
 
         popcount => \&popcount,
+        hamdist  => \&hamdist,
 
         neg   => sub ($) { goto &neg },    # used in overloading
         inv   => \&inv,
@@ -340,6 +341,9 @@ use overload
         getbit   => \&getbit,
         flipbit  => \&flipbit,
         clearbit => \&clearbit,
+
+        bit_scan0 => \&bit_scan0,
+        bit_scan1 => \&bit_scan1,
 
         rat_approx => \&rat_approx,
 
@@ -4197,12 +4201,6 @@ sub __mod__ {
     #
   Math_GMPz__Math_GMPz: {
 
-        if (Math::GMPz::Rmpz_fits_ulong_p($y)) {
-            my $r = Math::GMPz::Rmpz_init();
-            Math::GMPz::Rmpz_mod_ui($r, $x, Math::GMPz::Rmpz_get_ui($y) || goto &_nan);
-            return $r;
-        }
-
         my $sgn_y = Math::GMPz::Rmpz_sgn($y) || goto &_nan;
 
         my $r = Math::GMPz::Rmpz_init();
@@ -4801,7 +4799,7 @@ sub length ($) {
     $x = $$x if (ref($x) eq __PACKAGE__);
 
     if (ref($x) ne 'Math::GMPz') {
-        $x = _star2mpz($x) // return -1;
+        $x = _star2mpz($x) // return undef;
     }
 
     CORE::length(Math::GMPz::Rmpz_get_str($x, 10) =~ s/^-//r);
@@ -8594,7 +8592,7 @@ sub is_coprime ($$) {
     }
 
     if (!ref($k) and CORE::int($k) eq $k and $k >= 0 and $k < ULONG_MAX) {
-        ## `y` is a native integer
+        ## `k` is a native integer
     }
     else {
         $k = ref($k) eq __PACKAGE__ ? $$k : _star2obj($k);
@@ -9220,7 +9218,7 @@ sub is_power ($;$) {
     }
 
     if (!ref($k) and CORE::int($k) eq $k and $k < ULONG_MAX and $k > LONG_MIN) {
-        ## `y` is a native integer
+        ## `k` is a native integer
     }
     else {
         $k = _any2si(ref($k) eq __PACKAGE__ ? $$k : _star2obj($k)) // return 0;
@@ -9565,7 +9563,7 @@ sub binomial ($$) {
     }
 
     if (!ref($k) and CORE::int($k) eq $k and $k > LONG_MIN and $k < ULONG_MAX) {
-        ## `y` is a native integer
+        ## `k` is a native integer
     }
     else {
         $k = _any2si(ref($k) eq __PACKAGE__ ? $$k : _star2obj($k)) // goto &nan;
@@ -9730,7 +9728,7 @@ sub getbit ($$) {
     }
 
     if (!ref($k) and CORE::int($k) eq $k and $k >= 0 and $k < ULONG_MAX) {
-        ## `y` is a native integer
+        ## `k` is a native integer
     }
     else {
         $k = (ref($k) eq __PACKAGE__ ? _any2ui($$k) : _any2ui(_star2obj($k))) // return undef;
@@ -9753,7 +9751,7 @@ sub setbit ($$) {
     }
 
     if (!ref($k) and CORE::int($k) eq $k and $k >= 0 and $k < ULONG_MAX) {
-        ## `y` is a native integer
+        ## `k` is a native integer
     }
     else {
         $k = (ref($k) eq __PACKAGE__ ? _any2ui($$k) : _any2ui(_star2obj($k))) // goto &nan;
@@ -9778,7 +9776,7 @@ sub flipbit ($$) {
     }
 
     if (!ref($k) and CORE::int($k) eq $k and $k >= 0 and $k < ULONG_MAX) {
-        ## `y` is a native integer
+        ## `k` is a native integer
     }
     else {
         $k = (ref($k) eq __PACKAGE__ ? _any2ui($$k) : _any2ui(_star2obj($k))) // goto &nan;
@@ -9807,7 +9805,7 @@ sub clearbit ($$) {
     }
 
     if (!ref($k) and CORE::int($k) eq $k and $k >= 0 and $k < ULONG_MAX) {
-        ## `y` is a native integer
+        ## `k` is a native integer
     }
     else {
         $k = (ref($k) eq __PACKAGE__ ? _any2ui($$k) : _any2ui(_star2obj($k))) // goto &nan;
@@ -9816,6 +9814,60 @@ sub clearbit ($$) {
     my $r = Math::GMPz::Rmpz_init_set($n);
     Math::GMPz::Rmpz_clrbit($r, $k);
     bless \$r;
+}
+
+#
+## Scan n starting from bit index k, towards more
+## significant bits, until the first 0 is found.
+#
+
+sub bit_scan0 ($;$) {
+    my ($n, $k) = @_;
+
+    $n = $$n if (ref($n) eq __PACKAGE__);
+
+    if (ref($n) ne 'Math::GMPz') {
+        $n = _star2mpz($n) // return undef;
+    }
+
+    if (scalar(@_) == 1) {
+        $k = 0;
+    }
+    elsif (!ref($k) and CORE::int($k) eq $k and $k >= 0 and $k < ULONG_MAX) {
+        ## `k` is a native integer
+    }
+    else {
+        $k = (ref($k) eq __PACKAGE__ ? _any2ui($$k) : _any2ui(_star2obj($k))) // return undef;
+    }
+
+    Math::GMPz::Rmpz_scan0($n, $k);
+}
+
+#
+## Scan n starting from bit index k, towards more
+## significant bits, until the first 1 is found.
+#
+
+sub bit_scan1 ($;$) {
+    my ($n, $k) = @_;
+
+    $n = $$n if (ref($n) eq __PACKAGE__);
+
+    if (ref($n) ne 'Math::GMPz') {
+        $n = _star2mpz($n) // return undef;
+    }
+
+    if (scalar(@_) == 1) {
+        $k = 0;
+    }
+    elsif (!ref($k) and CORE::int($k) eq $k and $k >= 0 and $k < ULONG_MAX) {
+        ## `k` is a native integer
+    }
+    else {
+        $k = (ref($k) eq __PACKAGE__ ? _any2ui($$k) : _any2ui(_star2obj($k))) // return undef;
+    }
+
+    Math::GMPz::Rmpz_scan1($n, $k);
 }
 
 #
@@ -9832,7 +9884,7 @@ sub lsft {    # used in overloading
     }
 
     if (!ref($k) and CORE::int($k) eq $k and $k > LONG_MIN and $k < ULONG_MAX) {
-        ## `y` is a native integer
+        ## `k` is a native integer
     }
     else {
         $k = (ref($k) eq __PACKAGE__ ? _any2si($$k) : _any2si(_star2obj($k))) // goto &nan;
@@ -9861,7 +9913,7 @@ sub rsft {    # used in overloading
     }
 
     if (!ref($k) and CORE::int($k) eq $k and $k > LONG_MIN and $k < ULONG_MAX) {
-        ## `y` is a native integer
+        ## `k` is a native integer
     }
     else {
         $k = (ref($k) eq __PACKAGE__ ? _any2si($$k) : _any2si(_star2obj($k))) // goto &nan;
@@ -9886,7 +9938,7 @@ sub popcount ($) {
     $n = $$n if (ref($n) eq __PACKAGE__);
 
     if (ref($n) ne 'Math::GMPz') {
-        $n = _star2mpz($n) // return -1;
+        $n = _star2mpz($n) // return undef;
     }
 
     if (Math::GMPz::Rmpz_sgn($n) < 0) {
@@ -9895,6 +9947,27 @@ sub popcount ($) {
     }
 
     Math::GMPz::Rmpz_popcount($n);
+}
+
+#
+## Hamming distance
+#
+
+sub hamdist ($$) {
+    my ($n, $k) = @_;
+
+    $n = $$n if (ref($n) eq __PACKAGE__);
+    $k = $$k if (ref($k) eq __PACKAGE__);
+
+    if (ref($n) ne 'Math::GMPz') {
+        $n = _star2mpz($n) // return undef;
+    }
+
+    if (ref($k) ne 'Math::GMPz') {
+        $k = _star2mpz($k) // return undef;
+    }
+
+    Math::GMPz::Rmpz_hamdist($n, $k);
 }
 
 #

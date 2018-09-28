@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 490;
+plan tests => 503;
 
 use Math::AnyNum qw(:misc lngamma ipow10 log);
 use List::Util qw();
@@ -104,6 +104,22 @@ is(popcount(123),           6);
 is(popcount($o->new(-123)), 6);
 is(popcount(16),            1);
 is(popcount(-16),           1);
+
+is(hamdist(412,          123),          7);
+is(hamdist($o->new(412), 413),          1);
+is(hamdist(414,          $o->new(314)), 3);
+is(hamdist($o->new(213), $o->new(321)), 4);
+
+is(bit_scan0(1915), 2);
+is(bit_scan0(1915,          5),          7);
+is(bit_scan0($o->new(1915), 3),          7);
+is(bit_scan0($o->new(1915), $o->new(4)), 7);
+
+is(bit_scan1(580), 2);
+is(bit_scan1(580,          3),          6);
+is(bit_scan1($o->new(580), 3),          6);
+is(bit_scan1(580,          $o->new(4)), 6);
+is(bit_scan1($o->new(580), $o->new(3)), 6);
 
 is(join(' ', reals('3-4i')),           "3 -4");
 is(join(' ', reals(complex('-3-4i'))), "-3 -4");

@@ -8,8 +8,11 @@ Revision history for Math-AnyNum
         - lucasV(p, q, n)               Lucas V sequence
         - lucasUmod(p, q, n, m)         Lucas U sequence mod m
         - lucasVmod(p, q, n, m)         Lucas V sequence mod m
-        - is_congruent(n, k, m)`        true if `n` is congruent to `k` mod `m`
+        - bit_scan0(n, k)               index of the first 0-bit of n with index >= k
+        - bit_scan1(n, k)               index of the first 1-bit of n with index >= k
+        - hamdist(n, k)                 Hamming distance (number of bit-positions where the bits differ)
         - gcdext(n, k)                  return (u,v,d) where u*n+v*k=d
+        - is_congruent(n, k, m)`        true if `n` is congruent to `k` mod `m`
 
         [IMPROVEMENTS]
 

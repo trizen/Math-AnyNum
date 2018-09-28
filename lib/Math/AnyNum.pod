@@ -237,10 +237,13 @@ Additionally, each Math::AnyNum object is B<immutable>.
     digits(n,b)         digits of n in base b
     sumdigits(n,b)      sum of digits of n in base b
     popcount(n)         number of 1's in binary representation of n
+    hamdist(n,k)        number of bit-positions where the bits differ
     getbit(n,k)         k-th bit of integer n (1 or 0)
     setbit(n,k)         set the k-th bit of integer n to 1
     clearbit(n,k)       set the k-th bit of integer n to 0
     flipbit(n,k)        flip the k-th bit of integer n
+    bit_scan0(n,k)      index of the first 0-bit of n with index >= k
+    bit_scan1(n,k)      index of the first 1-bit of n with index >= k
 
     sum(@list)          sum of a list of numbers
     prod(@list)         product of a list of numbers
@@ -1834,12 +1837,13 @@ When C<x> is a complex number, it computes the sign using the identity:
 
 =head2 length
 
-    $x->length                                    #=> Scalar
+    $n->length                                    #=> Scalar
 
-Returns the number of digits in the integer part of C<x>.
-Returns C<-1> when C<x> cannot be truncated to an integer.
+Returns the number of digits of the integer part of C<n>.
 
-For C<-1234.56>, it returns C<4>.
+Returns C<undef> when C<n> cannot be truncated to an integer.
+
+For C<-1234.56>, it returns C<4>, which is the length of C<1234>.
 
 =head2 inc
 
@@ -1868,17 +1872,29 @@ Returns a deep-copy of the self-object.
 Returns the population count of the positive integer part of C<x>, which is the number of 1's in
 its binary representation.
 
+Return C<undef> when C<n> cannot be truncated to an integer.
+
 This value is also known as the Hamming weight value.
 
 Example:
 
     popcount(0b1011) = 3
 
+=head2 hamdist
+
+    hamdist(n, k)                                 #=> Scalar
+
+Returns the Hamming distance (number of bit-positions where the bits differ) between integers C<n> and C<k>.
+
+Return C<undef> when C<n> or C<k> cannot be truncated to an integer.
+
 =head2 getbit
 
     getbit(n, k)                                  #=> Bool
 
 Returns 1 if bit C<k> of C<n> is set, and 0 if it is not set.
+
+Return C<undef> when C<n> cannot be truncated to an integer or when C<k> is negative.
 
 Example:
 
@@ -1917,6 +1933,18 @@ Example:
 
     clearbit(0b1001, 0) = 0b1000
     clearbit(0b1100, 2) = 0b1000
+
+=head2 bit_scan0
+=head2 bit_scan1
+
+    bit_scan0(n, k)                               #=> Scalar
+    bit_scan1(n, k)                               #=> Scalar
+
+Scan C<n>, starting from bit index C<k>, towards more significant bits, 0 or 1 bit (respectively) is found.
+
+When C<k> is ommited, C<k=0> is assumed.
+
+Returns C<undef> if C<n> cannot be truncated to an integer or if C<k> is negative.
 
 =head1 * Introspection
 
