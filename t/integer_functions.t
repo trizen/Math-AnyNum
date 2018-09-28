@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 522;
+plan tests => 531;
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -256,6 +256,16 @@ is(catalan(-1), 'NaN');
 
 is(join(', ', map { catalan($_) } 0 .. 10), '1, 1, 2, 5, 14, 42, 132, 429, 1430, 4862, 16796');
 is(join(', ', map { bell($_) } 0 .. 10),    '1, 1, 2, 5, 15, 52, 203, 877, 4140, 21147, 115975');
+
+is(catalan(5,           0),           1);
+is(catalan(5,           1),           5);
+is(catalan(1,           $o->new(1)),  1);
+is(catalan($o->new(8),  3),           110);
+is(catalan($o->new(8),  -3),          'NaN');
+is(catalan($o->new(8),  $o->new(-3)), 'NaN');
+is(catalan($o->new(-8), 3),           -50);
+is(catalan($o->new(4),  $o->new(4)),  14);
+is(catalan(2,           $o->new(3)),  0);
 
 is(bell($o->new(30)),    '846749014511809332450147');
 is(catalan($o->new(45)), '2257117854077248073253720');

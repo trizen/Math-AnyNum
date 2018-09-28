@@ -21,9 +21,9 @@ use experimental qw(signatures);
 use lib qw(../lib);
 
 use Math::AnyNum qw(
-    is_prime is_power is_congruent
-    kronecker powmod as_bin bit_scan1
-);
+  is_prime is_power is_congruent
+  kronecker powmod as_bin bit_scan1
+  );
 
 sub BPSW_primality_test($n) {
 
@@ -44,7 +44,6 @@ sub BPSW_primality_test($n) {
             last;
         }
     }
-
 
     # Perform a strong Lucas probable test
     my $d = $n + 1;
@@ -82,6 +81,7 @@ sub BPSW_primality_test($n) {
     return 1 if is_congruent($V1, 0, $n);
 
     for (1 .. $s) {
+
         $V1 = ($V1 * $V1 - 2 * $Q1) % $n;
         $Q1 = ($Q1 * $Q1) % $n;
 

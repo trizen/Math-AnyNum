@@ -9478,8 +9478,37 @@ sub faulhaber_sum ($$) {
 ## Catalan numbers
 #
 
-sub catalan ($) {
-    my ($n) = @_;
+sub catalan ($;$) {
+    my ($n, $k) = @_;
+
+    # Catalan's triangle
+    # catalan(n, k) = binomial(n+k, k) - binomial(n+k, k-1)
+    if (scalar(@_) == 2) {
+
+        $n = _star2mpz($n) // goto &nan;
+
+        if (!ref($k) and CORE::int($k) eq $k and $k >= 0 and $k < ULONG_MAX) {
+            ## `k` is a native unsigned integer
+        }
+        elsif (ref($k) eq __PACKAGE__) {
+            $k = _any2ui($$k) // goto &nan;
+        }
+        else {
+            $k = _any2ui(_star2obj($k)) // goto &nan;
+        }
+
+        my $t = Math::GMPz::Rmpz_init();
+        my $u = Math::GMPz::Rmpz_init();
+
+        Math::GMPz::Rmpz_add_ui($t, $n, $k);
+        Math::GMPz::Rmpz_bin_ui($u, $t, $k);
+        ($k > 0)
+          ? Math::GMPz::Rmpz_bin_ui($t, $t, $k - 1)
+          : Math::GMPz::Rmpz_bin_si($t, $t, $k - 1);
+        Math::GMPz::Rmpz_sub($u, $u, $t);
+
+        return bless \$u;
+    }
 
     if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
         ## `n` is a native unsigned integer

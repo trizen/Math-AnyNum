@@ -60,6 +60,7 @@ Additionally, each Math::AnyNum object is B<immutable>.
     falling_factorial(n,k)    falling factorial: (n)_k
     bell(n)                   n-th Bell number
     catalan(n)                n-th Catalan number
+    catalan(n,k)              C(n,k) entry in Catalan's triangle
     lucas(n)                  n-th Lucas number
     lucasmod(n,m)             n-th Lucas number modulo m
     lucasU(P,Q,n)             Lucas U_n(P, Q) function
@@ -1480,8 +1481,11 @@ Returns the n-th Bell number.
 =head2 catalan
 
     catalan(n)                                    #=> Int | NaN
+    catalan(n, k)                                 #=> Int | NaN
 
 Returns the n-th Catalan number.
+
+If two arguments are provided, it returns the C<C(n,k)> entry in Catalan's triangle.
 
 =head2 binomial
 

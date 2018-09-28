@@ -18,6 +18,7 @@ Revision history for Math-AnyNum
 
         - More efficient algorithms in `fibmod(n, m)` and `lucasmod(n, m)`. (~5x faster)
         - Optimized the `div(Scalar, AnyNum)` case. It no longer converts the Scalar to a temporary object.
+        - Extended the `catalan()` function to accept an optional argument, computing the entries of Catalan's triangle `C(n,k)`.
 
 0.27    2018-07-04
 
