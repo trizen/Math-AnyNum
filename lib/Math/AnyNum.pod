@@ -6,7 +6,7 @@ Math::AnyNum - Arbitrary size precision for integers, rationals, floating-points
 
 =head1 VERSION
 
-Version 0.27
+Version 0.28
 
 =head1 SYNOPSIS
 
@@ -1946,7 +1946,7 @@ Example:
 
 Scan C<n>, starting from bit index C<k>, towards more significant bits, 0 or 1 bit (respectively) is found.
 
-When C<k> is ommited, C<k=0> is assumed.
+When C<k> is omitted, C<k=0> is assumed.
 
 Returns C<undef> if C<n> cannot be truncated to an integer or if C<k> is negative.
 

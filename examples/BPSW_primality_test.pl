@@ -45,7 +45,7 @@ sub BPSW_primality_test($n) {
         }
     }
 
-    # Perform a strong Lucas probable test
+    # Perform a strong Lucas probable prime test
     my $d = $n + 1;
     my $s = bit_scan1($d, 0);
 

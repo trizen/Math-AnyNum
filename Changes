@@ -1,6 +1,6 @@
 Revision history for Math-AnyNum
 
-0.28    2018-??-??
+0.28    2018-09-29
 
         [ADDITIONS]
 
@@ -11,12 +11,12 @@ Revision history for Math-AnyNum
         - bit_scan0(n, k)               index of the first 0-bit of n with index >= k
         - bit_scan1(n, k)               index of the first 1-bit of n with index >= k
         - hamdist(n, k)                 Hamming distance (number of bit-positions where the bits differ)
-        - gcdext(n, k)                  return (u,v,d) where u*n+v*k=d
+        - gcdext(n, k)                  return (u,v,d) where `u*n + v*k = d`
         - is_congruent(n, k, m)`        true if `n` is congruent to `k` mod `m`
 
         [IMPROVEMENTS]
 
-        - More efficient algorithms in `fibmod(n, m)` and `lucasmod(n, m)`. (~5x faster)
+        - More efficient algorithms in `fibmod(n, m)` and `lucasmod(n, m)`.
         - Optimized the `div(Scalar, AnyNum)` case. It no longer converts the Scalar to a temporary object.
         - Extended the `catalan()` function to accept an optional argument, computing the entries of Catalan's triangle `C(n,k)`.
 
