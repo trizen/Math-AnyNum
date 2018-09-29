@@ -1943,7 +1943,7 @@ Example:
     bit_scan0(n, k)                               #=> Scalar
     bit_scan1(n, k)                               #=> Scalar
 
-Scan C<n>, starting from bit index C<k>, towards more significant bits, 0 or 1 bit (respectively) is found.
+Scan C<n>, starting from bit index C<k>, towards more significant bits, until 0 or 1 bit (respectively) is found.
 
 When C<k> is omitted, C<k=0> is assumed.
 
