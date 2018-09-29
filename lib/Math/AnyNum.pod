@@ -1938,8 +1938,7 @@ Example:
     clearbit(0b1001, 0) = 0b1000
     clearbit(0b1100, 2) = 0b1000
 
-=head2 bit_scan0
-=head2 bit_scan1
+=head2 bit_scan0 / bit_scan1
 
     bit_scan0(n, k)                               #=> Scalar
     bit_scan1(n, k)                               #=> Scalar
