@@ -5787,7 +5787,7 @@ sub deg2rad ($) {
     my $f = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_const_pi($f, $ROUND);
     Math::MPFR::Rmpfr_div_ui($f, $f, 180, $ROUND);
-    bless \__mul__(_star2mpfr_mpc($x), $f);
+    bless \__mul__(_star2obj($x), $f);
 }
 
 sub rad2deg ($) {
@@ -5795,7 +5795,7 @@ sub rad2deg ($) {
     my $f = Math::MPFR::Rmpfr_init2($PREC);
     Math::MPFR::Rmpfr_const_pi($f, $ROUND);
     Math::MPFR::Rmpfr_ui_div($f, 180, $f, $ROUND);
-    bless \__mul__(_star2mpfr_mpc($x), $f);
+    bless \__mul__(_star2obj($x), $f);
 }
 
 #
