@@ -105,7 +105,7 @@ Additionally, each Math::AnyNum object is B<immutable>.
     ilog2(n)                  integer logarithm of n to base 2
     ilog10(n)                 integer logarithm of n to base 10
     divmod(a,b)               quotient and remainder of a/b
-    invmod(n,k)               inverse of n modulo k
+    invmod(n,k)               multiplicative inverse of n modulo k
     powmod(a,b,n)             modular exponentiation: a ^ b mod n
     isqrtrem(n)               integer sqrt remainder: n - isqrt(n)^2
     irootrem(n,k)             integer root remainder: n - iroot(n,k)^k
@@ -1122,8 +1122,9 @@ where both are integers. When C<y> is zero, it returns two NaN values.
 
     invmod(x, y)                                  #=> Int | NaN
 
-Computes the inverse of C<x> modulo C<y> and returns the result.
-When no inverse exists, the NaN value is returned.
+Computes the multiplicative inverse of C<x> modulo C<y> and returns the result.
+
+When no inverse exists (i.e.: C<gcd(x, y) != 1>), the NaN value is returned.
 
 =head2 powmod
 
