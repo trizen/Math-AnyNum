@@ -281,8 +281,10 @@ use overload
 
         is_prime   => \&is_prime,
         is_coprime => \&is_coprime,
-        is_smooth  => \&is_smooth,
         next_prime => \&next_prime,
+
+        is_smooth           => \&is_smooth,
+        is_smooth_over_prod => \&is_smooth_over_prod,
                   );
 
     my %misc = (
@@ -8681,6 +8683,42 @@ sub is_smooth ($$) {
         Math::GMPz::Rmpz_remove($t, $t, $g);
         return 1 if Math::GMPz::Rmpz_cmp_ui($t, 1) == 0;
         Math::GMPz::Rmpz_gcd($g, $t, $B);
+    }
+
+    return 0;
+}
+
+sub is_smooth_over_prod ($$) {
+    my ($n, $k) = @_;
+
+    $n = ref($n) eq __PACKAGE__ ? $$n : _star2obj($n);
+
+    if (ref($n) ne 'Math::GMPz') {
+        __is_int__($n) || return 0;
+        $n = _any2mpz($n) // return 0;
+    }
+
+    return 0 if Math::GMPz::Rmpz_sgn($n) <= 0;
+
+    $k = ref($k) eq __PACKAGE__ ? $$k : _star2obj($k);
+
+    if (ref($k) ne 'Math::GMPz') {
+        __is_int__($k) || return 0;
+        $k = _any2mpz($k) // return 0;
+    }
+
+    return 0 if Math::GMPz::Rmpz_sgn($k) <= 0;
+    return 1 if Math::GMPz::Rmpz_cmp_ui($n, 1) == 0;
+
+    my $g = Math::GMPz::Rmpz_init();
+    my $t = Math::GMPz::Rmpz_init_set($n);
+
+    Math::GMPz::Rmpz_gcd($g, $t, $k);
+
+    while (Math::GMPz::Rmpz_cmp_ui($g, 1) > 0) {
+        Math::GMPz::Rmpz_remove($t, $t, $g);
+        return 1 if Math::GMPz::Rmpz_cmp_ui($t, 1) == 0;
+        Math::GMPz::Rmpz_gcd($g, $t, $k);
     }
 
     return 0;

@@ -116,6 +116,7 @@ Additionally, each Math::AnyNum object is B<immutable>.
     is_polygonal2(n,k)        return 1 if n is a second k-gonal number
     is_coprime(n,k)           return 1 if gcd(n,k) = 1
     is_smooth(n,k)            return 1 if all prime factors of n are <= k
+    is_smooth_over_prod(n,k)  return 1 if n is smooth over the primes p|k
     is_prime(n,[r])           Miller-Rabin primality test
     primorial(n)              product of primes below n
     next_prime(n)             next prime > n
@@ -1596,6 +1597,19 @@ Example:
 
     is_smooth(36, 3)    # true  : 36 = 2^2 * 3^2
     is_smooth(39, 6)    # false : 39 = 3 * 13, where 13 > 6
+
+=head2 is_smooth_over_prod
+
+    is_smooth_over_prod(n, k)                     #=> Bool
+
+Returns a true value when C<n> is the product of a subset of powers of prime factors of C<k>,
+where C<k> is a square-free integer, whose prime factors represent a set C<A>, such that C<n>
+is said to be smooth over a set C<A> if there exists a factorization of C<n> where the factors
+are powers of elements in C<A>.
+
+Example:
+
+    is_smooth_over_prod($n, 3*5*7*11)   # true for odd 11-smooth numbers $n
 
 =head2 is_power
 

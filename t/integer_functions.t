@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 531;
+plan tests => 546;
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -731,11 +731,23 @@ ok(is_smooth(Math::AnyNum->new(125), Math::AnyNum->new(28)));
 ok(is_smooth(13 * 13 * 13 * 3 * 2,   13));
 ok(is_smooth(19 * 19 * 13 * 13,      19));
 
+ok(is_smooth_over_prod(1,                    1));
+ok(is_smooth_over_prod(1,                    Math::AnyNum->new(1)));
+ok(is_smooth_over_prod(Math::AnyNum->new(1), Math::AnyNum->new(1)));
+ok(is_smooth_over_prod(Math::AnyNum->new(1), 1));
+ok(is_smooth_over_prod(2,                    30));
+ok(is_smooth_over_prod(19 * 19 * 13 * 13,    19 * 13 * 13 * 5));
+ok(is_smooth_over_prod(13 * 13 * 13 * 3 * 2, 13 * 3 * 2 * 19));
+
+ok(!is_smooth_over_prod(13 * 13 * 13 * 3 * 2, 13));
+ok(!is_smooth_over_prod(19 * 19 * 13 * 13,    19));
+
 #ok(is_smooth(-125,                   5));
 #ok(is_smooth(-125,                   -5));
 #ok(is_smooth(125 * 3,                -5));
 
 is(join(' ', grep { is_smooth($_, 3) } 0 .. 30), '1 2 3 4 6 8 9 12 16 18 24 27');
+is(join(' ', grep { is_smooth_over_prod($_, 3 * 5 * 7 * 11) } 0 .. 30), '1 3 5 7 9 11 15 21 25 27');
 
 ok(!is_smooth(13 * 5 * 7,                 11));
 ok(!is_smooth(-13 * 5,                    11));
@@ -749,6 +761,12 @@ ok(!is_smooth(1,                          0));
 ok(!is_smooth(2,                          1));
 ok(!is_smooth(2,                          Math::AnyNum->new(1)));
 ok(!is_smooth(1,                          Math::AnyNum->new(0)));
+
+ok(!is_smooth_over_prod(-13 * 5,                       11));
+ok(!is_smooth_over_prod(-13 * 5,                       -11));
+ok(!is_smooth_over_prod(Math::AnyNum->new(13 * 5 * 7), 12));
+ok(!is_smooth_over_prod(Math::AnyNum->new(2),          Math::AnyNum->new(1)));
+ok(!is_smooth_over_prod(1,                             Math::AnyNum->new(0)));
 
 is(next_prime('165001'),          '165037');
 is(next_prime($o->new('165001')), '165037');

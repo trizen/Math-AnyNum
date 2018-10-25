@@ -2,6 +2,10 @@ Revision history for Math-AnyNum
 
 0.29    2018-??-??
 
+        [ADDITIONS]
+
+        - is_smooth_over_prod(n,k)      return 1 if n is smooth over the primes p|k
+
         [IMPROVEMENTS]
 
         - Much faster algorithm in `is_smooth(n, k)`.
