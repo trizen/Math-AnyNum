@@ -1,5 +1,11 @@
 Revision history for Math-AnyNum
 
+0.29    2018-??-??
+
+        [IMPROVEMENTS]
+
+        - Much faster algorithm in `is_smooth(n, k)`.
+
 0.28    2018-09-29
 
         [ADDITIONS]

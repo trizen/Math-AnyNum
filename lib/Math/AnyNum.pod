@@ -112,8 +112,8 @@ Additionally, each Math::AnyNum object is B<immutable>.
     is_square(n)              return 1 if n is a perfect square
     is_power(n)               return 1 if n = c^k for integer c
     is_power(n,k)             return 1 if n = c^k for integer c, k
-    is_polygonal(n,k)         return 1 if n is a first k-polygonal number
-    is_polygonal2(n,k)        return 1 if n is a second k-polygonal number
+    is_polygonal(n,k)         return 1 if n is a first k-gonal number
+    is_polygonal2(n,k)        return 1 if n is a second k-gonal number
     is_coprime(n,k)           return 1 if gcd(n,k) = 1
     is_smooth(n,k)            return 1 if all prime factors of n are <= k
     is_prime(n,[r])           Miller-Rabin primality test

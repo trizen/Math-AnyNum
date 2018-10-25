@@ -8628,25 +8628,62 @@ sub is_smooth ($$) {
 
     return 0 if (Math::GMPz::Rmpz_sgn($n) <= 0);
 
-    $k = $$k if (ref($k) eq __PACKAGE__);
-
-    if (ref($k) ne 'Math::GMPz') {
-        $k = _star2mpz($k) // return 0;
+    if (ref($k) eq __PACKAGE__) {
+        $k = _any2ui($$k) // return 0;
+    }
+    elsif (!ref($k) and CORE::int($k) eq $k and $k > LONG_MIN and $k < ULONG_MAX) {
+        ## `k` is a native integer
+    }
+    else {
+        $k = _any2ui(_star2obj($k)) // return 0;
     }
 
-    return 0 if (Math::GMPz::Rmpz_sgn($k) <= 0);
+    return 0 if $k <= 0;
+    return 1 if Math::GMPz::Rmpz_cmp_ui($n, 1) == 0;
 
-    my $p = Math::GMPz::Rmpz_init_set_ui(2);
+    state %cache;
+
+    # Clear the cache when there are too many values
+    if (scalar(keys(%cache)) > 100) {
+        Math::GMPz::Rmpz_clear($_) for values(%cache);
+        undef %cache;
+    }
+
+    my $B = exists($cache{$k}) ? $cache{$k} : do {
+
+        state $GMP_V_MAJOR = Math::GMPz::__GNU_MP_VERSION();
+        state $GMP_V_MINOR = Math::GMPz::__GNU_MP_VERSION_MINOR();
+        state $OLD_GMP     = ($GMP_V_MAJOR < 5 or ($GMP_V_MAJOR == 5 and $GMP_V_MINOR < 1));
+
+        my $t = Math::GMPz::Rmpz_init_nobless();
+
+        if ($OLD_GMP) {
+            Math::GMPz::Rmpz_set_ui($t, 1);
+            for (my $p = Math::GMPz::Rmpz_init_set_ui(2) ;
+                 Math::GMPz::Rmpz_cmp_ui($p, $k) <= 0 ;
+                 Math::GMPz::Rmpz_nextprime($p, $p)) {
+                Math::GMPz::Rmpz_mul($t, $t, $p);
+            }
+        }
+        else {
+            Math::GMPz::Rmpz_primorial_ui($t, $k);
+        }
+
+        $cache{$k} = $t;
+    };
+
     my $t = Math::GMPz::Rmpz_init_set($n);
 
-    for (; Math::GMPz::Rmpz_cmp($p, $k) <= 0 ; Math::GMPz::Rmpz_nextprime($p, $p)) {
-        if (Math::GMPz::Rmpz_divisible_p($t, $p)) {
-            Math::GMPz::Rmpz_remove($t, $t, $p);
-            Math::GMPz::Rmpz_cmp_ui($t, 1) == 0 and return 1;
-        }
+    my $g = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_gcd($g, $t, $B);
+
+    while (Math::GMPz::Rmpz_cmp_ui($g, 1) > 0) {
+        Math::GMPz::Rmpz_remove($t, $t, $g);
+        return 1 if Math::GMPz::Rmpz_cmp_ui($t, 1) == 0;
+        Math::GMPz::Rmpz_gcd($g, $t, $B);
     }
 
-    Math::GMPz::Rmpz_cmp_ui($t, 1) == 0;
+    return 0;
 }
 
 #
