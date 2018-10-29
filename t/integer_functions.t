@@ -762,11 +762,11 @@ ok(!is_smooth(2,                          1));
 ok(!is_smooth(2,                          Math::AnyNum->new(1)));
 ok(!is_smooth(1,                          Math::AnyNum->new(0)));
 
-ok(!is_smooth_over_prod(-13 * 5,                       11));
-ok(!is_smooth_over_prod(-13 * 5,                       -11));
-ok(!is_smooth_over_prod(Math::AnyNum->new(13 * 5 * 7), 12));
-ok(!is_smooth_over_prod(Math::AnyNum->new(2),          Math::AnyNum->new(1)));
-ok(!is_smooth_over_prod(1,                             Math::AnyNum->new(0)));
+ok(!is_smooth_over_prod(-13 * 5,                               11));
+ok(!is_smooth_over_prod(-13 * 5,                               -11));
+ok(!is_smooth_over_prod(Math::AnyNum->new(13 * 5 * 7 * 8 * 3), 12));
+ok(!is_smooth_over_prod(Math::AnyNum->new(2),                  Math::AnyNum->new(1)));
+ok(!is_smooth_over_prod(1,                                     Math::AnyNum->new(0)));
 
 is(next_prime('165001'),          '165037');
 is(next_prime($o->new('165001')), '165037');

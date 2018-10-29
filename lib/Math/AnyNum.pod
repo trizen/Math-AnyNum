@@ -283,7 +283,7 @@ Additionally, each Math::AnyNum object is B<immutable>.
     is_div(n,k)         return 1 if n is exactly divisible by k
     is_congruent(n,k,m) return 1 if n is congruent to k mod m
 
-=head1 IMPORT / EXPORT
+=head1 EXPORT
 
 Each function can be exported individually, as:
 
@@ -327,7 +327,7 @@ useful mathematical constants that can be exported, such as:
     Inf         # positive Infinity
     NaN         # Not-a-Number
 
-The syntax for importing a constant, is:
+The syntax for exporting a constant, is:
 
     use Math::AnyNum qw(pi);
     say pi;                          # 3.141592653589...
@@ -336,8 +336,8 @@ Nothing is exported by default.
 
 =head1 HOW IT WORKS
 
-Internally, each Math::AnyNum object holds a reference to an object of type Math::GMPz, Math::GMPq, Math::MPFR or Math::MPC.
-Based on the internal types, it decides what functions to call on each operation and does automatic promotion whenever necessarily.
+Internally, each Math::AnyNum object holds a reference to an object of type L<Math::GMPz>, L<Math::GMPq>, L<Math::MPFR> or L<Math::MPC>.
+Based on the internal types, it decides what functions to call on each operation and does automatic promotion whenever is necessary.
 
 The promotion rules can be summarized as follows:
 
@@ -381,14 +381,21 @@ For example, if we change the precision to 3 decimal digits (where C<4> is the c
 we get the following results:
 
     local $Math::AnyNum::PREC = 3*4;
+
+    # Floating-points
     say sqrt(2);                                  #=> 1.41
+    say sqrt(19+13*i);                            #=> 4.58+1.42i
+
+    # Integers
     say 98**7;                                    #=> 86812553324672
+
+    # Rationals
     say 1 / 98**7                                 #=> 1/86812553324672
 
-As shown above, integers and rational numbers do not obey this precision, because they can grow and
+Notice that integers and rational numbers do not obey this precision, because they can grow and
 shrink dynamically, without a specific limit.
 
-Furthermore, a rational number never losses precision and accuracy in rational operations, therefore if we say:
+Furthermore, a rational number never losses precision or accuracy in rational operations, therefore if we say:
 
     my $x = 1/3;
     say $x*3;                                     #=> 1

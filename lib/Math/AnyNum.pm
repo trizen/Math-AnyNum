@@ -8674,9 +8674,9 @@ sub is_smooth ($$) {
         $cache{$k} = $t;
     };
 
+    my $g = Math::GMPz::Rmpz_init();
     my $t = Math::GMPz::Rmpz_init_set($n);
 
-    my $g = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_gcd($g, $t, $B);
 
     while (Math::GMPz::Rmpz_cmp_ui($g, 1) > 0) {
