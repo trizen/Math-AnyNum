@@ -7633,6 +7633,10 @@ sub __bernfrac__ {
         goto &_zero;
     }
 
+    if ($n <= 500) {
+        return ((_bernoulli_numbers($n))[($n>>1)+1]);
+    }
+
     state $round = Math::MPFR::MPFR_RNDN();
     state $tau   = 6.28318530717958647692528676655900576839433879875;
 

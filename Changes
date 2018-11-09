@@ -9,7 +9,8 @@ Revision history for Math-AnyNum
         [IMPROVEMENTS]
 
         - Much faster algorithm in `is_smooth(n, k)`.
-        - Cached the Bernoulli numbers that are internally used in `bernoulli_polynomial(n, x)` and `faulhaber_sum(n, k)`.
+        - Cached the values of the `bernoulli(n)` function for `n <= 500`.
+        - Also cached the Bernoulli numbers that are internally used in `bernoulli_polynomial(n, x)` and `faulhaber_sum(n, k)`.
 
 0.28    2018-09-29
 
