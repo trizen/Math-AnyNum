@@ -3138,7 +3138,9 @@ sub __div__ {
         $x < 0
           ? Math::GMPq::Rmpq_set_si($r, $x, 1)
           : Math::GMPq::Rmpq_set_ui($r, $x, 1);
+
         Math::GMPq::Rmpq_div($r, $r, $y);
+
         return $r;
     }
 
@@ -3208,6 +3210,14 @@ sub __div__ {
 
         Math::GMPq::Rmpq_set_den($r, $y);
         Math::GMPq::Rmpq_canonicalize($r);
+
+        # If the result is an integer, return a GMPz object
+        if (Math::GMPq::Rmpq_integer_p($r)) {
+            my $z = Math::GMPz::Rmpz_init();
+            Math::GMPq::Rmpq_get_num($z, $r);
+            return $z;
+        }
+
         return $r;
     }
 
