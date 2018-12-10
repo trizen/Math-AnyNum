@@ -1471,13 +1471,13 @@ See also:
 
 =head2 superfactorial
 
-    superfactorial(n)                               #=> Int | NaN
+    superfactorial(n)                             #=> Int | NaN
 
 Product of first C<n> factorials: C<Prod_{k=1..n} k!>.
 
 =head2 hyperfactorial
 
-    hyperfactorial(n)                               #=> Int | NaN
+    hyperfactorial(n)                             #=> Int | NaN
 
 Hyperfactorial of C<n>, defined as: C<Prod_{k=1..n} k^k>.
 
@@ -1737,8 +1737,8 @@ This function finds a value C<k> such that f(k) = 0. Returns C<undef> otherwise.
 
 =head2 bsearch_le
 
-    bsearch_le(n, \&f)                               #=> Int | undef
-    bsearch_le(a, b, \&f)                            #=> Int | undef
+    bsearch_le(n, \&f)                            #=> Int | undef
+    bsearch_le(a, b, \&f)                         #=> Int | undef
 
 Binary search from to C<0> to C<n>, or from C<a> to C<b>, which can be any arbitrary large integers.
 
@@ -1751,8 +1751,8 @@ This function finds a value C<k> such that f(k) <= 0 and f(k+1) > 0. Returns C<u
 
 =head2 bsearch_ge
 
-    bsearch_ge(n, \&f)                               #=> Int | undef
-    bsearch_ge(a, b, \&f)                            #=> Int | undef
+    bsearch_ge(n, \&f)                            #=> Int | undef
+    bsearch_ge(a, b, \&f)                         #=> Int | undef
 
 Binary search from to C<0> to C<n>, or from C<a> to C<b>, which can be any arbitrary large integers.
 
