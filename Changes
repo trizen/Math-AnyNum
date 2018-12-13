@@ -2,7 +2,7 @@ Revision history for Math-AnyNum
 
 0.30    2018-12-13
 
-        - Fixed an `:overload` issue on 32-bit systems with 64-bit Perl for integers >= 2^32.
+        - Fixed an `:overload` issue for integers in the range [2^32, 2^64] on 32-bit systems with 64-bit Perl.
 
 0.29    2018-11-11
 
