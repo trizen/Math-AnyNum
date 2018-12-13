@@ -381,7 +381,7 @@ use overload
                 overload::constant integer => sub {
                     ($_[0] < ULONG_MAX)
                       ? (bless \Math::GMPz::Rmpz_init_set_ui($_[0]))
-                      : (bless \Math::GMPz::Rmpz_init_set_ui("$_[0]", 10));
+                      : (bless \Math::GMPz::Rmpz_init_set_str("$_[0]", 10));
                   },
                   float  => sub { bless \_str2obj($_[0]) },
                   binary => sub {
