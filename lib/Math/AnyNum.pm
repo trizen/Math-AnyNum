@@ -7084,8 +7084,12 @@ sub fibmod ($$) {
         $m = _star2mpz($m) // goto &nan;
     }
 
-    Math::GMPz::Rmpz_sgn($n) < 0  and goto &nan;
     Math::GMPz::Rmpz_sgn($m) == 0 and goto &nan;
+
+    my $sgn = Math::GMPz::Rmpz_sgn($n);
+
+    $sgn < 0  and goto &nan;
+    $sgn == 0 and goto &zero;
 
 #<<<
     my ($f, $g, $w) = (
@@ -7144,8 +7148,12 @@ sub lucasmod ($$) {
         $m = _star2mpz($m) // goto &nan;
     }
 
-    Math::GMPz::Rmpz_sgn($n) < 0  and goto &nan;
     Math::GMPz::Rmpz_sgn($m) == 0 and goto &nan;
+
+    my $sgn = Math::GMPz::Rmpz_sgn($n);
+
+    $sgn < 0  and goto &nan;
+    $sgn == 0 and return bless \Math::GMPz::Rmpz_init_set_ui(2);
 
 #<<<
     my ($f, $g, $w) = (
@@ -8629,6 +8637,7 @@ sub is_prime ($;$) {
         $n = _any2mpz($n) // return 0;
     }
 
+    Math::GMPz::Rmpz_sgn($n) > 0 or return 0;
     $r = defined($r) ? (CORE::abs(CORE::int($r)) || 20) : 20;
     Math::GMPz::Rmpz_probab_prime_p($n, $r);
 }
