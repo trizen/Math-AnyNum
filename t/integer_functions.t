@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 562;
+plan tests => 582;
 
 use Math::AnyNum qw(:ntheory);
 use Math::GMPz::V qw();
@@ -102,13 +102,42 @@ is(join(' ', map { fibonacci(Math::AnyNum->new_ui($_), Math::AnyNum->new_ui(4)) 
 }
 
 is(fibmod(0, 100), 0);
+is(fibmod(1, 100), 1);
 is(lucasmod(0, 100), 2);
+is(lucasmod(1, 100), 1);
 
 is(lucasUmod(1, -1, 0, 100), 0);
+is(lucasUmod(1, -1, 1, 100), 1);
+
 is(lucasVmod(1, -1, 0, 100), 2);
+is(lucasVmod(1, -1, 1, 100), 1);
 
 is(lucasUmod(4, 4, 0, 100), 0);
+is(lucasUmod(4, 4, 1, 100), 1);
+
+is(lucasUmod(4, 4,  50, 1000), lucasU(4, 4,  50) % 1000);
+is(lucasUmod(4, -4, 50, 1000), lucasU(4, -4, 50) % 1000);
+
 is(lucasVmod(4, 4, 0, 100), 2);
+is(lucasVmod(4, 4, 1, 100), 4);
+
+is(lucasVmod(4, 4, 0, 100), lucasV(4, 4, 0) % 100);
+is(lucasVmod(4, 4, 1, 100), lucasV(4, 4, 1) % 100);
+
+is(lucasVmod(4,  4, 50, 1000), 248);
+is(lucasVmod(-4, 4, 50, 1000), 248);
+
+is(lucasVmod(4,  4, 50, 1000), lucasV(4, 4, 50) % 1000);
+is(lucasVmod(-4, 4, 50, 1000), lucasV(4, 4, 50) % 1000);
+
+is(lucasVmod(4,  4, 50, 1001), lucasV(4,  4, 50) % 1001);
+is(lucasVmod(-4, 4, 50, 1001), lucasV(-4, 4, 50) % 1001);
+
+is(lucasVmod(4,  -4, 50, 1000), 624);
+is(lucasVmod(-4, -4, 50, 1000), 624);
+
+is(lucasVmod(4,  -4, 50, 1000), lucasV(4,  -4, 50) % 1000);
+is(lucasVmod(-4, -4, 50, 1000), lucasV(-4, -4, 50) % 1000);
 
 is(fibmod(1234, 987654), fibonacci(1234) % 987654);
 is(lucasmod(1234, 987654), lucas(1234) % 987654);
