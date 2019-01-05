@@ -2,6 +2,12 @@ Revision history for Math-AnyNum
 
 0.31    2019-??-??
 
+        [ADDITIONS]
+
+        - Added the `base(n,b)` function, which returns a string-representation of `n` in base `b`.
+
+        [FIXES]
+
         - Fixed `fibmod(0, m)` and `lucasmod(0, m)`.
         - Fixed `is_prime(n)` for negative `n` to always return 0.
 

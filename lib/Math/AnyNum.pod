@@ -257,6 +257,7 @@ Additionally, each Math::AnyNum object is B<immutable>.
     bsearch_ge(n,\&f)   binary search from 0 to n (greater than or equal to)
     bsearch_ge(a,b,\&f) binary search from a to b (greater than or equal to)
 
+    base(n,b)           string-representation of n in base b
     as_bin(n)           binary string-representation of n
     as_oct(n)           octal string-representation of n
     as_hex(n)           hexadecimal string-representation of n
@@ -2183,6 +2184,24 @@ If C<x> is an integer that fits inside a native signed or unsigned integer, the 
 otherwise the result is returned as a double, with possible truncation.
 
 If C<x> is a complex number, only the real part is considered.
+
+=head2 base
+
+    base(n, b)                                    #=> Scalar
+
+Returns a string-representation of C<n> in a given base C<b> (between 2 and 62), where C<n> can be any type of number, including a floating-point or a complex number.
+
+Example:
+
+    base(42, 2)         = "101010"
+    base(17.5, 36)      = "h.i"
+    base("99/43", 16)   = "63/2b"
+    base("17.5+5i", 36) = "(h.i 5)"
+
+The output of this function can be passed to I<new()>, along with the base-number, which converts it back to the original number:
+
+    say Math::AnyNum->new("101010", 2);    #=> 42
+    say Math::AnyNum->new("h.i", 36);      #=> 17.5
 
 =head2 as_bin
 

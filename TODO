@@ -1,9 +1,5 @@
 ## TODO list for Math::AnyNum
 
-# Add the following conversion methods:
-
-    in_base  [?]
-
 # Add the following functions (maybe):
 
     max
