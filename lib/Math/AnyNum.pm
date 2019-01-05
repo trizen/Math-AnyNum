@@ -9387,6 +9387,29 @@ sub is_power ($;$) {
 sub kronecker ($$) {
     my ($n, $k) = @_;
 
+    if (!ref($n) and CORE::int($n) eq $n and $n < ULONG_MAX and $n > LONG_MIN) {
+
+        if (!ref($k) and CORE::int($k) eq $k and $k < ULONG_MAX and $k > LONG_MIN) {
+            $k =
+              ($k < 0)
+              ? Math::GMPz::Rmpz_init_set_si($k)
+              : Math::GMPz::Rmpz_init_set_ui($k);
+        }
+        else {
+            $k = $$k if (ref($k) eq __PACKAGE__);
+
+            if (ref($k) ne 'Math::GMPz') {
+                $k = _star2mpz($k) // goto &nan;
+            }
+        }
+
+        return (
+                $n < 0
+                ? Math::GMPz::Rmpz_si_kronecker($n, $k)
+                : Math::GMPz::Rmpz_ui_kronecker($n, $k)
+               );
+    }
+
     $n = $$n if (ref($n) eq __PACKAGE__);
 
     if (ref($n) ne 'Math::GMPz') {
