@@ -4,6 +4,7 @@ Revision history for Math-AnyNum
 
         [ADDITIONS]
 
+        - Added the `min(@list)` and `max(@list)` functions.
         - Added the `base(n,b)` function, which returns a string-representation of `n` in base `b`.
 
         [IMPROVEMENTS]

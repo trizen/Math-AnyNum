@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 563;
+plan tests => 577;
 
 use Math::AnyNum qw(:misc lngamma ipow10 log);
 use List::Util qw();
@@ -66,6 +66,27 @@ foreach my $i (1 .. 1000) {
     }
 }
 ok($end_inclusive, 'rand is end-inclusive');
+
+ok(!defined(min()));
+ok(!defined(max()));
+
+is(max(0), 0);
+is(min(0), 0);
+
+is(max(5, 2), '5');
+is(min(2, 5), '2');
+
+is(max(2, 5), '5');
+is(min(5, 2), '2');
+
+is(max(3, 5, 2), 5);
+is(min(3, 1, 2), 1);
+
+is(max('-43/9', '-19/2', '-9', '-3.4', '-3-10i', '-4'), '-3-10i');
+is(min('43/9', '-19/2', 42, '-9', '-3.4', '-3-10i', '9.1'), '-19/2');
+
+ok(!defined(max(5, 'NaN', 42)));
+ok(!defined(min(5, 'NaN', 42)));
 
 is(sum(),  0);
 is(prod(), 1);

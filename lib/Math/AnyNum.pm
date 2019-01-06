@@ -291,6 +291,9 @@ use overload
         rand  => \&rand,
         irand => \&irand,
 
+        min => \&min,
+        max => \&max,
+
         sum  => \&sum,
         prod => \&prod,
 
@@ -7475,6 +7478,36 @@ sub primorial ($) {
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_primorial_ui($r, $n);
     bless \$r;
+}
+
+sub min {
+    my @terms = map { ref($_) eq __PACKAGE__ ? $$_ : _star2obj($_) } @_;
+
+    @terms || return undef;
+
+    my $min = shift(@terms);
+    foreach my $curr (@terms) {
+        if ((__cmp__($curr, $min) // return undef) < 0) {
+            $min = $curr;
+        }
+    }
+
+    bless \$min;
+}
+
+sub max {
+    my @terms = map { ref($_) eq __PACKAGE__ ? $$_ : _star2obj($_) } @_;
+
+    @terms || return undef;
+
+    my $max = shift(@terms);
+    foreach my $curr (@terms) {
+        if ((__cmp__($curr, $max) // return undef) > 0) {
+            $max = $curr;
+        }
+    }
+
+    bless \$max;
 }
 
 sub sum {
