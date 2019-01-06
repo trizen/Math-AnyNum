@@ -17,7 +17,7 @@ use constant {
               LONG_MIN  => Math::GMPq::_long_min(),
              };
 
-our $VERSION = '0.30';
+our $VERSION = '0.31';
 our ($ROUND, $PREC);
 
 BEGIN {
@@ -10355,6 +10355,9 @@ sub __base__ {
     }
 
   Math_MPC: {
+
+        # return Math::MPC::Rmpc_get_str($base, 0, $x, $ROUND);       # not OK
+
         my $fr = Math::MPFR::Rmpfr_init2(CORE::int($PREC));
         Math::MPC::RMPC_RE($fr, $x);
         my $real = __base__($fr, $base);
