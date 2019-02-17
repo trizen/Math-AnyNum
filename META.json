@@ -1,7 +1,7 @@
 {
    "abstract" : "Arbitrary size precision for integers, rationals, floating-points and complex numbers.",
    "author" : [
-      "Daniel Șuteu <trizen@protonmail.com>"
+      "Daniel Șuteu <trizen@cpan.org>"
    ],
    "dynamic_config" : 1,
    "generated_by" : "Module::Build version 0.4224",
