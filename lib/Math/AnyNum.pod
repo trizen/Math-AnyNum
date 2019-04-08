@@ -71,7 +71,7 @@ Additionally, each Math::AnyNum object is B<immutable>.
     fibonacci(n,k)            n-th Fibonacci number of k-th order
     fibmod(n,m)               n-th Fibonacci number modulo m
     polygonal(n,k)            n-th k-gonal number
-    harmonic(n)               n-th harmonic number: 1+1/2+...+1/n
+    harmonic(n)               n-th harmonic number: 1 + 1/2 + ... + 1/n
     secant_number(n)          n-th secant/zig number
     tangent_number(n)         n-th tangent/zag number
     euler(n)                  n-th Euler number: E_n
@@ -94,7 +94,7 @@ Additionally, each Math::AnyNum object is B<immutable>.
     isub(a,b)                 integer subtraction: a-b
     imul(a,b)                 integer multiplication: a*b
     idiv(a,b)                 integer division: int(a/b)
-    imod(a,b)                 integer remainder of a/b
+    imod(a,b)                 integer remainder: a%b
     ipow(n,k)                 integer exponentiation: n^k
     ipow2(k)                  integer exponentiation: 2^k
     ipow10(k)                 integer exponentiation: 10^k
@@ -105,19 +105,19 @@ Additionally, each Math::AnyNum object is B<immutable>.
     ilog2(n)                  integer logarithm of n to base 2
     ilog10(n)                 integer logarithm of n to base 10
     divmod(a,b)               quotient and remainder of a/b
-    invmod(n,k)               multiplicative inverse of n modulo k
-    powmod(a,b,n)             modular exponentiation: a ^ b mod n
+    invmod(n,m)               multiplicative inverse of n modulo m
+    powmod(a,b,m)             modular exponentiation: a ^ b mod m
     isqrtrem(n)               integer sqrt remainder: n - isqrt(n)^2
     irootrem(n,k)             integer root remainder: n - iroot(n,k)^k
     is_square(n)              return 1 if n is a perfect square
-    is_power(n)               return 1 if n = c^k for integer c
-    is_power(n,k)             return 1 if n = c^k for integer c, k
+    is_power(n)               return 1 if n = c^k for integers c, k > 1
+    is_power(n,k)             return 1 if n = c^k for integers c, k
     is_polygonal(n,k)         return 1 if n is a first k-gonal number
     is_polygonal2(n,k)        return 1 if n is a second k-gonal number
     is_coprime(n,k)           return 1 if gcd(n,k) = 1
     is_smooth(n,k)            return 1 if all prime factors of n are <= k
     is_smooth_over_prod(n,k)  return 1 if n is smooth over the primes p|k
-    is_prime(n,[r])           Miller-Rabin primality test
+    is_prime(n,r=20)          Miller-Rabin primality test
     primorial(n)              product of primes <= n
     next_prime(n)             next prime > n
     valuation(n,k)            number of times n is divisible by k
@@ -220,9 +220,9 @@ Additionally, each Math::AnyNum object is B<immutable>.
     round(x,-k)         round x to k places after the decimal point
     acmp(a,b)           absolute comparison: abs(a) <=> abs(b)
     approx_cmp(a,b,k)   approximate comparison: round(a,k) <=> round(b,k)
-    rat(x)              convert x into a rational number
-    rat(str)            parse a decimal expansion as fraction
-    rat_approx(x)       rational approximation of real number x
+    rat(x)              convert x to a rational number
+    rat(str)            parse a decimal expansion as an exact fraction
+    rat_approx(x)       rational approximation of a real number x
     numerator(r)        numerator of rational number r
     denominator(r)      denominator of rational number r
     nude(r)             numerator and denominator of r
