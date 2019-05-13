@@ -61,13 +61,13 @@ sub BPSW_primality_test($n) {
             $Q2 = ($Q1 * $Q) % $n;
             $U1 = ($U1 * $V2) % $n;
             $V1 = ($V2 * $V1 - $Q1) % $n;
-            $V2 = ($V2 * $V2 - ($Q2 + $Q2)) % $n;
+            $V2 = ($V2 * $V2 - 2*$Q2) % $n;
         }
         else {
             $Q2 = $Q1;
             $U1 = ($U1 * $V1 - $Q1) % $n;
             $V2 = ($V2 * $V1 - $Q1) % $n;
-            $V1 = ($V1 * $V1 - ($Q2 + $Q2)) % $n;
+            $V1 = ($V1 * $V1 - 2*$Q2) % $n;
         }
     }
 
@@ -80,9 +80,9 @@ sub BPSW_primality_test($n) {
     return 1 if $U1 == 0;
     return 1 if $V1 == 0;
 
-    for (1 .. $s) {
+    for (1 .. $s-1) {
 
-        $V1 = ($V1 * $V1 - 2 * $Q1) % $n;
+        $V1 = ($V1 * $V1 - 2*$Q1) % $n;
         $Q1 = ($Q1 * $Q1) % $n;
 
         return 1 if $V1 == 0;
