@@ -6877,11 +6877,10 @@ sub __lucasUV__ {
     my ($V1, $V2) = (Math::GMPz::Rmpz_init_set_ui(2), Math::GMPz::Rmpz_init_set($P));
     my ($Q1, $Q2) = (Math::GMPz::Rmpz_init_set_ui(1), Math::GMPz::Rmpz_init_set_ui(1));
 
-    my $t = Math::GMPz::Rmpz_init_set($n);
+    my $t = Math::GMPz::Rmpz_init();
     my $s = Math::GMPz::Rmpz_scan1($n, 0);
 
-    Math::GMPz::Rmpz_neg($t, $t) if Math::GMPz::Rmpz_sgn($n) < 0;
-    Math::GMPz::Rmpz_div_2exp($t, $t, $s + 1);
+    Math::GMPz::Rmpz_div_2exp($t, $n, $s + 1);
 
     foreach my $bit (split(//, Math::GMPz::Rmpz_get_str($t, 2))) {
 
@@ -6933,11 +6932,10 @@ sub __lucasUVmod__ {
     my ($V1, $V2) = (Math::GMPz::Rmpz_init_set_ui(2), Math::GMPz::Rmpz_init_set($P));
     my ($Q1, $Q2) = (Math::GMPz::Rmpz_init_set_ui(1), Math::GMPz::Rmpz_init_set_ui(1));
 
-    my $t = Math::GMPz::Rmpz_init_set($n);
+    my $t = Math::GMPz::Rmpz_init();
     my $s = Math::GMPz::Rmpz_scan1($n, 0);
 
-    Math::GMPz::Rmpz_neg($t, $t) if Math::GMPz::Rmpz_sgn($n) < 0;
-    Math::GMPz::Rmpz_div_2exp($t, $t, $s + 1);
+    Math::GMPz::Rmpz_div_2exp($t, $n, $s + 1);
 
     foreach my $bit (split(//, Math::GMPz::Rmpz_get_str($t, 2))) {
 
@@ -7003,6 +7001,9 @@ sub lucasU ($$$) {
     # U_0(P, Q) = 0
     Math::GMPz::Rmpz_sgn($n) || goto &zero;
 
+    # undefined for n < 0
+    Math::GMPz::Rmpz_sgn($n) < 0 && goto &nan;
+
     my $D = Math::GMPz::Rmpz_init();
 
     Math::GMPz::Rmpz_mul($D, $P, $P);
@@ -7039,6 +7040,9 @@ sub lucasUmod ($$$$) {
     # U_0(P, Q) = 0
     Math::GMPz::Rmpz_sgn($n) || goto &zero;
 
+    # undefined for n < 0
+    Math::GMPz::Rmpz_sgn($n) < 0 && goto &nan;
+
     my $D = Math::GMPz::Rmpz_init();
 
     Math::GMPz::Rmpz_mul($D, $P, $P);
@@ -7069,6 +7073,9 @@ sub lucasV ($$$) {
     $Q = _star2mpz($Q) // goto &nan;
     $n = _star2mpz($n) // goto &nan;
 
+    # undefined for n < 0
+    Math::GMPz::Rmpz_sgn($n) < 0 && goto &nan;
+
     my ($V) = __lucasV__($P, $Q, $n);
 
     bless \$V;
@@ -7084,6 +7091,9 @@ sub lucasVmod ($$$$) {
 
     # undefined for m=0
     Math::GMPz::Rmpz_sgn($m) || goto &nan;
+
+    # undefined for n < 0
+    Math::GMPz::Rmpz_sgn($n) < 0 && goto &nan;
 
     my ($V) = __lucasVmod__($P, $Q, $n, $m);
 

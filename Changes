@@ -3,6 +3,7 @@ Revision history for Math-AnyNum
 0.32    2019-??-??
 
         - Minor optimizations in the computation of the Lucas sequences.
+        - Return NaN for negative `n` in Lucas sequences.
 
 0.31    2019-01-07
 
