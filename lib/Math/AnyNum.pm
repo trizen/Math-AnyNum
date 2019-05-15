@@ -6877,10 +6877,13 @@ sub __lucasUV__ {
     my ($V1, $V2) = (Math::GMPz::Rmpz_init_set_ui(2), Math::GMPz::Rmpz_init_set($P));
     my ($Q1, $Q2) = (Math::GMPz::Rmpz_init_set_ui(1), Math::GMPz::Rmpz_init_set_ui(1));
 
-    my $t = Math::GMPz::Rmpz_init_set_ui(2);
-    my $s = Math::GMPz::Rmpz_remove($t, $n, $t);
+    my $t = Math::GMPz::Rmpz_init_set($n);
+    my $s = Math::GMPz::Rmpz_scan1($n, 0);
 
-    foreach my $bit (split(//, substr(Math::GMPz::Rmpz_get_str($t, 2), 0, -1))) {
+    Math::GMPz::Rmpz_neg($t, $t) if Math::GMPz::Rmpz_sgn($n) < 0;
+    Math::GMPz::Rmpz_div_2exp($t, $t, $s + 1);
+
+    foreach my $bit (split(//, Math::GMPz::Rmpz_get_str($t, 2))) {
 
         Math::GMPz::Rmpz_mul($Q1, $Q1, $Q2);
 
@@ -6930,10 +6933,13 @@ sub __lucasUVmod__ {
     my ($V1, $V2) = (Math::GMPz::Rmpz_init_set_ui(2), Math::GMPz::Rmpz_init_set($P));
     my ($Q1, $Q2) = (Math::GMPz::Rmpz_init_set_ui(1), Math::GMPz::Rmpz_init_set_ui(1));
 
-    my $t = Math::GMPz::Rmpz_init_set_ui(2);
-    my $s = Math::GMPz::Rmpz_remove($t, $n, $t);
+    my $t = Math::GMPz::Rmpz_init_set($n);
+    my $s = Math::GMPz::Rmpz_scan1($n, 0);
 
-    foreach my $bit (split(//, substr(Math::GMPz::Rmpz_get_str($t, 2), 0, -1))) {
+    Math::GMPz::Rmpz_neg($t, $t) if Math::GMPz::Rmpz_sgn($n) < 0;
+    Math::GMPz::Rmpz_div_2exp($t, $t, $s + 1);
+
+    foreach my $bit (split(//, Math::GMPz::Rmpz_get_str($t, 2))) {
 
         Math::GMPz::Rmpz_mul($Q1, $Q1, $Q2);
         Math::GMPz::Rmpz_mod($Q1, $Q1, $m);
