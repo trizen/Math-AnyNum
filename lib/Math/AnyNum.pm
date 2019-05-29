@@ -7547,7 +7547,7 @@ sub _secant_numbers {
         return @cache;
     }
 
-    $n <<= 1 if ($n <= 250);
+    $n <<= 1 if ($n <= 256);
 
     my @S = (Math::GMPz::Rmpz_init_set_ui(1));
 
@@ -7561,7 +7561,7 @@ sub _secant_numbers {
         }
     }
 
-    push @cache, @S[@cache .. (@S <= 1000 ? $#S : 1000)];
+    push @cache, @S[@cache .. (@S <= 1024 ? $#S : 1024)];
 
     return @S;
 }
@@ -7575,7 +7575,7 @@ sub _tangent_numbers {
         return @cache;
     }
 
-    $n <<= 1 if ($n <= 250);
+    $n <<= 1 if ($n <= 256);
 
     my @T = (Math::GMPz::Rmpz_init_set_ui(1));
 
@@ -7590,7 +7590,7 @@ sub _tangent_numbers {
         }
     }
 
-    push @cache, @T[@cache .. (@T <= 1000 ? $#T : 1000)];
+    push @cache, @T[@cache .. (@T <= 1024 ? $#T : 1024)];
 
     return @T;
 }
@@ -7646,7 +7646,7 @@ sub _bernoulli_numbers {
         $B[($k >> 1) + 1] = $q;
     }
 
-    push @cache, @B[@cache .. (@B <= 1000 ? $#B : 1000)];
+    push @cache, @B[@cache .. (@B <= 1024 ? $#B : 1024)];
 
     return (@cache, (@B > @cache ? @B[@cache .. $#B] : ()));
 }
@@ -7718,7 +7718,7 @@ sub __bernfrac__ {
         goto &_zero;
     }
 
-    if ($n <= 500) {
+    if ($n < 512) {
         return ((_bernoulli_numbers($n))[($n>>1)+1]);
     }
 
