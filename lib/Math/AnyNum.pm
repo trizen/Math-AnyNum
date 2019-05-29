@@ -7547,7 +7547,7 @@ sub _secant_numbers {
         return @cache;
     }
 
-    $n <<= 1 if ($n <= 256);
+    $n <<= 1 if ($n <= 512);
 
     my @S = (Math::GMPz::Rmpz_init_set_ui(1));
 
@@ -7575,7 +7575,7 @@ sub _tangent_numbers {
         return @cache;
     }
 
-    $n <<= 1 if ($n <= 256);
+    $n <<= 1 if ($n <= 512);
 
     my @T = (Math::GMPz::Rmpz_init_set_ui(1));
 
