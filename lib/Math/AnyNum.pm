@@ -17,7 +17,7 @@ use constant {
               LONG_MIN  => Math::GMPq::_long_min(),
              };
 
-our $VERSION = '0.31';
+our $VERSION = '0.32';
 our ($ROUND, $PREC);
 
 BEGIN {
