@@ -7688,7 +7688,7 @@ sub bernoulli_polynomial ($$) {
         push @terms, __mul__(__pow__($x, $k), $q);
     }
 
-    bless \_binsplit(\@terms, \&__add__);
+    bless \_binsplit([reverse @terms], \&__add__);
 }
 
 #
