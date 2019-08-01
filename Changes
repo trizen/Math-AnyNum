@@ -2,7 +2,14 @@ Revision history for Math-AnyNum
 
 0.33    2019-?-?
 
-        - Faster (subquadratic-time) algorithms in `digits(n,b)` and `sumdigits(n,b)`.
+
+        [ADDITIONS]
+
+        - Added the `digits2num(\@digits, $base)` function.
+
+        [IMPROVEMENTS]
+
+        - Faster (subquadratic-time) algorithms in `digits(n,b)` and `sumdigits(n,b)` for bases b > 62.
 
 0.32    2019-06-07
 

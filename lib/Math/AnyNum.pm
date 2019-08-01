@@ -327,8 +327,9 @@ use overload
         denominator => \&denominator,
         nude        => \&nude,
 
-        digits    => \&digits,
-        sumdigits => \&sumdigits,
+        digits     => \&digits,
+        digits2num => \&digits2num,
+        sumdigits  => \&sumdigits,
 
         bsearch    => \&bsearch,
         bsearch_le => \&bsearch_le,
@@ -10652,6 +10653,63 @@ sub sumdigits ($;$) {
     }
 
     bless \$sum;
+}
+
+my %FROM_DIGITS_36;
+@FROM_DIGITS_36{0 .. 35} = (0 .. 9, 'a' .. 'z');
+
+my %FROM_DIGITS_62;
+@FROM_DIGITS_62{0 .. 61} = (0 .. 9, 'A' .. 'Z', 'a' .. 'z');
+
+sub digits2num {
+    my ($digits, $base) = @_;
+
+    ref($digits) eq 'ARRAY' or goto &nan;
+
+    $base //= 10;
+
+    if ($base <= 1) {
+        goto &nan;
+    }
+
+#<<<
+    if ($base <= 62) {
+        $base = ref($base) ? Math::GMPz::Rmpz_get_ui(_star2mpz($base) // goto &nan) : CORE::int($base);
+        return bless \Math::GMPz::Rmpz_init_set_str(scalar reverse(join('', map { ($base <= 36 ? $FROM_DIGITS_36{$_} : $FROM_DIGITS_62{$_}) // goto &nan } @$digits)), $base);
+    }
+#>>>
+
+    if (!ref($base) and CORE::int($base) eq $base and $base > 1 and $base < ULONG_MAX) {
+        $base = Math::GMPz::Rmpz_init_set_ui($base);
+    }
+    else {
+        $base = Math::GMPz::Rmpz_init_set(_star2mpz($base) // goto &nan);
+    }
+
+    my @L = map {
+        (!ref($_) and CORE::int($_) eq $_ and $_ >= 0 and $_ < ULONG_MAX)
+          ? Math::GMPz::Rmpz_init_set_ui($_)
+          : Math::GMPz::Rmpz_init_set(_star2mpz($_) // goto &nan);
+    } @$digits;
+
+    my $k = scalar(@L);
+
+    while ($k > 1) {    # Algorithm from "Modern Computer Arithmetic" by Richard P. Brent and Paul Zimmermann
+
+        my @T;
+        for (0 .. ($k >> 1) - 1) {
+            Math::GMPz::Rmpz_addmul($L[$_ << 1], $L[($_ << 1) + 1], $base);
+            push @T, $L[$_ << 1];
+        }
+
+        push(@T, $L[-1]) if ($k & 1);
+        @L = @T;
+        Math::GMPz::Rmpz_mul($base, $base, $base);
+        $k = ($k >> 1) + ($k & 1);
+    }
+
+    my $t = $L[0] // goto &zero;
+    bless \$t;
 }
 
 sub bsearch ($$;$) {
