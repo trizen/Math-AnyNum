@@ -1,5 +1,9 @@
 Revision history for Math-AnyNum
 
+0.33    2019-?-?
+
+        - Faster (subquadratic-time) algorithms in `digits(n,b)` and `sumdigits(n,b)`.
+
 0.32    2019-06-07
 
         - Minor documentation improvements.
