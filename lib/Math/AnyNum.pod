@@ -237,6 +237,7 @@ Additionally, each Math::AnyNum object is B<immutable>.
     inv(x)              multiplicative inverse of x: 1/x
     conj(x)             complex conjugate of x
     digits(n,b)         digits of n in base b
+    digits2num(\@d,b)   conversion of digits in base b to an integer
     sumdigits(n,b)      sum of digits of n in base b
     popcount(n)         number of 1's in binary representation of n
     hamdist(n,k)        number of bit-positions where the bits differ
@@ -2400,6 +2401,19 @@ Example:
 
     digits(12345)      = (5, 4, 3, 2, 1)
     digits(12345, 100) = (45, 23, 1)
+
+=head2 digits2num
+
+    digits2num([...], b=10)                       #=> Int | NaN
+
+Takes an array-ref of digits (in reverse order) and an optional base (default 10), converting the digits to an integer in the given base.
+
+The value of C<b> must be greater than C<1>. Returns NaN otherwise.
+
+Example:
+
+    digits2num([5, 4, 3, 2, 1])  = 12345
+    digits2num([45, 23, 1], 100) = 12345
 
 =head2 sumdigits
 
