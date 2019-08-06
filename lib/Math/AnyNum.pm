@@ -4718,28 +4718,22 @@ sub log (_;$) {
 sub __ilog__ {
     my ($x, $y) = @_;
 
-    # Make sure `y` is a Math::GMPz object
-    $y = Math::GMPz::Rmpz_init_set_ui($y) if !ref($y);
-
     # ilog(x, y <= 1) = NaN
-    Math::GMPz::Rmpz_cmp_ui($y, 1) <= 0 and return;
+    $y <= 1 and return;
 
     # ilog(x <= 0, y) = NaN
     Math::GMPz::Rmpz_sgn($x) <= 0 and return;
 
     # Return faster for y <= 62
-    if (Math::GMPz::Rmpz_cmp_ui($y, 62) <= 0) {
+    if ($y <= 62) {
 
-        $y = Math::GMPz::Rmpz_get_ui($y);
+        $y = Math::GMPz::Rmpz_get_ui($y) if ref($y);
 
-        my $t = Math::GMPz::Rmpz_init();
         my $e = (Math::GMPz::Rmpz_sizeinbase($x, $y) || return) - 1;
 
         if ($e > 0) {
-
-            $y == 2
-              ? Math::GMPz::Rmpz_setbit($t, $e)
-              : Math::GMPz::Rmpz_ui_pow_ui($t, $y, $e);
+            state $t = Math::GMPz::Rmpz_init_nobless();
+            Math::GMPz::Rmpz_ui_pow_ui($t, $y, $e);
 
             Math::GMPz::Rmpz_cmp($t, $x) > 0 and --$e;
         }
@@ -4747,13 +4741,15 @@ sub __ilog__ {
         return $e;
     }
 
+    # Make sure `y` is a Math::GMPz object
+    $y = Math::GMPz::Rmpz_init_set_ui($y) if !ref($y);
+
     my $e = 0;
-    my $t = Math::GMPz::Rmpz_init();
 
+    state $t       = Math::GMPz::Rmpz_init_nobless();
     state $round_z = Math::MPFR::MPFR_RNDZ();
-
-    state $logx = Math::MPFR::Rmpfr_init2_nobless(64);
-    state $logy = Math::MPFR::Rmpfr_init2_nobless(64);
+    state $logx    = Math::MPFR::Rmpfr_init2_nobless(64);
+    state $logy    = Math::MPFR::Rmpfr_init2_nobless(64);
 
     Math::MPFR::Rmpfr_set_z($logx, $x, $round_z);
     Math::MPFR::Rmpfr_set_z($logy, $y, $round_z);
@@ -4781,29 +4777,25 @@ sub __ilog__ {
 sub ilog2 ($) {
     my ($x) = @_;
 
-    state $two = Math::GMPz::Rmpz_init_set_ui(2);
-
     $x = $$x if (ref($x) eq __PACKAGE__);
 
     if (ref($x) ne 'Math::GMPz') {
         $x = _star2mpz($x) // goto &nan;
     }
 
-    __PACKAGE__->new_ui(__ilog__($x, $two) // goto &nan);
+    bless \Math::GMPz::Rmpz_init_set_ui(__ilog__($x, 2) // goto &nan);
 }
 
 sub ilog10 ($) {
     my ($x) = @_;
 
-    state $ten = Math::GMPz::Rmpz_init_set_ui(10);
-
     $x = $$x if (ref($x) eq __PACKAGE__);
 
     if (ref($x) ne 'Math::GMPz') {
         $x = _star2mpz($x) // goto &nan;
     }
 
-    __PACKAGE__->new_ui(__ilog__($x, $ten) // goto &nan);
+    bless \Math::GMPz::Rmpz_init_set_ui(__ilog__($x, 10) // goto &nan);
 }
 
 sub ilog ($;$) {
@@ -4819,17 +4811,21 @@ sub ilog ($;$) {
         $x = _star2mpz($x) // goto &nan;
     }
 
-    $y = $$y if (ref($y) eq __PACKAGE__);
-
-    if (ref($y) ne 'Math::GMPz') {
-        $y = _star2mpz($y) // goto &nan;
+    if (!ref($y) and CORE::int($y) eq $y and $y > 1 and $y < ULONG_MAX) {
+        ## y is a native integer -- OK
+    }
+    else {
+        $y = $$y if (ref($y) eq __PACKAGE__);
+        if (ref($y) ne 'Math::GMPz') {
+            $y = _star2mpz($y) // goto &nan;
+        }
     }
 
-    __PACKAGE__->new_ui(__ilog__($x, $y) // goto &nan);
+    bless \Math::GMPz::Rmpz_init_set_ui(__ilog__($x, $y) // goto &nan);
 }
 
-sub length ($) {
-    my ($x) = @_;
+sub length ($;$) {
+    my ($x, $y) = @_;
 
     $x = $$x if (ref($x) eq __PACKAGE__);
 
@@ -4837,7 +4833,32 @@ sub length ($) {
         $x = _star2mpz($x) // return undef;
     }
 
-    CORE::length(Math::GMPz::Rmpz_get_str($x, 10) =~ s/^-//r);
+    my $neg = ((Math::GMPz::Rmpz_sgn($x) || return 0) < 0) ? 1 : 0;
+
+    if (defined($y)) {
+        if (!ref($y) and CORE::int($y) eq $y and $y > 1 and $y < ULONG_MAX) {
+            ## y is a native integer -- OK
+        }
+        else {
+            $y = $$y if (ref($y) eq __PACKAGE__);
+            if (ref($y) ne 'Math::GMPz') {
+                $y = _star2mpz($y) // return undef;
+            }
+        }
+    }
+    else {
+        $y = 10;
+    }
+
+    if ($neg) {
+        $x = Math::GMPz::Rmpz_init_set($x);
+        Math::GMPz::Rmpz_abs($x, $x);
+    }
+
+    1 + (
+        __ilog__($x, $y)
+          // do { my @digits = $_[0]->digits($y); return scalar @digits }
+        );
 }
 
 #
@@ -10517,8 +10538,8 @@ sub digits ($;$) {
         my $A = $n;
         my $B = ref($k) ? Math::GMPz::Rmpz_get_ui($k) : $k;
 
-        my $Q = Math::GMPz::Rmpz_init();
-        my $R = Math::GMPz::Rmpz_init();
+        state $Q = Math::GMPz::Rmpz_init_nobless();
+        state $R = Math::GMPz::Rmpz_init_nobless();
 
         return sub {
             my ($A, $r) = @_;
@@ -10614,8 +10635,8 @@ sub sumdigits ($;$) {
         my $A = $n;
         my $B = ref($k) ? Math::GMPz::Rmpz_get_ui($k) : $k;
 
-        my $Q = Math::GMPz::Rmpz_init();
-        my $R = Math::GMPz::Rmpz_init();
+        state $Q = Math::GMPz::Rmpz_init_nobless();
+        state $R = Math::GMPz::Rmpz_init_nobless();
 
         my $total = sub {
             my ($A, $r) = @_;
@@ -10636,7 +10657,7 @@ sub sumdigits ($;$) {
           ->($A, $r);
 
         ($total < ULONG_MAX)
-          && return __PACKAGE__->new_ui($total);
+          && return bless \Math::GMPz::Rmpz_init_set_ui($total);
     }
 
     # This algorithm will be used only for very large bases,

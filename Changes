@@ -6,6 +6,7 @@ Revision history for Math-AnyNum
         [ADDITIONS]
 
         - Added the `digits2num(\@digits, $base)` function.
+        - Extended the `length()` method to accept an optional argument specifying the base.
 
         [IMPROVEMENTS]
 
