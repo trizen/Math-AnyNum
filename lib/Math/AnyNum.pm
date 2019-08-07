@@ -4734,7 +4734,6 @@ sub __ilog__ {
         if ($e > 0) {
             state $t = Math::GMPz::Rmpz_init_nobless();
             Math::GMPz::Rmpz_ui_pow_ui($t, $y, $e);
-
             Math::GMPz::Rmpz_cmp($t, $x) > 0 and --$e;
         }
 
@@ -4833,7 +4832,7 @@ sub length ($;$) {
         $x = _star2mpz($x) // return undef;
     }
 
-    my $neg = ((Math::GMPz::Rmpz_sgn($x) || return 0) < 0) ? 1 : 0;
+    my $neg = ((Math::GMPz::Rmpz_sgn($x) || return 1) < 0) ? 1 : 0;
 
     if (defined($y)) {
         if (!ref($y) and CORE::int($y) eq $y and $y > 1 and $y < ULONG_MAX) {
@@ -4855,10 +4854,7 @@ sub length ($;$) {
         Math::GMPz::Rmpz_abs($x, $x);
     }
 
-    1 + (
-        __ilog__($x, $y)
-          // do { my @digits = $_[0]->digits($y); return scalar @digits }
-        );
+    1 + (__ilog__($x, $y) // return 0);
 }
 
 #
@@ -10501,10 +10497,10 @@ sub digits ($;$) {
 
     my $sgn = Math::GMPz::Rmpz_sgn($n);
 
-    if ($sgn == 0) {
-        goto &zero;
+    if ($sgn == 0) {    # n = 0
+        return (0);
     }
-    elsif ($sgn < 0) {    # make it absolute
+    elsif ($sgn < 0) {    # n < 0; make it absolute
         $n = Math::GMPz::Rmpz_init_set($n);
         Math::GMPz::Rmpz_abs($n, $n);
     }
@@ -10596,10 +10592,10 @@ sub sumdigits ($;$) {
 
     my $sgn = Math::GMPz::Rmpz_sgn($n);
 
-    if ($sgn == 0) {
+    if ($sgn == 0) {    # n = 0
         goto &zero;
     }
-    elsif ($sgn < 0) {    # make it absolute
+    elsif ($sgn < 0) {    # n < 0; make it absolute
         $n = Math::GMPz::Rmpz_init_set($n);
         Math::GMPz::Rmpz_abs($n, $n);
     }
