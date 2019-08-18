@@ -6,7 +6,7 @@ Math::AnyNum - Arbitrary size precision for integers, rationals, floating-points
 
 =head1 VERSION
 
-Version 0.32
+Version 0.33
 
 =head1 SYNOPSIS
 
@@ -1307,7 +1307,7 @@ Returns the n-th Euler polynomial: C<E_n(x)>.
 
 Returns the n-th Bernoulli number C<B_n> as an exact fraction, with C<bernoulli(1) = 1/2>.
 
-When an additional argument is provided, it returns the the n-th Bernoulli polynomial: C<B_n(x)>.
+When an additional argument is provided, it returns the n-th Bernoulli polynomial: C<B_n(x)>.
 
 =head2 euler
 
@@ -1316,7 +1316,7 @@ When an additional argument is provided, it returns the the n-th Bernoulli polyn
 
 Returns the n-th Euler number C<E_n>, starting with C<euler(0) = 1>.
 
-When an additional argument is provided, it returns the the n-th Euler polynomial: C<E_n(x)>.
+When an additional argument is provided, it returns the n-th Euler polynomial: C<E_n(x)>.
 
 =head2 lucas
 
