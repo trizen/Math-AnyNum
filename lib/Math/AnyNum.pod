@@ -2558,7 +2558,7 @@ interface to L<Math::GMPz> and L<Math::MPFR>, which he talked about at the YAPC 
 See his great presentation at: L<https://www.youtube.com/watch?v=Dhl4_Chvm_g>.
 
 The main aim of this module is to provide a fast and correct alternative to L<Math::BigInt>,
-L<Maht::BigFloat> and L<Math::BigRat>, as well as to L<bigint>, L<bignum> and L<bigrat> pragmas.
+L<Math::BigFloat> and L<Math::BigRat>, as well as to L<bigint>, L<bignum> and L<bigrat> pragmas.
 
 The original project was called C<Math::BigNum>, but because of some design flaws, that project
 was abandoned and much of its code ended up in this module.
