@@ -117,7 +117,7 @@ Additionally, each Math::AnyNum object is B<immutable>.
     is_coprime(n,k)           return 1 if gcd(n,k) = 1
     is_smooth(n,k)            return 1 if all prime factors of n are <= k
     is_smooth_over_prod(n,k)  return 1 if n is smooth over the primes p|k
-    is_prime(n,r=20)          Miller-Rabin primality test
+    is_prime(n,r=22)          Miller-Rabin primality test
     primorial(n)              product of primes <= n
     next_prime(n)             next prime > n
     valuation(n,k)            number of times n is divisible by k
@@ -1579,7 +1579,7 @@ Returns 2 if C<n> is definitely prime, 1 if C<n> is probably prime (without
 being certain), or 0 if C<n> is definitely composite. This method does some
 trial divisions, then some Miller-Rabin probabilistic primality tests. It
 also accepts an optional argument for specifying the accuracy of the test.
-By default, it uses an accuracy value of 20.
+By default, it uses an accuracy value of 22.
 
 Reasonable accuracy values are between 15 and 50.
 

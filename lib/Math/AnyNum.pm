@@ -8718,7 +8718,7 @@ sub is_prime ($;$) {
     }
 
     Math::GMPz::Rmpz_sgn($n) > 0 or return 0;
-    $r = defined($r) ? (CORE::abs(CORE::int($r)) || 20) : 20;
+    $r = defined($r) ? (CORE::abs(CORE::int($r)) || 22) : 22;
     Math::GMPz::Rmpz_probab_prime_p($n, $r);
 }
 
