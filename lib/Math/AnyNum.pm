@@ -10452,7 +10452,7 @@ sub rat_approx ($) {
     Math::MPFR::Rmpfr_set($f1, $x, $ROUND);
 
     while (1) {
-        Math::MPFR::Rmpfr_round($f2, $f1);
+        Math::MPFR::Rmpfr_floor($f2, $f1);
         Math::MPFR::Rmpfr_get_z($z, $f2, $ROUND);
 
         Math::GMPz::Rmpz_addmul($n1, $n2, $z);    # n1 += n2 * z
