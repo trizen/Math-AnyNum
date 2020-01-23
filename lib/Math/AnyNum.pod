@@ -1581,7 +1581,7 @@ This method does some trial divisions, then C<r> Miller-Rabin probabilistic prim
 A higher C<r> value reduces the chances of a composite being identified as "probably prime". Reasonable values of C<r> are between 20 and 50.
 
 Starting with GMP 6.2.0, a Baillie-PSW probable prime test is performed, which has no known counter-examples.
-By specifying a value of r > 24, after C<n> passes the B-PSW test, C<r-24> additional Miller-Rabin tests are performed.
+By specifying a value of r > 24, if C<n> passes the B-PSW test, C<r-24> additional Miller-Rabin tests are performed.
 
 See also:
 
