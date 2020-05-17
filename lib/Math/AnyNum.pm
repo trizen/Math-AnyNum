@@ -1834,7 +1834,7 @@ sub __cmp__ {
 
   Math_MPFR__Scalar: {
         return (
-                  Math::MPFR::Rmpfr_nan_p($x) ? undef
+                  Math::MPFR::Rmpfr_nan_p($x)                  ? undef
                 : ($y || return Math::MPFR::Rmpfr_sgn($x)) < 0 ? Math::MPFR::Rmpfr_cmp_si($x, $y)
                 :                                                Math::MPFR::Rmpfr_cmp_ui($x, $y)
                );
@@ -3888,13 +3888,13 @@ sub __polygonal_root__ {
         my $t = Math::MPFR::Rmpfr_init2($PREC);
         my $u = Math::MPFR::Rmpfr_init2($PREC);
 
-        Math::MPFR::Rmpfr_sub_ui($u, $k, 2, $ROUND);    # u = k-2
-        Math::MPFR::Rmpfr_mul($t, $n, $u, $ROUND);      # t = n*u
-        Math::MPFR::Rmpfr_mul_2ui($t, $t, 3, $ROUND);   # t = t*8
+        Math::MPFR::Rmpfr_sub_ui($u, $k, 2, $ROUND);     # u = k-2
+        Math::MPFR::Rmpfr_mul($t, $n, $u, $ROUND);       # t = n*u
+        Math::MPFR::Rmpfr_mul_2ui($t, $t, 3, $ROUND);    # t = t*8
 
-        Math::MPFR::Rmpfr_sub_ui($u, $u, 2, $ROUND);    # u = u-2
-        Math::MPFR::Rmpfr_sqr($u, $u, $ROUND);          # u = u^2
-        Math::MPFR::Rmpfr_add($t, $t, $u, $ROUND);      # t = t+u
+        Math::MPFR::Rmpfr_sub_ui($u, $u, 2, $ROUND);     # u = u-2
+        Math::MPFR::Rmpfr_sqr($u, $u, $ROUND);           # u = u^2
+        Math::MPFR::Rmpfr_add($t, $t, $u, $ROUND);       # t = t+u
 
         # Return a complex number for `t < 0`
         if (Math::MPFR::Rmpfr_sgn($t) < 0) {
@@ -3903,18 +3903,18 @@ sub __polygonal_root__ {
             goto Math_MPC__Math_MPC;
         }
 
-        Math::MPFR::Rmpfr_sqrt($t, $t, $ROUND);         # t = sqrt(t)
-        Math::MPFR::Rmpfr_sub_ui($u, $k, 4, $ROUND);    # u = k-4
+        Math::MPFR::Rmpfr_sqrt($t, $t, $ROUND);          # t = sqrt(t)
+        Math::MPFR::Rmpfr_sub_ui($u, $k, 4, $ROUND);     # u = k-4
 
         $second
-          ? Math::MPFR::Rmpfr_sub($t, $u, $t, $ROUND)    # t = u-t
-          : Math::MPFR::Rmpfr_add($t, $t, $u, $ROUND);   # t = t+u
+          ? Math::MPFR::Rmpfr_sub($t, $u, $t, $ROUND)     # t = u-t
+          : Math::MPFR::Rmpfr_add($t, $t, $u, $ROUND);    # t = t+u
 
-        Math::MPFR::Rmpfr_add_ui($u, $u, 2, $ROUND);     # u = u+2
-        Math::MPFR::Rmpfr_mul_2ui($u, $u, 1, $ROUND);    # u = u*2
+        Math::MPFR::Rmpfr_add_ui($u, $u, 2, $ROUND);      # u = u+2
+        Math::MPFR::Rmpfr_mul_2ui($u, $u, 1, $ROUND);     # u = u*2
 
-        Math::MPFR::Rmpfr_zero_p($u) && return $n;       # `u` is zero
-        Math::MPFR::Rmpfr_div($t, $t, $u, $ROUND);       # t = t/u
+        Math::MPFR::Rmpfr_zero_p($u) && return $n;        # `u` is zero
+        Math::MPFR::Rmpfr_div($t, $t, $u, $ROUND);        # t = t/u
         return $t;
     }
 
@@ -3932,29 +3932,29 @@ sub __polygonal_root__ {
         my $t = Math::MPC::Rmpc_init2($PREC);
         my $u = Math::MPC::Rmpc_init2($PREC);
 
-        Math::MPC::Rmpc_sub_ui($u, $k, 2, $ROUND);    # u = k-2
-        Math::MPC::Rmpc_mul($t, $n, $u, $ROUND);      # t = n*u
-        Math::MPC::Rmpc_mul_2ui($t, $t, 3, $ROUND);   # t = t*8
+        Math::MPC::Rmpc_sub_ui($u, $k, 2, $ROUND);     # u = k-2
+        Math::MPC::Rmpc_mul($t, $n, $u, $ROUND);       # t = n*u
+        Math::MPC::Rmpc_mul_2ui($t, $t, 3, $ROUND);    # t = t*8
 
-        Math::MPC::Rmpc_sub_ui($u, $u, 2, $ROUND);    # u = u-2
-        Math::MPC::Rmpc_sqr($u, $u, $ROUND);          # u = u^2
-        Math::MPC::Rmpc_add($t, $t, $u, $ROUND);      # t = t+u
+        Math::MPC::Rmpc_sub_ui($u, $u, 2, $ROUND);     # u = u-2
+        Math::MPC::Rmpc_sqr($u, $u, $ROUND);           # u = u^2
+        Math::MPC::Rmpc_add($t, $t, $u, $ROUND);       # t = t+u
 
-        Math::MPC::Rmpc_sqrt($t, $t, $ROUND);         # t = sqrt(t)
-        Math::MPC::Rmpc_sub_ui($u, $k, 4, $ROUND);    # u = k-4
+        Math::MPC::Rmpc_sqrt($t, $t, $ROUND);          # t = sqrt(t)
+        Math::MPC::Rmpc_sub_ui($u, $k, 4, $ROUND);     # u = k-4
 
         $second
-          ? Math::MPC::Rmpc_sub($t, $u, $t, $ROUND)    # t = u-t
-          : Math::MPC::Rmpc_add($t, $t, $u, $ROUND);   # t = t+u
+          ? Math::MPC::Rmpc_sub($t, $u, $t, $ROUND)     # t = u-t
+          : Math::MPC::Rmpc_add($t, $t, $u, $ROUND);    # t = t+u
 
-        Math::MPC::Rmpc_add_ui($u, $u, 2, $ROUND);     # u = u+2
-        Math::MPC::Rmpc_mul_2ui($u, $u, 1, $ROUND);    # u = u*2
+        Math::MPC::Rmpc_add_ui($u, $u, 2, $ROUND);      # u = u+2
+        Math::MPC::Rmpc_mul_2ui($u, $u, 1, $ROUND);     # u = u*2
 
-        if (Math::MPC::Rmpc_cmp_si($t, 0) == 0) {      # `u` is zero
+        if (Math::MPC::Rmpc_cmp_si($t, 0) == 0) {       # `u` is zero
             return $n;
         }
 
-        Math::MPC::Rmpc_div($t, $t, $u, $ROUND);       # t = t/u
+        Math::MPC::Rmpc_div($t, $t, $u, $ROUND);        # t = t/u
         return $t;
     }
 }
@@ -8071,14 +8071,14 @@ sub bernreal ($) {
     my $f = Math::MPFR::Rmpfr_init2($PREC);
     my $p = Math::MPFR::Rmpfr_init2($PREC);
 
-    Math::MPFR::Rmpfr_zeta_ui($f, $n, $ROUND);    # f = zeta(n)
-    Math::MPFR::Rmpfr_set_ui($p, $n + 1, $ROUND); # p = n+1
-    Math::MPFR::Rmpfr_gamma($p, $p, $ROUND);      # p = gamma(p)
+    Math::MPFR::Rmpfr_zeta_ui($f, $n, $ROUND);       # f = zeta(n)
+    Math::MPFR::Rmpfr_set_ui($p, $n + 1, $ROUND);    # p = n+1
+    Math::MPFR::Rmpfr_gamma($p, $p, $ROUND);         # p = gamma(p)
 
-    Math::MPFR::Rmpfr_mul($f, $f, $p, $ROUND);    # f = f * p
+    Math::MPFR::Rmpfr_mul($f, $f, $p, $ROUND);       # f = f * p
 
-    Math::MPFR::Rmpfr_const_pi($p, $ROUND);       # p = PI
-    Math::MPFR::Rmpfr_pow_ui($p, $p, $n, $ROUND); # p = p^n
+    Math::MPFR::Rmpfr_const_pi($p, $ROUND);          # p = PI
+    Math::MPFR::Rmpfr_pow_ui($p, $p, $n, $ROUND);    # p = p^n
 
     Math::MPFR::Rmpfr_div_2ui($f, $f, $n - 1, $ROUND);    # f = f / 2^(n-1)
 
@@ -8113,16 +8113,16 @@ sub lnbern ($) {
     Math::MPFR::Rmpfr_const_pi($pi, $ROUND);     # pi = π
 
     my $t = Math::MPFR::Rmpfr_init2($PREC);
-    Math::MPFR::Rmpfr_log($t, $pi, $ROUND);      # t = log(π)
-    Math::MPFR::Rmpfr_mul_z($t, $t, $n, $ROUND); # t = n*log(π)
+    Math::MPFR::Rmpfr_log($t, $pi, $ROUND);         # t = log(π)
+    Math::MPFR::Rmpfr_mul_z($t, $t, $n, $ROUND);    # t = n*log(π)
 
     my $s = Math::GMPz::Rmpz_init();
-    Math::GMPz::Rmpz_ui_sub($s, 1, $n);          # s = 1-n
+    Math::GMPz::Rmpz_ui_sub($s, 1, $n);             # s = 1-n
 
-    Math::MPFR::Rmpfr_mul_z($L, $L, $s, $ROUND); # L = (1 - n)*log(2)
-    Math::MPFR::Rmpfr_sub($L, $L, $t, $ROUND);   # L -= n*log(π)
+    Math::MPFR::Rmpfr_mul_z($L, $L, $s, $ROUND);    # L = (1 - n)*log(2)
+    Math::MPFR::Rmpfr_sub($L, $L, $t, $ROUND);      # L -= n*log(π)
 
-    if (Math::GMPz::Rmpz_fits_ulong_p($n)) {     # n is a native unsigned integer
+    if (Math::GMPz::Rmpz_fits_ulong_p($n)) {        # n is a native unsigned integer
         Math::MPFR::Rmpfr_zeta_ui($t, Math::GMPz::Rmpz_get_ui($n), $ROUND);
     }
     else {
@@ -8449,7 +8449,7 @@ sub falling_factorial ($$) {
 
     Math::GMPz::Rmpz_fits_ulong_p($r)
       ? Math::GMPz::Rmpz_bin_uiui($r, Math::GMPz::Rmpz_get_ui($r), $y < 0 ? -$y : $y)
-      : Math::GMPz::Rmpz_bin_ui($r, $r, $y < 0 ? -$y : $y);
+      : Math::GMPz::Rmpz_bin_ui($r, $r, $y < 0                            ? -$y : $y);
 
     Math::GMPz::Rmpz_sgn($r) || do {
         $y < 0
@@ -8504,7 +8504,7 @@ sub rising_factorial ($$) {
 
     Math::GMPz::Rmpz_fits_ulong_p($r)
       ? Math::GMPz::Rmpz_bin_uiui($r, Math::GMPz::Rmpz_get_ui($r), $y < 0 ? -$y : $y)
-      : Math::GMPz::Rmpz_bin_ui($r, $r, $y < 0 ? -$y : $y);
+      : Math::GMPz::Rmpz_bin_ui($r, $r, $y < 0                            ? -$y : $y);
 
     Math::GMPz::Rmpz_sgn($r) || do {
         $y < 0
@@ -8533,7 +8533,7 @@ sub rising_factorial ($$) {
 sub gcd {
     my ($x, $y) = @_;
 
-    @_ or goto &zero;  # By convention, gcd of an empty set is 0.
+    @_ or goto &zero;    # By convention, gcd of an empty set is 0.
     @_ == 1 and return $x;
 
     my $r = Math::GMPz::Rmpz_init();
@@ -8817,7 +8817,7 @@ sub is_smooth ($$) {
         $cache{$k} = $t;
     };
 
-    my $g = Math::GMPz::Rmpz_init();
+    state $g = Math::GMPz::Rmpz_init_nobless();
     my $t = Math::GMPz::Rmpz_init_set($n);
 
     Math::GMPz::Rmpz_gcd($g, $t, $B);
@@ -8825,7 +8825,7 @@ sub is_smooth ($$) {
     while (Math::GMPz::Rmpz_cmp_ui($g, 1) > 0) {
         Math::GMPz::Rmpz_remove($t, $t, $g);
         return 1 if Math::GMPz::Rmpz_cmp_ui($t, 1) == 0;
-        Math::GMPz::Rmpz_gcd($g, $t, $B);
+        Math::GMPz::Rmpz_gcd($g, $t, $g);
     }
 
     return 0;
@@ -8853,7 +8853,7 @@ sub is_smooth_over_prod ($$) {
     return 0 if Math::GMPz::Rmpz_sgn($k) <= 0;
     return 1 if Math::GMPz::Rmpz_cmp_ui($n, 1) == 0;
 
-    my $g = Math::GMPz::Rmpz_init();
+    state $g = Math::GMPz::Rmpz_init_nobless();
     my $t = Math::GMPz::Rmpz_init_set($n);
 
     Math::GMPz::Rmpz_gcd($g, $t, $k);
@@ -8861,7 +8861,7 @@ sub is_smooth_over_prod ($$) {
     while (Math::GMPz::Rmpz_cmp_ui($g, 1) > 0) {
         Math::GMPz::Rmpz_remove($t, $t, $g);
         return 1 if Math::GMPz::Rmpz_cmp_ui($t, 1) == 0;
-        Math::GMPz::Rmpz_gcd($g, $t, $k);
+        Math::GMPz::Rmpz_gcd($g, $t, $g);
     }
 
     return 0;
@@ -9200,27 +9200,27 @@ sub __is_polygonal__ {
     state $t = Math::GMPz::Rmpz_init_nobless();
     state $u = Math::GMPz::Rmpz_init_nobless();
 
-    Math::GMPz::Rmpz_sub_ui($u, $k, 2);    # u = k-2
-    Math::GMPz::Rmpz_mul($t, $n, $u);      # t = n*u
-    Math::GMPz::Rmpz_mul_2exp($t, $t, 3);  # t = t*8
+    Math::GMPz::Rmpz_sub_ui($u, $k, 2);      # u = k-2
+    Math::GMPz::Rmpz_mul($t, $n, $u);        # t = n*u
+    Math::GMPz::Rmpz_mul_2exp($t, $t, 3);    # t = t*8
 
-    Math::GMPz::Rmpz_sub_ui($u, $u, 2);    # u = u-2
-    Math::GMPz::Rmpz_mul($u, $u, $u);      # u = u^2
+    Math::GMPz::Rmpz_sub_ui($u, $u, 2);      # u = u-2
+    Math::GMPz::Rmpz_mul($u, $u, $u);        # u = u^2
 
-    Math::GMPz::Rmpz_add($t, $t, $u);      # t = t+u
+    Math::GMPz::Rmpz_add($t, $t, $u);        # t = t+u
     Math::GMPz::Rmpz_perfect_square_p($t) || return 0;
-    Math::GMPz::Rmpz_sqrt($t, $t);         # t = sqrt(t)
+    Math::GMPz::Rmpz_sqrt($t, $t);           # t = sqrt(t)
 
-    Math::GMPz::Rmpz_sub_ui($u, $k, 4);    # u = k-4
+    Math::GMPz::Rmpz_sub_ui($u, $k, 4);      # u = k-4
 
     $second
-      ? Math::GMPz::Rmpz_sub($t, $u, $t)    # t = u-t
-      : Math::GMPz::Rmpz_add($t, $t, $u);   # t = t+u
+      ? Math::GMPz::Rmpz_sub($t, $u, $t)     # t = u-t
+      : Math::GMPz::Rmpz_add($t, $t, $u);    # t = t+u
 
-    Math::GMPz::Rmpz_add_ui($u, $u, 2);     # u = u+2
-    Math::GMPz::Rmpz_mul_2exp($u, $u, 1);   # u = u*2
+    Math::GMPz::Rmpz_add_ui($u, $u, 2);      # u = u+2
+    Math::GMPz::Rmpz_mul_2exp($u, $u, 1);    # u = u*2
 
-    Math::GMPz::Rmpz_divisible_p($t, $u);   # true iff u|t
+    Math::GMPz::Rmpz_divisible_p($t, $u);    # true iff u|t
 }
 
 sub is_polygonal ($$) {
@@ -9278,13 +9278,13 @@ sub __ipolygonal_root__ {
     state $t = Math::GMPz::Rmpz_init_nobless();
     state $u = Math::GMPz::Rmpz_init_nobless();
 
-    Math::GMPz::Rmpz_sub_ui($u, $k, 2);    # u = k-2
-    Math::GMPz::Rmpz_mul($t, $n, $u);      # t = n*u
-    Math::GMPz::Rmpz_mul_2exp($t, $t, 3);  # t = t*8
+    Math::GMPz::Rmpz_sub_ui($u, $k, 2);      # u = k-2
+    Math::GMPz::Rmpz_mul($t, $n, $u);        # t = n*u
+    Math::GMPz::Rmpz_mul_2exp($t, $t, 3);    # t = t*8
 
-    Math::GMPz::Rmpz_sub_ui($u, $u, 2);    # u = u-2
-    Math::GMPz::Rmpz_mul($u, $u, $u);      # u = u^2
-    Math::GMPz::Rmpz_add($t, $t, $u);      # t = t+u
+    Math::GMPz::Rmpz_sub_ui($u, $u, 2);      # u = u-2
+    Math::GMPz::Rmpz_mul($u, $u, $u);        # u = u^2
+    Math::GMPz::Rmpz_add($t, $t, $u);        # t = t+u
 
     Math::GMPz::Rmpz_sgn($t) < 0 && goto &_nan;    # `t` is negative
 
@@ -9504,7 +9504,7 @@ sub kronecker ($$) {
 
 sub __valuation__ {    # takes two Math::GMPz objects
     my ($x, $y) = @_;
-    Math::GMPz::Rmpz_sgn($y) || return (0, $x);
+    Math::GMPz::Rmpz_sgn($y)          || return (0, $x);
     Math::GMPz::Rmpz_cmpabs_ui($y, 1) || return (0, $x);
     my $r = Math::GMPz::Rmpz_init();
     my $v = Math::GMPz::Rmpz_remove($r, $x, $y);
