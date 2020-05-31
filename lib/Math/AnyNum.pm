@@ -528,6 +528,13 @@ sub _reals2mpc {
 sub _str2obj {
     my ($s) = @_;
 
+#<<<
+    #~ $s // do {
+        #~ require Carp;
+        #~ Carp::carp("Use of uninitialized value");
+    #~ };
+#>>>
+
     $s || goto &_zero;
 
     $s = lc($s);
@@ -1032,6 +1039,13 @@ sub new {
             $base = CORE::int($base);
         }
     }
+
+#<<<
+    #~ $num // do {
+        #~ require Carp;
+        #~ Carp::carp("Use of uninitialized value");
+    #~ };
+#>>>
 
     my $ref = ref($num);
 
