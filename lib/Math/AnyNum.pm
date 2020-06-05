@@ -10703,6 +10703,8 @@ sub digits2num {
         goto &nan;
     }
 
+    @$digits || goto &zero;
+
 #<<<
     if ($base <= 62) {
         $base = ref($base) ? Math::GMPz::Rmpz_get_ui(_star2mpz($base) // goto &nan) : CORE::int($base);
@@ -10717,30 +10719,31 @@ sub digits2num {
         $base = Math::GMPz::Rmpz_init_set(_star2mpz($base) // goto &nan);
     }
 
-    my @L = map {
+    my @digits = map {
         (!ref($_) and CORE::int($_) eq $_ and $_ >= 0 and $_ < ULONG_MAX)
           ? Math::GMPz::Rmpz_init_set_ui($_)
           : Math::GMPz::Rmpz_init_set(_star2mpz($_) // goto &nan);
     } @$digits;
 
-    my $k = scalar(@L);
+    my $L = \@digits;
 
-    while ($k > 1) {    # Algorithm from "Modern Computer Arithmetic" by Richard P. Brent and Paul Zimmermann
+    # Algorithm from "Modern Computer Arithmetic"
+    #       by Richard P. Brent and Paul Zimmermann
+
+    for (my $k = scalar(@digits) ; $k > 1 ; $k = ($k >> 1) + ($k & 1)) {
 
         my @T;
         for (0 .. ($k >> 1) - 1) {
-            Math::GMPz::Rmpz_addmul($L[$_ << 1], $L[($_ << 1) + 1], $base);
-            push @T, $L[$_ << 1];
+            Math::GMPz::Rmpz_addmul($L->[$_ << 1], $L->[($_ << 1) + 1], $base);
+            push @T, $L->[$_ << 1];
         }
 
-        push(@T, $L[-1]) if ($k & 1);
-        @L = @T;
+        push(@T, $L->[-1]) if ($k & 1);
+        $L = \@T;
         Math::GMPz::Rmpz_mul($base, $base, $base);
-        $k = ($k >> 1) + ($k & 1);
     }
 
-    my $t = $L[0] // goto &zero;
-    bless \$t;
+    bless \($L->[0]);
 }
 
 sub bsearch ($$;$) {
