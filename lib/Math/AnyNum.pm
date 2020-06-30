@@ -9651,20 +9651,15 @@ sub geometric_sum ($$) {
 sub faulhaber_sum ($$) {
     my ($n, $p) = @_;
 
-    my $native_n = 0;
-
     if (!ref($n) and CORE::int($n) eq $n and $n >= 0 and $n < ULONG_MAX) {
-        $native_n = 1;
+        $n = Math::GMPz::Rmpz_init_set_ui($n);
     }
     else {
+
         $n = $$n if (ref($n) eq __PACKAGE__);
 
         if (ref($n) ne 'Math::GMPz') {
             $n = _star2mpz($n) // goto &nan;
-        }
-
-        if (Math::GMPz::Rmpz_fits_ulong_p($n)) {
-            ($native_n, $n) = (1, Math::GMPz::Rmpz_get_ui($n));
         }
     }
 
@@ -9675,36 +9670,57 @@ sub faulhaber_sum ($$) {
         $p = (ref($p) eq __PACKAGE__ ? _any2ui($$p) : _any2ui(_star2obj($p))) // goto &nan;
     }
 
+    if ($p == 0) {
+        return bless \$n;
+    }
+
+    if ($p == 1) {
+        my $r = Math::GMPz::Rmpz_init();
+        Math::GMPz::Rmpz_add_ui($r, $n, 1);
+        Math::GMPz::Rmpz_mul($r, $r, $n);
+        Math::GMPz::Rmpz_div_2exp($r, $r, 1);
+        return bless \$r;
+    }
+
     my @B = _bernoulli_numbers($p);
 
     my $z = Math::GMPz::Rmpz_init();
-    my $u = Math::GMPz::Rmpz_init();
     my $q = Math::GMPq::Rmpq_init();
+    my $u = Math::GMPz::Rmpz_init_set_ui(1);
 
     my $sum = Math::GMPq::Rmpq_init();
     Math::GMPq::Rmpq_set_ui($sum, 0, 1);
 
-    foreach my $j (0 .. $p) {
+    # Sum_{k=1..n} k^p = 1/(p+1) * Sum_{j=0..p} binomial(p+1, j) * n^(p-j+1) * bernoulli(j)
+    #                  = 1/(p+1) * Sum_{j=0..p} binomial(p+1, p-j) * n^(j+1) * bernoulli(p-j)
 
-        $j % 2 == 0 or $j == 1 or next;
+    foreach my $j (0 .. $p - 2) {
 
-        Math::GMPz::Rmpz_bin_uiui($z, $p + 1, $j);    # z = binomial(p+1, j)
+        Math::GMPz::Rmpz_mul($u, $u, $n);
 
-#<<<
-        $native_n
-          ? Math::GMPz::Rmpz_ui_pow_ui($u, $n, $p + 1 - $j)     # u = n^(p+1 - j)
-          : Math::GMPz::Rmpz_pow_ui(   $u, $n, $p + 1 - $j);    # ==//==
-#>>>
+        # Skip when bernoulli(p-j) == 0
+        ($p - $j) % 2 == 0 or next;
 
-        Math::GMPz::Rmpz_mul($z, $z, $u);             # z = z * u
-        Math::GMPq::Rmpq_mul_z($q, $j <= 1 ? $B[$j] : $B[($j >> 1) + 1], $z);
-        Math::GMPq::Rmpq_neg($q, $q) if ($j == 1);
+        Math::GMPz::Rmpz_bin_uiui($z, $p + 1, $p - $j);
+        Math::GMPz::Rmpz_mul($z, $z, $u);
+        Math::GMPq::Rmpq_mul_z($q, $B[(($p - $j) >> 1) + 1], $z);
         Math::GMPq::Rmpq_add($sum, $sum, $q);
     }
 
+    # sum += (1/2) * (p+1) * n^p
+    Math::GMPz::Rmpz_mul($u, $u, $n);
+    Math::GMPz::Rmpz_mul_ui($z, $u, $p + 1);
+    Math::GMPq::Rmpq_set_ui($q, 1, 2);
+    Math::GMPq::Rmpq_mul_z($q, $q, $z);
+    Math::GMPq::Rmpq_add($sum, $sum, $q);
+
+    # sum += n^(p+1)
+    Math::GMPz::Rmpz_mul($u, $u, $n);
+    Math::GMPq::Rmpq_add_z($sum, $sum, $u);
+
+    # z = sum/(p+1)
     Math::GMPq::Rmpq_get_num($z, $sum);
     Math::GMPz::Rmpz_divexact_ui($z, $z, $p + 1);
-
     bless \$z;
 }
 
