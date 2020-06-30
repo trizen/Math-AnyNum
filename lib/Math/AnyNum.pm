@@ -9674,11 +9674,12 @@ sub faulhaber_sum ($$) {
         return bless \$n;
     }
 
-    if ($p == 1) {
+    if ($p == 1 or $p == 3) {
         my $r = Math::GMPz::Rmpz_init();
         Math::GMPz::Rmpz_add_ui($r, $n, 1);
         Math::GMPz::Rmpz_mul($r, $r, $n);
         Math::GMPz::Rmpz_div_2exp($r, $r, 1);
+        Math::GMPz::Rmpz_mul($r, $r, $r) if ($p == 3);
         return bless \$r;
     }
 
@@ -9711,8 +9712,8 @@ sub faulhaber_sum ($$) {
     Math::GMPz::Rmpz_mul($u, $u, $n);
     Math::GMPz::Rmpz_mul_2exp($z, $n, 1);
     Math::GMPz::Rmpz_add_ui($z, $z, $p + 1);
+    Math::GMPz::Rmpz_mul($u, $u, $z);
     Math::GMPq::Rmpq_set_ui($q, 1, 2);
-    Math::GMPq::Rmpq_mul_z($q, $q, $z);
     Math::GMPq::Rmpq_mul_z($q, $q, $u);
     Math::GMPq::Rmpq_add($sum, $sum, $q);
 
