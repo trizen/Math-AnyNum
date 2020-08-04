@@ -1028,6 +1028,44 @@ sub _binsplit {
     __SUB__->(\@partial, $func);
 }
 
+# Cached primorial of k
+sub _cached_primorial {
+    my ($k, $limit) = @_;
+
+    $limit //= 100;
+
+    state %cache;
+
+    # Clear the cache when there are too many values cached
+    if (scalar(keys(%cache)) > $limit) {
+        Math::GMPz::Rmpz_clear($_) for values(%cache);
+        undef %cache;
+    }
+
+    $cache{$k} //= do {
+
+        state $GMP_V_MAJOR = Math::GMPz::__GNU_MP_VERSION();
+        state $GMP_V_MINOR = Math::GMPz::__GNU_MP_VERSION_MINOR();
+        state $OLD_GMP     = ($GMP_V_MAJOR < 5 or ($GMP_V_MAJOR == 5 and $GMP_V_MINOR < 1));
+
+        my $t = Math::GMPz::Rmpz_init_nobless();
+
+        if ($OLD_GMP) {
+            Math::GMPz::Rmpz_set_ui($t, 1);
+            for (my $p = Math::GMPz::Rmpz_init_set_ui(2) ;
+                 Math::GMPz::Rmpz_cmp_ui($p, $k) <= 0 ;
+                 Math::GMPz::Rmpz_nextprime($p, $p)) {
+                Math::GMPz::Rmpz_mul($t, $t, $p);
+            }
+        }
+        else {
+            Math::GMPz::Rmpz_primorial_ui($t, $k);
+        }
+
+        $t;
+    };
+}
+
 sub new {
     my ($class, $num, $base) = @_;
 
@@ -8785,7 +8823,7 @@ sub is_smooth ($$) {
         $n = _any2mpz($n) // return 0;
     }
 
-    return 0 if (Math::GMPz::Rmpz_sgn($n) <= 0);
+    return 0 if Math::GMPz::Rmpz_sgn($n) <= 0;
 
     if (ref($k) eq __PACKAGE__) {
         $k = _any2ui($$k) // return 0;
@@ -8797,44 +8835,19 @@ sub is_smooth ($$) {
         $k = _any2ui(_star2obj($k)) // return 0;
     }
 
-    return 0 if $k <= 0;
     return 1 if Math::GMPz::Rmpz_cmp_ui($n, 1) == 0;
+    return 0 if $k <= 1;
 
-    state %cache;
-
-    # Clear the cache when there are too many values
-    if (scalar(keys(%cache)) > 100) {
-        Math::GMPz::Rmpz_clear($_) for values(%cache);
-        undef %cache;
-    }
-
-    my $B = exists($cache{$k}) ? $cache{$k} : do {
-
-        state $GMP_V_MAJOR = Math::GMPz::__GNU_MP_VERSION();
-        state $GMP_V_MINOR = Math::GMPz::__GNU_MP_VERSION_MINOR();
-        state $OLD_GMP     = ($GMP_V_MAJOR < 5 or ($GMP_V_MAJOR == 5 and $GMP_V_MINOR < 1));
-
-        my $t = Math::GMPz::Rmpz_init_nobless();
-
-        if ($OLD_GMP) {
-            Math::GMPz::Rmpz_set_ui($t, 1);
-            for (my $p = Math::GMPz::Rmpz_init_set_ui(2) ;
-                 Math::GMPz::Rmpz_cmp_ui($p, $k) <= 0 ;
-                 Math::GMPz::Rmpz_nextprime($p, $p)) {
-                Math::GMPz::Rmpz_mul($t, $t, $p);
-            }
-        }
-        else {
-            Math::GMPz::Rmpz_primorial_ui($t, $k);
-        }
-
-        $cache{$k} = $t;
-    };
+    my $B = _cached_primorial($k);
 
     state $g = Math::GMPz::Rmpz_init_nobless();
-    my $t = Math::GMPz::Rmpz_init_set($n);
+    Math::GMPz::Rmpz_gcd($g, $n, $B);
 
-    Math::GMPz::Rmpz_gcd($g, $t, $B);
+    if (Math::GMPz::Rmpz_cmp_ui($g, 1) == 0) {
+        return 0;
+    }
+
+    my $t = Math::GMPz::Rmpz_init_set($n);
 
     while (Math::GMPz::Rmpz_cmp_ui($g, 1) > 0) {
         Math::GMPz::Rmpz_remove($t, $t, $g);
@@ -8843,6 +8856,141 @@ sub is_smooth ($$) {
     }
 
     return 0;
+}
+
+#
+## True if all the prime factors of `n` are >= k.
+#
+
+sub is_rough ($$) {
+    my ($n, $k) = @_;
+
+    $n = ref($n) eq __PACKAGE__ ? $$n : _star2obj($n);
+
+    if (ref($n) ne 'Math::GMPz') {
+        __is_int__($n) || return 0;
+        $n = _any2mpz($n) // return 0;
+    }
+
+    return 0 if Math::GMPz::Rmpz_sgn($n) <= 0;
+
+    if (ref($k) eq __PACKAGE__) {
+        $k = _any2ui($$k) // return 0;
+    }
+    elsif (!ref($k) and CORE::int($k) eq $k and $k > LONG_MIN and $k < ULONG_MAX) {
+        ## `k` is a native integer
+    }
+    else {
+        $k = _any2ui(_star2obj($k)) // return 0;
+    }
+
+    --$k;
+
+    return 1 if $k <= 1;
+    return 1 if Math::GMPz::Rmpz_cmp_ui($n, 1) == 0;
+
+    my $B = _cached_primorial($k);
+
+    state $g = Math::GMPz::Rmpz_init_nobless();
+    Math::GMPz::Rmpz_gcd($g, $n, $B);
+    (Math::GMPz::Rmpz_cmp_ui($g, 1) > 0) ? 0 : 1;
+}
+
+#
+## Smooth part of n, containing all prime factors p|n such that p <= k.
+#
+sub smooth_part {
+    my ($n, $k) = @_;
+
+    $n = ref($n) eq __PACKAGE__ ? $$n : _star2obj($n);
+
+    if (ref($n) ne 'Math::GMPz') {
+        $n = _any2mpz($n) // goto &nan;
+    }
+
+    goto &zero if Math::GMPz::Rmpz_sgn($n) <= 0;
+
+    if (ref($k) eq __PACKAGE__) {
+        $k = _any2ui($$k) // goto &nan;
+    }
+    elsif (!ref($k) and CORE::int($k) eq $k and $k > LONG_MIN and $k < ULONG_MAX) {
+        ## `k` is a native integer
+    }
+    else {
+        $k = _any2ui(_star2obj($k)) // goto &nan;
+    }
+
+    goto &one if $k <= 1;
+    goto &one if Math::GMPz::Rmpz_cmp_ui($n, 1) == 0;
+
+    my $B = _cached_primorial($k);
+
+    state $g = Math::GMPz::Rmpz_init_nobless();
+    Math::GMPz::Rmpz_gcd($g, $n, $B);
+
+    if (Math::GMPz::Rmpz_cmp_ui($g, 1) == 0) {
+        goto &one;
+    }
+
+    my $t = Math::GMPz::Rmpz_init_set($n);
+
+    while (Math::GMPz::Rmpz_cmp_ui($g, 1) > 0) {
+        Math::GMPz::Rmpz_remove($t, $t, $g);
+        return (bless \$n) if Math::GMPz::Rmpz_cmp_ui($t, 1) == 0;
+        Math::GMPz::Rmpz_gcd($g, $t, $g);
+    }
+
+    Math::GMPz::Rmpz_divexact($t, $n, $t);
+    bless \$t;
+}
+
+#
+## Rough part of n, containing all prime factors p|n such that p >= k.
+#
+sub rough_part {
+    my ($n, $k) = @_;
+
+    $n = ref($n) eq __PACKAGE__ ? $$n : _star2obj($n);
+
+    if (ref($n) ne 'Math::GMPz') {
+        $n = _any2mpz($n) // goto &nan;
+    }
+
+    goto &zero if Math::GMPz::Rmpz_sgn($n) <= 0;
+
+    if (ref($k) eq __PACKAGE__) {
+        $k = _any2ui($$k) // goto &nan;
+    }
+    elsif (!ref($k) and CORE::int($k) eq $k and $k > LONG_MIN and $k < ULONG_MAX) {
+        ## `k` is a native integer
+    }
+    else {
+        $k = _any2ui(_star2obj($k)) // goto &nan;
+    }
+
+    --$k;
+
+    return (bless \$n) if $k <= 1;
+    goto &one          if Math::GMPz::Rmpz_cmp_ui($n, 1) == 0;
+
+    my $B = _cached_primorial($k);
+
+    state $g = Math::GMPz::Rmpz_init_nobless();
+    Math::GMPz::Rmpz_gcd($g, $n, $B);
+
+    if (Math::GMPz::Rmpz_cmp_ui($g, 1) == 0) {
+        return bless \$n;
+    }
+
+    my $t = Math::GMPz::Rmpz_init_set($n);
+
+    while (Math::GMPz::Rmpz_cmp_ui($g, 1) > 0) {
+        Math::GMPz::Rmpz_remove($t, $t, $g);
+        goto &one if Math::GMPz::Rmpz_cmp_ui($t, 1) == 0;
+        Math::GMPz::Rmpz_gcd($g, $t, $g);
+    }
+
+    bless \$t;
 }
 
 sub is_smooth_over_prod ($$) {
@@ -8868,9 +9016,14 @@ sub is_smooth_over_prod ($$) {
     return 1 if Math::GMPz::Rmpz_cmp_ui($n, 1) == 0;
 
     state $g = Math::GMPz::Rmpz_init_nobless();
-    my $t = Math::GMPz::Rmpz_init_set($n);
 
-    Math::GMPz::Rmpz_gcd($g, $t, $k);
+    Math::GMPz::Rmpz_gcd($g, $n, $k);
+
+    if (Math::GMPz::Rmpz_cmp_ui($g, 1) == 0) {
+        return 0;
+    }
+
+    my $t = Math::GMPz::Rmpz_init_set($n);
 
     while (Math::GMPz::Rmpz_cmp_ui($g, 1) > 0) {
         Math::GMPz::Rmpz_remove($t, $t, $g);

@@ -92,12 +92,12 @@ is(join(' ', map { fibonacci(Math::AnyNum->new_ui($_), Math::AnyNum->new_ui(4)) 
 {
     my $t = ipow2(127) - 1;
     is(lucasmod($t, $t), 1);
-    is(fibmod($t, $t), $t - 1);
+    is(fibmod($t, $t),   $t - 1);
 }
 
 {
     my $t = ipow10(15);
-    is(fibmod(105, $t), fibonacci(105) % $t);
+    is(fibmod(105, $t),   fibonacci(105) % $t);
     is(lucasmod(105, $t), lucas(105) % $t);
 }
 
@@ -139,13 +139,13 @@ is(lucasVmod(-4, -4, 50, 1000), 624);
 is(lucasVmod(4,  -4, 50, 1000), lucasV(4,  -4, 50) % 1000);
 is(lucasVmod(-4, -4, 50, 1000), lucasV(-4, -4, 50) % 1000);
 
-is(fibmod(1234, 987654), fibonacci(1234) % 987654);
+is(fibmod(1234, 987654),   fibonacci(1234) % 987654);
 is(lucasmod(1234, 987654), lucas(1234) % 987654);
 
-is(fibmod(-1, 1234), 'NaN');
+is(fibmod(-1, 1234),   'NaN');
 is(lucasmod(-1, 1234), 'NaN');
 
-is(fibmod(42, 0), 'NaN');
+is(fibmod(42, 0),   'NaN');
 is(lucasmod(42, 0), 'NaN');
 
 {
@@ -278,9 +278,9 @@ is(rising_factorial($o->new(-123), 13),          '-764762377697592310465228800')
 is(rising_factorial($o->new(-123), $o->new(13)), '-764762377697592310465228800');
 
 is(falling_factorial(-123, -13), '-1/683933833713293936188416000');
-is(rising_factorial(-123, -13), '-1/3012474223753262018150400000');
+is(rising_factorial(-123, -13),  '-1/3012474223753262018150400000');
 
-is(rising_factorial(12, -13), 'NaN');
+is(rising_factorial(12, -13),   'NaN');
 is(falling_factorial(-13, -14), 'NaN');
 
 is(superfactorial(-1), 'NaN');
@@ -674,7 +674,7 @@ ok(!is_polygonal('68260505237496759433061476685485086062274987298529934559531667
 ok(is_polygonal('3599999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999937', ipow(10, 128)));
 #>>>
 
-is(polygonal(10, 3), '55');
+is(polygonal(10, 3),                    '55');
 is(polygonal(12, Math::AnyNum->new(4)), '144');
 
 is(join('', map { is_polygonal2($_, 5) ? 1 : 0 } qw(0 2 7 15 26 40 57 77 100)),   '1' x 9);
@@ -766,10 +766,10 @@ ok(!is_prime(-1), '-1 is not prime');
 ok(!is_prime(-2), '-2 is not prime');
 ok(!is_prime(-3), '-3 is not prime');
 
-ok(is_prime('165001'),          'is_prime');
-ok(is_prime($o->new('165001')), 'is_prime');
+ok(is_prime('165001'),              'is_prime');
+ok(is_prime($o->new('165001')),     'is_prime');
 ok(is_prime($o->new('165001'), 30), 'is_prime');
-ok(!is_prime('113822804831'), '!is_prime');
+ok(!is_prime('113822804831'),       '!is_prime');
 ok(!is_prime('113822804831',          30),          '!is_prime');
 ok(!is_prime($o->new('113822804831'), $o->new(30)), '!is_prime');
 ok(!is_prime('1396981702787004809899378463251'), '!is_prime');
@@ -804,7 +804,7 @@ ok(!is_smooth_over_prod(19 * 19 * 13 * 13,    19));
 #ok(is_smooth(-125,                   -5));
 #ok(is_smooth(125 * 3,                -5));
 
-is(join(' ', grep { is_smooth($_, 3) } 0 .. 30), '1 2 3 4 6 8 9 12 16 18 24 27');
+is(join(' ', grep { is_smooth($_, 3) } 0 .. 30),                        '1 2 3 4 6 8 9 12 16 18 24 27');
 is(join(' ', grep { is_smooth_over_prod($_, 3 * 5 * 7 * 11) } 0 .. 30), '1 3 5 7 9 11 15 21 25 27');
 
 ok(!is_smooth(13 * 5 * 7,                 11));
@@ -815,10 +815,12 @@ ok(!is_smooth(13 * 5,                     -11));
 ok(!is_smooth(13 * 5,                     Math::AnyNum->new(-11)));
 ok(!is_smooth(13 * 5 * 7,                 Math::AnyNum->new(12)));
 ok(!is_smooth(39,                         6));
-ok(!is_smooth(1,                          0));
 ok(!is_smooth(2,                          1));
 ok(!is_smooth(2,                          Math::AnyNum->new(1)));
-ok(!is_smooth(1,                          Math::AnyNum->new(0)));
+
+# 1 has no prime factors, therefore all of them are >= 0
+ok(is_smooth(1, 0));
+ok(is_smooth(1, Math::AnyNum->new(0)));
 
 ok(!is_smooth_over_prod(-13 * 5,                               11));
 ok(!is_smooth_over_prod(-13 * 5,                               -11));
@@ -857,5 +859,5 @@ is(subfactorial(0,  -20), 0);
 is(subfactorial(30, -20), 0);
 
 is(multinomial(3, 17, 9), '11417105700');
-is(multinomial(7, 2, 5, 2, 12, 11), '440981754363423854380800');
+is(multinomial(7,                    2, 5, 2,                    12, 11),                    '440981754363423854380800');
 is(multinomial(Math::AnyNum->new(7), 2, 5, Math::AnyNum->new(2), 12, Math::AnyNum->new(11)), '440981754363423854380800');
