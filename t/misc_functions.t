@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 590;
+plan tests => 592;
 
 use Math::AnyNum qw(:misc lngamma ipow10 log);
 use List::Util qw();
@@ -93,6 +93,9 @@ is(prod(), 1);
 
 is(sum(3, 5, 9, 41),  3 + 5 + 9 + 41);
 is(prod(3, 5, 9, 41), 3 * 5 * 9 * 41);
+
+is(sum(3, 5, "4/3", 9, "17/19", 11, "11/5"),  "9242/285");
+is(prod(3, 5, "4/3", 9, "17/19", 11, "11/5"), "74052/19");
 
 is(float(3.14159),         '3.14159');
 is(float('777/222'),       '3.5');

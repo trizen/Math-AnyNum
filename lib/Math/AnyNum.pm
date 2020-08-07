@@ -1050,7 +1050,17 @@ sub _star2mpfr_mpc {
 sub _star2obj {
     my ($x) = @_;
 
-    ref($x) || goto &_str2obj;
+    # Performance improvement for Perl integers
+    if (!ref($x)) {
+        if (CORE::int($x) eq $x and $x > LONG_MIN and $x < ULONG_MAX) {
+            return (
+                    ($x < 0)
+                    ? Math::GMPz::Rmpz_init_set_si($x)
+                    : Math::GMPz::Rmpz_init_set_ui($x)
+                   );
+        }
+        goto &_str2obj;
+    }
 
     if (ref($x) eq __PACKAGE__) {
         $$x;
@@ -7403,8 +7413,26 @@ sub max {
 
 sub sum {
     my @terms = map { ref($_) eq __PACKAGE__ ? $$_ : _star2obj($_) } @_;
+
     @terms || goto &zero;
-    bless \_binsplit(\@terms, \&__add__);
+
+    my @left;
+    my $sum = Math::GMPz::Rmpz_init_set_ui(0);
+
+    foreach my $n (@terms) {
+        if (ref($n) eq 'Math::GMPz') {
+            Math::GMPz::Rmpz_add($sum, $sum, $n);
+        }
+        else {
+            push @left, $n;
+        }
+    }
+
+    if (@left) {
+        $sum = __add__($sum, _binsplit(\@left, \&__add__));
+    }
+
+    bless \$sum;
 }
 
 sub prod {
@@ -9197,8 +9225,8 @@ sub remdiv ($$) {
 sub make_coprime {
     my ($n, $k) = @_;
 
-    $n = _star2mpz($$n) // goto &nan;
-    $k = _star2mpz($$k) // goto &nan;
+    $n = _star2mpz($n) // goto &nan;
+    $k = _star2mpz($k) // goto &nan;
 
     if (Math::GMPz::Rmpz_sgn($n) == 0) {
         return bless \$n;

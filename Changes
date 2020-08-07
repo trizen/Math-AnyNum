@@ -12,6 +12,7 @@ Revision history for Math-AnyNum
 
         [IMPROVEMENTS]
 
+        - Optimizations in `sum(...)` for integer arguments.
         - Optimizations in `faulhaber_sum(n,k)` for k = 2 and k >= n.
         - Internal code simplifications.
 

@@ -5,9 +5,9 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 586;
+plan tests => 618;
 
-use Math::AnyNum qw(:ntheory);
+use Math::AnyNum qw(:ntheory prod);
 use Math::GMPz::V qw();
 
 my $GMP_V_MAJOR = Math::GMPz::V::___GNU_MP_VERSION();
@@ -729,6 +729,30 @@ is(faulhaber_sum(30,   80), '158249066989116825526204502215331005991574102359778
 is(faulhaber_sum('36893488147419103232', 6), '13290765244262525999877070971093849105865118528347431876799549931828154109852970889789225381341531108777505296823405714971493113182289920');
 #>>>
 
+# Sum_{k=1..n} sigma_2(k)
+is(
+    dirichlet_sum(
+                  10**5,                              # n
+                  sub { 1 },                          # f
+                  sub { $_[0]**2 },                   # g
+                  sub { $_[0] },                      # F(n) = Sum_{k=1..n} f(k)
+                  sub { faulhaber_sum($_[0], 2) },    # G(n) = Sum_{k=1..n} g(k)
+                 ),
+    Math::AnyNum->new("400692683389101"),
+  );
+
+# Sum_{k=1..n} k * sigma(k)
+is(
+    dirichlet_sum(
+        10**4,                              # n
+        sub { $_[0] },                      # f
+        sub { $_[0]**2 },                   # g
+        sub { faulhaber_sum($_[0], 1) },    # F(n) = Sum_{k=1..n} f(k)
+        sub { faulhaber_sum($_[0], 2) },    # G(n) = Sum_{k=1..n} g(k)
+                 ),
+    Math::AnyNum->new("548429473046"),
+  );
+
 is(geometric_sum(3, 8), 585);
 is(geometric_sum(8, 3), 9841);
 
@@ -800,6 +824,56 @@ ok(is_smooth_over_prod(13 * 13 * 13 * 3 * 2, 13 * 3 * 2 * 19));
 ok(!is_smooth_over_prod(13 * 13 * 13 * 3 * 2, 13));
 ok(!is_smooth_over_prod(19 * 19 * 13 * 13,    19));
 
+do {
+    my $n = "172864518041328651521584134678230948270774322090771071422829";    # 2081
+    ok(is_smooth($n, 4073));
+    ok(is_rough($n, 2080));
+    ok(is_rough($n, 2081));
+    ok(!is_rough($n, 2082));
+};
+
+do {
+    my $n = "1377276413364943226363244108454842276965894752197358387200000";    # 97
+    ok(!is_smooth($n, 23));
+    ok(!is_smooth($n, 96));
+    ok(is_smooth($n, 97));
+    ok(is_smooth($n, 98));
+};
+
+do {
+    my $n = prod(17, 17, 19, 23, 23, 29, 47, 53, 59);
+    my $k = prod(43, 97, 43, 97, 43);
+
+    is(rough_part(43 * 97, 101), 1);
+    is(rough_part($k,      97),  97**2);
+    is(rough_part($k,      98),  1);
+
+    is(smooth_part(43 * 97, 23), 1);
+    is(smooth_part($k,      43), 43**3);
+    is(smooth_part($k,      41), 1);
+
+    is(smooth_part($n * 17 * 19 * 23, 19), 17**3 * 19**2);
+    is(smooth_part($n * 17 * 19 * 23, 18), 17**3);
+};
+
+is(smooth_part(3 * 3 * 5 * 7,  5), 45);
+is(smooth_part(5 * 7 * 7 * 11, 6), 5);
+
+is(rough_part(3 * 3 * 5 * 7,  5), 35);
+is(rough_part(5 * 7 * 7 * 11, 6), 539);
+
+is(make_coprime(0, 1), 0);
+is(make_coprime(0, 2), 0);
+is(make_coprime(0, 3), 0);
+
+is(make_coprime(-42, 6),  -7);
+is(make_coprime(-42, -6), -7);
+
+is(make_coprime(ipow(2, 256) - 1, ipow2(128) + 1),   ipow2(128) - 1);
+is(make_coprime(ipow2(256) - 1,   ipow(2, 128) - 1), ipow2(128) + 1);
+
+is(make_coprime(Math::AnyNum->new("31205865600000"), 2 * 3 * 5 * 7 * 43 * 97), 13);
+
 #ok(is_smooth(-125,                   5));
 #ok(is_smooth(-125,                   -5));
 #ok(is_smooth(125 * 3,                -5));
@@ -827,6 +901,9 @@ ok(!is_smooth_over_prod(-13 * 5,                               -11));
 ok(!is_smooth_over_prod(Math::AnyNum->new(13 * 5 * 7 * 8 * 3), 12));
 ok(!is_smooth_over_prod(Math::AnyNum->new(2),                  Math::AnyNum->new(1)));
 ok(!is_smooth_over_prod(1,                                     Math::AnyNum->new(0)));
+
+ok(is_smooth_over_prod(42, 2 * 3 * 7 * 11));
+ok(is_smooth_over_prod(75, 3 * 5));
 
 is(next_prime(-10),               '2');
 is(next_prime('165001'),          '165037');

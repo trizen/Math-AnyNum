@@ -693,7 +693,7 @@ Example:
 
     conj(x)                                       #=> Float | Complex
 
-Complex conjugate of C<x>. Return C<x> when C<x> is a real number.
+Complex conjugate of C<x>. Returns C<x> when C<x> is a real number.
 
 Example:
 
@@ -1670,7 +1670,7 @@ Example:
 
     is_smooth_over_prod(n, k)                     #=> Bool
 
-Return true if C<n> can be expressed as a product of primes dividing C<k>.
+Returns true if C<n> can be expressed as a product of primes dividing C<k>.
 
 Equivalently, it returns true if C<gcd(rad(n), rad(k)) == rad(n)>.
 
@@ -1707,7 +1707,7 @@ Example:
     is_power(n)
     is_power(n, k)                                #=> Bool
 
-Return a true value when C<n> is a perfect power of a given integer C<k>.
+Returns true when C<n> is a perfect power of a given integer C<k>.
 
 When C<n> is not an integer, it always returns false. On the other hand, when C<k> is not an integer,
 it will implicitly be truncated to an integer. If C<k> is not positive after truncation, C<0> is returned.
@@ -1975,7 +1975,7 @@ Returns C<x + 1>.
     --$x                                          #=> Any
     $x--                                          #=> Any
 
-Return C<x - 1>.
+Returns C<x - 1>.
 
 =head2 copy
 
@@ -1990,7 +1990,7 @@ Returns a deep-copy of the self-object.
 Returns the population count of the positive integer part of C<x>, which is the number of 1's in
 its binary representation.
 
-Return C<undef> when C<n> cannot be truncated to an integer.
+Returns C<undef> when C<n> cannot be truncated to an integer.
 
 This value is also known as the Hamming weight value.
 
@@ -2004,7 +2004,7 @@ Example:
 
 Returns the Hamming distance (number of bit-positions where the bits differ) between integers C<n> and C<k>.
 
-Return C<undef> when C<n> or C<k> cannot be truncated to an integer.
+Returns C<undef> when C<n> or C<k> cannot be truncated to an integer.
 
 =head2 getbit
 
@@ -2012,7 +2012,7 @@ Return C<undef> when C<n> or C<k> cannot be truncated to an integer.
 
 Returns 1 if bit C<k> of C<n> is set, and 0 if it is not set.
 
-Return C<undef> when C<n> cannot be truncated to an integer or when C<k> is negative.
+Returns C<undef> when C<n> cannot be truncated to an integer or when C<k> is negative.
 
 Example:
 
@@ -2222,7 +2222,7 @@ Example:
     rat_approx(3.14)     = 22/7
     rat_approx(zeta(-5)) = -1/252
 
-Return NaN when C<n> is not a real number.
+Returns NaN when C<n> is not a real number.
 
 =head2 float
 
@@ -2461,7 +2461,7 @@ Example:
 
     reals(x)                                      #=> (Any, Any)
 
-Return the real and the imaginary part of C<x> as real numbers.
+Returns the real and the imaginary part of C<x> as real numbers.
 
 Example:
 
