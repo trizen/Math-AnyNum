@@ -285,11 +285,11 @@ use overload
         next_prime => \&next_prime,
 
         is_smooth           => \&is_smooth,
-        is_rough           => \&is_rough,
+        is_rough            => \&is_rough,
         is_smooth_over_prod => \&is_smooth_over_prod,
 
         smooth_part => \&smooth_part,
-        rough_part => \&rough_part,
+        rough_part  => \&rough_part,
                   );
 
     my %misc = (
@@ -4037,11 +4037,7 @@ sub polygonal_root2 ($$) {
 sub isqrt ($) {
     my ($x) = @_;
 
-    $x = $$x if (ref($x) eq __PACKAGE__);
-
-    if (ref($x) ne 'Math::GMPz') {
-        $x = _star2mpz($x) // goto &nan;
-    }
+    $x = _star2mpz($x) // goto &nan;
 
     Math::GMPz::Rmpz_sgn($x) < 0 and goto &nan;
     my $r = Math::GMPz::Rmpz_init();
@@ -4056,11 +4052,7 @@ sub isqrt ($) {
 sub icbrt ($) {
     my ($x) = @_;
 
-    $x = $$x if (ref($x) eq __PACKAGE__);
-
-    if (ref($x) ne 'Math::GMPz') {
-        $x = _star2mpz($x) // goto &nan;
-    }
+    $x = _star2mpz($x) // goto &nan;
 
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_root($r, $x, 3);
@@ -4121,11 +4113,7 @@ sub iroot ($$) {
 sub isqrtrem ($) {
     my ($x) = @_;
 
-    $x = $$x if (ref($x) eq __PACKAGE__);
-
-    if (ref($x) ne 'Math::GMPz') {
-        $x = _star2mpz($x) // return (nan(), nan());
-    }
+    $x = _star2mpz($x) // return (nan(), nan());
 
     Math::GMPz::Rmpz_sgn($x) < 0
       and return (nan(), nan());
@@ -4525,17 +4513,8 @@ sub polymod {
 sub divmod ($$) {
     my ($x, $y) = @_;
 
-    $x = $$x if (ref($x) eq __PACKAGE__);
-
-    if (ref($x) ne 'Math::GMPz') {
-        $x = _star2mpz($x) // return (nan(), nan());
-    }
-
-    $y = $$y if (ref($y) eq __PACKAGE__);
-
-    if (ref($y) ne 'Math::GMPz') {
-        $y = _star2mpz($y) // return (nan(), nan());
-    }
+    $x = _star2mpz($x) // return (nan(), nan());
+    $y = _star2mpz($y) // return (nan(), nan());
 
     Math::GMPz::Rmpz_sgn($y)
       || return (nan(), nan());
@@ -4803,25 +4782,13 @@ sub __ilog__ {
 
 sub ilog2 ($) {
     my ($x) = @_;
-
-    $x = $$x if (ref($x) eq __PACKAGE__);
-
-    if (ref($x) ne 'Math::GMPz') {
-        $x = _star2mpz($x) // goto &nan;
-    }
-
+    $x = _star2mpz($x) // goto &nan;
     bless \Math::GMPz::Rmpz_init_set_ui(__ilog__($x, 2) // goto &nan);
 }
 
 sub ilog10 ($) {
     my ($x) = @_;
-
-    $x = $$x if (ref($x) eq __PACKAGE__);
-
-    if (ref($x) ne 'Math::GMPz') {
-        $x = _star2mpz($x) // goto &nan;
-    }
-
+    $x = _star2mpz($x) // goto &nan;
     bless \Math::GMPz::Rmpz_init_set_ui(__ilog__($x, 10) // goto &nan);
 }
 
@@ -6697,21 +6664,13 @@ sub __irand__ {
         sub irand ($;$) {
             my ($x, $y) = @_;
 
-            $x = $$x if (ref($x) eq __PACKAGE__);
-
-            if (ref($x) ne 'Math::GMPz') {
-                $x = _star2mpz($x) // goto &nan;
-            }
+            $x = _star2mpz($x) // goto &nan;
 
             if (!defined($y)) {
                 return bless \__irand__($x, undef, $state);
             }
 
-            $y = $$y if (ref($y) eq __PACKAGE__);
-
-            if (ref($y) ne 'Math::GMPz') {
-                $y = _star2mpz($y) // goto &nan;
-            }
+            $y = _star2mpz($y) // goto &nan;
 
             bless \__irand__($x, $y, $state);
         }
@@ -6719,14 +6678,10 @@ sub __irand__ {
         sub iseed ($) {
             my ($x) = @_;
 
-            $x = $$x if (ref($x) eq __PACKAGE__);
-
-            if (ref($x) ne 'Math::GMPz') {
-                $x = _star2mpz($x) // do {
-                    require Carp;
-                    Carp::croak("iseed(): invalid seed value <<$_[0]>> (expected an integer)");
-                };
-            }
+            $x = _star2mpz($x) // do {
+                require Carp;
+                Carp::croak("iseed(): invalid seed value <<$_[0]>> (expected an integer)");
+            };
 
             Math::GMPz::zgmp_randseed($state, $x);
             bless \$x;
@@ -7102,16 +7057,8 @@ sub lucasVmod ($$$$) {
 sub fibmod ($$) {
     my ($n, $m) = @_;
 
-    $n = $$n if (ref($n) eq __PACKAGE__);
-    $m = $$m if (ref($m) eq __PACKAGE__);
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _star2mpz($n) // goto &nan;
-    }
-
-    if (ref($m) ne 'Math::GMPz') {
-        $m = _star2mpz($m) // goto &nan;
-    }
+    $n = _star2mpz($n) // goto &nan;
+    $m = _star2mpz($m) // goto &nan;
 
     Math::GMPz::Rmpz_sgn($m) == 0 and goto &nan;
 
@@ -7166,16 +7113,8 @@ sub fibmod ($$) {
 sub lucasmod ($$) {
     my ($n, $m) = @_;
 
-    $n = $$n if (ref($n) eq __PACKAGE__);
-    $m = $$m if (ref($m) eq __PACKAGE__);
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _star2mpz($n) // goto &nan;
-    }
-
-    if (ref($m) ne 'Math::GMPz') {
-        $m = _star2mpz($m) // goto &nan;
-    }
+    $n = _star2mpz($n) // goto &nan;
+    $m = _star2mpz($m) // goto &nan;
 
     Math::GMPz::Rmpz_sgn($m) == 0 and goto &nan;
 
@@ -8293,23 +8232,13 @@ sub gcd {
         ($x, $y) = ($y, $x);
     }
 
-    $x = $$x if (ref($x) eq __PACKAGE__);
-
-    if (ref($x) ne 'Math::GMPz') {
-        $x = _star2mpz($x) // goto &nan;
-    }
+    $x = _star2mpz($x) // goto &nan;
 
     if (!ref($y) and CORE::int($y) eq $y and $y < ULONG_MAX and $y > LONG_MIN) {
         Math::GMPz::Rmpz_gcd_ui($r, $x, $y < 0 ? -$y : $y);
     }
     else {
-
-        $y = $$y if (ref($y) eq __PACKAGE__);
-
-        if (ref($y) ne 'Math::GMPz') {
-            $y = _star2mpz($y) // goto &nan;
-        }
-
+        $y = _star2mpz($y) // goto &nan;
         Math::GMPz::Rmpz_gcd($r, $x, $y);
     }
 
@@ -8357,11 +8286,7 @@ sub lcm {
         ($x, $y) = ($y, $x);
     }
 
-    $x = $$x if (ref($x) eq __PACKAGE__);
-
-    if (ref($x) ne 'Math::GMPz') {
-        $x = _star2mpz($x) // goto &nan;
-    }
+    $x = _star2mpz($x) // goto &nan;
 
     my $r = Math::GMPz::Rmpz_init();
 
@@ -8369,13 +8294,7 @@ sub lcm {
         Math::GMPz::Rmpz_lcm_ui($r, $x, $y < 0 ? -$y : $y);
     }
     else {
-
-        $y = $$y if (ref($y) eq __PACKAGE__);
-
-        if (ref($y) ne 'Math::GMPz') {
-            $y = _star2mpz($y) // goto &nan;
-        }
-
+        $y = _star2mpz($y) // goto &nan;
         Math::GMPz::Rmpz_lcm($r, $x, $y);
     }
 
@@ -8388,13 +8307,7 @@ sub lcm {
 
 sub next_prime ($) {
     my ($n) = @_;
-
-    $n = $$n if (ref($n) eq __PACKAGE__);
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _star2mpz($n) // goto &nan;
-    }
-
+    $n = _star2mpz($n) // goto &nan;
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_nextprime($r, $n);
     bless \$r;
@@ -9037,12 +8950,7 @@ sub is_polygonal ($$) {
         $n = _any2mpz($n) // return 0;
     }
 
-    $k = $$k if (ref($k) eq __PACKAGE__);
-
-    if (ref($k) ne 'Math::GMPz') {
-        $k = _star2mpz($k) // return 0;
-    }
-
+    $k = _star2mpz($k) // return 0;
     __is_polygonal__($n, $k);
 }
 
@@ -9060,11 +8968,7 @@ sub is_polygonal2 ($$) {
         $n = _any2mpz($n) // return 0;
     }
 
-    $k = $$k if (ref($k) eq __PACKAGE__);
-
-    if (ref($k) ne 'Math::GMPz') {
-        $k = _star2mpz($k) // return 0;
-    }
+    $k = _star2mpz($k) // return 0;
 
     __is_polygonal__($n, $k, 1);
 }
@@ -9112,17 +9016,8 @@ sub __ipolygonal_root__ {
 sub ipolygonal_root ($$) {
     my ($n, $k) = @_;
 
-    $n = $$n if (ref($n) eq __PACKAGE__);
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _star2mpz($n) // goto &nan;
-    }
-
-    $k = $$k if (ref($k) eq __PACKAGE__);
-
-    if (ref($k) ne 'Math::GMPz') {
-        $k = _star2mpz($k) // goto &nan;
-    }
+    $n = _star2mpz($n) // goto &nan;
+    $k = _star2mpz($k) // goto &nan;
 
     bless \__ipolygonal_root__($n, $k);
 }
@@ -9134,17 +9029,8 @@ sub ipolygonal_root ($$) {
 sub ipolygonal_root2 ($$) {
     my ($n, $k) = @_;
 
-    $n = $$n if (ref($n) eq __PACKAGE__);
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _star2mpz($n) // goto &nan;
-    }
-
-    $k = $$k if (ref($k) eq __PACKAGE__);
-
-    if (ref($k) ne 'Math::GMPz') {
-        $k = _star2mpz($k) // goto &nan;
-    }
+    $n = _star2mpz($n) // goto &nan;
+    $k = _star2mpz($k) // goto &nan;
 
     bless \__ipolygonal_root__($n, $k, 1);
 }
@@ -9243,11 +9129,7 @@ sub kronecker ($$) {
               : Math::GMPz::Rmpz_init_set_ui($k);
         }
         else {
-            $k = $$k if (ref($k) eq __PACKAGE__);
-
-            if (ref($k) ne 'Math::GMPz') {
-                $k = _star2mpz($k) // goto &nan;
-            }
+            $k = _star2mpz($k) // goto &nan;
         }
 
         return (
@@ -9257,11 +9139,7 @@ sub kronecker ($$) {
                );
     }
 
-    $n = $$n if (ref($n) eq __PACKAGE__);
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _star2mpz($n) // goto &nan;
-    }
+    $n = _star2mpz($n) // goto &nan;
 
     if (!ref($k) and CORE::int($k) eq $k and $k < ULONG_MAX and $k > LONG_MIN) {
         return (
@@ -9271,11 +9149,7 @@ sub kronecker ($$) {
                );
     }
 
-    $k = $$k if (ref($k) eq __PACKAGE__);
-
-    if (ref($k) ne 'Math::GMPz') {
-        $k = _star2mpz($k) // goto &nan;
-    }
+    $k = _star2mpz($k) // goto &nan;
 
     Math::GMPz::Rmpz_kronecker($n, $k);
 }
@@ -9296,17 +9170,8 @@ sub __valuation__ {    # takes two Math::GMPz objects
 sub valuation ($$) {
     my ($n, $k) = @_;
 
-    $n = $$n if (ref($n) eq __PACKAGE__);
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _star2mpz($n) // goto &nan;
-    }
-
-    $k = $$k if (ref($k) eq __PACKAGE__);
-
-    if (ref($k) ne 'Math::GMPz') {
-        $k = _star2mpz($k) // goto &nan;
-    }
+    $n = _star2mpz($n) // goto &nan;
+    $k = _star2mpz($k) // goto &nan;
 
     (__valuation__($n, $k))[0];
 }
@@ -9318,19 +9183,36 @@ sub valuation ($$) {
 sub remdiv ($$) {
     my ($n, $k) = @_;
 
-    $n = $$n if (ref($n) eq __PACKAGE__);
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _star2mpz($n) // goto &nan;
-    }
-
-    $k = $$k if (ref($k) eq __PACKAGE__);
-
-    if (ref($k) ne 'Math::GMPz') {
-        $k = _star2mpz($k) // goto &nan;
-    }
+    $n = _star2mpz($n) // goto &nan;
+    $k = _star2mpz($k) // goto &nan;
 
     bless \((__valuation__($n, $k))[1]);
+}
+
+#
+## Make n coprime to k, by removing from n common factors with k
+#
+sub make_coprime {
+    my ($n, $k) = @_;
+
+    $n = _star2mpz($$n) // goto &nan;
+    $k = _star2mpz($$k) // goto &nan;
+
+    if (Math::GMPz::Rmpz_sgn($n) == 0) {
+        return bless \$n;
+    }
+
+    my $r = Math::GMPz::Rmpz_init_set($n);
+    my $g = Math::GMPz::Rmpz_init();
+
+    Math::GMPz::Rmpz_gcd($g, $r, $k);
+
+    while (Math::GMPz::Rmpz_cmp_ui($g, 1) > 0) {
+        Math::GMPz::Rmpz_remove($r, $r, $g);
+        Math::GMPz::Rmpz_gcd($g, $r, $g);
+    }
+
+    bless \$r;
 }
 
 #
@@ -9340,17 +9222,8 @@ sub remdiv ($$) {
 sub invmod ($$) {
     my ($n, $k) = @_;
 
-    $n = $$n if (ref($n) eq __PACKAGE__);
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _star2mpz($n) // goto &nan;
-    }
-
-    $k = $$k if (ref($k) eq __PACKAGE__);
-
-    if (ref($k) ne 'Math::GMPz') {
-        $k = _star2mpz($k) // goto &nan;
-    }
+    $n = _star2mpz($n) // goto &nan;
+    $k = _star2mpz($k) // goto &nan;
 
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_invert($r, $n, $k) || (goto &nan);
@@ -9364,23 +9237,9 @@ sub invmod ($$) {
 sub powmod ($$$) {
     my ($n, $k, $z) = @_;
 
-    $n = $$n if (ref($n) eq __PACKAGE__);
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _star2mpz($n) // goto &nan;
-    }
-
-    $k = $$k if (ref($k) eq __PACKAGE__);
-
-    if (ref($k) ne 'Math::GMPz') {
-        $k = _star2mpz($k) // goto &nan;
-    }
-
-    $z = $$z if (ref($z) eq __PACKAGE__);
-
-    if (ref($z) ne 'Math::GMPz') {
-        $z = _star2mpz($z) // goto &nan;
-    }
+    $n = _star2mpz($n) // goto &nan;
+    $k = _star2mpz($k) // goto &nan;
+    $z = _star2mpz($z) // goto &nan;
 
     Math::GMPz::Rmpz_sgn($z) || goto &nan;
 
@@ -9695,17 +9554,8 @@ sub multinomial {
 sub and {    # used in overloading
     my ($n, $k) = @_;
 
-    $n = $$n;
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _any2mpz($n) // goto &nan;
-    }
-
-    $k = $$k if (ref($k) eq __PACKAGE__);
-
-    if (ref($k) ne 'Math::GMPz') {
-        $k = _star2mpz($k) // goto &nan;
-    }
+    $n = _star2mpz($n) // goto &nan;
+    $k = _star2mpz($k) // goto &nan;
 
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_and($r, $n, $k);
@@ -9719,17 +9569,8 @@ sub and {    # used in overloading
 sub or {    # used in overloading
     my ($n, $k) = @_;
 
-    $n = $$n;
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _any2mpz($n) // goto &nan;
-    }
-
-    $k = $$k if (ref($k) eq __PACKAGE__);
-
-    if (ref($k) ne 'Math::GMPz') {
-        $k = _star2mpz($k) // goto &nan;
-    }
+    $n = _star2mpz($n) // goto &nan;
+    $k = _star2mpz($k) // goto &nan;
 
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_ior($r, $n, $k);
@@ -9743,17 +9584,8 @@ sub or {    # used in overloading
 sub xor {    # used in overloading
     my ($n, $k) = @_;
 
-    $n = $$n;
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _any2mpz($n) // goto &nan;
-    }
-
-    $k = $$k if (ref($k) eq __PACKAGE__);
-
-    if (ref($k) ne 'Math::GMPz') {
-        $k = _star2mpz($k) // goto &nan;
-    }
+    $n = _star2mpz($n) // goto &nan;
+    $k = _star2mpz($k) // goto &nan;
 
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_xor($r, $n, $k);
@@ -9767,11 +9599,7 @@ sub xor {    # used in overloading
 sub not {    # used in overloading
     my ($n) = @_;
 
-    $n = $$n;
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _any2mpz($n) // goto &nan;
-    }
+    $n = _star2mpz($n) // goto &nan;
 
     my $r = Math::GMPz::Rmpz_init();
     Math::GMPz::Rmpz_com($r, $n);
@@ -9925,11 +9753,7 @@ sub rsft {    # used in overloading
 sub popcount ($) {
     my ($n) = @_;
 
-    $n = $$n if (ref($n) eq __PACKAGE__);
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _star2mpz($n) // return undef;
-    }
+    $n = _star2mpz($n) // return undef;
 
     if (Math::GMPz::Rmpz_sgn($n) < 0) {
         $n = Math::GMPz::Rmpz_init_set($n);
@@ -9946,16 +9770,8 @@ sub popcount ($) {
 sub hamdist ($$) {
     my ($n, $k) = @_;
 
-    $n = $$n if (ref($n) eq __PACKAGE__);
-    $k = $$k if (ref($k) eq __PACKAGE__);
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _star2mpz($n) // return undef;
-    }
-
-    if (ref($k) ne 'Math::GMPz') {
-        $k = _star2mpz($k) // return undef;
-    }
+    $n = _star2mpz($n) // return undef;
+    $k = _star2mpz($k) // return undef;
 
     Math::GMPz::Rmpz_hamdist($n, $k);
 }
@@ -9966,37 +9782,19 @@ sub hamdist ($$) {
 
 sub as_bin ($) {
     my ($n) = @_;
-
-    $n = $$n if (ref($n) eq __PACKAGE__);
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _star2mpz($n) // return undef;
-    }
-
+    $n = _star2mpz($n) // return undef;
     Math::GMPz::Rmpz_get_str($n, 2);
 }
 
 sub as_oct ($) {
     my ($n) = @_;
-
-    $n = $$n if (ref($n) eq __PACKAGE__);
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _star2mpz($n) // return undef;
-    }
-
+    $n = _star2mpz($n) // return undef;
     Math::GMPz::Rmpz_get_str($n, 8);
 }
 
 sub as_hex ($) {
     my ($n) = @_;
-
-    $n = $$n if (ref($n) eq __PACKAGE__);
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _star2mpz($n) // return undef;
-    }
-
+    $n = _star2mpz($n) // return undef;
     Math::GMPz::Rmpz_get_str($n, 16);
 }
 
@@ -10190,11 +9988,7 @@ my %DIGITS_62;
 sub digits ($;$) {
     my ($n, $k) = @_;
 
-    $n = $$n if (ref($n) eq __PACKAGE__);
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _star2mpz($n) // return;
-    }
+    $n = _star2mpz($n) // return;
 
     $k //= 10;
 
@@ -10212,12 +10006,7 @@ sub digits ($;$) {
         return if ($k <= 1);    # not defined for k <= 1
     }
     else {
-        $k = $$k if (ref($k) eq __PACKAGE__);
-
-        if (ref($k) ne 'Math::GMPz') {
-            $k = _star2mpz($k) // return;
-        }
-
+        $k = _star2mpz($k) // return;
         return if (Math::GMPz::Rmpz_cmp_ui($k, 1) <= 0);    # not defined for k <= 1
     }
 
@@ -10285,11 +10074,7 @@ sub digits ($;$) {
 sub sumdigits ($;$) {
     my ($n, $k) = @_;
 
-    $n = $$n if (ref($n) eq __PACKAGE__);
-
-    if (ref($n) ne 'Math::GMPz') {
-        $n = _star2mpz($n) // goto &nan;
-    }
+    $n = _star2mpz($n) // goto &nan;
 
     $k //= 10;
 
@@ -10307,12 +10092,7 @@ sub sumdigits ($;$) {
         goto &nan if ($k <= 1);    # not defined for k <= 1
     }
     else {
-        $k = $$k if (ref($k) eq __PACKAGE__);
-
-        if (ref($k) ne 'Math::GMPz') {
-            $k = _star2mpz($k) // goto &nan;
-        }
-
+        $k = _star2mpz($k) // goto &nan;
         goto &nan if (Math::GMPz::Rmpz_cmp_ui($k, 1) <= 0);    # not defined for k <= 1
     }
 

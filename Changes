@@ -4,13 +4,15 @@ Revision history for Math-AnyNum
 
         [ADDITIONS]
 
-        - is_rough(n,k)     returns true if all prime factors p|n are p >= k
-        - smooth_part(n,k)  returns the largest k-smooth divisor of n
-        - rough_part(n,k)   returns the largest k-rough divisor of n
+        - is_rough(n,k)       true if all prime factors p|n are p >= k
+        - smooth_part(n,k)    the largest k-smooth divisor of n
+        - rough_part(n,k)     the largest k-rough divisor of n
+        - make_coprime(n,k)   make n coprime to k by removing factors from n
 
         [IMPROVEMENTS]
 
         - Optimizations in `faulhaber_sum(n,k)` for k = 2 and k >= n.
+        - Internal code simplifications.
 
 0.34    2020-01-23
 
