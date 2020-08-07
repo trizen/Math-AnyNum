@@ -4,10 +4,11 @@ Revision history for Math-AnyNum
 
         [ADDITIONS]
 
-        - is_rough(n,k)       true if all prime factors p|n are p >= k
-        - smooth_part(n,k)    the largest k-smooth divisor of n
-        - rough_part(n,k)     the largest k-rough divisor of n
-        - make_coprime(n,k)   make n coprime to k by removing factors from n
+        - is_rough(n,k)         true if all prime factors p|n are p >= k
+        - smooth_part(n,k)      the largest k-smooth divisor of n
+        - rough_part(n,k)       the largest k-rough divisor of n
+        - make_coprime(n,k)     make n coprime to k by removing factors from n
+        - dirichlet_sum(n,...)  the Dirichlet hyperbola method
 
         [IMPROVEMENTS]
 

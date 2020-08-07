@@ -290,6 +290,8 @@ use overload
 
         smooth_part => \&smooth_part,
         rough_part  => \&rough_part,
+
+        make_coprime => \&make_coprime,
                   );
 
     my %misc = (
@@ -9363,7 +9365,7 @@ sub faulhaber_sum ($$) {
 ## https://en.wikipedia.org/wiki/Dirichlet_hyperbola_method
 #
 
-sub dirichlet_sum {
+sub dirichlet_sum ($$$$$) {
     my ($n, $f, $g, $F, $G) = @_;
 
     $n = _star2mpz($n) // goto &nan;
