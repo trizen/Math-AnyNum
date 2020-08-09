@@ -1274,7 +1274,7 @@ Example:
 
 =head2 dirichlet_sum
 
-    dirichlet_sum(n, \&f, \&g, \&F, \&G)          #=> Int
+    dirichlet_sum(n, \&f, \&g, \&F, \&G)          #=> Int | NaN
 
 Given two arithmetic functions C<f> and C<g>, it computes the following sum in C<O(sqrt(n))> steps:
 
@@ -1636,7 +1636,7 @@ Returns true when C<n> and C<k> are relatively prime to each other. That is, whe
 
 =head2 make_coprime
 
-    make_coprime(n, k)                            #=> Bool
+    make_coprime(n, k)                            #=> Int | NaN
 
 Returns the largest divisor of C<n> that is coprime to C<k>.
 
@@ -1682,7 +1682,7 @@ Example:
 
 =head2 smooth_part
 
-    smooth_part(n, k)                             #=> Bool
+    smooth_part(n, k)                             #=> Int | NaN
 
 Returns the largest divisor of C<n> that is C<k>-smooth.
 
@@ -1693,7 +1693,7 @@ Example:
 
 =head2 rough_part
 
-    rough_part(n, k)                              #=> Bool
+    rough_part(n, k)                              #=> Int | NaN
 
 Returns the largest divisor of C<n> that is C<k>-rough.
 
