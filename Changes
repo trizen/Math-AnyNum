@@ -14,6 +14,7 @@ Revision history for Math-AnyNum
 
         - Optimizations in `sum(...)` for integer arguments.
         - Optimizations in `faulhaber_sum(n,k)` for k = 2 and k >= n.
+        - Extended `powmod(b, n, m)` to support rational bases `b`.
         - Internal code simplifications.
 
 0.34    2020-01-23

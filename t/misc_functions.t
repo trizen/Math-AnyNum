@@ -283,11 +283,11 @@ is(join(' ', digits(1234, 0)),   '');
 
 #is(digits2num([5040, 1234], 10), 1234*10 + 5040);      # currenlty this is not supported
 
-is(digits2num([],           -1), 'NaN');
+is(digits2num([], -1),           'NaN');
 is(digits2num([1, 2, 3, 4], -1), 'NaN');
-is(digits2num([]),      0);
-is(digits2num([], 100), 0);
-is(digits2num([5, 4, 3, 2, 1]), 12345);
+is(digits2num([]),               0);
+is(digits2num([], 100),          0);
+is(digits2num([5, 4, 3, 2, 1]),  12345);
 is(digits2num([45, 23, 1], 100), 12345);
 is(digits2num([digits('996105818874172862495850884533', '81592785159219522212')], '81592785159219522212'),
     '996105818874172862495850884533');
@@ -329,7 +329,7 @@ is(
     113
   );
 
-is(bsearch_le(10**6, sub { exp($_) <=> 1e+9 }), 20);    #=>  20   (exp( 20) <= 1e+9)
+is(bsearch_le(10**6, sub { exp($_) <=> 1e+9 }), 20);             #=>  20   (exp( 20) <= 1e+9)
 is(bsearch_le(-10**6, 10**6, sub { exp($_) <=> 1e-9 }), -21);    #=> -21   (exp(-21) <= 1e-9)
 
 is(bsearch_ge(10**6, sub { exp($_) <=> 1e+9 }), 21);             #=>  21   (exp( 21) >= 1e+9)
@@ -581,8 +581,8 @@ is(as_dec(sqrt(float(2)),   3), '1.41');
 is(as_dec(sqrt(rat(2)),     4), '1.414');
 is(as_dec(sqrt(complex(2)), 5), '1.4142');
 
-is(as_dec('0.5'), '0.5');
-is(as_dec('0.5',      10), '0.5');
+is(as_dec('0.5'),          '0.5');
+is(as_dec('0.5', 10),      '0.5');
 is(as_dec(rat('0.5'), 10), '0.5');
 is(as_dec(complex('0.5')), '0.5');
 
@@ -723,19 +723,19 @@ ok(!(rat(0) == '-1'));
 ok(!(int(0) == '-1'));
 ok(!(complex(0) == '-1'));
 
-is(float(0) <=> '0',   0);
-is(rat(0) <=> '0',     0);
-is(int(0) <=> '0',     0);
+is(float(0)   <=> '0', 0);
+is(rat(0)     <=> '0', 0);
+is(int(0)     <=> '0', 0);
 is(complex(0) <=> '0', 0);
 
-is(float(0) <=> '1',   -1);
-is(rat(0) <=> '1',     -1);
-is(int(0) <=> '1',     -1);
+is(float(0)   <=> '1', -1);
+is(rat(0)     <=> '1', -1);
+is(int(0)     <=> '1', -1);
 is(complex(0) <=> '1', -1);
 
-is(float(0) <=> '-1',   1);
-is(rat(0) <=> '-1',     1);
-is(int(0) <=> '-1',     1);
+is(float(0)   <=> '-1', 1);
+is(rat(0)     <=> '-1', 1);
+is(int(0)     <=> '-1', 1);
 is(complex(0) <=> '-1', 1);
 
 is(complex(3,       4),         '3+4i');

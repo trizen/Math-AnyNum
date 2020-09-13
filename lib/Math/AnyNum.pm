@@ -8348,24 +8348,14 @@ sub next_prime ($) {
 #
 
 sub __is_int__ {
-    my ($n) = @_;
+    my ($x) = @_;
 
-    return 1 if (ref($n) eq 'Math::GMPz');
+    ref($x) eq 'Math::GMPz' && return 1;
+    ref($x) eq 'Math::GMPq' && return Math::GMPq::Rmpq_integer_p($x);
+    ref($x) eq 'Math::MPFR' && return Math::MPFR::Rmpfr_integer_p($x);
 
-    goto(ref($n) =~ tr/:/_/rs);
-
-  Math_MPFR: {
-        goto &Math::MPFR::Rmpfr_integer_p;
-    }
-
-  Math_GMPq: {
-        goto &Math::GMPq::Rmpq_integer_p;
-    }
-
-  Math_MPC: {
-        @_ = _any2mpfr($n);
-        goto &Math::MPFR::Rmpfr_integer_p;
-    }
+    (@_) = _any2mpfr($x);
+    goto __SUB__;
 }
 
 sub is_int ($) {
@@ -9265,25 +9255,43 @@ sub invmod ($$) {
 #
 
 sub powmod ($$$) {
-    my ($n, $k, $z) = @_;
+    my ($n, $k, $m) = @_;
 
-    $n = _star2mpz($n) // goto &nan;
+    $n = _star2obj($n) // goto &nan;
     $k = _star2mpz($k) // goto &nan;
-    $z = _star2mpz($z) // goto &nan;
+    $m = _star2mpz($m) // goto &nan;
 
-    Math::GMPz::Rmpz_sgn($z) || goto &nan;
+    Math::GMPz::Rmpz_sgn($m) || goto &nan;
 
-    if (Math::GMPz::Rmpz_sgn($k) < 0) {
-        my $t = Math::GMPz::Rmpz_init();
-        Math::GMPz::Rmpz_gcd($t, $n, $z);
-        Math::GMPz::Rmpz_cmp_ui($t, 1) == 0 or goto &nan;
+    if (ref($n) ne 'Math::GMPz') {
+
+        if (__is_int__($n)) {
+            $n = _any2mpz($n) // goto &nan;
+        }
+        else {
+            $n = _any2mpq($n) // goto &nan;
+
+            state $z = Math::GMPz::Rmpz_init_nobless();
+
+            my $t = Math::GMPz::Rmpz_init();
+            Math::GMPq::Rmpq_get_den($z, $n);
+            Math::GMPz::Rmpz_invert($t, $z, $m) or goto &nan;
+            Math::GMPq::Rmpq_get_num($z, $n);
+            Math::GMPz::Rmpz_mul($t, $t, $z);
+
+            $n = $t;
+        }
     }
 
     my $r = Math::GMPz::Rmpz_init();
 
+    if (Math::GMPz::Rmpz_sgn($k) < 0) {
+        Math::GMPz::Rmpz_invert($r, $n, $m) or goto &nan;
+    }
+
     Math::GMPz::Rmpz_fits_ulong_p($k)
-      ? Math::GMPz::Rmpz_powm_ui($r, $n, Math::GMPz::Rmpz_get_ui($k), $z)
-      : Math::GMPz::Rmpz_powm($r, $n, $k, $z);
+      ? Math::GMPz::Rmpz_powm_ui($r, $n, Math::GMPz::Rmpz_get_ui($k), $m)
+      : Math::GMPz::Rmpz_powm($r, $n, $k, $m);
 
     bless \$r;
 }

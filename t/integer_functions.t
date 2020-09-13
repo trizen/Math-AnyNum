@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 618;
+plan tests => 633;
 
 use Math::AnyNum qw(:ntheory prod);
 use Math::GMPz::V qw();
@@ -101,8 +101,8 @@ is(join(' ', map { fibonacci(Math::AnyNum->new_ui($_), Math::AnyNum->new_ui(4)) 
     is(lucasmod(105, $t), lucas(105) % $t);
 }
 
-is(fibmod(0, 100), 0);
-is(fibmod(1, 100), 1);
+is(fibmod(0, 100),   0);
+is(fibmod(1, 100),   1);
 is(lucasmod(0, 100), 2);
 is(lucasmod(1, 100), 1);
 
@@ -399,10 +399,10 @@ is(ipow10($o->new(3)),      1000);
 is(ipow10($o->new('13/2')), 1000000);
 is(ipow10($o->new('3.7')),  1000);
 
-is(lcm(),   1);
-is(lcm(42), 42);
-is(lcm(13,          14),          182);
-is(lcm(14,          $o->new(13)), 182);
+is(lcm(),                         1);
+is(lcm(42),                       42);
+is(lcm(13, 14),                   182);
+is(lcm(14, $o->new(13)),          182);
 is(lcm($o->new(14), 13),          182);
 is(lcm($o->new(13), $o->new(14)), 182);
 
@@ -425,11 +425,11 @@ ok(!is_coprime($o->new(6), 42));
 ok(!is_coprime($o->new(6), $o->new(42)));
 ok(!is_coprime(6,          $o->new(42)));
 
-is(gcd(),   0);
-is(gcd(42), 42);
-is(gcd(20,          12),          4);
+is(gcd(),                         0);
+is(gcd(42),                       42);
+is(gcd(20, 12),                   4);
 is(gcd($o->new(20), 12),          4);
-is(gcd(20,          $o->new(12)), 4);
+is(gcd(20, $o->new(12)),          4);
 is(gcd($o->new(12), $o->new(20)), 4);
 
 is(join(' ', gcdext(12,  20)),  '2 -1 4');
@@ -563,13 +563,13 @@ is(icbrt(1),     1);
 is(icbrt(0),     0);
 is(icbrt(-1),    -1);
 
-is(ilog(1234),   7);
-is(ilog(123456), 11);
-is(ilog(10000,          $o->new(10)), 4);
-is(ilog(10000,          10),          4);
-is(ilog($o->new(10000), 10),          4);
-is(ilog($o->new('123456')), 11);
-is(ilog(-1),                'NaN');
+is(ilog(1234),               7);
+is(ilog(123456),             11);
+is(ilog(10000, $o->new(10)), 4);
+is(ilog(10000, 10),          4);
+is(ilog($o->new(10000), 10), 4);
+is(ilog($o->new('123456')),  11);
+is(ilog(-1),                 'NaN');
 
 is(ilog(63,   2), '5');
 is(ilog(64,   2), '6');
@@ -624,11 +624,11 @@ is(ilog(ipow(2, 100),     ipow(2, 100)), '1');
 is(ilog(ipow(2, 100) - 1, ipow(2, 100)), '0');
 is(ilog(ipow(2, 100),     ipow(2, 99)),  '1');
 
-is(join(' ', isqrtrem(1234)), '35 9');
-is(join(' ', isqrtrem(100)),  '10 0');
-is(join(' ', irootrem(1234,     2)), '35 9');
-is(join(' ', irootrem(1234,     5)), '4 210');
-is(join(' ', irootrem(1234,     1)), '1234 0');
+is(join(' ', isqrtrem(1234)),        '35 9');
+is(join(' ', isqrtrem(100)),         '10 0');
+is(join(' ', irootrem(1234, 2)),     '35 9');
+is(join(' ', irootrem(1234, 5)),     '4 210');
+is(join(' ', irootrem(1234, 1)),     '1234 0');
 is(join(' ', irootrem('279841', 4)), '23 0');
 
 is(powmod(123,          456,          19),          11);
@@ -639,12 +639,35 @@ is(powmod(123,          $o->new(456), $o->new(19)), 11);
 is(powmod(123,          $o->new(456), 19),          11);
 is(powmod(123,          456,          $o->new(19)), 11);
 
-is(powmod(123, -1, 17), 13);
-is(powmod(123, -2, 17), 16);
-is(powmod(123, -3, 17), 4);
-is(powmod(123, -1, 15), 'NaN');
-is(powmod(123, -2, 15), 'NaN');
-is(powmod(123, -3, 15), 'NaN');
+is(powmod(123, -1,  17), 13);
+is(powmod(123, -2,  17), 16);
+is(powmod(123, -3,  17), 4);
+is(powmod(123, -1,  15), 'NaN');
+is(powmod(123, -2,  15), 'NaN');
+is(powmod(123, -3,  15), 'NaN');
+is(powmod(43,  97,  0),  'NaN');
+is(powmod(2,   -43, 0),  'NaN');
+is(powmod(0,   1,   0),  'NaN');
+is(powmod(0,   0,   0),  'NaN');
+
+is(powmod("3/4",          1234,  4171),     2138);
+is(powmod("43/97",        -129,  57 * 123), 3970);
+is(powmod($o->new("3/4"), -1234, 4171),     2304);
+
+is(powmod("43/97", 127, 43),     0);
+is(powmod("43/97", 127, 43 * 2), 43);
+is(powmod("43/97", 127, 97 * 3), 'NaN');
+is(powmod("43/97", 127, 0),      'NaN');
+
+sub my_powmod {
+    my ($x, $y, $k, $m) = @_;
+    (powmod($x, $k, $m) * powmod($y, -$k, $m)) % $m;
+}
+
+is(powmod("3/4",   1234,  4171),     my_powmod(3,  4,  1234,  4171));
+is(powmod("3/4",   -1234, 4171),     my_powmod(3,  4,  -1234, 4171));
+is(powmod("43/97", 127,   97 * 3),   my_powmod(43, 97, 127,   97 * 3));
+is(powmod("43/97", -129,  57 * 123), my_powmod(43, 97, -129,  57 * 123));
 
 is(invmod(123,          17),          13);
 is(invmod(123,          15),          'NaN');
@@ -744,11 +767,11 @@ is(
 # Sum_{k=1..n} k * sigma(k)
 is(
     dirichlet_sum(
-        10**4,                              # n
-        sub { $_[0] },                      # f
-        sub { $_[0]**2 },                   # g
-        sub { faulhaber_sum($_[0], 1) },    # F(n) = Sum_{k=1..n} f(k)
-        sub { faulhaber_sum($_[0], 2) },    # G(n) = Sum_{k=1..n} g(k)
+                  10**4,                              # n
+                  sub { $_[0] },                      # f
+                  sub { $_[0]**2 },                   # g
+                  sub { faulhaber_sum($_[0], 1) },    # F(n) = Sum_{k=1..n} f(k)
+                  sub { faulhaber_sum($_[0], 2) },    # G(n) = Sum_{k=1..n} g(k)
                  ),
     Math::AnyNum->new("548429473046"),
   );
@@ -762,16 +785,16 @@ is(geometric_sum(17, '-1/2'), '87381/131072');
 is(geometric_sum(15, '-4/3'), '-607417225/14348907');
 
 ok(is_power('279841'), '23^4');
-ok(is_power(100, 2),  '10^2');
-ok(is_power(125, 3),  '5^3');
-ok(is_power(1,   13), '1^x');
-ok(is_power(-1,  3),  '(-1)^odd');
-ok(!is_power(-1,   2), '(-1)^even');
-ok(!is_power(-123, 5), '-123');
-ok(!is_power(0,    0), '0^0');
-ok(is_power(0, 1), '0^1');
-ok(is_power(0, 2), '0^2');
-ok(is_power(0, 3), '0^3');
+ok(is_power(100,   2),  '10^2');
+ok(is_power(125,   3),  '5^3');
+ok(is_power(1,     13), '1^x');
+ok(is_power(-1,    3),  '(-1)^odd');
+ok(!is_power(-1,   2),  '(-1)^even');
+ok(!is_power(-123, 5),  '-123');
+ok(!is_power(0,    0),  '0^0');
+ok(is_power(0,     1),  '0^1');
+ok(is_power(0,     2),  '0^2');
+ok(is_power(0,     3),  '0^3');
 ok(is_power(1),   'is_power(1)');
 ok(is_power(-1),  'is_power(-1)');
 ok(!is_power(-2), 'is_power(-2)');
@@ -790,13 +813,13 @@ ok(!is_prime(-1), '-1 is not prime');
 ok(!is_prime(-2), '-2 is not prime');
 ok(!is_prime(-3), '-3 is not prime');
 
-ok(is_prime('165001'),              'is_prime');
-ok(is_prime($o->new('165001')),     'is_prime');
-ok(is_prime($o->new('165001'), 30), 'is_prime');
-ok(!is_prime('113822804831'),       '!is_prime');
-ok(!is_prime('113822804831',          30),          '!is_prime');
+ok(is_prime('165001'),                              'is_prime');
+ok(is_prime($o->new('165001')),                     'is_prime');
+ok(is_prime($o->new('165001'), 30),                 'is_prime');
+ok(!is_prime('113822804831'),                       '!is_prime');
+ok(!is_prime('113822804831', 30),                   '!is_prime');
 ok(!is_prime($o->new('113822804831'), $o->new(30)), '!is_prime');
-ok(!is_prime('1396981702787004809899378463251'), '!is_prime');
+ok(!is_prime('1396981702787004809899378463251'),    '!is_prime');
 
 #ok(is_smooth(0,                      0));
 #ok(is_smooth(0,                      40));
@@ -827,8 +850,8 @@ ok(!is_smooth_over_prod(19 * 19 * 13 * 13,    19));
 do {
     my $n = "172864518041328651521584134678230948270774322090771071422829";    # 2081
     ok(is_smooth($n, 4073));
-    ok(is_rough($n, 2080));
-    ok(is_rough($n, 2081));
+    ok(is_rough($n,  2080));
+    ok(is_rough($n,  2081));
     ok(!is_rough($n, 2082));
 };
 
@@ -836,8 +859,8 @@ do {
     my $n = "1377276413364943226363244108454842276965894752197358387200000";    # 97
     ok(!is_smooth($n, 23));
     ok(!is_smooth($n, 96));
-    ok(is_smooth($n, 97));
-    ok(is_smooth($n, 98));
+    ok(is_smooth($n,  97));
+    ok(is_smooth($n,  98));
 };
 
 do {
@@ -928,12 +951,12 @@ is(subfactorial(Math::AnyNum->new(7), 5),                    21);
 is(subfactorial(7,                    Math::AnyNum->new(5)), 21);
 
 is(subfactorial(-20, -20), 'NaN');
-is(subfactorial(12,  20),  'NaN');
-is(subfactorial(-12), 'NaN');
-is(subfactorial(0,  0),   1);
-is(subfactorial(0,  -1),  0);
-is(subfactorial(0,  -20), 0);
-is(subfactorial(30, -20), 0);
+is(subfactorial(12, 20),   'NaN');
+is(subfactorial(-12),      'NaN');
+is(subfactorial(0, 0),     1);
+is(subfactorial(0, -1),    0);
+is(subfactorial(0, -20),   0);
+is(subfactorial(30, -20),  0);
 
 is(multinomial(3, 17, 9), '11417105700');
 is(multinomial(7,                    2, 5, 2,                    12, 11),                    '440981754363423854380800');
