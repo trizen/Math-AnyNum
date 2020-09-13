@@ -360,6 +360,7 @@ use overload
         bit_scan1 => \&bit_scan1,
 
         rat_approx => \&rat_approx,
+        ratmod     => \&ratmod,
 
         is_inf     => \&is_inf,
         is_ninf    => \&is_ninf,
@@ -9250,6 +9251,47 @@ sub invmod ($$) {
     bless \$r;
 }
 
+sub _modular_rational {
+    my ($n, $m) = @_;
+
+    if (ref($n) ne 'Math::GMPq') {
+        $n = _any2mpq($n) // return;
+    }
+
+    state $z = Math::GMPz::Rmpz_init_nobless();
+
+    my $t = Math::GMPz::Rmpz_init();
+    Math::GMPq::Rmpq_get_den($z, $n);
+    Math::GMPz::Rmpz_invert($t, $z, $m) or return;
+    Math::GMPq::Rmpq_get_num($z, $n);
+    Math::GMPz::Rmpz_mul($t, $t, $z);
+
+    return $t;
+}
+
+#
+## Ratmod
+#
+
+sub ratmod ($$) {
+    my ($n, $m) = @_;
+
+    $n = _star2obj($n) // goto &nan;
+    $m = _star2mpz($m) // goto &nan;
+
+    my $r = Math::GMPz::Rmpz_init();
+
+    if (ref($n) eq 'Math::GMPz') {
+        Math::GMPz::Rmpz_mod($r, $n, $m);
+    }
+    else {
+        $r = _modular_rational($n, $m) // goto &nan;
+        Math::GMPz::Rmpz_mod($r, $r, $m);
+    }
+
+    bless \$r;
+}
+
 #
 ## Powmod
 #
@@ -9269,17 +9311,7 @@ sub powmod ($$$) {
             $n = _any2mpz($n) // goto &nan;
         }
         else {
-            $n = _any2mpq($n) // goto &nan;
-
-            state $z = Math::GMPz::Rmpz_init_nobless();
-
-            my $t = Math::GMPz::Rmpz_init();
-            Math::GMPq::Rmpq_get_den($z, $n);
-            Math::GMPz::Rmpz_invert($t, $z, $m) or goto &nan;
-            Math::GMPq::Rmpq_get_num($z, $n);
-            Math::GMPz::Rmpz_mul($t, $t, $z);
-
-            $n = $t;
+            $n = _modular_rational($n, $m) // goto &nan;
         }
     }
 

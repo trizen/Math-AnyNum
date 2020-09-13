@@ -228,6 +228,7 @@ Additionally, each Math::AnyNum object is B<immutable>.
     rat(x)              convert x to a rational number
     rat(str)            parse a decimal expansion as an exact fraction
     rat_approx(x)       rational approximation of a real number x
+    ratmod(r,m)         rational modular operation as an integer: r % m
     numerator(r)        numerator of rational number r
     denominator(r)      denominator of rational number r
     nude(r)             numerator and denominator of r
@@ -2223,6 +2224,20 @@ Example:
     rat_approx(zeta(-5)) = -1/252
 
 Returns NaN when C<n> is not a real number.
+
+=head2 ratmod
+
+    ratmod(r, m)                                  #=> Int | NaN
+
+Given a rational number C<r> and an integer C<m>, it returns C<r % m> computed as an integer.
+
+Example:
+
+    ratmod('43/97', 127) = 79
+
+Equivalent with:
+
+    (numerator($r) * invmod(denominator($r), $m)) % $m
 
 =head2 float
 

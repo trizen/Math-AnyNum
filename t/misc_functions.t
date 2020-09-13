@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 592;
+plan tests => 597;
 
 use Math::AnyNum qw(:misc lngamma ipow10 log);
 use List::Util qw();
@@ -692,6 +692,12 @@ is(rat('-1234.000e-2'),       '-617/50');
 is(rat('foo'),                     'NaN');
 is(rat('3+4i'),                    'NaN');
 is(rat(Math::AnyNum->new_c(3, 4)), 'NaN');
+
+is(ratmod(413,              97),           25);
+is(ratmod("43/97",          127),          79);
+is(ratmod("43/97",          $o->new(127)), 79);
+is(ratmod($o->new("43/97"), 127),          79);
+is(ratmod($o->new("43/97"), $o->new(127)), 79);
 
 ok(!(float(0) != '0'));
 ok(!(complex(0) != '0'));

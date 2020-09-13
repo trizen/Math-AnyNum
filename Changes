@@ -9,6 +9,7 @@ Revision history for Math-AnyNum
         - rough_part(n,k)       the largest k-rough divisor of n
         - make_coprime(n,k)     make n coprime to k by removing factors from n
         - dirichlet_sum(n,...)  the Dirichlet hyperbola method
+        - ratmod(r,m)           modular rational operation, returning an integer
 
         [IMPROVEMENTS]
 
