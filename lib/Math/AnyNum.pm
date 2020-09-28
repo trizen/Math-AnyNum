@@ -1115,9 +1115,13 @@ sub _binsplit {
 sub _cached_primorial {
     my ($k, $limit) = @_;
 
-    $limit //= 100;
-
     state %cache;
+
+    if (exists $cache{$k}) {
+        return $cache{$k};
+    }
+
+    $limit //= 100;
 
     # Clear the cache when there are too many values cached
     if (scalar(keys(%cache)) > $limit) {
