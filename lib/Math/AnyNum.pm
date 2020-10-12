@@ -1222,9 +1222,35 @@ sub new {
         return bless \_str2obj($num), $class;
     }
 
-    # Special case
+    # Already a __PACKAGE__ object
     if ($ref eq __PACKAGE__) {
         return $num;
+    }
+
+    # GMPz
+    if ($ref eq 'Math::GMPz') {
+        return bless \Math::GMPz::Rmpz_init_set($num);
+    }
+
+    # MPFR
+    if ($ref eq 'Math::MPFR') {
+        my $r = Math::MPFR::Rmpfr_init2(CORE::int($PREC));
+        Math::MPFR::Rmpfr_set($r, $num, $ROUND);
+        return bless \$r;
+    }
+
+    # MPC
+    if ($ref eq 'Math::MPC') {
+        my $r = Math::MPC::Rmpc_init2(CORE::int($PREC));
+        Math::MPC::Rmpc_set($r, $num, $ROUND);
+        return bless \$r;
+    }
+
+    # GMPq
+    if ($ref eq 'Math::GMPq') {
+        my $r = Math::GMPq::Rmpq_init();
+        Math::GMPq::Rmpq_set($r, $num);
+        return bless \$r;
     }
 
     bless \_star2obj($num), $class;
