@@ -233,9 +233,11 @@ use overload
 
         euler     => \&euler,
         bernoulli => \&bernfrac,
+        faulhaber => \&faulhaber_polynomial,
 
         euler_polynomial     => \&euler_polynomial,
         bernoulli_polynomial => \&bernoulli_polynomial,
+        faulhaber_polynomial => \&faulhaber_polynomial,
 
         lcm    => \&lcm,
         gcd    => \&gcd,
@@ -7743,6 +7745,20 @@ sub bernfrac ($;$) {
 
 *bernoulli = \&bernfrac;
 
+sub faulhaber_polynomial {
+    my ($n, $x) = @_;
+
+    $n = _star2ui($n) // goto &nan;
+    $x = ref($x) eq __PACKAGE__ ? $$x : _star2obj($x);
+
+    $n += 1;
+    $x = __inc__($x);
+
+    bernoulli_polynomial($n, $x)->sub(bernfrac($n))->div($n);
+}
+
+*faulhaber = \&faulhaber_polynomial;
+
 sub euler_polynomial ($$) {
     my ($n, $x) = @_;
 
@@ -9117,10 +9133,10 @@ sub polygonal ($$) {
         Math::GMPz::Rmpz_sub($r, $r, $k);       # r = r-k
     }
 
-    Math::GMPz::Rmpz_submul_ui($r, $n, 2);      # r = r-2*n
-    Math::GMPz::Rmpz_add_ui($r, $r, 4);         # r = r+4
-    Math::GMPz::Rmpz_mul($r, $r, $n);           # r = r*n
-    Math::GMPz::Rmpz_div_2exp($r, $r, 1);       # r = r/2
+    Math::GMPz::Rmpz_submul_ui($r, $n, 2);    # r = r-2*n
+    Math::GMPz::Rmpz_add_ui($r, $r, 4);       # r = r+4
+    Math::GMPz::Rmpz_mul($r, $r, $n);         # r = r*n
+    Math::GMPz::Rmpz_div_2exp($r, $r, 1);     # r = r/2
 
     bless \$r;
 }
