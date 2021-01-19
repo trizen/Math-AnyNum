@@ -829,7 +829,7 @@ sub _any2ui {
   Math_GMPz: {
 
         if (Math::GMPz::Rmpz_fits_ulong_p($x)) {
-            goto &Math::GMPz::Rmpz_get_ui;
+            return Math::GMPz::Rmpz_get_ui($x);
         }
 
         return;
@@ -849,8 +849,7 @@ sub _any2ui {
   Math_MPFR: {
 
         if (Math::MPFR::Rmpfr_integer_p($x) and Math::MPFR::Rmpfr_fits_ulong_p($x, $ROUND)) {
-            push @_, $ROUND;
-            goto &Math::MPFR::Rmpfr_get_ui;
+            return Math::MPFR::Rmpfr_get_ui($x, $ROUND);
         }
 
         if (Math::MPFR::Rmpfr_number_p($x)) {
@@ -874,11 +873,11 @@ sub _any2si {
   Math_GMPz: {
 
         if (Math::GMPz::Rmpz_fits_slong_p($x)) {
-            goto &Math::GMPz::Rmpz_get_si;
+            return Math::GMPz::Rmpz_get_si($x);
         }
 
         if (Math::GMPz::Rmpz_fits_ulong_p($x)) {
-            goto &Math::GMPz::Rmpz_get_ui;
+            return Math::GMPz::Rmpz_get_ui($x);
         }
 
         return;
@@ -899,13 +898,11 @@ sub _any2si {
 
         if (Math::MPFR::Rmpfr_integer_p($x)) {
             if (Math::MPFR::Rmpfr_fits_slong_p($x, $ROUND)) {
-                push @_, $ROUND;
-                goto &Math::MPFR::Rmpfr_get_si;
+                return Math::MPFR::Rmpfr_get_si($x, $ROUND);
             }
 
             if (Math::MPFR::Rmpfr_fits_ulong_p($x, $ROUND)) {
-                push @_, $ROUND;
-                goto &Math::MPFR::Rmpfr_get_ui;
+                return Math::MPFR::Rmpfr_get_ui($x, $ROUND);
             }
         }
 
@@ -1464,13 +1461,11 @@ sub __stringify__ {
     goto(ref($x) =~ tr/:/_/rs);
 
   Math_GMPz: {
-        push @_, 10;
-        goto &Math::GMPz::Rmpz_get_str;
+        return Math::GMPz::Rmpz_get_str($x, 10);
     }
 
   Math_GMPq: {
-        push @_, 10;
-        goto &Math::GMPq::Rmpq_get_str;
+        return Math::GMPq::Rmpq_get_str($x, 10);
     }
 
   Math_MPFR: {
@@ -8720,15 +8715,15 @@ sub __sgn__ {
     goto(ref($x) =~ tr/:/_/rs);
 
   Math_MPFR: {
-        goto &Math::MPFR::Rmpfr_sgn;
+        return Math::MPFR::Rmpfr_sgn($x);
     }
 
   Math_GMPq: {
-        goto &Math::GMPq::Rmpq_sgn;
+        return Math::GMPq::Rmpq_sgn($x);
     }
 
   Math_GMPz: {
-        goto &Math::GMPz::Rmpz_sgn;
+        return Math::GMPz::Rmpz_sgn($x);
     }
 
     # sgn(x) = x / abs(x)
