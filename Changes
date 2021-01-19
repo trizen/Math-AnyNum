@@ -1,8 +1,9 @@
 Revision history for Math-AnyNum
 
-0.37    2021-?-?
+0.37    2021-01-19
 
-        - Added the `faulhaber_polynomial(n,x)` function. (also aliased as `faulhaber`)
+        - Added the `faulhaber_polynomial(n,x)` function (also aliased as `faulhaber`).
+        - Fixed some memory leaks in some special cases, such as `index(o, s)`, where `o` is a Math::AnyNum object.
 
 0.36    2020-11-22
 
