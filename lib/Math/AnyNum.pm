@@ -838,7 +838,7 @@ sub _any2ui {
   Math_GMPq: {
 
         if (Math::GMPq::Rmpq_integer_p($x)) {
-            @_ = ($x = _mpq2mpz($x));
+            $x = _mpq2mpz($x);
             goto Math_GMPz;
         }
 
@@ -861,7 +861,7 @@ sub _any2ui {
     }
 
   Math_MPC: {
-        @_ = ($x = _any2mpfr($x));
+        $x = _any2mpfr($x);
         goto Math_MPFR;
     }
 }
@@ -886,7 +886,7 @@ sub _any2si {
   Math_GMPq: {
 
         if (Math::GMPq::Rmpq_integer_p($x)) {
-            @_ = ($x = _mpq2mpz($x));
+            $x = _mpq2mpz($x);
             goto Math_GMPz;
         }
 
@@ -915,7 +915,7 @@ sub _any2si {
     }
 
   Math_MPC: {
-        @_ = ($x = _any2mpfr($x));
+        $x = _any2mpfr($x);
         goto Math_MPFR;
     }
 }
