@@ -10183,8 +10183,12 @@ sub sumdigits ($;$) {
 #<<<
     if (ref($k) ? (Math::GMPz::Rmpz_cmp_ui($k, 62) <= 0) : ($k <= 62)) {
         $k = Math::GMPz::Rmpz_get_ui($k) if ref($k);
+
         return bless \Math::GMPz::Rmpz_init_set_ui(Math::GMPz::Rmpz_popcount($n)) if $k == 2;
-        return bless \Math::GMPz::Rmpz_init_set_ui(List::Util::sum(map { $k <= 36 ? $DIGITS_36{$_} : $DIGITS_62{$_} } split(//, Math::GMPz::Rmpz_get_str($n, $k))));
+
+        if (Math::GMPz::Rmpz_sizeinbase($n, $k) <= 1e6) {
+            return bless \Math::GMPz::Rmpz_init_set_ui(List::Util::sum(map { $k <= 36 ? $DIGITS_36{$_} : $DIGITS_62{$_} } split(//, Math::GMPz::Rmpz_get_str($n, $k))));
+        }
     }
 #>>>
 
