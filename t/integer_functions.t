@@ -959,7 +959,7 @@ is(subfactorial(Math::AnyNum->new(7), 5),                    21);
 is(subfactorial(7,                    Math::AnyNum->new(5)), 21);
 
 is(subfactorial(-20, -20), 'NaN');
-is(subfactorial(12, 20),   'NaN');
+is(subfactorial(12, 20),   0);
 is(subfactorial(-12),      'NaN');
 is(subfactorial(0, 0),     1);
 is(subfactorial(0, -1),    0);

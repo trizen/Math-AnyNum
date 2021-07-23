@@ -8024,7 +8024,7 @@ sub subfactorial ($;$) {
 
     goto &zero if ($k < 0);
     goto &one  if ($n == 0);
-    goto &nan  if ($n < 0);
+    goto &zero if ($n < 0);
 
     my $tau  = 6.28318530717958647692528676655900576839433879875;
     my $prec = 4 + CORE::int(($n * CORE::log($n) + CORE::log($tau * $n) / 2 - $n) / CORE::log(2));
