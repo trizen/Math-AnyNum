@@ -247,6 +247,10 @@ use overload
         kronecker => \&kronecker,
 
         remdiv => \&remdiv,
+
+        addmod => \&addmod,
+        submod => \&submod,
+        mulmod => \&mulmod,
         divmod => \&divmod,
 
         iadd => \&iadd,
@@ -4536,6 +4540,47 @@ sub polymod {
     map { bless \$_ } @r;
 }
 
+# Modular operations
+
+sub addmod ($$$) {
+    my ($x, $y, $m) = @_;
+
+    $x = _star2mpz($x) // goto &nan;
+    $y = _star2mpz($y) // goto &nan;
+    $m = _star2mpz($m) // goto &nan;
+
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_add($r, $x, $y);
+    Math::GMPz::Rmpz_mod($r, $r, $m);
+    bless \$r;
+}
+
+sub submod ($$$) {
+    my ($x, $y, $m) = @_;
+
+    $x = _star2mpz($x) // goto &nan;
+    $y = _star2mpz($y) // goto &nan;
+    $m = _star2mpz($m) // goto &nan;
+
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_sub($r, $x, $y);
+    Math::GMPz::Rmpz_mod($r, $r, $m);
+    bless \$r;
+}
+
+sub mulmod ($$$) {
+    my ($x, $y, $m) = @_;
+
+    $x = _star2mpz($x) // goto &nan;
+    $y = _star2mpz($y) // goto &nan;
+    $m = _star2mpz($m) // goto &nan;
+
+    my $r = Math::GMPz::Rmpz_init();
+    Math::GMPz::Rmpz_mul($r, $x, $y);
+    Math::GMPz::Rmpz_mod($r, $r, $m);
+    bless \$r;
+}
+
 #
 ## DIVMOD
 #
@@ -7457,7 +7502,7 @@ sub sum {
 
     @terms || goto &zero;
 
-    my @left;
+    my @non_mpz;
     my $sum = Math::GMPz::Rmpz_init_set_ui(0);
 
     foreach my $n (@terms) {
@@ -7465,12 +7510,12 @@ sub sum {
             Math::GMPz::Rmpz_add($sum, $sum, $n);
         }
         else {
-            push @left, $n;
+            push @non_mpz, $n;
         }
     }
 
-    if (@left) {
-        $sum = __add__($sum, _binsplit(\@left, \&__add__));
+    if (@non_mpz) {
+        $sum = __add__($sum, _binsplit(\@non_mpz, \&__add__));
     }
 
     bless \$sum;
@@ -10143,11 +10188,11 @@ sub digits ($;$) {
     # Subquadratic algorithm from "Modern Computer Arithmetic" by Richard P. Brent and Paul Zimmermann
     if (!ref($k) || Math::GMPz::Rmpz_fits_ulong_p($k)) {
 
-        # Find r such that B^(2r - 2) <= A < B^(2r)
-        my $r = (__ilog__($n, $k) >> 1) + 1;
-
         my $A = $n;
         my $B = ref($k) ? Math::GMPz::Rmpz_get_ui($k) : $k;
+
+        # Find r such that B^(2r - 2) <= A < B^(2r)
+        my $r = (__ilog__($A, $B) >> 1) + 1;
 
         state $Q = Math::GMPz::Rmpz_init_nobless();
         state $R = Math::GMPz::Rmpz_init_nobless();
@@ -10247,11 +10292,11 @@ sub sumdigits ($;$) {
     # Subquadratic algorithm from "Modern Computer Arithmetic" by Richard P. Brent and Paul Zimmermann
     if (!ref($k) || Math::GMPz::Rmpz_fits_ulong_p($k)) {
 
-        # Find r such that B^(2r - 2) <= A < B^(2r)
-        my $r = (__ilog__($n, $k) >> 1) + 1;
-
         my $A = $n;
         my $B = ref($k) ? Math::GMPz::Rmpz_get_ui($k) : $k;
+
+        # Find r such that B^(2r - 2) <= A < B^(2r)
+        my $r = (__ilog__($A, $B) >> 1) + 1;
 
         state $Q = Math::GMPz::Rmpz_init_nobless();
         state $R = Math::GMPz::Rmpz_init_nobless();

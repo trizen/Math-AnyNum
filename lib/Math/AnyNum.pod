@@ -106,6 +106,10 @@ Additionally, each Math::AnyNum object is B<immutable>.
     ilog(n,k)                 integer logarithm of n to base k
     ilog2(n)                  integer logarithm of n to base 2
     ilog10(n)                 integer logarithm of n to base 10
+    addmod(a,b,m)             modular integer addition: (a+b)%m
+    submod(a,b,m)             modular integer subtraction: (a-b)%m
+    mulmod(a,b,m)             modular integer multiplication: (a*b)%m
+    divmod(a,b,m)             modular integer division: (a/b)%m
     divmod(a,b)               quotient and remainder of a/b
     invmod(n,m)               multiplicative inverse of n modulo m
     powmod(a,b,m)             modular exponentiation: a ^ b mod m
@@ -1131,12 +1135,40 @@ Returns C<0> when C<n> is negative.
 
 The integer modulus operation. Returns NaN when C<y> is zero.
 
+=head2 addmod
+
+    addmod(a, b, m)                               #=> Int | NaN
+
+Modular integer addition: C<(a+b) % m>.
+
+    say addmod(43, 97, 127)     # == (43+97)%127
+
+=head2 submod
+
+    submod(a,b,m)                                 #=> Int | NaN
+
+Modular integer subtraction: C<(a-b) % m>.
+
+    say submod(43, 97, 127)     #=> (43-97)%127
+
+=head2 mulmod
+
+    mulmod(a,b,m)                                 #=> Int | NaN
+
+Modular integer multiplication: C<(a*b) % m>.
+
+    say mulmod(43, 97, 127)     # == (43*97)%127
+
 =head2 divmod
 
-    divmod(x, y)                                  #=> (Int, Int) | (NaN, NaN)
+    divmod(a, b)                                  #=> (Int, Int) | (NaN, NaN)
+    divmod(a, b, m)                               #=> (Int, Int) | (NaN, NaN)
 
-Returns the quotient and the remainder from division of C<x> by C<y>,
-where both are integers. When C<y> is zero, it returns two NaN values.
+When only two arguments are provided, it returns C<(idiv(a,b), imod(a,b))>.
+
+When three arguments are given, it does integer modular division: C<(a/b) % m>.
+
+    say divmod(43, 97, 127)     # == (43 * invmod(97, 127))%127
 
 =head2 invmod
 

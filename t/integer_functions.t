@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 639;
+plan tests => 642;
 
 use Math::AnyNum qw(:ntheory prod);
 use Math::GMPz::V qw();
@@ -248,6 +248,10 @@ is(divmod(12345,         $o->new(1000)), 345);
 
 is(divmod(23, 17, 97), 47);
 is(divmod(24, 2,  8),  4);
+
+is(addmod(24, 8, 29),   3);
+is(submod(127, 88, 29), 10);
+is(mulmod(127, 88, 29), 11);
 
 is(binomial(42, 39),  11480);
 is(binomial(-4, -42), 10660);
