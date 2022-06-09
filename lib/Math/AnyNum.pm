@@ -121,7 +121,7 @@ use overload
         atan2   => \&atan2,
         deg2rad => \&deg2rad,
         rad2deg => \&rad2deg,
-               );
+    );
 
     my %special = (
         beta => \&beta,
@@ -180,7 +180,7 @@ use overload
 
         polygonal_root  => \&polygonal_root,
         polygonal_root2 => \&polygonal_root2,
-                  );
+    );
 
     my %ntheory = (
         factorial    => \&factorial,
@@ -294,7 +294,7 @@ use overload
         rough_part  => \&rough_part,
 
         make_coprime => \&make_coprime,
-                  );
+    );
 
     my %misc = (
         rand  => \&rand,
@@ -382,7 +382,7 @@ use overload
         is_even      => \&is_even,
         is_div       => \&is_div,
         is_congruent => \&is_congruent,
-               );
+    );
 
     sub import {
         shift;
@@ -10115,9 +10115,21 @@ sub digits ($;$) {
         return sub {
             my ($A, $r) = @_;
 
-            if (Math::GMPz::Rmpz_cmp_ui($A, $B) < 0) {
-                return Math::GMPz::Rmpz_get_ui($A);
+            # Cut the recursion early
+            if (Math::GMPz::Rmpz_fits_ulong_p($A)) {
+                my $v = Math::GMPz::Rmpz_init_set($A);
+                my $m = Math::GMPz::Rmpz_init();
+
+                my @digits;
+                while (Math::GMPz::Rmpz_sgn($v)) {
+                    push @digits, Math::GMPz::Rmpz_divmod_ui($v, $m, $v, $B);
+                }
+                return @digits;
             }
+
+            #~ if (Math::GMPz::Rmpz_cmp_ui($A, $B) < 0) {
+            #~ return Math::GMPz::Rmpz_get_ui($A);
+            #~ }
 
             my $t = Math::GMPz::Rmpz_init();
             Math::GMPz::Rmpz_ui_pow_ui($t, $B, 2 * ($r - 1));    # can this be optimized away?
@@ -10207,9 +10219,21 @@ sub sumdigits ($;$) {
         my $total = sub {
             my ($A, $r) = @_;
 
-            if (Math::GMPz::Rmpz_cmp_ui($A, $B) < 0) {
-                return Math::GMPz::Rmpz_get_ui($A);
+            # Cut the recursion early
+            if (Math::GMPz::Rmpz_fits_ulong_p($A)) {
+                my $v = Math::GMPz::Rmpz_init_set($A);
+                my $m = Math::GMPz::Rmpz_init();
+
+                my $sum = 0;
+                while (Math::GMPz::Rmpz_sgn($v)) {
+                    $sum += Math::GMPz::Rmpz_divmod_ui($v, $m, $v, $B);
+                }
+                return $sum;
             }
+
+            #~ if (Math::GMPz::Rmpz_cmp_ui($A, $B) < 0) {
+            #~ return Math::GMPz::Rmpz_get_ui($A);
+            #~ }
 
             my $w = ($r + 1) >> 1;
             my $t = Math::GMPz::Rmpz_init();
