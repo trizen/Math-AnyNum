@@ -4540,8 +4540,31 @@ sub polymod {
 ## DIVMOD
 #
 
-sub divmod ($$) {
-    my ($x, $y) = @_;
+sub divmod ($$;$) {
+    my ($x, $y, $m) = @_;
+
+    if (defined($m)) {    # modular division
+
+        $x = _star2mpz($x) // goto &nan;
+        $y = _star2mpz($y) // goto &nan;
+        $m = _star2mpz($m) // goto &nan;
+
+        my $r = Math::GMPz::Rmpz_init();
+
+        if (Math::GMPz::Rmpz_divisible_p($x, $y) and Math::GMPz::Rmpz_sgn($y)) {
+            Math::GMPz::Rmpz_divexact($r, $x, $y);
+            Math::GMPz::Rmpz_mod($r, $r, $m);
+        }
+        elsif (Math::GMPz::Rmpz_invert($r, $y, $m)) {
+            Math::GMPz::Rmpz_mul($r, $r, $x);
+            Math::GMPz::Rmpz_mod($r, $r, $m);
+        }
+        else {
+            goto &nan;
+        }
+
+        return bless \$r;
+    }
 
     $x = _star2mpz($x) // return (nan(), nan());
     $y = _star2mpz($y) // return (nan(), nan());
