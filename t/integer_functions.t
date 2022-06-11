@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 1510;
+plan tests => 1522;
 
 use Math::AnyNum qw(:ntheory prod);
 use Math::GMPz::V qw();
@@ -863,6 +863,21 @@ ok(is_power(1),   'is_power(1)');
 ok(is_power(-1),  'is_power(-1)');
 ok(!is_power(-2), 'is_power(-2)');
 ok(is_power(0),   'is_power(0)');
+
+ok(is_power(ipow(197,  77), 77));
+ok(!is_power(ipow(197, 77), 197));
+
+ok(is_power_of(64,             2));
+ok(is_power_of(27,             3));
+ok(is_power_of(ipow(197, 77),  197));
+ok(!is_power_of(ipow(197, 77), 77));
+
+ok(!is_power_of(28,                3));
+ok(!is_power_of(26,                3));
+ok(!is_power_of(63,                2));
+ok(!is_power_of(65,                2));
+ok(!is_power_of(ipow(197, 77) - 1, 197));
+ok(!is_power_of(ipow(197, 77) + 1, 197));
 
 ok(is_square(100), 'is_square(100)');
 ok(!is_square(99), 'is_square(99)');

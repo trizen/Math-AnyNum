@@ -291,6 +291,7 @@ use overload
         quadratic_powmod => \&quadratic_powmod,
 
         is_power      => \&is_power,
+        is_power_of   => \&is_power_of,
         is_square     => \&is_square,
         is_polygonal  => \&is_polygonal,
         is_polygonal2 => \&is_polygonal2,
@@ -7366,7 +7367,6 @@ sub lucasmod ($$) {
 
 sub _quadratic_mul {
     my ($xa, $xb, $ya, $yb, $w) = @_;
-
     (__add__(__mul__($xa, $ya), __mul__(__mul__($xb, $yb), $w)), __add__(__mul__($xa, $yb), __mul__($xb, $ya)));
 }
 
@@ -7377,7 +7377,7 @@ sub _quadratic_invmod {
     $xb = __mod__($xb, $m);
 
     my $t = invmod(__sub__(__mul__($xa, $xa), __mul__(__mul__($xb, $xb), $w)), $m);
-    return (__mod__(__mul__($xa, $$t), $m), __mod__(__neg__(__mul__($xb, $$t)), $m));
+    (__mod__(__mul__($xa, $$t), $m), __mod__(__neg__(__mul__($xb, $$t)), $m));
 }
 
 sub _quadratic_pow {
@@ -7394,7 +7394,7 @@ sub _quadratic_pow {
         ($x, $y) = _quadratic_mul($x, $y, $x, $y, $w);
     }
 
-    return ($c1, $c2);
+    ($c1, $c2);
 }
 
 sub _mpz_quadratic_powmod {
@@ -7457,7 +7457,7 @@ sub _quadratic_powmod {
         ($c1, $c2) = _quadratic_invmod($c1, $c2, $w, $m);
     }
 
-    return ($c1, $c2);
+    ($c1, $c2);
 }
 
 sub quadratic_powmod ($$$$$) {
@@ -7471,7 +7471,7 @@ sub quadratic_powmod ($$$$$) {
 
     my ($r1, $r2) = _quadratic_powmod($x, $y, $w, $n, $m);
 
-    return ((bless \$r1), (bless \$r2));
+    ((bless \$r1), (bless \$r2));
 }
 
 sub chebyshevT ($$) {
@@ -7491,8 +7491,7 @@ sub chebyshevT ($$) {
     # T_n(x) = 1/2 * ((x - sqrt(x^2 - 1))^n + (x + sqrt(x^2 - 1))^n)
 
     my ($r1, $r2) = _quadratic_pow($x, Math::GMPz::Rmpz_init_set_si(-1), __dec__(__mul__($x, $x)), $n);
-
-    return bless \$r1;
+    bless \$r1;
 }
 
 #
@@ -7520,7 +7519,7 @@ sub chebyshevTmod ($$$) {
     my ($r1, $r2) = _quadratic_powmod($x, Math::GMPz::Rmpz_init_set_si(-1), __dec__(__mul__($x, $x)), $n, $m);
     my $r = bless \$r1;
     $r = $r->mod($m);
-    return $r;
+    $r;
 }
 
 #
@@ -7558,7 +7557,7 @@ sub chebyshevU ($$) {
 
     my $r = bless \$r2;
     $r = $r->neg if $negative;
-    return $r;
+    $r;
 }
 
 #
@@ -7601,7 +7600,7 @@ sub chebyshevUmod {
     my $r = bless \$r2;
     $r = $r->neg if $negative;
     $r = $r->mod($m);
-    return $r;
+    $r;
 }
 
 #
@@ -9516,6 +9515,33 @@ sub is_power ($;$) {
     $k = _star2si($k) // return 0;
 
     __is_power__($n, $k);
+}
+
+sub is_power_of ($$) {
+    my ($n, $k) = @_;
+
+    $n = _star2obj($n);
+    $k = _star2obj($k);
+
+    if (ref($n) ne 'Math::GMPz') {
+        __is_int__($n) || return 0;
+        $n = _any2mpz($n) // return 0;
+    }
+
+    if (ref($k) ne 'Math::GMPz') {
+        $k = _any2mpz($k) // 0;
+    }
+
+    if (Math::GMPz::Rmpz_cmp_ui($k, 2) == 0) {
+        return (Math::GMPz::Rmpz_popcount($n) == 1);
+    }
+
+    my $e = __ilog__($n, $k) // return 0;
+
+    state $t = Math::GMPz::Rmpz_init_nobless();
+    Math::GMPz::Rmpz_pow_ui($t, $k, $e);
+
+    (Math::GMPz::Rmpz_cmp($t, $n) == 0);
 }
 
 #
