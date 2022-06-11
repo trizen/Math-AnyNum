@@ -6,7 +6,7 @@ Math::AnyNum - Arbitrary size precision for integers, rationals, floating-points
 
 =head1 VERSION
 
-Version 0.38
+Version 0.39
 
 =head1 SYNOPSIS
 
@@ -85,6 +85,8 @@ Additionally, each Math::AnyNum object is B<immutable>.
     hermiteHe(n,x)            Probabilists' Hermite polynomials: He_n(x)
     chebyshevT(n,x)           Chebyshev polynomials of the 1st kind: T_n(x)
     chebyshevU(n,x)           Chebyshev polynomials of the 2nd kind: U_n(x)
+    chebyshevTmod(n,x,m)      Modular Chebyshev polynomials of the 1st kind: T_n(x)
+    chebyshevUmod(n,x,m)      Modular Chebyshev polynomials of the 2nd kind: U_n(x)
     faulhaber_sum(n,k)        sum of powers: 1^k + 2^k + ... + n^k
     geometric_sum(n,r)        geometric sum: r^0 + r^1 + ... + r^n
     dirichlet_sum(n,f,g,F,G)  Dirichlet hyperbola method
@@ -1502,6 +1504,18 @@ Defined as:
     U(0, x) = 1
     U(1, x) = 2*x
     U(n, x) = 2*x*U(n-1, x) - U(n-2, x)
+
+=head2 chebyshevTmod
+
+    chebyshevTmod(n, x, m)                        #=> Int | NaN
+
+Compute the modular Chebyshev polynomials of the first kind: C<T_n(x) mod m>, where C<n> must be an integer.
+
+=head2 chebyshevUmod
+
+    chebyshevUmod(n, x, m)                        #=> Int | NaN
+
+Compute the modular Chebyshev polynomials of the second kind: C<U_n(x) mod m>, where C<n> must be an integer.
 
 =head2 laguerreL
 
