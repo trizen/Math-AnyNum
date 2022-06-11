@@ -95,7 +95,10 @@ Additionally, each Math::AnyNum object is B<immutable>.
     iadd(a,b)                 integer addition: a+b
     isub(a,b)                 integer subtraction: a-b
     imul(a,b)                 integer multiplication: a*b
-    idiv(a,b)                 integer division: int(a/b)
+    idiv(a,b)                 floor division: floor(a/b)
+    idiv_ceil(a,b)            ceil division: int(a/b)
+    idiv_round(a,b)           round division: int(a/b)
+    idiv_trunc(a,b)           truncated division: trunc(a/b)
     imod(a,b)                 integer remainder: a%b
     ipow(n,k)                 integer exponentiation: n^k
     ipow2(k)                  integer exponentiation: 2^k
@@ -1105,15 +1108,23 @@ Example:
 
 All operations in this section are done with integers.
 
-=head2 iadd | isub | imul | idiv | ipow
+=head2 iadd | isub | imul | ipow
 
     iadd(x, y)                                    #=> Int | NaN
     isub(x, y)                                    #=> Int | NaN
     imul(x, y)                                    #=> Int | NaN
-    idiv(x, y)                                    #=> Int | NaN
     ipow(x, y)                                    #=> Int | NaN
 
-Integer addition, subtraction, multiplication, division and exponentiation.
+Integer addition, subtraction, multiplication and exponentiation.
+
+=head2 idiv | idiv_ceil | idiv_round | idiv_trunc
+
+    idiv(x, y)                                    #=> Int | NaN
+    idiv_ceil(x, y)                               #=> Int | NaN
+    idiv_trunc(x, y)                              #=> Int | NaN
+    idiv_round(x, y)                              #=> Int | NaN
+
+Integer division: C<floor(a/b)>, C<ceil(a/b)>, C<trunc(a/b)>, C<round(a/b)>.
 
 =head2 ipow2
 
@@ -1185,6 +1196,14 @@ When no inverse exists (i.e.: C<gcd(x, y) != 1>), the NaN value is returned.
 Computes C<(x ** y) % z>, where all three values are integers.
 
 Returns NaN when the third argument is 0, or when C<y> is negative and C<gcd(x, z) != 1>.
+
+=head2 quadratic_powmod
+
+    quadratic_powmod(a, b, w, n, m)               #=> Int | NaN
+
+Computes C<(a + b*sqrt(w))**n % m>, returning C<(x,y)> satisfying:
+
+    x + y*sqrt(w) == (a + b*sqrt(w))**n (mod m)
 
 =head2 isqrt | icbrt
 
