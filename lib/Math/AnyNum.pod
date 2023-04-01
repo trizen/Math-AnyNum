@@ -411,7 +411,7 @@ we get the following results:
     say 98**7;                                    #=> 86812553324672
 
     # Rationals
-    say 1 / 98**7                                 #=> 1/86812553324672
+    say 1 / 98**7;                                #=> 1/86812553324672
 
 Notice that integers and rational numbers do not obey this precision, because they can grow and
 shrink dynamically, without a specific limit.

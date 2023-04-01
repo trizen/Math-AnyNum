@@ -9967,7 +9967,7 @@ sub binomial ($$) {
         and CORE::int($k) eq $k
         and $n >= 0
         and $k >= 0
-        and $n < ULONG_MAX
+        and $n < 1e6
         and $k < ULONG_MAX) {
         my $r = Math::GMPz::Rmpz_init();
         Math::GMPz::Rmpz_bin_uiui($r, $n, $k);
@@ -9979,7 +9979,7 @@ sub binomial ($$) {
 
     my $r = Math::GMPz::Rmpz_init();
 
-    if ($k >= 0 and Math::GMPz::Rmpz_fits_ulong_p($n)) {
+    if ($k >= 0 and Math::GMPz::Rmpz_fits_ulong_p($n) and Math::GMPz::Rmpz_cmp_ui($n, 1e6) <= 0) {
         Math::GMPz::Rmpz_bin_uiui($r, Math::GMPz::Rmpz_get_ui($n), $k);
     }
     else {
