@@ -4928,11 +4928,19 @@ sub log (_;$) {
 sub __ilog__ {
     my ($x, $y) = @_;
 
+    if (ref($y) eq 'Math::GMPz' and Math::GMPz::Rmpz_fits_ulong_p($y)) {
+        $y = Math::GMPz::Rmpz_get_ui($y);
+    }
+
     # ilog(x, y <= 1) = NaN
     $y <= 1 and return;
 
     # ilog(x <= 0, y) = NaN
     Math::GMPz::Rmpz_sgn($x) <= 0 and return;
+
+    # ilog(x,y) = 0, when y > x
+    (ref($y) ? Math::GMPz::Rmpz_cmp($x, $y) : Math::GMPz::Rmpz_cmp_ui($x, $y)) >= 0
+      or return 0;
 
     # Return faster for y <= 62
     if ($y <= 62) {
