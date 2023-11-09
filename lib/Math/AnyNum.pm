@@ -1136,9 +1136,7 @@ sub _cached_primorial {
 
         if ($OLD_GMP) {
             Math::GMPz::Rmpz_set_ui($t, 1);
-            for (my $p = Math::GMPz::Rmpz_init_set_ui(2) ;
-                 Math::GMPz::Rmpz_cmp_ui($p, $k) <= 0 ;
-                 Math::GMPz::Rmpz_nextprime($p, $p)) {
+            for (my $p = Math::GMPz::Rmpz_init_set_ui(2) ; Math::GMPz::Rmpz_cmp_ui($p, $k) <= 0 ; Math::GMPz::Rmpz_nextprime($p, $p)) {
                 Math::GMPz::Rmpz_mul($t, $t, $p);
             }
         }
