@@ -643,11 +643,16 @@ sub _str2obj {
     $s =~ s/^\+// if substr($s, 0, 1) eq '+';
 
     # Fraction
-    if (index($s, '/') != -1 and $s =~ m{^\s*[-+]?[0-9]+\s*/\s*[-+]?[1-9]+[0-9]*\s*\z}) {
-        my $r = Math::GMPq::Rmpq_init();
-        Math::GMPq::Rmpq_set_str($r, $s, 10);
-        Math::GMPq::Rmpq_canonicalize($r);
-        return $r;
+    if (index($s, '/') != -1) {
+
+        if ($s =~ m{^\s*-?[0-9]+\s*/\s*-?[1-9]+[0-9]*\s*\z}) {
+            my $r = Math::GMPq::Rmpq_init();
+            Math::GMPq::Rmpq_set_str($r, $s, 10);
+            Math::GMPq::Rmpq_canonicalize($r);
+            return $r;
+        }
+
+        return ${Math::AnyNum->new($s, 10)};
     }
 
     # Integer
@@ -1186,19 +1191,40 @@ sub new {
 
         if (index($num, '/') != -1) {
 
-            if ($num =~ m{/\s*0+\s*\z}) {
+            my ($nu, $de) = split(/\//, $num);
+
+            my $nu_obj = $class->new($nu, $base);
+            my $de_obj = $class->new($de, $base);
+
+            if (ref($$nu_obj) ne 'Math::GMPz') {
                 goto &nan;
+            }
+
+            if (ref($$de_obj) ne 'Math::GMPz') {
+                goto &nan;
+            }
+
+            if (Math::GMPz::Rmpz_sgn($$de_obj) == 0) {
+                if (Math::GMPz::Rmpz_sgn($$nu_obj) == 0) {
+                    goto &nan;    # 0/0
+                }
+
+                if (Math::GMPz::Rmpz_sgn($$nu_obj) < 0) {
+                    goto &ninf;    # -x/0
+                }
+                else {
+                    goto &inf;     # +x/0
+                }
             }
 
             my $r = Math::GMPq::Rmpq_init();
-            eval { Math::GMPq::Rmpq_set_str($r, $num, $int_base); 1 } // goto &nan;
 
-            if (Math::GMPq::Rmpq_get_str($r, 10) !~ m{^\s*[-+]?[0-9]+\s*(?:/\s*[-+]?[1-9]+[0-9]*\s*)?\z}) {
-                goto &nan;
-            }
+            Math::GMPq::Rmpq_set_num($r, $$nu_obj);
+            Math::GMPq::Rmpq_set_den($r, $$de_obj);
 
             Math::GMPq::Rmpq_canonicalize($r);
-            return bless \$r, $class;
+
+            return bless(\$r, $class);
         }
         elsif (substr($num, 0, 1) eq '(' and substr($num, -1) eq ')') {
             my $r = Math::MPC::Rmpc_init2($PREC);

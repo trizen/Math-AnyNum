@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 99;
+plan tests => 109;
 
 {
     use Math::AnyNum qw(:overload);
@@ -137,6 +137,16 @@ plan tests => 99;
     is(Math::AnyNum->new('12.34'),       '12.34');
     is(Math::AnyNum->new('0/0'),         'NaN');
     is(Math::AnyNum->new('0/0', 36),     'NaN');
+    is(Math::AnyNum->new('-1/0', 36),    '-Inf');
+    is(Math::AnyNum->new('1/0', 36),     'Inf');
+    is(Math::AnyNum->new('1/0'),         'Inf');
+    is(Math::AnyNum->new('-2/0'),        '-Inf');
+    is(Math::AnyNum->new('-2/'),         'NaN');
+    is(Math::AnyNum->new('1/'),          'NaN');
+    is(Math::AnyNum->new('/'),           'NaN');
+    is(Math::AnyNum->new('0/'),          'NaN');
+    is(Math::AnyNum->new('/2'),          'NaN');
+    is(Math::AnyNum->new('/0'),          'NaN');
     is(Math::AnyNum->new('000/000', 16), 'NaN');
     is(Math::AnyNum->new('dfp/abc', 12), 'NaN');
     is(Math::AnyNum->new('hi'),          'NaN');
