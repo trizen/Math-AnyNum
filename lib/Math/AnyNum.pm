@@ -1185,6 +1185,11 @@ sub new {
         $num =~ s/^\+// if substr($num, 0, 1) eq '+';
 
         if (index($num, '/') != -1) {
+
+            if ($num =~ m{/\s*0+\s*\z}) {
+                goto &nan;
+            }
+
             my $r = Math::GMPq::Rmpq_init();
             eval { Math::GMPq::Rmpq_set_str($r, $num, $int_base); 1 } // goto &nan;
 
