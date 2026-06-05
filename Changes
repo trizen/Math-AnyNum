@@ -1,5 +1,9 @@
 Revision history for Math-AnyNum
 
+0.43    2026-??-??
+
+        - Better performance in `bernfrac(n)` for large values of `n`.
+
 0.42    2026-03-31
 
         - Workaround for broken `mpc_fr_div()` and `mpc_ui_div()` functions in mpc=1.4.0.

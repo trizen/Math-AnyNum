@@ -8013,8 +8013,8 @@ sub bernoulli_polynomial ($$) {
 ## Bernoulli number
 #
 
-# Algorithm due to Kevin J. McGown (December 8, 2005).
-# Described in his paper: "Computing Bernoulli Numbers Quickly".
+# Computation of the n-th Bernoulli number using prime numbers.
+# Algorithm: Kevin J. McGown, "Computing Bernoulli Numbers Quickly" (2005)
 
 sub __bernfrac__ {
     my ($n) = @_;    # $n is an unsigned integer
@@ -8040,22 +8040,13 @@ sub __bernfrac__ {
         return ((_bernoulli_numbers($n))[($n>>1)+1]);
     }
 
-    state $round = Math::MPFR::MPFR_RNDN();
-    state $tau   = 6.28318530717958647692528676655900576839433879875;
+    state $round     = Math::MPFR::MPFR_RNDN();
+    state $round_inf = Math::MPFR::MPFR_RNDU();
+    state $tau       = 6.28318530717958647692528676655900576839433879875;
 
-    my $log2B = (CORE::log(4 * $tau * $n) / 2 + $n * (CORE::log($n / $tau) - 1)) / CORE::log(2);
-
-    my $prec = CORE::int($n + $log2B) + ($n <= 90 ? 24 : 0);
+    # We compute the von Staudt-Clausen denominator early to measure
+    # its exact bit-length for the precision optimizations.
     state $d = Math::GMPz::Rmpz_init_nobless();
-    Math::GMPz::Rmpz_fac_ui($d, $n);                      # d = n!
-
-    my $K = Math::MPFR::Rmpfr_init2($prec);
-    Math::MPFR::Rmpfr_const_pi($K, $round);               # K = pi
-    Math::MPFR::Rmpfr_pow_si($K, $K, -$n, $round);        # K = K^(-n)
-    Math::MPFR::Rmpfr_mul_z($K, $K, $d, $round);          # K = K*d
-    Math::MPFR::Rmpfr_div_2ui($K, $K, $n - 1, $round);    # K = K / 2^(n-1)
-
-    # `d` is the denominator of bernoulli(n)
     Math::GMPz::Rmpz_set_ui($d, 2);                       # d = 2
 
     my @primes = (2);
@@ -8086,6 +8077,21 @@ sub __bernfrac__ {
             }
         }
     }
+
+    # We need enough bits to represent |numerator of B_n| = |B_n| · d exactly,
+    # then round correctly. Use Stirling to bound log2|B_n|, and the exact
+    # bit-length of d.
+    my $log2B = (CORE::log(4 * $tau * $n) / 2 + $n * (CORE::log($n / $tau) - 1)) / CORE::log(2);
+    my $prec  = CORE::int($log2B) + Math::GMPz::Rmpz_sizeinbase($d, 2) + 64;
+
+    state $fac = Math::GMPz::Rmpz_init_nobless();
+    Math::GMPz::Rmpz_fac_ui($fac, $n);                    # fac = n!
+
+    my $K = Math::MPFR::Rmpfr_init2($prec);
+    Math::MPFR::Rmpfr_const_pi($K, $round_inf);               # K = pi
+    Math::MPFR::Rmpfr_pow_si($K, $K, -$n, $round);        # K = K^(-n)
+    Math::MPFR::Rmpfr_mul_z($K, $K, $fac, $round);        # K = K*fac
+    Math::MPFR::Rmpfr_div_2ui($K, $K, $n - 1, $round);    # K = K / 2^(n-1)
 
     state $N = Math::MPFR::Rmpfr_init2_nobless(64);
 
